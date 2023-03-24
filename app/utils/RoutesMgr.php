@@ -3,9 +3,8 @@
 namespace app\utils;
 
 use Exception;
-use app\middleware\AccessMiddleware;
+use app\admin\middleware\AccessMiddleware;
 use app\admin\model\SystemAuthRule;
-use app\service\cloud\KfCloud;
 use Webman\Route;
 use support\Request;
 
@@ -33,10 +32,9 @@ class RoutesMgr
             ]);
         // 检测是未安装（注册路由）
         if (file_exists(base_path() . '/.env')) {
-            RoutesMgr::installed();
-            KfCloud::registerRoutes();
+            self::installed();
         } else {
-            RoutesMgr::install();
+            self::install();
         }
     }
 
@@ -78,14 +76,12 @@ class RoutesMgr
         // 批量注册模块路由
         foreach ($modules as $value) {
             Route::group("/{$value}", function () {
-                // 注册视图路由
-                $viewPath = str_replace('\\', '/', dirname(__DIR__)) . '/admin/view';
                 // 注册访问地址
-                Route::any('/', function (Request $request, $path = '') use ($viewPath) {
+                Route::any('/', function (Request $request, $path = '') {
                     if (strpos($path, '..') !== false) {
                         return response('<h1>400 Bad Request</h1>', 400);
                     }
-                    $file = "{$viewPath}/index.html";
+                    $file = base_path() . "/view/index.html";
                     if (!is_file($file)) {
                         return response('<h1>404 Not Found</h1>', 404);
                     }
@@ -94,11 +90,11 @@ class RoutesMgr
                 // 注册静态资源
                 Route::any(
                     '/assets/[{path:.+}]',
-                    function (Request $request, $path = '') use ($viewPath) {
+                    function (Request $request, $path = '') {
                         if (strpos($path, '..') !== false) {
                             return response('<h1>400 Bad Request</h1>', 400);
                         }
-                        $file = "{$viewPath}/assets/{$path}";
+                        $file = base_path() . "/view/assets/{$path}";
                         if (!is_file($file)) {
                             return response('<h1>404 Not Found</h1>', 404);
                         }

@@ -62,6 +62,24 @@ abstract class Enum extends EnumBaseic
     }
 
     /**
+     * 获取字典数据枚举
+     *
+     * @Author 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-03-22
+     * @return array
+     */
+    public static function getDict(): array
+    {
+        $data = self::toArray();
+        $list = [];
+        foreach ($data as $value) {
+            $list[$value['value']] = $value['text'];
+        }
+        return $list;
+    }
+
+    /**
      * 获取元素所需数据
      *
      * @Author 贵州猿创科技有限公司

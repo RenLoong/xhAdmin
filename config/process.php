@@ -1,16 +1,4 @@
 <?php
-/**
- * This file is part of webman.
- *
- * Licensed under The MIT License
- * For full copyright and license information, please see the MIT-LICENSE.txt
- * Redistributions of files must retain the above copyright notice.
- *
- * @author    walkor<walkor@workerman.net>
- * @copyright walkor<walkor@workerman.net>
- * @link      http://www.workerman.net/
- * @license   http://www.opensource.org/licenses/mit-license.php MIT License
- */
 
 use Workerman\Worker;
 
@@ -38,5 +26,12 @@ return [
                 'enable_memory_monitor' => DIRECTORY_SEPARATOR === '/',
             ]
         ]
-    ]
+    ],
+    // 应用安装进程
+    'app_install' => [
+        // 这里指定进程类，就是上面定义的Pusher类
+        'handler' => process\AppInstallProcess::class,
+        'listen'  => 'http://0.0.0.0:39700',
+        'count'   => 1,
+    ],
 ];

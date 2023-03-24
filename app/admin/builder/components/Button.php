@@ -64,6 +64,10 @@ trait Button
                 'api'                       => '',
                 'method'                    => 'GET',
                 'queryParams'               => [],
+                'params'                    => [
+                    'field'                 => 'id',
+                    'value'                 => '',
+                ],
             ],
             // 按钮样式
             'button'                        => [],
@@ -115,6 +119,10 @@ trait Button
                 'method'                    => 'GET',
                 'queryParams'               => [],
                 'aliasParams'               => [],
+                'params'                    => [
+                    'field'                 => 'id',
+                    'value'                 => '',
+                ],
             ],
             // 按钮样式
             'button'                        => [],

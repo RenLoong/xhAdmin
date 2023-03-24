@@ -2,7 +2,6 @@
 
 namespace app\service;
 
-use app\admin\model\SystemAdmin;
 use app\admin\model\SystemUpload;
 use app\admin\model\SystemUploadCate;
 use Exception;
@@ -23,13 +22,13 @@ class Upload
      *
      * @Author 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-04
+     * @DateTime 2023-03-20
      * @param  type    $file
-     * @param  array   $config TODO:该参数预留后续使用
+     * @param  array   $config
      * @param  integer $cid
-     * @return boolean
+     * @return array
      */
-    public static function upload($file, array $config = [], int $cid = 0): bool
+    public static function upload($file, array $config = [], int $cid = 0): array
     {
         try {
             $category = self::getCategory($cid);
@@ -125,17 +124,18 @@ class Upload
      *
      * @Author 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-04
-     * @param  type    $resutl
-     * @return boolean
+     * @DateTime 2023-03-20
+     * @param  type  $result
+     * @param  array $category
+     * @return array
      */
-    private static function addUpload($result, array $category): bool
+    private static function addUpload($result, array $category): array
     {
         $fiel_name = basename($result->file_name);
         $where['filename'] = $fiel_name;
-        $fileModel = SystemUpload::where($where)->count();
+        $fileModel = SystemUpload::where($where)->find();
         if ($fileModel) {
-            return true;
+            return $fileModel->toArray();
         }
         $data['cid'] = $category['id'];
         $data['title'] = $result->origin_name;
@@ -144,7 +144,11 @@ class Upload
         $data['format'] = $result->extension;
         $data['size'] = $result->size;
         $data['adapter'] = $result->adapter;
-        return (new SystemUpload($data))->save();
+        if (!(new SystemUpload)->save($data)) {
+            throw new Exception('附件数据入库失败');
+        }
+        $data['url'] = self::url((string)$result->file_name);
+        return $data;
     }
 
     /**

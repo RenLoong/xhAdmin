@@ -11,7 +11,6 @@ use support\Response;
  */
 trait Json
 {
-
     /**
      * 返回JSON数据
      *
