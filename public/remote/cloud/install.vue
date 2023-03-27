@@ -121,7 +121,9 @@ export default {
         // 继续
         if (response.next && response.progress == 100) {
           _this.install.step = response.next;
-          _this.installStep();
+          setTimeout(() => {
+            _this.installStep();
+          }, 2000);
         }
         // 安装完成
         if (response.next == "" && response.progress == 100) {
@@ -132,7 +134,11 @@ export default {
       });
       // 监听出现错误
       eventSource.addEventListener("error", (e) => {
-        console.error(e);
+        const { data } = e;
+        const response = JSON.parse(data);
+        _this.install.text = response.msg;
+        _this.install.step = "";
+        _this.install.progress = 0;
       });
     },
     // 提交购买

@@ -347,11 +347,11 @@ function uriPush(string $uri, array $data): string
  * @param  string $remarks
  * @return void
  */
-function p($str, $remarks = '日志：')
+function p($str, $remarks = '-----日志-----')
 {
     if (config('app.debug')) {
-        $currentDate = date('Y-m-d');
-        echo "{$currentDate}-----{$remarks}";
+        $currentDate = date('Y-m-d H:i:s');
+        echo "时间：{$currentDate} {$remarks}";
         echo PHP_EOL;
         print_r($str);
         echo PHP_EOL;

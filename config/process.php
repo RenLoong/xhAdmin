@@ -3,6 +3,13 @@
 use Workerman\Worker;
 
 return [
+    // 应用安装进程
+    'app_install' => [
+        // 这里指定进程类，就是上面定义的Pusher类
+        'handler' => process\AppInstallProcess::class,
+        'listen'  => 'http://0.0.0.0:39700',
+        'count'   => 1,
+    ],
     // File update detection and automatic reload
     'monitor' => [
         'handler' => process\Monitor::class,
@@ -26,12 +33,5 @@ return [
                 'enable_memory_monitor' => DIRECTORY_SEPARATOR === '/',
             ]
         ]
-    ],
-    // 应用安装进程
-    'app_install' => [
-        // 这里指定进程类，就是上面定义的Pusher类
-        'handler' => process\AppInstallProcess::class,
-        'listen'  => 'http://0.0.0.0:39700',
-        'count'   => 1,
     ],
 ];

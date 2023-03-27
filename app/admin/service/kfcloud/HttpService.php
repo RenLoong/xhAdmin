@@ -16,7 +16,7 @@ use yzh52521\EasyHttp\Request;
 class HttpService
 {
     // host
-    private static $host = 'http://1.116.41.3:39500/api/';
+    public static $host = 'http://1.116.41.3:39500/api/';
 
     /**
      * 实例请求

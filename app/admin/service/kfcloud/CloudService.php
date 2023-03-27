@@ -138,12 +138,31 @@ class CloudService
      * @param  string   $step
      * @return Response
      */
-    public static function install(int $id, string $step): Response
+    public static function getDownKey(int $id, string $step): Response
     {
         $query = [
             'plugin_id'     => $id,
             'step'          => $step
         ];
-        return HttpService::send()->get('Plugin/install', $query);
+        return HttpService::send()->get('Plugin/getKey', $query);
+    }
+
+    /**
+     * 获取下载流
+     *
+     * @Author 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-03-25
+     * @param  string   $key
+     * @return Response
+     */
+    public static function install(string $key): Response
+    {
+        $query = [
+            'key'           => $key
+        ];
+        return HttpService::send()
+            ->withStream(false)
+            ->get('Plugin/install', $query);
     }
 }
