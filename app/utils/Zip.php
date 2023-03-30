@@ -2,6 +2,7 @@
 
 namespace app\utils;
 
+use app\exception\AppException;
 use ZipArchive;
 
 class Zip
@@ -75,6 +76,34 @@ class Zip
     }
 
     /**
+     * 解压
+     *
+     * @Author 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-03-28
+     * @param  string $zipName
+     * @param  string $dest
+     * @return void
+     */
+    public static function unzipFile(string $zipName, string $dest)
+    {
+        //检测要解压压缩包是否存在
+        if (!is_file($zipName)) {
+            throw new AppException('压缩包不存在');
+        }
+        //检测目标路径是否存在
+        if (!is_dir($dest)) {
+            mkdir($dest, 0777, true);
+        }
+        $zip = new ZipArchive();
+        if ($zip->open($zipName) !== true) {
+            throw new AppException('打开zip包失败');
+        }
+        $zip->extractTo($dest);
+        return $zip->close();
+    }
+
+    /**
      * zip解压缩
      * 注：ZipArchive::extractTo() 有异常，会丢失文件和文件错位，中文文件夹不兼容（有人说是编码问题）
      *
@@ -92,9 +121,9 @@ class Zip
             $target_path = dirname($source_path);
         }
         if (!file_exists($target_path)) {
-            throw new \Exception('目标路径"' . $target_path . '"不存在');
+            throw new AppException("目标路径 {$target_path} 不存在");
         } else if (!is_dir($target_path)) {
-            throw new \Exception('目标路径"' . $target_path . '"必须为目录');
+            throw new AppException("目标路径 {$target_path} 必须是目录");
         }
         $source_path = realpath($source_path);
         $target_path = realpath($target_path);
@@ -107,7 +136,7 @@ class Zip
                 $out_path = "$target_path/$index_file_name";
 
                 if (file_exists($out_path) && !$force_cover) {
-                    throw new \Exception('不允许覆盖，如需强制覆盖请将第3个参数设为false');
+                    throw new AppException("不允许覆盖，如需强制覆盖请将第3个参数设为false");
                 }
 
                 if ($index_stat['crc'] != 0) {
@@ -118,7 +147,7 @@ class Zip
                 }
             }
         } else {
-            throw new \Exception('zip文件打开失败');
+            throw new AppException("zip文件打开失败");
         }
         $zip_resource->close();
     }

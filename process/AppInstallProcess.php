@@ -4,11 +4,14 @@ namespace process;
 
 use app\admin\service\kfcloud\CloudService;
 use app\admin\service\kfcloud\HttpService;
-use app\utils\Zip;
+use Exception;
+use FFI;
+use think\facade\Db;
 use Webman\Http\Response;
 use Workerman\Connection\TcpConnection;
 use Workerman\Protocols\Http\Request;
 use Workerman\Protocols\Http\ServerSentEvents;
+use ZipArchive;
 
 /**
  * 应用安装处理进程
@@ -19,6 +22,15 @@ use Workerman\Protocols\Http\ServerSentEvents;
  */
 class AppInstallProcess
 {
+    /**
+     * 当前对象
+     *
+     * @var TcpConnection
+     * @Author 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-03-28
+     */
+    private $connection;
 
     /**
      * 消息处理
@@ -32,6 +44,7 @@ class AppInstallProcess
      */
     public function onMessage(TcpConnection $connection, Request $request)
     {
+        $this->connection = $connection;
         if ($request->header('accept') === 'text/event-stream') {
             $headers = [
                 'Access-Control-Allow-Origin'       => '*',
@@ -46,11 +59,11 @@ class AppInstallProcess
                 ],
             ];
             $connection->send(new Response(200, $headers));
-            $this->sendRes($connection, $initify, 'pageinfo');
+            $this->sendRes($initify, 'pageinfo');
             // 获取插件
             $query = $request->get();
             if (!isset($query['id'])) {
-                $this->sendRes($connection, [
+                $this->sendRes([
                     'code'      => 404,
                     'msg'       => '插件ID错误',
                 ], 'error');
@@ -59,128 +72,143 @@ class AppInstallProcess
             // 获取插件信息
             $plugin = CloudService::detail($query['id'])->array();
             if ($plugin['code'] !== 200) {
-                $this->sendRes($connection, [
+                $this->sendRes([
                     'code'      => $plugin['code'],
                     'msg'       => $plugin['msg'],
                 ], 'error');
                 return;
             }
-            switch ($query['step']) {
-                    // 执行文件下载
-                case 'file':
-                    $step = [
-                        'step'          => 'file',
-                        'plugin_id'     => $query['id'],
-                        'text'          => '下载代码...',
-                        'status'        => 'success',
-                        'next'          => 'filed',
-                    ];
-                    $this->sendRes($connection, $step, 'pageinfo');
-                    // 获取下载KEY
-                    $response = $this->getPluginKey($query['id'], $query['step']);
-                    if ($response['code'] !== 200) {
-                        $this->sendRes($connection, [
-                            'code'      => $response['code'],
-                            'msg'       => $response['msg'],
-                        ], 'error');
-                        return;
-                    }
-                    // 下载文件
-                    $this->downloadFile($connection, $response['data'], $step);
-                    break;
-                    // 执行文件安装
-                case 'filed':
-                    $step = [
-                        'step'          => 'filed',
-                        'plugin_id'     => $query['id'],
-                        'text'          => '安装代码...',
-                        'status'        => 'warning',
-                        'next'          => 'database',
-                    ];
-                    $this->sendRes($connection, $step, 'pageinfo');
-                    $this->installPack($connection, $step);
-                    break;
-                    // 执行数据下载
-                case 'database':
-                    $step = [
-                        'step'          => 'database',
-                        'plugin_id'     => $query['id'],
-                        'text'          => '下载SQL...',
-                        'status'        => 'success',
-                        'next'          => 'databased',
-                    ];
-                    $this->sendRes($connection, $step, 'pageinfo');
-                    // 下一步
-                    sleep(1);
-                    $this->mockInstall($connection, $request, $step);
-                    break;
-                    // 执行数据安装
-                case 'databased':
-                    $step = [
-                        'step'          => 'database',
-                        'plugin_id'     => $query['id'],
-                        'text'          => '安装SQL...',
-                        'status'        => 'warning',
-                        'next'          => '',
-                    ];
-                    $this->sendRes($connection, $step, 'pageinfo');
-                    // 下一步
-                    sleep(1);
-                    $this->mockInstall($connection, $request, $step);
-                    break;
-            }
+            // 处理安装步骤
+            $this->checkStep($request, $query);
         }
     }
 
     /**
-     * 模拟安装
+     * 处理安装步骤
      *
      * @Author 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-24
-     * @param  TcpConnection $connection
-     * @param  Request       $request
-     * @param  array         $step
+     * @DateTime 2023-03-28
+     * @param  Request $request
+     * @param  array   $query
      * @return void
      */
-    private function mockInstall(TcpConnection $connection, Request $request, array $step)
+    private function checkStep(Request $request, array $query)
     {
-        for ($i = 0; $i < 100; $i++) {
-            usleep(50000);
-            $i += rand(0.1, 1);
-            $this->sendRes($connection, ['progress' => round($i, 2)]);
-        }
-        // 返回结尾
-        $this->sendRes($connection, ['progress' => 100, 'next' => $step['next']]);
-        usleep(500000);
-    }
-
-    /**
-     * 安装应用
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-25
-     * @param  TcpConnection $connection
-     * @param  array         $data
-     * @param  array         $step
-     * @return void
-     */
-    private function installPack(TcpConnection $connection, array $step)
-    {
-        try {
-            $packPath = runtime_path('/temp.zip');
-            $pluginPath = base_path('/plugin/a1/');
-            // 开始解压
-            Zip::zipExport($packPath, $pluginPath, true);
-            // 返回结尾
-            $this->sendRes($connection, ['progress' => 100, 'next' => $step['next']]);
-            usleep(500000);
-        } catch (\Throwable $e) {
-            $this->sendRes($connection, [
-                'msg'       => $e->getMessage(),
-                'code'      => $e->getCode()
+        $step = [
+            'step'          => 'database',
+            'plugin_id'     => $query['id'],
+            'text'          => '安装SQL...',
+            'status'        => 'warning',
+            'next'          => 'lock',
+        ];
+        // 安装文件已存在（直接下一步）
+        $tempFile = runtime_path('/temp.txt');
+        if (!is_file($tempFile)) {
+            return $this->sendRes([
+                'code'      => 404,
+                'msg'       => '找不到SQL更新文件',
             ], 'error');
+        }
+        return $this->installSQL($tempFile, $step);
+        switch ($query['step']) {
+                // 执行文件下载
+            case 'file':
+                $step = [
+                    'step'          => 'file',
+                    'plugin_id'     => $query['id'],
+                    'text'          => '下载代码...',
+                    'status'        => 'success',
+                    'next'          => 'filed',
+                ];
+                $this->sendRes($step, 'pageinfo');
+                // 获取下载KEY
+                $response = $this->getPluginKey($query['id'], $query['step']);
+                if ($response['code'] !== 200) {
+                    return $this->sendRes([
+                        'code'      => $response['code'],
+                        'msg'       => $response['msg'],
+                    ], 'error');
+                }
+                // 安装文件已存在（直接下一步）
+                $tempFile = runtime_path('/temp.zip');
+                if (is_file($tempFile)) {
+                    sleep(1);
+                    return $this->sendRes(['progress' => 100, 'next' => $step['next']]);
+                }
+                // 下载文件
+                return $this->downloadFile($tempFile, $response['data'], $step);
+                break;
+                // 执行文件安装
+            case 'filed':
+                $step = [
+                    'step'          => 'filed',
+                    'plugin_id'     => $query['id'],
+                    'text'          => '安装代码...',
+                    'status'        => 'warning',
+                    'next'          => 'database',
+                ];
+                $this->sendRes($step, 'pageinfo');
+                $packPath = runtime_path('/temp.zip');
+                return $this->installPack($packPath, $step);
+                break;
+                // 执行数据下载
+            case 'database':
+                $step = [
+                    'step'          => 'database',
+                    'plugin_id'     => $query['id'],
+                    'text'          => '下载SQL...',
+                    'status'        => 'success',
+                    'next'          => 'databased',
+                ];
+                $this->sendRes($step, 'pageinfo');
+                // 获取下载KEY
+                $response = $this->getPluginKey($query['id'], $query['step']);
+                if ($response['code'] !== 200) {
+                    return $this->sendRes([
+                        'code'      => $response['code'],
+                        'msg'       => $response['msg'],
+                    ], 'error');
+                }
+                // 安装文件已存在（直接下一步）
+                $tempFile = runtime_path('/temp.txt');
+                if (is_file($tempFile)) {
+                    sleep(1);
+                    return $this->sendRes(['progress' => 100, 'next' => $step['next']]);
+                }
+                return $this->downloadFile($tempFile, $response['data'], $step);
+                break;
+                // 执行数据安装
+            case 'databased':
+                $step = [
+                    'step'          => 'database',
+                    'plugin_id'     => $query['id'],
+                    'text'          => '安装SQL...',
+                    'status'        => 'warning',
+                    'next'          => 'lock',
+                ];
+                $this->sendRes($step, 'pageinfo');
+                // 安装文件已存在（直接下一步）
+                $tempFile = runtime_path('/temp.txt');
+                if (!is_file($tempFile)) {
+                    return $this->sendRes([
+                        'code'      => 404,
+                        'msg'       => '找不到SQL更新文件',
+                    ], 'error');
+                }
+                return $this->installSQL($tempFile, $step);
+                break;
+                // 应用安装完成
+            case 'lock':
+                $step = [
+                    'step'          => 'lock',
+                    'plugin_id'     => $query['id'],
+                    'text'          => '安装完成',
+                    'status'        => 'success',
+                    'next'          => '',
+                ];
+                $this->sendRes($step, 'pageinfo');
+                break;
         }
     }
 
@@ -189,14 +217,118 @@ class AppInstallProcess
      *
      * @Author 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-25
-     * @param  TcpConnection $connection
-     * @param  array         $data
+     * @DateTime 2023-03-30
+     * @param  string $tempFile
+     * @param  array  $step
      * @return void
      */
-    private function installDatabase(TcpConnection $connection, array $data)
+    private function installSQL(string $tempFile, array $step)
     {
-        $packPath = runtime_path('/temp.sql');
+        try {
+            // 替换SQL模板文件内容
+            $str = file_get_contents($tempFile);
+            $str = preg_replace('/--.*/i', '', $str);
+            $str = preg_replace('/\/\*(.*)\*\//i', '', $str);
+            //去除空格 创建数组
+            $arr = explode(";", $str);
+            // 去空数组
+            $arr = array_filter($arr);
+            file_put_contents(runtime_path('/sql.txt'), var_export($arr, true));
+            // 总数
+            // $count = count($arr);
+            // // 执行SQL
+            // foreach ($arr as $key => $sql) {
+            //     $sql = trim($sql);
+            //     Db::query("{$sql};");
+            //     // 获得进度
+            //     $progress = round(($key / $count) * 100, 2);
+            //     $this->sendRes(['progress' => $progress]);
+            // }
+        } catch (\Throwable $e) {
+            return $this->sendRes([
+                'msg'       => $e->getMessage(),
+                'code'      => $e->getCode()
+            ], 'error');
+        }
+        // 返回结尾
+        return $this->sendRes(['progress' => 100, 'next' => $step['next']]);
+    }
+
+    /**
+     * 安装应用
+     *
+     * @Author 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-03-28
+     * @param  string $packPath
+     * @param  array  $step
+     * @return void
+     */
+    private function installPack(string $packPath, array $step)
+    {
+        try {
+            $pluginPath = base_path('/plugin/');
+            // 开始解压（覆盖安装）
+            $this->unzipFile($packPath, $pluginPath, true, $step);
+            // 返回结尾
+            return $this->sendRes(['progress' => 100, 'next' => $step['next']]);
+        } catch (\Throwable $e) {
+            $this->sendRes([
+                'msg'       => $e->getMessage(),
+                'code'      => $e->getCode()
+            ], 'error');
+        }
+    }
+
+    /**
+     * 解压安装文件
+     *
+     * @Author 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-03-28
+     * @param  string      $source_path
+     * @param  string|null $target_path
+     * @param  boolean     $force_cover
+     * @return void
+     */
+    private function unzipFile(string $source_path, string $target_path = null, bool $force_cover = false)
+    {
+        if ($target_path === null) {
+            $target_path = dirname($source_path);
+        }
+        if (!file_exists($target_path)) {
+            throw new Exception("目标路径 {$target_path} 不存在");
+        } else if (!is_dir($target_path)) {
+            throw new Exception("目标路径 {$target_path} 必须是目录");
+        }
+        $source_path = realpath($source_path);
+        $target_path = realpath($target_path);
+
+        $zip_resource = new ZipArchive;
+        if ($zip_resource->open($source_path) === true) {
+            $numFiles = $zip_resource->numFiles;
+            for ($i = 0; $i < $numFiles; $i++) {
+                $index_stat = $zip_resource->statIndex($i);
+                $index_file_name = $index_stat['name'];
+                $out_path = "$target_path/$index_file_name";
+                if (file_exists($out_path) && !$force_cover) {
+                    throw new Exception("不允许覆盖，如需强制覆盖请将第3个参数设为false");
+                }
+                if ($index_stat['crc'] != 0) {
+                    $zip_resource->extractTo($target_path, $index_file_name);
+                    // 获得进度
+                    $progress = round(($i / $numFiles) * 100, 2);
+                    $this->sendRes(['progress' => $progress]);
+                } else {
+                    @mkdir($out_path, 0777);
+                }
+            }
+        } else {
+            throw new Exception("zip文件打开失败");
+        }
+        $zip_resource->close();
+        // 删除临时文件
+        unlink($source_path);
     }
 
     /**
@@ -204,129 +336,82 @@ class AppInstallProcess
      *
      * @Author 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-25
-     * @param  TcpConnection $connection
-     * @param  array         $data
-     * @param  array         $step
+     * @DateTime 2023-03-28
+     * @param  string $path
+     * @param  array  $data
+     * @param  array  $step
      * @return void
      */
-    private function downloadFile(TcpConnection $connection, array $data, array $step)
+    private function downloadFile(string $savePath, array $data, array $step)
     {
         $key = $data['key'];
-        $format = $data['format'];
         // 获取安装文件
         $host = HttpService::$host;
         $url = "{$host}Plugin/install?key={$key}";
-        // header
-        $header = get_headers($url, true);
-        // 检测文件大小
-        if (!isset($header['Content-Length'])) {
-            $this->sendRes($connection, [
-                'code'      => 404,
-                'msg'       => '插件ID错误',
-            ], 'error');
-            return;
-        }
-        // 文件大小（字节）
-        $fileSize = $header['Content-Length'];
-        // 远程文件
-        $remote = fopen($url, 'rb');
-        if (!$remote) {
-            $this->sendRes($connection, [
-                'code'      => 404,
-                'msg'       => '远程源文件错误',
-            ], 'error');
-            return;
-        }
-        // 缓存文件路径
-        $savePath = runtime_path("/temp.{$format}");
-        // 本地文件
-        $local = fopen($savePath, 'wb');
-        if (!$local) {
-            $this->sendRes($connection, [
-                'code'      => 404,
-                'msg'       => '本地源文件错误',
-            ], 'error');
-            return;
-        }
-        // 每次写入字节（1024=1kb）
-        $chunk = 4096;
-        // 分段读取文件
-        $downlen = 0;
-        while (!feof($remote)) {
-            // 读取流
-            $stream = fread($remote, $chunk);
-            // 写入文件
-            fwrite($local, $stream, $chunk);
-            // 获得块大小
-            $downlen += strlen($stream);
-            // 计算百分比
-            $percent = round($downlen / $fileSize * 100, 2);
-
-            if ($percent < 100) {
-                $this->sendRes($connection, ['progress' => $percent]);
-            }
-        }
-        fclose($local);
-        fclose($remote);
+        $this->curlDownload($url, $savePath, $step);
     }
 
     /**
-     * 下载文件
+     * 使用CURL方式下载保存文件
      *
      * @Author 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-25
-     * @param  TcpConnection $connection
-     * @param  array         $data
+     * @DateTime 2023-03-28
+     * @param  string         $url
+     * @param  string         $savePath
+     * @param  array          $step
+     * @return string|boolean
+     */
+    private function curlDownload(string $url, string $savePath, array $step): string|bool
+    {
+        // 本地文件
+        $local = fopen($savePath, 'wb');
+        if (!$local) {
+            return $this->sendRes([
+                'code'      => 404,
+                'msg'       => '本地源文件错误',
+            ], 'error');
+        }
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_NOPROGRESS, 0);
+        curl_setopt($ch, CURLOPT_FILE, $local);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, [$this, 'progress']);
+        $response = curl_exec($ch);
+        curl_close($ch);
+        fclose($local);
+        // 输出最后结尾
+        $this->sendRes(['progress' => 100, 'next' => $step['next']]);
+        return $response;
+    }
+
+    /**
+     * 下载进度显示
+     *
+     * @Author 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-03-28
+     * @param  type $ch CURL资源句柄
+     * @param  type $total 文件总大小
+     * @param  type $current 当前已下载
+     * @param  type $uploadSize
+     * @param  type $uploaded
      * @return void
      */
-    private function downloadFile1(TcpConnection $connection, array $data, array $step)
+    private function progress($ch, $total, $current, $uploadSize, $uploaded)
     {
-        $key = $data['key'];
-        $format = $data['format'];
-        // 获取安装文件
-        $file = CloudService::install($key);
-        // 远程文件路径
-        // $url = "{$host}Plugin/install?key={$key}";
-        // 缓存文件路径
-        $savePath = runtime_path("/temp.{$format}");
-        // 文件大小（BT）
-        $fileSize = $file->header('Content-Length');
-        // 远程文件
-        $fp = $file->body();
-        // $fp = fopen($url, 'rb');
-        // 本地文件
-        $localFile = fopen($savePath, 'w');
-        // 每次分片大小
-        $chunk_size = 1024 * 1024 * 1; // 1MB
-        // 累计下载大小
-        $downlen = 0;
-        // 下载总大小
-        $last = 0;
-        $diff = 0;
-        // 分段读取文件
-        while (!feof($fp)) {
-            // 读取流
-            $stream_size = fread($fp, $chunk_size);
-            // 写入文件
-            fwrite($localFile, $stream_size);
-            // 获得块大小
-            $downlen += strlen($stream_size);
-            // 计算百分比
-            $percent = round($downlen / $fileSize * 100, 2);
-            $diff += $percent - $last;
-            if ($diff > 1) {
-                $diff = 0;
-            }
-            $last = $percent;
-            if ($last < 100) {
-                $this->sendRes($connection, ['progress' => $last]);
-            }
+        if ($total == 0) {
+            return;
         }
-        fclose($fp);
-        // 返回结尾
-        $this->sendRes($connection, ['progress' => 100, 'next' => $step['next']]);
+        if ($current > $total) {
+            $current = $total;
+        }
+        $total = (float) $total;
+        $current = (float) $current;
+        // 当前进度
+        $progress = round(((float)$current / (float)$total) * 100, 2);
+        $this->sendRes(['progress' => $progress]);
     }
 
     /**
@@ -350,20 +435,20 @@ class AppInstallProcess
     }
 
     /**
-     * 返回消息
+     * 输出消息
      *
      * @Author 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-24
-     * @param  TcpConnection $connection
-     * @param  array         $data
-     * @param  string        $eventName
-     * @return void
+     * @DateTime 2023-03-28
+     * @param  array  $data
+     * @param  string $eventName
+     * @return string
      */
-    private function sendRes(TcpConnection $connection, array $data, string $eventName = 'progress')
+    private function sendRes(array $data, string $eventName = 'progress'): string
     {
         $serverMsg['event'] = $eventName;
         $serverMsg['data'] = json_encode($data, 256);
-        $connection->send(new ServerSentEvents($serverMsg));
+        $this->connection->send(new ServerSentEvents($serverMsg));
+        return '';
     }
 }

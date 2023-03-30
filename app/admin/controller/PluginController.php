@@ -11,6 +11,7 @@ use app\exception\AppException;
 use support\Request;
 use Workerman\Protocols\Http\ServerSentEvents;
 use yzh52521\EasyHttp\Http;
+use ZipArchive;
 
 class PluginController extends BaseController
 {
@@ -168,6 +169,9 @@ class PluginController extends BaseController
     {
         $page = (int)$request->get('page', 1);
         $data = CloudService::list($page)->array();
+        if ($data['code'] !== 200) {
+            return json($data);
+        }
         foreach ($data['data']['data'] as $key => $value) {
             $money = (float)$value['money'];
             // 是否可以购买

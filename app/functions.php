@@ -337,6 +337,23 @@ function uriPush(string $uri, array $data): string
     }
     return $uri;
 }
+
+/**
+ * 字符串转真假
+ *
+ * @Author 贵州猿创科技有限公司
+ * @Email 416716328@qq.com
+ * @DateTime 2023-03-27
+ * @param  string  $val
+ * @param  boolean $return_null
+ * @return boolean
+ */
+function is_true(string $val, bool $return_null = false): bool
+{
+    $boolval = (is_string($val) ? filter_var($val, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) : (bool) $val);
+    return ($boolval === null && !$return_null ? false : $boolval);
+}
+
 /**
  * 输出日志到终端（仅调试模式下有效）
  *

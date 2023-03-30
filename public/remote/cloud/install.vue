@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container">
+  <div class="page-container" v-if="initLock">
     <!-- 应用信息 -->
     <el-form :model="form" label-position="top" class="form-container">
       <el-row :gutter="20">
@@ -65,6 +65,8 @@ export default {
   },
   data() {
     return {
+      // 页面初始化
+      initLock: false,
       // 安装按钮锁定
       install: {
         lock: false,
@@ -94,7 +96,7 @@ export default {
     installStep() {
       const _this = this;
       // 开发测试
-      const host = `//1.116.41.3:39700/`;
+      const host = `//127.0.0.1:39700/`;
       // 生产环境
       // const host = `//${window.location.host}/`;
       const url = `${host}?step=${this.install.step}&id=${this.form.id}`;
@@ -116,14 +118,15 @@ export default {
       eventSource.addEventListener("progress", (e) => {
         const { data } = e;
         const response = JSON.parse(data);
-        _this.install.progress = response.progress;
+        // 防止重复更新
+        if (response.progress != _this.install.progress) {
+          _this.install.progress = response.progress;
+        }
 
-        // 继续
+        // 下一步
         if (response.next && response.progress == 100) {
           _this.install.step = response.next;
-          setTimeout(() => {
-            _this.installStep();
-          }, 2000);
+          _this.installStep();
         }
         // 安装完成
         if (response.next == "" && response.progress == 100) {
@@ -160,6 +163,7 @@ export default {
         .useGet("/admin/Plugin/detail", queryParams)
         .then((res) => {
           _this.form = res?.data ?? {};
+          _this.initLock = true;
         })
         .catch((err) => {
           if (err?.code == 12000) {

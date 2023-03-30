@@ -4,7 +4,7 @@ use Workerman\Worker;
 
 return [
     // 应用安装进程
-    'app_install' => [
+    'appInstall' => [
         // 这里指定进程类，就是上面定义的Pusher类
         'handler' => process\AppInstallProcess::class,
         'listen'  => 'http://0.0.0.0:39700',

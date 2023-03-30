@@ -10,7 +10,7 @@ return [
         'public' => [
             'driver' => \Shopwwi\WebmanFilesystem\Adapter\LocalAdapterFactory::class,
             'root' => public_path(),
-            'url' => '//1.116.41.3:39200' // 静态文件访问域名
+            'url' => '//127.0.0.1:39200' // 静态文件访问域名
         ],
         // 阿里云驱动
         'oss' => [

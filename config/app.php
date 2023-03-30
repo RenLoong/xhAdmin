@@ -2,8 +2,11 @@
 
 use support\Request;
 
+$APP_DEBUG = getenv('APP_DEBUG');
+$APP_DEBUG = eval("return {$APP_DEBUG};");
+
 return [
-    'debug' => getenv('APP_DEBUG'),
+    'debug' => $APP_DEBUG,
     'error_reporting' => E_ALL,
     'default_timezone' => getenv('DEFAULT_TIMEZONE'),
     'request_class' => Request::class,

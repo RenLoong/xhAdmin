@@ -31,7 +31,7 @@ class CloudService
             'password'      => $password,
             'scode'         => $scode
         ];
-        return HttpService::send()->post('User/login', $body)->array();
+        return HttpService::send()->post('User/login', $body);
     }
 
     /**
@@ -122,10 +122,10 @@ class CloudService
      * @param  string   $order_no
      * @return Response
      */
-    public static function UnifiedOrder(string $order_no): Response
+    public static function unifiedOrder(string $order_no): Response
     {
         $query = [];
-        return HttpService::send()->get('Plugin/list', $query);
+        return HttpService::send()->get('Order/unifiedOrder', $query);
     }
 
     /**
@@ -162,7 +162,7 @@ class CloudService
             'key'           => $key
         ];
         return HttpService::send()
-            ->withStream(false)
+            ->withStream(true)
             ->get('Plugin/install', $query);
     }
 }

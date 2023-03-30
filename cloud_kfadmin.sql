@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : KfAdmin-cloud
+ Source Server         : KFAdmin-cloud
  Source Server Type    : MySQL
- Source Server Version : 50737
- Source Host           : 1.116.41.3:3306
- Source Schema         : cloud8_hangpu_ne
+ Source Server Version : 50740
+ Source Host           : localhost:3306
+ Source Schema         : cloud_kfadmin
 
  Target Server Type    : MySQL
- Target Server Version : 50737
+ Target Server Version : 50740
  File Encoding         : 65001
 
- Date: 24/03/2023 23:03:53
+ Date: 30/03/2023 11:31:54
 */
 
 SET NAMES utf8mb4;
@@ -36,7 +36,7 @@ CREATE TABLE `php_store`  (
   `logo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商户图标',
   `remarks` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '平台备注',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '商户-商户列表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '商户-商户列表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of php_store
@@ -63,7 +63,7 @@ CREATE TABLE `php_store_grade`  (
   `expire_day` int(11) NULL DEFAULT 0 COMMENT '使用期限（天）0则无限期',
   `sort` int(11) NULL DEFAULT 0 COMMENT '排序',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 15 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '商户-商户等级' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 15 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '商户-商户等级' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of php_store_grade
@@ -85,7 +85,7 @@ CREATE TABLE `php_store_platform`  (
   `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `logo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '商户-平台数据' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '商户-平台数据' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of php_store_platform
@@ -117,7 +117,7 @@ CREATE TABLE `php_system_admin`  (
 -- ----------------------------
 -- Records of php_system_admin
 -- ----------------------------
-INSERT INTO `php_system_admin` VALUES (1, NULL, '2023-03-22 11:38:05', 1, 0, 'admin', '$2y$10$K.0DWIBPyTXnINYX1M9M5O73MpneZTtAWkYGa7OMpU2Gzsgi8rKsq', '1', '楚羽幽', '117.188.16.144', '2023-03-22 11:38:05', NULL, '', '0');
+INSERT INTO `php_system_admin` VALUES (1, NULL, '2023-03-27 21:48:20', 1, 0, 'admin', '$2y$10$K.0DWIBPyTXnINYX1M9M5O73MpneZTtAWkYGa7OMpU2Gzsgi8rKsq', '1', '楚羽幽', '127.0.0.1', '2023-03-27 21:48:19', NULL, '', '0');
 INSERT INTO `php_system_admin` VALUES (19, '2023-03-14 11:54:06', '2023-03-14 11:54:16', 4, 1, '958416459', '$2y$10$SMTsgf7fn.FIBPnLOsEqmuiAn1VT0Akrck7dTtVdsqeB/bHbdIAzy', '1', '123456', '117.188.18.48', '2023-03-14 11:54:16', NULL, '', '0');
 
 -- ----------------------------
@@ -349,7 +349,7 @@ CREATE TABLE `php_system_plugin`  (
   `plugin_type` enum('app','plugin') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT 'app' COMMENT '应用类型',
   `doc_url` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '使用文档地址',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-插件安装' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-插件安装' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of php_system_plugin
@@ -393,7 +393,7 @@ CREATE TABLE `php_system_upload_cate`  (
   `sort` int(11) NULL DEFAULT 0 COMMENT '分类排序',
   `is_system` enum('0','1') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '0' COMMENT '是否系统：0否，1是',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-附件分类' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-附件分类' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of php_system_upload_cate
