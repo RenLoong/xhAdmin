@@ -20,19 +20,13 @@ class SystemAdmin extends Model
         'password'
     ];
 
-    // 标记字段为附件类型
-    public $uploadify = [
-        'headimg'   => 'image',
-    ];
-
     /**
      * 密码加密写入
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param mixed $value
+     * @return bool|string
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-08
-     * @param  type $value
-     * @return void
+     * @DateTime 2023-04-29
      */
     protected function setPasswordAttr($value)
     {
@@ -40,5 +34,18 @@ class SystemAdmin extends Model
             return false;
         }
         return Password::passwordHash((string)$value);;
+    }
+
+    /**
+     * 设置头像储存
+     * @param mixed $value
+     * @return array|string
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-05-03
+     */
+    protected function setHeadimgAttr($value)
+    {
+        return Upload::path($value);
     }
 }

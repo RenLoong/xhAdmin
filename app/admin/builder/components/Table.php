@@ -42,23 +42,23 @@ trait Table
     private $keepSource = false;
     // 行配置
     private $rowConfig = [
-        'keyField'          => 'id',
-        'isHover'           => true,
+        'keyField' => 'id',
+        'isHover'  => true,
     ];
     // 工具栏配置
     private $toolbarConfig = [
         // 是否开启刷新按钮
-        'refresh'           => true,
+        'refresh' => true,
         // 是否开启导入按钮
-        'import'            => false,
+        'import'  => false,
         // 是否开启导出按钮
-        'export'            => false,
+        'export'  => false,
         // 是否开启打印按钮
-        'print'             => false,
+        'print'   => false,
         // 是否开启全屏缩放按钮
-        'zoom'              => true,
+        'zoom'    => true,
         // 是否开启自定义表格列
-        'custom'            => true
+        'custom'  => true
     ];
 
     // 列字段名（注：属性层级越深，渲染性能就越差，例如：aa.bb.cc.dd.ee）
@@ -66,24 +66,24 @@ trait Table
     // 数据代理配置项（基于 Promise API）
     private $proxyConfig = [
         // 启用动态序号代理，每一页的序号会根据当前页数变化
-        'seq'               => true,
+        'seq'    => true,
         // 启用排序代理，当点击排序时会自动触发 query 行为
-        'sort'              => true,
+        'sort'   => true,
         // 启用筛选代理，当点击筛选时会自动触发 query 行为 
-        'filter'            => true,
+        'filter' => true,
         // 启用表单代理，当点击表单提交按钮时会自动触发 reload 行为
-        'form'              => true,
+        'form'   => true,
         // 数据代理字段
-        'props'             => [
+        'props'  => [
             // 默认无分页
-            'list'          => 'data',
+            'list' => 'data',
         ],
     ];
     // 是否选项表格
     private $tabsConfig = [
-        'active'            => '',
-        'field'             => '',
-        'list'              => [],
+        'active' => '',
+        'field'  => '',
+        'list'   => [],
     ];
 
     /**
@@ -159,50 +159,50 @@ trait Table
     {
         $this->treeConfig = array_merge([
             // 自动将列表转为树结构（支持虚拟滚动）
-            'transform'         => true,
+            'transform'     => true,
             // 树节点的字段名
-            'rowField'          => 'id',
+            'rowField'      => 'id',
             // 树父节点的字段名
-            'parentField'       => 'pid',
+            'parentField'   => 'pid',
             // 树子节点的字段名
             // 'children'          => 'children',
             /**
              * 树节点的缩进
              * 需要在addColumn方法中的扩展参数内添加treeNode标注为节点
              */
-            'indent'            => 20,
+            'indent'        => 20,
             // 树节点的连接线（启用连接线会降低渲染性能）
-            'line'              => false,
+            'line'          => false,
             // 默认展开所有子孙树节点（只会在初始化时被触发一次）
-            'expandAll'         => true,
+            'expandAll'     => true,
             // 默认展开指定树节点（只会在初始化时被触发一次，需要有 row-config.keyField）
-            'expandRowKeys'     => [],
+            'expandRowKeys' => [],
             // 对于同一级的节点，每次只能展开一个
-            'accordion'         => false,
+            'accordion'     => false,
             /**
              * 触发方式（注：当多种功能重叠时，会同时触发）
              * default（点击按钮触发）, cell（点击单元格触发）, row（点击行触发）
              */
-            'trigger'           => 'cell',
+            'trigger'       => 'cell',
             // 是否使用懒加载（启用后只有指定 hasChild 的节点才允许被点击）
-            'lazy'              => false,
+            'lazy'          => false,
             // 只对 lazy 启用后有效，标识是否存在子节点，从而控制是否允许被点击
-            'hasChild'          => 'hasChild',
+            'hasChild'      => 'hasChild',
             /**
              * 是否保留展开状态
              * 对于某些场景可能会用到
              * 比如数据被刷新之后还保留之前展开的状态
              * 需要有 row-config.keyField
              */
-            'reserve'           => false,
+            'reserve'       => false,
             // 是否显示图标按钮
-            'showIcon'          => true,
+            'showIcon'      => true,
             // 自定义展开后显示的图标
-            'iconOpen'          => 'vxe-icon-square-minus',
+            'iconOpen'      => 'vxe-icon-square-minus',
             // 自定义收起后显示的图标
-            'iconClose'         => 'vxe-icon-square-plus',
+            'iconClose'     => 'vxe-icon-square-plus',
             // 自定义懒加载中显示的图标
-            'iconLoaded'        => '',
+            'iconLoaded'    => '',
         ], $config);
         return $this;
     }
@@ -220,37 +220,37 @@ trait Table
     {
         $this->expandConfig = array_merge([
             // 展开列显示的字段名，可以直接显示在单元格中
-            'labelField'        => 'id',
+            'labelField'    => 'id',
             // 默认展开所有行（只会在初始化时被触发一次）
-            'expandAll'         => true,
+            'expandAll'     => true,
             // 默认展开指定行（只会在初始化时被触发一次，需要有 row-config.keyField）
-            'expandRowKeys'     => [],
+            'expandRowKeys' => [],
             // 每次只能展开一行
-            'accordion'         => false,
+            'accordion'     => false,
             // 展开内容的高度，默认自适应高度
-            'height'            => '',
+            'height'        => '',
             /**
              * 触发方式（注：当多种功能重叠时，会同时触发）
              * default（点击按钮触发）, cell（点击单元格触发）, row（点击行触发）
              */
-            'trigger'           => 'cell',
+            'trigger'       => 'cell',
             // 是否使用懒加载
-            'lazy'              => false,
+            'lazy'          => false,
             /**
              * 是否保留展开状态
              * 对于某些场景可能会用到
              * 比如数据被刷新之后还保留之前展开的状态
              * 需要有 row-config.keyField
              */
-            'reserve'           => false,
+            'reserve'       => false,
             // 是否显示图标按钮
-            'showIcon'          => true,
+            'showIcon'      => true,
             // 自定义展开后显示的图标
-            'iconOpen'          => 'vxe-icon-square-minus',
+            'iconOpen'      => 'vxe-icon-square-minus',
             // 自定义收起后显示的图标
-            'iconClose'         => 'vxe-icon-square-plus',
+            'iconClose'     => 'vxe-icon-square-plus',
             // 自定义懒加载中显示的图标
-            'iconLoaded'        => '',
+            'iconLoaded'    => '',
         ], $config);
         return $this;
     }
@@ -282,10 +282,10 @@ trait Table
     public function checkboxConfig(array $config = []): ListBuilder
     {
         $this->checkboxConfig = array_merge([
-            'labelField'        => 'id',
-            'reserve'           => true,
-            'highlight'         => true,
-            'range'             => true
+            'labelField' => 'id',
+            'reserve'    => true,
+            'highlight'  => true,
+            'range'      => true
         ], $config);
         return $this;
     }
@@ -316,10 +316,16 @@ trait Table
      */
     public function exportConfig(array $config = []): ListBuilder
     {
+        // 开启导出按钮
+        $this->toolbarConfig([
+            'export' => true
+        ]);
+        // 导出配置参数
         $this->exportConfig = array_merge([
+            'api'    => '',
             'remote' => true,
-            'types' => ['xlsx'],
-            'modes' => ['current', 'selected', 'all'],
+            'types'  => ['xlsx', 'xls'],
+            'modes'  => ['current', 'selected', 'all'],
         ], $config);
         return $this;
     }
@@ -335,10 +341,16 @@ trait Table
      */
     public function importConfig(array $config = []): ListBuilder
     {
+        // 开启导入按钮
+        $this->toolbarConfig([
+            'import' => true
+        ]);
+        // 配置导入参数
         $this->importConfig = array_merge([
-            'remote' => true,
-            'types' => ['xlsx'],
-            'modes' => ['insert'],
+            'api'      => '',
+            'isRemote' => false,
+            'types'    => ['xlsx'],
+            'modes'    => ['insert'],
         ], $config);
         return $this;
     }
@@ -355,7 +367,7 @@ trait Table
     public function filterConfig(array $config = []): ListBuilder
     {
         $this->filterConfig = array_merge([
-            'remote'            => true
+            'remote' => true
         ], $config);
         return $this;
     }
@@ -372,8 +384,8 @@ trait Table
     public function sortConfig(array $config = []): ListBuilder
     {
         $this->sortConfig = array_merge([
-            'trigger'           => 'cell',
-            'remote'            => true
+            'trigger' => 'cell',
+            'remote'  => true
         ], $config);
         return $this;
     }
@@ -390,8 +402,8 @@ trait Table
     public function rowConfig(array $config = []): ListBuilder
     {
         $this->rowConfig = array_merge([
-            'keyField'          => 'id',
-            'isHover'           => true,
+            'keyField' => 'id',
+            'isHover'  => true,
         ], $config);
         return $this;
     }
@@ -408,10 +420,10 @@ trait Table
     public function editConfig(array $config = []): ListBuilder
     {
         $this->editConfig = array_merge([
-            'enabled'       => true,
-            'trigger'       => 'dblclick',
-            'mode'          => 'cell',
-            'showStatus'    => true
+            'enabled'    => true,
+            'trigger'    => 'dblclick',
+            'mode'       => 'cell',
+            'showStatus' => true
         ], $config);
         return $this;
     }
@@ -442,7 +454,7 @@ trait Table
      */
     public function toolbarConfig(array $toolbar = []): ListBuilder
     {
-        $toolbar = array_merge($this->toolbarConfig, $toolbar);
+        $toolbar             = array_merge($this->toolbarConfig, $toolbar);
         $this->toolbarConfig = $toolbar;
         return $this;
     }
@@ -458,8 +470,8 @@ trait Table
      */
     public function customConfig(array $customConfig = []): ListBuilder
     {
-        $customConfig = array_merge([
-            'storage'       => true
+        $customConfig       = array_merge([
+            'storage' => true
         ], $customConfig);
         $this->customConfig = $customConfig;
         return $this;
@@ -476,19 +488,19 @@ trait Table
      */
     public function columnConfig(array $columnConfig = []): ListBuilder
     {
-        $columnConfig = array_merge([
+        $columnConfig       = array_merge([
             // 是否需要为每一列的 VNode 设置 key 属性（非特殊情况下不需要使用）
-            'useKey'        => false,
+            'useKey'    => false,
             // 当鼠标点击列头时，是否要高亮当前列
-            'isCurrent'     => false,
+            'isCurrent' => false,
             // 	当鼠标移到列头时，是否要高亮当前头
-            'isHover'       => true,
+            'isHover'   => true,
             // 每一列是否启用列宽调整
-            'resizable'     => true,
+            'resizable' => true,
             // 每一列的宽度 auto, px, %
-            'width'         => 'auto',
+            'width'     => 'auto',
             // 每一列的最小宽度 auto, px, %
-            'minWidth'      => 'auto',
+            'minWidth'  => 'auto',
         ], $columnConfig);
         $this->columnConfig = $columnConfig;
         return $this;
@@ -507,9 +519,9 @@ trait Table
      */
     public function addColumn(string $field, string $title, array $extra = []): ListBuilder
     {
-        $columns = [
-            'field'         => $field,
-            'title'         => $title
+        $columns         = [
+            'field' => $field,
+            'title' => $title
         ];
         $this->columns[] = array_merge($extra, $columns);
         return $this;
@@ -532,9 +544,9 @@ trait Table
             throw new Exception('缺少元素类型');
         }
         $extra['params']['props'] = isset($extra['params']['props']) ? $extra['params']['props'] : [];
-        $extra = array_merge([
-            'slots'             => [
-                'default'       => $extra['params']['type']
+        $extra                    = array_merge([
+            'slots' => [
+                'default' => $extra['params']['type']
             ],
         ], $extra);
         $this->addColumn($field, $title, $extra);
@@ -560,10 +572,10 @@ trait Table
          * 'vxe-icon-question-circle-fill' }, itemRender: { name: '$input', props: { placeholder: '请输入名称' } } },
          */
         $extra = array_merge([
-            'editRender'            => [
-                'name'              => 'input',
-                'attrs'             => [
-                    'placeholder'   => '请输入',
+            'editRender' => [
+                'name'  => 'input',
+                'attrs' => [
+                    'placeholder' => '请输入',
                 ],
             ],
         ], $extra);
@@ -583,10 +595,22 @@ trait Table
      */
     public function pageConfig(array $pagerConfig = [], array $field = []): ListBuilder
     {
-        $this->pagerConfig = array_merge([
-            'pageSize'          => 10,
-            'pageSizes'         => [10, 15, 20, 50, 100, 200, 500, 1000],
-            'layouts'           => [
+        // 当前页码
+        $currentPage = (int) request()->get('page', 1);
+        // 分页配置
+        $config = config('paginator');
+        // 每页数量
+        $listRows                   = isset($config['listRows']) ? $config['listRows'] : 20;
+        $this->pagerConfig          = array_merge([
+            'currentPage' => $currentPage,
+            'pageSize'    => $listRows,
+            'total'       => 1000,
+            'pageSizes'   => [10, 15, 20, 50, 100, 200, 500, 1000],
+            'align'       => 'right',
+            'background'  => true,
+            'perfect'     => true,
+            'border'      => true,
+            'layouts'     => [
                 'PrevJump',
                 'PrevPage',
                 'Number',
@@ -598,8 +622,8 @@ trait Table
             ]
         ], $pagerConfig);
         $this->proxyConfig['props'] = array_merge([
-            'result'            => 'data.data',
-            'total'             => 'data.total',
+            'result' => 'data.data',
+            'total'  => 'data.total',
         ], $field);
         return $this;
     }

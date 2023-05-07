@@ -18,12 +18,11 @@ class SystemAuthRule extends Model
 
     /**
      * 修改器-检测父级菜单是否数组
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param mixed $value
+     * @return mixed
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-10
-     * @param  type $value
-     * @return void
+     * @DateTime 2023-05-03
      */
     public function setPidAttr($value)
     {
@@ -32,12 +31,11 @@ class SystemAuthRule extends Model
 
     /**
      * 修改器-Path路径首字母转大写
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param mixed $value
+     * @return string
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-11
-     * @param  type $value
-     * @return void
+     * @DateTime 2023-05-03
      */
     public function setPathAttr($value)
     {
@@ -46,13 +44,12 @@ class SystemAuthRule extends Model
 
     /**
      * 获取完整的请求地址
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param mixed $value
+     * @param mixed $data
+     * @return string
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-07
-     * @param  type $value
-     * @param  type $data
-     * @return void
+     * @DateTime 2023-05-03
      */
     protected function getPathTextAttr($value, $data)
     {

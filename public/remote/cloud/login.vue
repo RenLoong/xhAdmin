@@ -1,34 +1,30 @@
 <template>
   <div class="form-page">
     <div class="form-container">
-      <el-form :model="form" label-position="top">
-        <el-form-item label="登录账号">
-          <el-input v-model="form.username" placeholder="请输入云服务账号" />
-        </el-form-item>
-        <el-form-item label="登录密码">
-          <el-input
-            type="password"
-            v-model="form.password"
-            placeholder="请输入登录密码"
-          />
-        </el-form-item>
-        <el-form-item label="验证码">
-          <el-input v-model="form.scode" placeholder="请输入验证码">
-            <template #suffix>
-              <el-image :src="scodeSrc" @click="hanldScode" class="captcha"></el-image>
-            </template>
-          </el-input>
-        </el-form-item>
+      <n-form :model="form" label-position="top">
+        <n-form-item label="登录账号">
+          <n-input v-model:value="form.username" placeholder="请输入云服务账号" />
+        </n-form-item>
+        <n-form-item label="登录密码">
+          <n-input type="password" v-model:value="form.password" placeholder="请输入登录密码" />
+        </n-form-item>
+        <n-form-item label="验证码">
+          <n-input-group>
+            <n-input v-model:value="form.scode" placeholder="请输入验证码">
+            </n-input>
+            <n-image :src="captcha" @click="getCaptcha()" :preview-disabled="true" class="captcha" />
+          </n-input-group>
+        </n-form-item>
         <div class="action-btn">
           <a href="http://kfadmin.net/user/#/register" target="_blank">注册账号</a>
           <a href="http://kfadmin.net/user/#/forgot" target="_blank">忘记密码</a>
         </div>
-        <div class="text-center mt-3">
-          <el-button type="primary" style="width: 100%" @click="onSubmit">
+        <div class="submit-button">
+          <n-button type="primary" block @click="onSubmit">
             立即登录
-          </el-button>
+          </n-button>
         </div>
-      </el-form>
+      </n-form>
     </div>
   </div>
 </template>
@@ -42,7 +38,8 @@ export default {
         password: "",
         scode: "",
       },
-      scodeSrc: "/api/admin/Cloud/captcha",
+      scodeSrc: "/admin/PluginCloud/captcha",
+      captcha: '',
     };
   },
   props: {
@@ -57,20 +54,25 @@ export default {
     },
     onSubmit() {
       var _this = this;
-      _this.$http.usePost("/admin/cloud/login", _this.form).then((e) => {
-        const { msg } = e;
-        _this.openWin("remote/cloud/index");
-        _this.$notifyMsg.useNotifySuccess(msg);
-      });
+      _this.$http.usePost("admin/PluginCloud/login", _this.form)
+        .then((e) => {
+          const { msg } = e;
+          _this.openWin("remote/cloud/index");
+          _this.$notifyMsg.useNotification(msg);
+        });
     },
-    // 切换验证码
-    hanldScode() {
-      const _this = this;
-      _this.scodeSrc = `${_this.scodeSrc}?t=${Math.random()}`;
+    // 获取验证码
+    getCaptcha() {
+      var _this = this;
+      _this.$http.useGet(`${_this.scodeSrc}?t=${Math.random()}`).then((res) => {
+        const { data } = res
+        _this.captcha = data
+      })
     },
     init() {
       // 检测是否已登录
       //   console.log("用户数据", this.$user);
+      this.getCaptcha();
     },
   },
 };
@@ -81,11 +83,11 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-top: 50px;
+  height: 100%;
 
   .form-container {
-    width: 350px;
     margin: 0 auto;
+    width: 450px;
 
     .captcha {
       width: 90px;
@@ -96,6 +98,10 @@ export default {
     .action-btn {
       display: flex;
       justify-content: space-between;
+    }
+
+    .submit-button {
+      margin-top: 20px;
     }
   }
 }

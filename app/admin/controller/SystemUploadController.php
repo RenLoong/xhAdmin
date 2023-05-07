@@ -2,10 +2,10 @@
 
 namespace app\admin\controller;
 
+use app\admin\builder\FormBuilder;
 use app\admin\model\SystemUpload;
 use app\BaseController;
 use app\service\Upload;
-use Exception;
 use support\Request;
 
 /**
@@ -18,12 +18,11 @@ class SystemUploadController extends BaseController
 {
     /**
      * 获取附件列表
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-04
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function index(Request $request)
     {
@@ -38,33 +37,74 @@ class SystemUploadController extends BaseController
 
     /**
      * 修改附件
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-04
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function edit(Request $request)
     {
-        $post = $request->post();
-        if (!isset($post['id']) || !$post['id']) {
-            return parent::fail('附件数据错误');
+        $id    = $request->get('id','');
+        $where = [
+            ['id','=',$id]
+        ];
+        $model = SystemUpload::where($where)->find();
+        if (!$model) {
+            return parent::fail('该附件不存在');
         }
-        if (!SystemUpload::where(['id' => $post['id']])->strict(false)->save($post)) {
-            return parent::fail('修改失败');
+        if ($request->method() === 'PUT') {
+            $post = $request->post();
+            if (!$model->save($post)) {
+                return parent::fail('修改失败');
+            }
+            return parent::success('修改成功');
         }
-        return parent::success('修改成功');
+        else {
+            $builder = new FormBuilder;
+            $data    = $builder
+                ->setMethod('PUT')
+                ->addRow('title', 'input', '附件名称')
+                ->addRow('path', 'input', '文件地址', '', [
+                    'disabled' => true,
+                ])
+                ->addRow('filename', 'input', '文件名称','',[
+                    'disabled'  => true,
+                    'col'       => [
+                        'span'  => 12
+                    ]
+                ])
+                ->addRow('format', 'input', '文件格式','',[
+                    'disabled'  => true,
+                    'col'       => [
+                        'span'  => 12
+                    ]
+                ])
+                ->addRow('size_format', 'input', '文件大小','',[
+                    'disabled'  => true,
+                    'col'       => [
+                        'span'  => 12
+                    ]
+                ])
+                ->addRow('adapter', 'input', '选定器','',[
+                    'disabled'  => true,
+                    'col'       => [
+                        'span'  => 12
+                    ]
+                ])
+                ->setData($model)
+                ->create();
+            return parent::successRes($data);
+        }
     }
 
     /**
      * 移动选中附件
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-05
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function move(Request $request)
     {
@@ -86,23 +126,19 @@ class SystemUploadController extends BaseController
 
     /**
      * 删除选中附件
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-04
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function del(Request $request)
     {
-        $ids = $request->get('ids');
-        if (!is_array($ids)) {
-            return parent::fail('删除附件出错');
+        $id = (int)$request->post('id',0);
+        if (!$id) {
+            return parent::fail('请选择需要删除的附件');
         }
-        if (empty($ids)) {
-            return parent::fail('请选择附件');
-        }
-        if (!Upload::delete($ids)) {
+        if (!Upload::delete($id)) {
             return parent::fail('删除失败');
         }
         return parent::success('删除完成');
@@ -111,15 +147,20 @@ class SystemUploadController extends BaseController
 
     /**
      * 上传附件
-     *
      * @param Request $request
-     * @return void
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
      */
     public function upload(Request $request)
     {
         $file = $request->file('file');
         $cid = (int)$request->post('cid');
-        if (!Upload::upload($file, [], $cid)) {
+        if (!$cid) {
+            return parent::fail('请选择分类上传');
+        }
+        if (!Upload::upload($file, $cid)) {
             return parent::fail('上传失败');
         }
         return parent::success('上传成功');

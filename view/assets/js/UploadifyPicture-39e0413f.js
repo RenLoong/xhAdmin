@@ -1,1 +1,0 @@
-const f={JPG:"fa-file-image-o",GIF:"fa-file-image-o",PNG:"fa-file-image-o",PDF:"fa-file-pdf-o",DOC:"fa-file-word-o",DOCX:"fa-file-word-o",XLS:"fa-file-excel-o",XLSX:"fa-file-excel-o",TXT:"fa-file-text-o",JSON:"fa-file-text-o",MP4:"fa-file-video-o"},e={JPG:"jpg",PNG:"png",GIF:"gif"};export{e as U,f as a};

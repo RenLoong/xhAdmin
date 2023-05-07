@@ -66,10 +66,16 @@ class AuthRule
      */
     public static function getCascaderOptions(): array
     {
-
-        $list   = SystemAuthRule::select()->toArray();
-        $list   = DataMgr::channelLevel($list, '', '', 'path', 'pid');
+        $orderBy = ['sort'=>'asc','id'=>'asc'];
+        $list   = SystemAuthRule::order($orderBy)->select()->toArray();
+        $list   = DataMgr::channelLevel($list, 0, '', 'id', 'pid');
         $list   = self::getChildrenOptions($list);
+        $list = array_merge([
+            [
+                'label' => '顶级权限菜单',
+                'value' => 0
+            ]
+        ], $list);
         return $list;
     }
 
@@ -90,7 +96,7 @@ class AuthRule
             $authRule                       = AuthRuleRuleType::getText($value['component']);
             $title                          = "{$value['title']}-{$authRule['text']}";
             $list[$i]['label']              = $title;
-            $list[$i]['value']              = $value['path'];
+            $list[$i]['value']              = $value['id'];
             if ($value['children']) {
                 $list[$i]['children']       = self::getChildrenOptions($value['children']);
             }

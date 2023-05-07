@@ -10,46 +10,52 @@ use app\BaseController;
 use app\utils\DataMgr;
 use support\Request;
 
+/**
+ * 部门管理
+ * @copyright 贵州猿创科技有限公司
+ * @Email 416716328@qq.com
+ * @DateTime 2023-04-29
+ */
 class SystemAdminRoleController extends BaseController
 {
 
     /**
-     * 表格列
-     *
-     * @Author 贵州猿创科技有限公司
+     * 表格
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-07
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function indexGetTable(Request $request)
     {
         $builder = new ListBuilder;
         $data = $builder
-            ->addActionOptions('操作', [
-                'width'         => 180
-            ])
+            ->addActionOptions('操作')
             ->pageConfig()
             ->addTopButton('add', '添加', [
-                'api'           => '/admin/SystemAdminRole/add',
+                'api'           => 'admin/SystemAdminRole/add',
+                'path'          => '/SystemAdminRole/add',
             ], [], [
                 'type'          => 'success'
             ])
             ->addRightButton('auth', '授权', [
-                'api'           => '/admin/SystemAdminRole/auth',
+                'api'           => 'admin/SystemAdminRole/auth',
+                'path'          => '/SystemAdminRole/auth',
             ], [], [
                 'type'          => 'warning',
                 'link'          => true
             ])
             ->addRightButton('edit', '修改', [
-                'api'           => '/admin/SystemAdminRole/edit',
+                'api'           => 'admin/SystemAdminRole/edit',
+                'path'          => '/SystemAdminRole/edit',
             ], [], [
                 'type'          => 'primary',
                 'link'          => true
             ])
             ->addRightButton('del', '删除', [
                 'type'          => 'confirm',
-                'api'           => '/admin/SystemAdminRole/del',
+                'api'           => 'admin/SystemAdminRole/del',
                 'method'        => 'delete',
             ], [
                 'title'         => '温馨提示',
@@ -70,12 +76,11 @@ class SystemAdminRoleController extends BaseController
 
     /**
      * 列表
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-07
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function index(Request $request)
     {
@@ -90,12 +95,11 @@ class SystemAdminRoleController extends BaseController
 
     /**
      * 添加
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-07
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function add(Request $request)
     {
@@ -121,12 +125,11 @@ class SystemAdminRoleController extends BaseController
 
     /**
      * 修改
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-07
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function edit(Request $request)
     {
@@ -156,30 +159,28 @@ class SystemAdminRoleController extends BaseController
 
     /**
      * 删除
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-07
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function del(Request $request)
     {
-        $id = $request->get('id');
-        if (!SystemAdminRole::destroy($id)) {
+        $id = $request->post('id');
+        if (!SystemAdminRole::where(['id'=> $id])->delete()) {
             return parent::fail('删除失败');
         }
         return parent::success('删除成功');
     }
 
     /**
-     * 角色授权
-     *
-     * @Author 贵州猿创科技有限公司
+     * 授权
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-07
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function auth(Request $request)
     {
@@ -193,22 +194,33 @@ class SystemAdminRoleController extends BaseController
         }
         if ($request->method() == 'PUT') {
             $post = $request->post();
-            $model->rule = $post['rule'];
-            if (!$model->save($post)) {
+            $where       = [
+                ['id','in',$post['rule']]
+            ];
+            $paths      = SystemAuthRule::where($where)->column('path');
+            $model->rule = array_values(array_filter($paths));
+            if (!$model->save()) {
                 return parent::fail('保存失败');
             }
             return parent::success('保存成功');
         }
+        // 查询已授权关联规则ID
+        $where         = [
+            ['path','in',$model['rule']]
+        ];
+        $model['rule'] = SystemAuthRule::where($where)->column('id');
         // 获取全部权限规则
-        $rule = SystemAuthRule::order('sort asc,id asc')->select()->toArray();
-        $rule = DataMgr::channelLevel($rule, '', '', 'path', 'pid');
+        $rule = SystemAuthRule::order(['sort'=>'asc','id'=>'asc'])
+        ->select()
+        ->toArray();
+        $rule = DataMgr::channelLevel($rule, 0, '', 'id', 'pid');
         // 拼接规则权限为视图所需要的数组
         $authRule = $this->getAuthRule($rule);
         // 获取默认规则
-        $rules = self::getDefaultRule();
-        // 合并已授权规则
-        if (!empty($rules)) {
-            $model['rule'] = array_merge($rules, $model['rule']);
+        $defaultActive = self::getDefaultRule();
+        // 默认选中规则 与 已授权规则合并
+        if (!empty($defaultActive)) {
+            $model['rule'] = array_values(array_unique(array_merge($defaultActive, $model['rule'])));
         }
         // 渲染页面
         $builder = new FormBuilder;
@@ -218,9 +230,21 @@ class SystemAdminRoleController extends BaseController
                 'disabled'      => true
             ])
             ->addRow('rule', 'tree', '权限授权', [], [
+                // 节点数据
                 'data'                      => $authRule,
-                'showCheckbox'              => true,
+                // 是否展开全部
                 'defaultExpandAll'          => true,
+                // 透传组件属性
+                'props'                     => [
+                    // 是否允许多选节点
+                    'multiple'              => true,
+                    // 是否关联子节点
+                    'cascade'               => true,
+                    // 选择框位置
+                    'checkboxPlacement'     => 'left',
+                    // 子节点为块元素
+                    'blockNode'             => true
+                ],
             ])
             ->setData($model)
             ->create();
@@ -228,23 +252,24 @@ class SystemAdminRoleController extends BaseController
     }
 
     /**
-     * 获取默认系统规则
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-10
+     * 获取默认选中规则
      * @return array
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
      */
     private static function getDefaultRule(): array
     {
-        return SystemAuthRule::where(['is_default' => '1'])->column('path');
+        return SystemAuthRule::where(['is_default' => '1'])->column('id');
     }
 
     /**
      * 获取权限列表
-     *
      * @param array $rule
      * @return array
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
      */
     private function getAuthRule(array $rule): array
     {
@@ -252,10 +277,11 @@ class SystemAdminRoleController extends BaseController
         $i = 0;
         foreach ($rule as $value) {
             // 默认选选中
-            $disabled = $value['is_default'] == '1' ? true : false;
+            $disabled = false;
+            $disabled = $value['is_default'] === '1';
             // 组装树状格式数据
-            $data[$i]['title']          = $value['title'];
-            $data[$i]['id']             = $value['path'];
+            $data[$i]['label']          = $value['title'];
+            $data[$i]['key']            = $value['id'];
             $data[$i]['disabled']       = $disabled;
             $data[$i]['level']          = $value['_level'];
             if ($value['children']) {

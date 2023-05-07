@@ -2,7 +2,7 @@
 return [
     'enable' => true,
     'default' => 'public',
-    'max_size' => 1024 * 1024 * 10, //单个文件大小10M
+    'max_size' => 1024 * 1024 * 50, //单个文件大小10M
     'ext_yes' => [], //允许上传文件类型 为空则为允许所有
     'ext_no' => [], // 不允许上传文件类型 为空则不限制
     'storage' => [
@@ -10,7 +10,7 @@ return [
         'public' => [
             'driver' => \Shopwwi\WebmanFilesystem\Adapter\LocalAdapterFactory::class,
             'root' => public_path(),
-            'url' => '//127.0.0.1:39200' // 静态文件访问域名
+            'url' => 'http://cloud8.hangpu.net' // 静态文件访问域名
         ],
         // 阿里云驱动
         'oss' => [

@@ -5,7 +5,7 @@
       <div class="user">
         <!-- 用户 -->
         <div class="user-info">
-          <el-avatar :src="user.headimg" />
+          <n-avatar :src="user.headimg" size="large" />
           <div class="info">
             <div class="nickname">
               <span class="fa fa-user-o"></span>
@@ -19,10 +19,12 @@
         </div>
         <!-- 充值 -->
         <div class="recharge">
-          <el-button type="success" @click="hanldOpenBrowser('user/recharge')">
-            <span class="fa fa-credit-card"></span>
-            <span class="ml-2">充值</span>
-          </el-button>
+          <n-button type="success" @click="hanldOpenBrowser('user/recharge')">
+            <template #icon>
+              <app-icons icon="CreditCardOutlined" />
+            </template>
+            <span>充值</span>
+          </n-button>
         </div>
       </div>
     </div>
@@ -32,48 +34,32 @@
         <span class="fa fa-tv"></span>
         <span class="ml-2">工具服务</span>
       </div>
-      <el-row :gutter="20">
-        <el-col :span="6" class="tool-col">
+      <n-grid :cols="4">
+        <n-grid-item class="tool-col">
           <div class="item" @click="hanldOpenBrowser('perfect')">
-            <el-image
-              src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
-              class="tool-logo"
-            >
-            </el-image>
+            <n-image src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png" class="tool-logo" />
             <div>个人资料</div>
           </div>
-        </el-col>
-        <el-col :span="6" class="tool-col">
+        </n-grid-item>
+        <n-grid-item class="tool-col">
           <div class="item" @click="hanldOpenBrowser('wallet')">
-            <el-image
-              src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
-              class="tool-logo"
-            >
-            </el-image>
+            <n-image src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png" class="tool-logo" />
             <div>我的钱包</div>
           </div>
-        </el-col>
-        <el-col :span="6" class="tool-col" @click="hanldOpenBrowser('plugin')">
-          <div class="item">
-            <el-image
-              src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
-              class="tool-logo"
-            >
-            </el-image>
+        </n-grid-item>
+        <n-grid-item class="tool-col">
+          <div class="item" @click="hanldOpenBrowser('plugin')">
+            <n-image src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png" class="tool-logo" />
             <div>我的应用</div>
           </div>
-        </el-col>
-        <el-col :span="6" class="tool-col" @click="hanldOpenBrowser('site')">
-          <div class="item">
-            <el-image
-              src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
-              class="tool-logo"
-            >
-            </el-image>
+        </n-grid-item>
+        <n-grid-item class="tool-col">
+          <div class="item" @click="hanldOpenBrowser('site')">
+            <n-image src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png" class="tool-logo" />
             <div>我的站点</div>
           </div>
-        </el-col>
-      </el-row>
+        </n-grid-item>
+      </n-grid>
     </div>
     <!-- 账单流水 -->
     <div class="block-container">
@@ -81,11 +67,11 @@
         <span class="fa fa-file-text-o"></span>
         <span class="ml-2">账单流水</span>
       </div>
-      <el-table :data="datalist" stripe border>
+      <!-- <el-table :data="datalist" stripe border>
         <el-table-column prop="date" label="账单时间" width="180" />
         <el-table-column prop="name" label="账单金额" width="150" />
         <el-table-column prop="address" label="账单备注" />
-      </el-table>
+      </el-table> -->
     </div>
   </div>
 </template>
@@ -108,26 +94,34 @@ export default {
     this.init();
   },
   methods: {
-    // 打开新的浏览器窗口
+    /**
+     * 打开新的浏览器窗口
+     * @param {*} path 
+     */
     hanldOpenBrowser(path) {
       const url = `http://kfadmin.net/user/#/${path}`;
       window.open(url);
     },
+    /**
+     * 打开新页面
+     * @param {*} path 
+     */
     openWin(path) {
       this.$emit("openWin", path);
     },
+    // 初始化业务
     init() {
       var _this = this;
       _this.$http
-        .useGet("/admin/Cloud/index")
+        .useGet("/admin/PluginCloud/index")
         .then((e) => {
           const { data } = e;
           _this.user = data;
           _this.isLogin = true;
         })
         .catch((err) => {
-          if (err?.code == 12000) {
-            _this.openWin("remote/cloud/login");
+          if (err?.code == 11000) {
+            _this.$emit('openWin', 'remote/cloud/login')
           }
         });
     },
@@ -137,15 +131,19 @@ export default {
 
 <style lang="scss" scoped>
 .cloud-container {
+  padding: 20px;
+
   .user-center {
     .user {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       border-bottom: 1px solid #ddd;
       padding: 10px 0;
 
       .user-info {
         display: flex;
+        align-items: center;
 
         .info {
           padding: 3px 0 0 8px;
@@ -153,8 +151,7 @@ export default {
         }
       }
 
-      .recharge {
-      }
+      .recharge {}
     }
   }
 

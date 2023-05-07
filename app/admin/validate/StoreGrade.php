@@ -20,11 +20,10 @@ class StoreGrade extends Validate
 
     /**
      * 添加场景验证
-     *
-     * @Author 贵州猿创科技有限公司
+     * @return Validate
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-11
-     * @return void
+     * @DateTime 2023-05-01
      */
     public function sceneAdd()
     {
@@ -37,11 +36,10 @@ class StoreGrade extends Validate
 
     /**
      * 修改场景
-     *
-     * @Author 贵州猿创科技有限公司
+     * @return Validate
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-11
-     * @return void
+     * @DateTime 2023-05-01
      */
     public function sceneEdit()
     {
@@ -55,12 +53,11 @@ class StoreGrade extends Validate
 
     /**
      * 验证名称
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param mixed $value
+     * @return bool|string
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-12
-     * @param  type $value
-     * @return void
+     * @DateTime 2023-05-01
      */
     protected function verifyTitle($value)
     {

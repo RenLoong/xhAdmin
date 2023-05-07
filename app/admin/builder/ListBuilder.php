@@ -70,7 +70,7 @@ class ListBuilder
      */
     public function create(): array
     {
-        $resutl = $this->parseRule();
+        $resutl              = $this->parseRule();
         $data['tableConfig'] = $resutl;
 
         // 移除按钮属性
@@ -83,8 +83,8 @@ class ListBuilder
         if (isset($data['tabsConfig']['tabsConfig'])) {
             unset($data['tabsConfig']['tabsConfig']);
         }
-        $data['tabsConfig'] = $resutl['tabsConfig'];
-        $data['topButtonList'] = $resutl['topButtonList'];
+        $data['tabsConfig']      = $resutl['tabsConfig'];
+        $data['topButtonList']   = $resutl['topButtonList'];
         $data['rightButtonList'] = $resutl['rightButtonList'];
 
         // 返回数据
@@ -93,12 +93,12 @@ class ListBuilder
 
     /**
      * 动态设置属性
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param mixed $name
+     * @param mixed $value
+     * @return void
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-07
-     * @param  type $name
-     * @param  type $value
+     * @DateTime 2023-04-29
      */
     public function __set($name, $value)
     {

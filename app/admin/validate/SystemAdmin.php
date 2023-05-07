@@ -25,11 +25,10 @@ class SystemAdmin extends Validate
 
     /**
      * 登录场景
-     *
-     * @Author 贵州猿创科技有限公司
+     * @return Validate
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-11
-     * @return void
+     * @DateTime 2023-04-30
      */
     public function sceneLogin()
     {
@@ -43,11 +42,10 @@ class SystemAdmin extends Validate
 
     /**
      * 添加场景验证
-     *
-     * @Author 贵州猿创科技有限公司
+     * @return Validate
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-11
-     * @return void
+     * @DateTime 2023-04-30
      */
     public function sceneAdd()
     {
@@ -63,11 +61,10 @@ class SystemAdmin extends Validate
 
     /**
      * 修改场景
-     *
-     * @Author 贵州猿创科技有限公司
+     * @return Validate
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-11
-     * @return void
+     * @DateTime 2023-04-30
      */
     public function sceneEdit()
     {
@@ -82,13 +79,30 @@ class SystemAdmin extends Validate
     }
 
     /**
-     * 验证是否存在
-     *
-     * @Author 贵州猿创科技有限公司
+     * 修改自身数据
+     * @return Validate
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-11
-     * @param  type $value
-     * @return void
+     * @DateTime 2023-04-30
+     */
+    public function sceneEditSelf()
+    {
+        return $this->only([
+            'username',
+            'nickname',
+            'headimg'
+        ])
+            ->remove('role_id')
+            ->remove('username', ['verifyAdd']);
+    }
+
+    /**
+     * 验证是否存在
+     * @param mixed $value
+     * @return bool|string
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-30
      */
     protected function verifyAdd($value)
     {

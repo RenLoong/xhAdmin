@@ -1,54 +1,54 @@
 <template>
   <div class="page-container" v-if="initLock">
     <!-- 应用信息 -->
-    <el-form :model="form" label-position="top" class="form-container">
-      <el-row :gutter="20">
-        <el-col :span="12">
-          <el-form-item label="应用名称">
-            {{ form.title }}
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="应用版本">
-            {{ form.version }}
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="平台类型">
-            {{ form.platform }}
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="应用类型">
-            {{ form.plugin_type }}
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="开发者名称">
-            {{ form.author.title }}
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="应用图标">
-            <el-image :src="form.logo" class="plugin-logo"></el-image>
-          </el-form-item>
-        </el-col>
-      </el-row>
-    </el-form>
+    <n-form :model="form" labn-position="top" class="form-container">
+      <n-row :cols="20">
+        <n-col :span="12">
+          <n-form-item label="应用名称">
+            {{ form?.title }}
+          </n-form-item>
+        </n-col>
+        <n-col :span="12">
+          <n-form-item label="应用版本">
+            {{ form?.version }}
+          </n-form-item>
+        </n-col>
+        <n-col :span="12">
+          <n-form-item label="平台类型">
+            {{ form?.platform }}
+          </n-form-item>
+        </n-col>
+        <n-col :span="12">
+          <n-form-item label="应用类型">
+            {{ form?.plugin_type }}
+          </n-form-item>
+        </n-col>
+        <n-col :span="12">
+          <n-form-item label="开发者名称">
+            {{ form?.dev?.title }}
+          </n-form-item>
+        </n-col>
+        <n-col :span="12">
+          <n-form-item label="应用图标">
+            <n-image :src="form?.logo" class="plugin-logo"></n-image>
+          </n-form-item>
+        </n-col>
+      </n-row>
+    </n-form>
     <!-- 安装信息展示 -->
     <div class="progress-container" v-if="install.lock">
-      <el-progress type="circle" :status="install.status" :percentage="install.progress">
+      <n-progress type="circle" :status="install.status" :percentage="install.progress">
         <template #default="{ percentage }">
           <div class="percentage-icon fa fa-cube" v-if="install.step == 'success'"></div>
           <div class="percentage-label">{{ install.text }}</div>
           <div class="percentage-value" v-if="percentage">{{ percentage }} %</div>
         </template>
-      </el-progress>
+      </n-progress>
     </div>
     <div class="text-center mt-3" v-else>
-      <el-button type="primary" style="width: 100%" @click="onSubmit">
+      <n-button type="primary" style="width: 100%" @click="onSubmit">
         开始安装
-      </el-button>
+      </n-button>
     </div>
   </div>
 </template>
@@ -56,7 +56,7 @@
 <script>
 export default {
   props: {
-    queryParams: {
+    ajaxParams: {
       type: Object,
       default: () => {
         return {};
@@ -147,23 +147,39 @@ export default {
     // 提交购买
     onSubmit() {
       const _this = this;
-      _this.$confirm.useConfirm("是否确认开始安装？", () => {
-        _this.install.lock = true;
-        _this.install.step = "请求中...";
-        _this.install.step = "file";
-        _this.installStep();
+      _this.$useDialog.create({
+        type: 'warning',
+        title: '温馨提示',
+        content: '是否确认开始安装？',
+        positiveText: '确定',
+        negativeText: '取消',
+        maskClosable: false,
+        onPositiveClick() {
+          _this.install.lock = true;
+          _this.install.step = "请求中...";
+          _this.install.step = "file";
+          _this.installStep();
+        }
       });
     },
     getDetail() {
       const _this = this;
       const queryParams = {
-        ...this.queryParams,
+        ...this.ajaxParams,
       };
       _this.$http
-        .useGet("/admin/Plugin/detail", queryParams)
+        .useGet("admin/Plugin/detail", queryParams)
         .then((res) => {
-          _this.form = res?.data ?? {};
-          _this.initLock = true;
+          const { data } = res;
+          if (data.code === 200) {
+            _this.form = data?.data ?? {};
+            _this.initLock = true;
+          } else {
+            _this.$useNotification?.error({
+              title: data?.msg ?? '获取失败',
+              duration: 1500,
+            });
+          }
         })
         .catch((err) => {
           if (err?.code == 12000) {
@@ -180,6 +196,8 @@ export default {
 
 <style lang="scss" scoped>
 .page-container {
+  padding: 20px;
+
   .form-container {
     .plugin-logo {
       width: 40px;

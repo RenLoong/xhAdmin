@@ -40,9 +40,7 @@
     "shopwwi/webman-filesystem": "^1.0",
     "shopwwi/filesystem-oss": "^1.0",
     "overtrue/flysystem-qiniu": "^2.0",
-    "overtrue/flysystem-cos": "^4.0",
-    "php-di/php-di": "^6",
-    "doctrine/annotations": "^1.14"
+    "overtrue/flysystem-cos": "^4.0"
   },
   "suggest": {
     "ext-event": "For better performance. "

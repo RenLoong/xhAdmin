@@ -22,7 +22,42 @@ class BaseController
      * @Email 416716328@qq.com
      * @DateTime 2023-03-13
      */
-    public $model;
+    protected $model;
+
+    /**
+     * 模块名
+     * @var string
+     */
+    protected $moduleName;
+
+    /**
+     * 构造函数
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-05-03
+     */
+    public function __construct()
+    {
+        $request          = request();
+        $moduleName = $this->getPathModule($request->path());
+        $moduleName = getModule($moduleName);
+        $this->moduleName = $moduleName;
+    }
+
+    /**
+     * 获取HTTP路径中的模块
+     * @param string $path
+     * @return string
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-05-03
+     */
+    private function getPathModule(string $path)
+    {
+        $modules = explode('/', $path);
+        $modules = current(array_filter($modules));
+        return $modules ? $modules : 'admin';
+    }
 
     /**
      * 获取地址栏参数后，返回查询相应参数
@@ -33,7 +68,7 @@ class BaseController
      * @param  Request $request
      * @return array
      */
-    protected function getParams(Request $request = null): array
+    protected function getParams(Request $request): array
     {
         if (!$request) {
             $request = request();
@@ -92,12 +127,11 @@ class BaseController
 
     /**
      * 设置开关值
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-13
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-05-01
      */
     public function rowEdit(Request $request)
     {

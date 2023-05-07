@@ -15,12 +15,11 @@ class StoreGrade extends ModelStoreGrade
 {
     /**
      * 设置为默认等级，则取消其他默认
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param mixed $value
+     * @return mixed
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-13
-     * @param  type $value
-     * @return void
+     * @DateTime 2023-04-30
      */
     protected function setIsDefaultAttr($value)
     {

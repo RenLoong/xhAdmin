@@ -25,112 +25,109 @@ use FormBuilder\Factory\Elm;
 class SystemAuthRuleController extends BaseController
 {
     /**
-     * 表格列
-     * 
-     * TODO:未解决自动默认展开
-     *
-     * @Author 贵州猿创科技有限公司
+     * 表格
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-07
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function indexGetTable(Request $request)
     {
         $builder = new ListBuilder;
-        $data = $builder
+        $data    = $builder
             ->addActionOptions('操作', [
-                'width'         => 150
+                'width' => 150
             ])
             ->treeConfig([
-                'rowField'      => 'path',
+                'rowField' => 'id',
             ])
             ->addTopButton('add', '添加', [
-                'api'           => '/admin/SystemAuthRule/add',
+                'api'  => 'admin/SystemAuthRule/add',
+                'path' => '/SystemAuthRule/add'
             ], [], [
-                'type'          => 'success'
-            ])
+                    'type' => 'success'
+                ])
             ->addRightButton('edit', '修改', [
-                'api'           => '/admin/SystemAuthRule/edit',
+                'api'  => 'admin/SystemAuthRule/edit',
+                'path' => '/SystemAuthRule/edit'
             ], [], [
-                'type'          => 'primary',
-                'link'          => true
-            ])
+                    'type' => 'primary',
+                    'link' => true
+                ])
             ->addRightButton('del', '删除', [
-                'type'          => 'confirm',
-                'api'           => '/admin/SystemAuthRule/del',
-                'method'        => 'delete',
+                'type'   => 'confirm',
+                'api'    => 'admin/SystemAuthRule/del',
+                'method' => 'delete',
             ], [
-                'title'         => '温馨提示',
-                'content'       => '是否确认删除该数据',
-            ], [
-                'type'          => 'danger',
-                'link'          => true
-            ])
+                    'title'   => '温馨提示',
+                    'content' => '是否确认删除该数据',
+                ], [
+                    'type' => 'error',
+                    'link' => true
+                ])
             ->addColumn('path_text', '权限地址', [
-                'treeNode'      => true
+                'treeNode' => true
             ])
             ->addColumn('title', '权限名称')
             ->addColumnEle('show', '是否显示', [
-                'width'             => 100,
-                'params'            => [
-                    'type'          => 'tags',
-                    'options'       => ['隐藏', '显示'],
-                    'props'         => [
+                'width'  => 100,
+                'params' => [
+                    'type'    => 'tags',
+                    'options' => ['隐藏', '显示'],
+                    'style'   => [
                         [
-                            'type'  => 'danger',
+                            'type' => 'error',
                         ],
                         [
-                            'type'  => 'success',
+                            'type' => 'success',
                         ],
                     ],
                 ],
             ])
             ->addColumnEle('is_api', '是否接口', [
-                'width'             => 100,
-                'params'            => [
-                    'type'          => 'tags',
-                    'options'       => ['否', '是'],
-                    'props'         => [
+                'width'  => 100,
+                'params' => [
+                    'type'    => 'tags',
+                    'options' => ['否', '是'],
+                    'style'   => [
                         [
-                            'type'  => 'danger',
+                            'type' => 'error',
                         ],
                         [
-                            'type'  => 'success',
+                            'type' => 'success',
                         ],
                     ],
                 ],
             ])
             ->addColumnEle('component', '组件类型', [
-                'width'             => 120,
-                'params'            => [
-                    'type'          => 'tags',
-                    'options'       => [
-                        'layouts/index' => '布局组件',
-                        ''              => '不使用组件',
-                        'form/index'    => '表单组件',
-                        'table/index'   => '表格组件',
-                        'remote/index'  => '远程组件',
+                'width'  => 120,
+                'params' => [
+                    'type'    => 'tags',
+                    'options' => [
+                        ''             => '不使用组件',
+                        'form/index'   => '表单组件',
+                        'table/index'  => '表格组件',
+                        'remote/index' => '远程组件',
                     ],
-                    'props'             => [
-                        '' => [
-                            'type'      => 'danger'
+                    'style'   => [
+                        ''             => [
+                            'type' => 'info'
                         ],
-                        'form/index'    => [
-                            'type'      => 'warning'
+                        'form/index'   => [
+                            'type' => 'warning'
                         ],
-                        'table/index'   => [
-                            'type'      => 'success'
+                        'table/index'  => [
+                            'type' => 'success'
                         ],
-                        'remote/index'  => [
-                            'color'     => '#626aef',
-                            'dark'      => true
+                        'remote/index' => [
+                            'type' => 'error'
                         ],
                     ],
                 ],
             ])
             ->addColumn('method', '请求类型', [
-                'width'             => 180
+                'width' => 180
             ])
             ->create();
         return parent::successRes($data);
@@ -138,16 +135,15 @@ class SystemAuthRuleController extends BaseController
 
     /**
      * 列表
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-07
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function index(Request $request)
     {
-        $list = SystemAuthRule::order('sort asc,id asc')
+        $list = SystemAuthRule::order(['sort' => 'asc', 'id' => 'asc'])
             ->select()
             ->toArray();
         return parent::successRes($list);
@@ -155,21 +151,37 @@ class SystemAuthRuleController extends BaseController
 
     /**
      * 添加
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-07
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function add(Request $request)
     {
         if ($request->method() == 'POST') {
-            $post = $request->post();
+            $post  = $request->post();
             $model = new SystemAuthRule;
 
             // 数据验证
             hpValidate(ValidateSystemAuthRule::class, $post, 'add');
+
+            // 额外验证
+            if ($post['component'] !== 'remote/index') {
+                // 接口/表单/表格
+                if (!isset($post['namespace']) || !$post['namespace']) {
+                    return parent::fail('请输入命名空间');
+                }
+                if (!isset($post['path']) || !$post['path'] && $post['is_api'] === '1') {
+                    return parent::fail('请输入权限路由');
+                }
+                if (!isset($post['method']) || empty($post['method'])) {
+                    return parent::fail('至少选择一个请求类型');
+                }
+            }
+            if (!isset($post['method'])) {
+                $post['method'] = ['GET'];
+            }
 
             if (!$model->save($post)) {
                 return parent::fail('添加失败');
@@ -177,104 +189,100 @@ class SystemAuthRuleController extends BaseController
             return parent::success('添加成功');
         }
         $builder = new FormBuilder;
-        $view = $builder
+        $view    = $builder
             ->setMethod('POST')
             ->addRow('module', 'input', '模块名称', 'admin', [
-                'placeholder'           => '如app目录下则直接填写模块名，应用插件则填写：服务商/插件名',
-                'col'                   => [
-                    'span'              => 12
+                'placeholder' => '如app目录下则直接填写模块名，应用插件则填写：服务商/插件名',
+                'col'         => [
+                    'span' => 12
                 ],
             ])
             ->addRow('pid', 'cascader', '父级菜单', [], [
-                'props'                 => [
-                    'props'             => [
+                'props'       => [
+                    'props' => [
                         'checkStrictly' => true,
                     ],
                 ],
-                'options'               => AuthRule::getCascaderOptions(),
-                'placeholder'           => '如不选择则是顶级菜单',
-                'col'                   => [
-                    'span'              => 12
+                'options'     => AuthRule::getCascaderOptions(),
+                'placeholder' => '如不选择则是顶级菜单',
+                'col'         => [
+                    'span' => 12
                 ],
             ])
             ->addRow('title', 'input', '菜单名称', '', [
-                'col'                   => [
-                    'span'              => 12
+                'col' => [
+                    'span' => 12
                 ],
             ])
             ->addRow('component', 'select', '菜单类型', '', [
-                'options'               => AuthRuleRuleType::getOptions(),
-                'col'                   => [
-                    'span'              => 12
+                'options' => AuthRuleRuleType::getOptions(),
+                'col'     => [
+                    'span' => 12
                 ],
                 // 使用联动组件
-                'control'               => [
+                'control' => [
                     [
-                        'value'         => 'remote/index',
-                        'where'         => '==',
-                        'rule'          => [
+                        'value' => 'remote/index',
+                        'where' => '==',
+                        'rule'  => [
                             Elm::input('auth_params', '远程组件')
                                 ->props([
-                                    'placeholder'   => '远程组件地址，示例：remote/index，则会自动加载 http://www.xxx.com/remote/index.vue 文件作为组件渲染',
+                                    'placeholder' => '示例：remote/index，则会自动加载 http://www.xxx.com/remote/index.vue 文件作为组件渲染',
                                 ])
                                 ->col([
-                                    'span'  => 12
+                                    'span' => 12
                                 ])
                         ],
                     ],
                     [
-                        'value'         => 'remote/index',
-                        'where'         => '!=',
-                        'rule'          => [
+                        'value' => ['','table/index','form/index'],
+                        'where' => 'in',
+                        'rule'  => [
                             Elm::input('auth_params', '附带参数')
                                 ->props([
-                                    'placeholder'   => '附带地址栏参数（选填），格式：name=楚羽幽&sex=男'
+                                    'placeholder' => '附带地址栏参数（选填），格式：name=楚羽幽&sex=男'
                                 ])
                                 ->col([
-                                    'span'  => 12
+                                    'span' => 12
+                                ]),
+                            Elm::radio('is_api', '是否接口', '0')
+                                ->col([
+                                    'span' => 12
                                 ])
+                                ->options(AuthRuleIsApi::getOptions()),
+                            Elm::input('namespace', '命名空间', "\\app\\admin\\controller\\")
+                                ->placeholder('示例：\\app\\admin\\controller\\')
+                                ->col([
+                                    'span' => 12
+                                ]),
+                            Elm::input('path', '权限路由', "")
+                                ->placeholder('示例：控制器/方法')
+                                ->col([
+                                    'span' => 12
+                                ]),
+                            Elm::checkbox('method', '请求类型', ['GET'])
+                            ->options(AuthRuleMethods::getOptions())
+                                ->col([
+                                    'span' => 12
+                                ]),
                         ],
                     ],
-                ],
-            ])
-            ->addRow('is_api', 'radio', '是否接口', '0', [
-                'options'               => AuthRuleIsApi::getOptions(),
-                'col'                   => [
-                    'span'              => 12
-                ],
-            ])
-            ->addRow('namespace', 'input', '命名空间', "\\app\\admin\\controller\\", [
-                'placeholder'           => '示例：\\app\\admin\\controller\\',
-                'col'                   => [
-                    'span'              => 12
-                ],
-            ])
-            ->addRow('path', 'input', '权限路由', '', [
-                'placeholder'           => '示例：控制器/方法',
-                'col'                   => [
-                    'span'              => 12
                 ],
             ])
             ->addRow('show', 'radio', '显示隐藏', '1', [
-                'options'               => AuthRuleShow::getOptions(),
-                'col'                   => [
-                    'span'              => 12
-                ],
-            ])
-            ->addRow('method', 'checkbox', '请求类型', ['GET'], [
-                'options'               => AuthRuleMethods::getOptions(),
-                'col'                   => [
-                    'span'              => 12
+                'options' => AuthRuleShow::getOptions(),
+                'col'     => [
+                    'span' => 12
                 ],
             ])
             ->addComponent('icon', 'icons', '菜单图标', '', [
-                'col'                   => [
-                    'span'              => 12
+                'col' => [
+                    'span' => 12
                 ],
             ])
             ->addRow('sort', 'input', '菜单排序', '0', [
-                'col'                   => [
-                    'span'              => 12
+                'col' => [
+                    'span' => 12
                 ],
             ])
             ->create();
@@ -283,16 +291,15 @@ class SystemAuthRuleController extends BaseController
 
     /**
      * 修改
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-07
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function edit(Request $request)
     {
-        $id = $request->get('id');
+        $id    = $request->get('id');
         $where = [
             ['id', '=', $id],
         ];
@@ -306,110 +313,121 @@ class SystemAuthRuleController extends BaseController
             // 数据验证
             hpValidate(ValidateSystemAuthRule::class, $post, 'edit');
 
+            // 额外验证
+            if ($post['component'] !== 'remote/index') {
+                // 接口/表单/表格
+                if (!isset($post['namespace']) || !$post['namespace']) {
+                    return parent::fail('请输入命名空间');
+                }
+                if (!isset($post['path']) || !$post['path'] && $post['is_api'] === '1') {
+                    return parent::fail('请输入权限路由');
+                }
+                if (!isset($post['method']) || empty($post['method'])) {
+                    return parent::fail('至少选择一个请求类型');
+                }
+            }
+
             if (!$model->save($post)) {
                 return parent::fail('修改失败');
             }
             return parent::success('修改成功');
         }
+        $model->pid = [$model['pid']];
         $builder = new FormBuilder;
-        $view = $builder
+        $view    = $builder
             ->setMethod('PUT')
             ->addRow('module', 'input', '模块名称', 'admin', [
-                'placeholder'           => '如app目录下则直接填写模块名，应用插件则填写：服务商/插件名',
-                'col'                   => [
-                    'span'              => 12
+                'placeholder' => '如app目录下则直接填写模块名，应用插件则填写：服务商/插件名',
+                'col'         => [
+                    'span' => 12
                 ],
             ])
             ->addRow('pid', 'cascader', '父级菜单', [], [
-                'props'                 => [
-                    'props'             => [
+                'props'       => [
+                    'props' => [
                         'checkStrictly' => true,
                     ],
                 ],
-                'options'               => AuthRule::getCascaderOptions(),
-                'placeholder'           => '如不选择则是顶级菜单',
-                'col'                   => [
-                    'span'              => 12
+                'options'     => AuthRule::getCascaderOptions(),
+                'placeholder' => '如不选择则是顶级菜单',
+                'col'         => [
+                    'span' => 12
                 ],
             ])
             ->addRow('title', 'input', '菜单名称', '', [
-                'col'                   => [
-                    'span'              => 12
+                'col' => [
+                    'span' => 12
                 ],
             ])
             ->addRow('component', 'select', '菜单类型', '', [
-                'options'               => AuthRuleRuleType::getOptions(),
-                'col'                   => [
-                    'span'              => 12
+                'options' => AuthRuleRuleType::getOptions(),
+                'col'     => [
+                    'span' => 12
                 ],
                 // 使用联动组件
-                'control'               => [
+                'control' => [
                     [
-                        'value'         => 'remote/index',
-                        'where'         => '==',
-                        'rule'          => [
+                        'value' => 'remote/index',
+                        'where' => '==',
+                        'rule'  => [
                             Elm::input('auth_params', '远程组件')
                                 ->props([
-                                    'placeholder'   => '远程组件地址，示例：remote/index，则会自动加载 http://www.xxx.com/remote/index.vue 文件作为组件渲染',
+                                    'placeholder' => '示例：remote/index，则会自动加载 http://www.xxx.com/remote/index.vue 文件作为组件渲染',
                                 ])
                                 ->col([
-                                    'span'  => 12
+                                    'span' => 12
                                 ])
                         ],
                     ],
                     [
-                        'value'         => 'remote/index',
-                        'where'         => '!=',
-                        'rule'          => [
+                        'value' => ['', 'table/index', 'form/index'],
+                        'where' => 'in',
+                        'rule'  => [
                             Elm::input('auth_params', '附带参数')
                                 ->props([
-                                    'placeholder'   => '附带地址栏参数（选填），格式：name=楚羽幽&sex=男'
+                                    'placeholder' => '附带地址栏参数（选填），格式：name=楚羽幽&sex=男'
                                 ])
                                 ->col([
-                                    'span'  => 12
+                                    'span' => 12
+                                ]),
+                            Elm::radio('is_api', '是否接口', '0')
+                                ->col([
+                                    'span' => 12
                                 ])
+                                ->options(AuthRuleIsApi::getOptions()),
+                            Elm::input('namespace', '命名空间', "\\app\\admin\\controller\\")
+                                ->placeholder('示例：\\app\\admin\\controller\\')
+                                ->col([
+                                    'span' => 12
+                                ]),
+                            Elm::input('path', '权限路由', "")
+                                ->placeholder('示例：控制器/方法')
+                                ->col([
+                                    'span' => 12
+                                ]),
+                            Elm::checkbox('method', '请求类型', ['GET'])
+                                ->options(AuthRuleMethods::getOptions())
+                                ->col([
+                                    'span' => 12
+                                ]),
                         ],
                     ],
-                ],
-            ])
-            ->addRow('is_api', 'radio', '是否接口', '', [
-                'options'               => AuthRuleIsApi::getOptions(),
-                'col'                   => [
-                    'span'              => 12
-                ],
-            ])
-            ->addRow('namespace', 'input', '命名空间', "\\app\\admin\\controller\\", [
-                'placeholder'           => '示例：\\app\\admin\\controller\\',
-                'col'                   => [
-                    'span'              => 12
-                ],
-            ])
-            ->addRow('path', 'input', '权限路由', '', [
-                'placeholder'           => '示例：控制器/方法',
-                'col'                   => [
-                    'span'              => 12
                 ],
             ])
             ->addRow('show', 'radio', '显示隐藏', '1', [
-                'options'               => AuthRuleShow::getOptions(),
-                'col'                   => [
-                    'span'              => 12
-                ],
-            ])
-            ->addRow('method', 'checkbox', '请求类型', ['GET'], [
-                'options'               => AuthRuleMethods::getOptions(),
-                'col'                   => [
-                    'span'              => 12
+                'options' => AuthRuleShow::getOptions(),
+                'col'     => [
+                    'span' => 12
                 ],
             ])
             ->addComponent('icon', 'icons', '菜单图标', '', [
-                'col'                   => [
-                    'span'              => 12
+                'col' => [
+                    'span' => 12
                 ],
             ])
             ->addRow('sort', 'input', '菜单排序', '0', [
-                'col'                   => [
-                    'span'              => 12
+                'col' => [
+                    'span' => 12
                 ],
             ])
             ->setData($model)
@@ -419,17 +437,26 @@ class SystemAuthRuleController extends BaseController
 
     /**
      * 删除
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-07
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function del(Request $request)
     {
-        $id = $request->get('id');
-        if (!SystemAuthRule::destroy($id)) {
+        $id = $request->post('id');
+        $where = [
+            ['id','=',$id]
+        ];
+        $model = SystemAuthRule::where($where)->find();
+        if (!$model) {
+            return parent::fail('该数据不存在');
+        }
+        if ($model->is_system === '1') {
+            return parent::fail('系统级权限规则，禁止删除');
+        }
+        if (!$model->delete()) {
             return parent::fail('删除失败');
         }
         return parent::success('删除成功');

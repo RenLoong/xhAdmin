@@ -1,20 +1,8 @@
 # 关于框架
 
-本框架 php 要求 php8.1 + Mysql5.7 以上
+本框架 php 要求 php7.4 + Mysql5.7 以上
 
 # 框架主页及文档
-
-## 移除禁用函数
-putenv
-proc_open
-pcntl_signal
-
-## 开启扩展
-curl
-
-## 安装扩展
-fileinfo
-
 
 ## LICENSE
 

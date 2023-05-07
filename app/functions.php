@@ -3,12 +3,31 @@
 use app\service\Upload;
 
 /**
+ * 获取映射模块名称
+ * @param string $moduleName
+ * @return string
+ * @copyright 贵州猿创科技有限公司
+ * @Email 416716328@qq.com
+ * @DateTime 2023-04-30
+ */
+function getModule(string $moduleName): string
+{
+    $modules = config('admin');
+    if (isset($modules[$moduleName])) {
+        $moduleName = $modules[$moduleName];
+    }
+    return $moduleName;
+}
+/**
  * 验证器（支持场景验证）
- *
- * @param [type] $validate
+ * @param mixed $validate
  * @param array $data
  * @param string $scene
- * @return boolean
+ * @throws Exception
+ * @return bool
+ * @copyright 贵州猿创科技有限公司
+ * @Email 416716328@qq.com
+ * @DateTime 2023-04-30
  */
 function hpValidate($validate, array $data, string $scene = ''): bool
 {
@@ -232,24 +251,30 @@ function uncamelize(string $camelCaps, $separator = '_'): string
 
 /**
  * 当前登录管理员id
- *
- * @return mixed|null
+ * @param string $key
+ * @return mixed
+ * @copyright 贵州猿创科技有限公司
+ * @Email 416716328@qq.com
+ * @DateTime 2023-05-03
  */
-function hp_admin_id()
+function hp_admin_id(string $key)
 {
-    return session('hp_admin.id');
+    return session("{$key}.id");
 }
 
 /**
  * 当前管理员
- *
- * @param null|array|string $fields
- * @return array|mixed|null
+ * @param string $key
+ * @param mixed $fields
+ * @return mixed
+ * @copyright 贵州猿创科技有限公司
+ * @Email 416716328@qq.com
+ * @DateTime 2023-05-03
  */
-function hp_admin($fields = null)
+function hp_admin(string $key,$fields = null)
 {
-    if (!$admin = session('hp_admin')) {
-        return null;
+    if (!$admin = session($key)) {
+        return '';
     }
     if ($fields === null) {
         return $admin;
@@ -263,16 +288,19 @@ function hp_admin($fields = null)
     }
     return $admin[$fields] ?? null;
 }
+
 /**
  * 对查询结果集进行排序
- * @access public
- * @param array $list 查询结果
- * @param string $field 排序的字段名
- * @param array $sortby 排序类型
  * asc正向排序 desc逆向排序 nat自然排序
- * @return array
+ * @param mixed $list 查询结果
+ * @param mixed $field 排序的字段名
+ * @param mixed $sortby 排序类型
+ * @return array|bool
+ * @copyright 贵州猿创科技有限公司
+ * @Email 416716328@qq.com
+ * @DateTime 2023-05-03
  */
-function list_sort_by($list, $field, $sortby = 'asc')
+function list_sort_by(array $list, string $field, $sortby = 'asc')
 {
     if (is_array($list)) {
         $refer = $resultSet = array();
@@ -337,38 +365,20 @@ function uriPush(string $uri, array $data): string
     }
     return $uri;
 }
-
-/**
- * 字符串转真假
- *
- * @Author 贵州猿创科技有限公司
- * @Email 416716328@qq.com
- * @DateTime 2023-03-27
- * @param  string  $val
- * @param  boolean $return_null
- * @return boolean
- */
-function is_true(string $val, bool $return_null = false): bool
-{
-    $boolval = (is_string($val) ? filter_var($val, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) : (bool) $val);
-    return ($boolval === null && !$return_null ? false : $boolval);
-}
-
 /**
  * 输出日志到终端（仅调试模式下有效）
- *
- * @Author 贵州猿创科技有限公司
- * @Email 416716328@qq.com
- * @DateTime 2023-03-11
- * @param  type   $str
- * @param  string $remarks
+ * @param mixed $str
+ * @param mixed $remarks
  * @return void
+ * @copyright 贵州猿创科技有限公司
+ * @Email 416716328@qq.com
+ * @DateTime 2023-04-29
  */
-function p($str, $remarks = '-----日志-----')
+function p($str, $remarks = '日志：')
 {
     if (config('app.debug')) {
-        $currentDate = date('Y-m-d H:i:s');
-        echo "时间：{$currentDate} {$remarks}";
+        $currentDate = date('Y-m-d');
+        echo "{$currentDate}-----{$remarks}";
         echo PHP_EOL;
         print_r($str);
         echo PHP_EOL;

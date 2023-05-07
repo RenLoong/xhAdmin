@@ -13,10 +13,6 @@ use app\Enum;
  */
 class AuthRuleRuleType extends Enum
 {
-    const LAYOUT_VIEW = [
-        'text'      => '布局组件',
-        'value'     => 'layouts/index',
-    ];
     const DIR_VIEW = [
         'text'      => '不使用组件',
         'value'     => '',

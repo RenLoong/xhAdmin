@@ -15,11 +15,10 @@ class SystemUpload extends Model
 
     /**
      * 关联附件分类
-     *
-     * @Author 贵州猿创科技有限公司
+     * @return \think\model\relation\HasOne
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-06
-     * @return void
+     * @DateTime 2023-04-30
      */
     public function category()
     {
@@ -28,13 +27,12 @@ class SystemUpload extends Model
 
     /**
      * 追加URL参数
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param mixed $value
+     * @param mixed $data
+     * @return string
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-04
-     * @param  type $value
-     * @param  type $data
-     * @return void
+     * @DateTime 2023-04-30
      */
     protected function getUrlAttr($value, $data)
     {
@@ -43,13 +41,12 @@ class SystemUpload extends Model
 
     /**
      * 追加文件大小
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param mixed $value
+     * @param mixed $data
+     * @return string
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-06
-     * @param  type $value
-     * @param  type $data
-     * @return void
+     * @DateTime 2023-04-30
      */
     protected function getSizeFormatAttr($value, $data)
     {

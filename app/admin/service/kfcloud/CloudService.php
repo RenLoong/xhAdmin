@@ -13,6 +13,9 @@ use yzh52521\EasyHttp\Response;
  */
 class CloudService
 {
+    // 登录令牌名称
+    public static $loginToken = 'kf_user_token';
+
     /**
      * 登录云服务接口
      *
@@ -81,34 +84,32 @@ class CloudService
 
     /**
      * 获取应用插件详情
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-23
-     * @param  integer  $id
+     * @param string $name
      * @return Response
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-05-06
      */
-    public static function detail(int $id): Response
+    public static function detail(string|null $name): Response
     {
         $query = [
-            'plugin_id'         => $id
+            'name'         => $name
         ];
         return HttpService::send()->get('Plugin/detail', $query);
     }
 
     /**
      * 购买应用
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-23
-     * @param  integer  $id
+     * @param string $name
      * @return Response
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-05-06
      */
-    public static function buyApp(int $id): Response
+    public static function buyApp(string|null $name): Response
     {
         $query = [
-            'plugin_id'         => $id
+            'name'         => $name
         ];
         return HttpService::send()->get('Plugin/buy', $query);
     }
@@ -134,14 +135,14 @@ class CloudService
      * @Author 贵州猿创科技有限公司
      * @Email 416716328@qq.com
      * @DateTime 2023-03-23
-     * @param  integer  $id
+     * @param  string  $name
      * @param  string   $step
      * @return Response
      */
-    public static function getDownKey(int $id, string $step): Response
+    public static function getDownKey(string|null $name, string $step): Response
     {
         $query = [
-            'plugin_id'     => $id,
+            'name'          => $name,
             'step'          => $step
         ];
         return HttpService::send()->get('Plugin/getKey', $query);

@@ -16,7 +16,7 @@ use yzh52521\EasyHttp\Request;
 class HttpService
 {
     // host
-    public static $host = 'http://127.0.0.1:39500/api/';
+    public static $host = 'http://server8.kaifa.cc/api/';
 
     /**
      * 实例请求
@@ -28,10 +28,12 @@ class HttpService
      */
     public static function send(): Request
     {
-        $token = Cache::has('kf_user_token') ? Cache::get('kf_user_token') : request()->sessionId();
-        return Http::withHost(self::$host)->withHeaders([
-            'Authorization'         => $token,
-            'X-Requested-With'      => 'XMLHttpRequest',
-        ]);
+        $token = Cache::has(CloudService::$loginToken) ? Cache::get(CloudService::$loginToken) : request()->sessionId();
+        return Http::withHost(self::$host)->withHeaders(
+            [
+                'Authorization'    => $token,
+                'X-Requested-With' => 'XMLHttpRequest',
+            ]
+        );
     }
 }

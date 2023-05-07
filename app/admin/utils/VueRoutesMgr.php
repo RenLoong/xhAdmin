@@ -18,7 +18,6 @@ class VueRoutesMgr
     private static $visible = [
         'id',
         'module',
-        'namespace',
         'pid',
         'path',
         'title',
@@ -41,7 +40,7 @@ class VueRoutesMgr
     public static function run(SystemAdmin $adminModel): array
     {
         // 默认选择菜单
-        $active = 'admin/Index/index';
+        $active = 'Index/index';
         // 获取管理员权限
         $adminRoleRule = self::getAdminRoleRule($adminModel);
         return ['active' => $active, 'list' => $adminRoleRule];
@@ -58,8 +57,8 @@ class VueRoutesMgr
      */
     public static function getAdminRoleRule(SystemAdmin $adminModel): array
     {
-        $where = [
-            'id'        => $adminModel->role_id
+        $where     = [
+            'id' => $adminModel->role_id
         ];
         $roleModel = SystemAdminRole::where($where)
             ->field(['rule', 'is_system'])
@@ -88,7 +87,8 @@ class VueRoutesMgr
             // 两次排序
             $data = list_sort_by($data, 'id', 'asc');
             $data = list_sort_by($data, 'sort', 'asc');
-        } else {
+        }
+        else {
             // 系统级部门（查询全部规则返回）
             $data = $model->field(self::$visible)
                 ->select()

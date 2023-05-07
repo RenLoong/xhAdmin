@@ -27,51 +27,52 @@ class SystemConfigController extends BaseController
     private $componentType = ['checkbox', 'radio', 'select'];
 
     /**
-     * 表格列
-     *
-     * @Author 贵州猿创科技有限公司
+     * 表格
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-06
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function indexGetTable(Request $request)
     {
-        $cid = $request->get('cid');
+        $cid     = $request->get('cid');
         $builder = new ListBuilder;
-        $data = $builder
+        $data    = $builder
             ->addActionOptions('操作', [
-                'width'         => 130
+                'width' => 130
             ])
             ->pageConfig()
             ->addTopButton('add', '添加', [
-                'api'           => "/admin/SystemConfig/add",
-                'queryParams'   => [
-                    'cid'       => $cid
+                'api'         => "admin/SystemConfig/add",
+                'path'        => '/SystemConfig/add',
+                'queryParams' => [
+                    'cid' => $cid
                 ],
             ], [], [
-                'type'          => 'success',
-            ])
+                    'type' => 'success',
+                ])
             ->addRightButton('edit', '修改', [
-                'api'           => '/admin/SystemConfig/edit',
-                'queryParams'   => [
-                    'cid'       => $cid
+                'api'         => '/SystemConfig/edit',
+                'path'        => '/SystemConfig/edit',
+                'queryParams' => [
+                    'cid' => $cid
                 ],
             ], [], [
-                'type'          => 'primary',
-                'link'          => true
-            ])
+                    'type' => 'primary',
+                    'link' => true
+                ])
             ->addRightButton('del', '删除', [
-                'type'          => 'confirm',
-                'api'           => '/admin/SystemConfig/del',
-                'method'        => 'delete',
+                'type'   => 'confirm',
+                'api'    => '/SystemConfig/del',
+                'method' => 'delete',
             ], [
-                'title'         => '温馨提示',
-                'content'       => '是否确认删除该数据',
-            ], [
-                'type'          => 'danger',
-                'link'          => true
-            ])
+                    'title'   => '温馨提示',
+                    'content' => '是否确认删除该数据',
+                ], [
+                    'type' => 'danger',
+                    'link' => true
+                ])
             ->addColumn('title', '配置名称')
             ->addColumn('name', '配置标识')
             ->addColumn('type', '表单类型')
@@ -82,31 +83,30 @@ class SystemConfigController extends BaseController
     }
 
     /**
-     * 配置列表
-     *
-     * @Author 贵州猿创科技有限公司
+     * 列表
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-06
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function index(Request $request)
     {
-        $cid = $request->get('cid');
+        $cid   = $request->get('cid');
         $where = [
             ['cid', '=', $cid],
         ];
-        $data = SystemConfig::where($where)->paginate()->toArray();
+        $data  = SystemConfig::where($where)->paginate()->toArray();
         return parent::successRes($data);
     }
 
     /**
      * 系统配置
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-03
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function form(Request $request)
     {
@@ -114,7 +114,7 @@ class SystemConfigController extends BaseController
             $post = request()->post();
             foreach ($post as $name => $value) {
                 $where = [
-                    'name'      => $name
+                    'name' => $name
                 ];
                 $model = SystemConfig::where($where)->find();
                 if (!$model) {
@@ -127,7 +127,7 @@ class SystemConfigController extends BaseController
                     foreach ($value as $k => $v) {
                         $files[$k] = Upload::path($v);
                     }
-                    $uploadPath = implode(',', $files);
+                    $uploadPath   = implode(',', $files);
                     $model->value = $uploadPath;
                 }
                 if ($model->save() === false) {
@@ -137,14 +137,14 @@ class SystemConfigController extends BaseController
             return parent::success('保存成功');
         }
         $dataTabs = $this->getTabs();
-        $builder = new FormBuilder;
-        $builder = $builder->initTabs($dataTabs['active'], [
-            'props'             => [
+        $builder  = new FormBuilder;
+        $builder  = $builder->initTabs($dataTabs['active'], [
+            'props' => [
                 // 选项卡样式
-                'type'          => 'border-card'
+                'type' => 'line'
             ],
         ]);
-        $builder = $builder->setMethod('PUT');
+        $builder  = $builder->setMethod('PUT');
         foreach ($dataTabs['tabs'] as $value) {
             $builder = $builder->addTab(
                 $value['name'],
@@ -157,19 +157,18 @@ class SystemConfigController extends BaseController
     }
 
     /**
-     * 添加配置项
-     *
-     * @Author 贵州猿创科技有限公司
+     * 添加配置
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-06
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function add(Request $request)
     {
         $cid = $request->get('cid');
         if ($request->method() == 'POST') {
-            $post = $request->post();
+            $post        = $request->post();
             $post['cid'] = $cid;
             // 数据验证
             hpValidate(ValidateSystemConfig::class, $post, 'add');
@@ -180,61 +179,61 @@ class SystemConfigController extends BaseController
             return parent::success('保存成功');
         }
         $formType = FormType::getOptions();
-        $builder = new FormBuilder;
-        $data = $builder
+        $builder  = new FormBuilder;
+        $data     = $builder
             ->setMethod('POST')
             ->addRow('title', 'input', '配置项名称', '', [
-                'col'       => [
-                    'span'  => 12
+                'col' => [
+                    'span' => 12
                 ],
             ])
             ->addRow('name', 'input', '配置项标识', '', [
-                'col'       => [
-                    'span'  => 12
+                'col' => [
+                    'span' => 12
                 ],
             ])
             ->addRow('value', 'input', '默认数据', '', [
-                'col'       => [
-                    'span'  => 12
+                'col' => [
+                    'span' => 12
                 ],
             ])
             ->addRow('component', 'select', '表单类型', '', [
-                'col'       => [
-                    'span'  => 12
+                'col'     => [
+                    'span' => 12
                 ],
-                'options'   => $formType,
+                'options' => $formType,
                 // 使用联动组件
-                'control'               => [
+                'control' => [
                     [
-                        'value'         => 'uploadify',
-                        'where'         => '==',
-                        'rule'          => [
+                        'value' => 'uploadify',
+                        'where' => '==',
+                        'rule'  => [
                             Elm::textarea('extra', '附件扩展')
                                 ->props([
-                                    'placeholder'   => '',
+                                    'placeholder' => '',
                                 ])
                         ],
                     ],
                     [
-                        'value'         => ['radio', 'checkbox', 'select'],
-                        'where'         => 'in',
-                        'rule'          => [
+                        'value' => ['radio', 'checkbox', 'select'],
+                        'where' => 'in',
+                        'rule'  => [
                             Elm::textarea('extra', '扩展数据', '0,关闭|1,开启')
                                 ->props([
-                                    'placeholder'   => '数据示例：0,关闭|1,开启'
+                                    'placeholder' => '数据示例：0,关闭|1,开启'
                                 ])
                         ],
                     ],
                 ],
             ])
             ->addRow('placeholder', 'input', '配置项描述', '', [
-                'col'       => [
-                    'span'  => 12
+                'col' => [
+                    'span' => 12
                 ],
             ])
             ->addRow('sort', 'input', '配置项排序', '0', [
-                'col'       => [
-                    'span'  => 12
+                'col' => [
+                    'span' => 12
                 ],
             ])
             ->create();
@@ -243,12 +242,11 @@ class SystemConfigController extends BaseController
 
     /**
      * 修改配置项
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-06
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function edit(Request $request)
     {
@@ -271,61 +269,61 @@ class SystemConfigController extends BaseController
             return parent::fail('获取数据失败');
         }
         $formType = FormType::getOptions();
-        $builder = new FormBuilder;
-        $data = $builder
+        $builder  = new FormBuilder;
+        $data     = $builder
             ->setMethod('PUT')
             ->addRow('title', 'input', '配置项名称', '', [
-                'col'       => [
-                    'span'  => 12
+                'col' => [
+                    'span' => 12
                 ],
             ])
             ->addRow('name', 'input', '配置项标识', '', [
-                'col'       => [
-                    'span'  => 12
+                'col' => [
+                    'span' => 12
                 ],
             ])
             ->addRow('value', 'input', '默认数据', '', [
-                'col'       => [
-                    'span'  => 12
+                'col' => [
+                    'span' => 12
                 ],
             ])
             ->addRow('component', 'select', '表单类型', '', [
-                'col'       => [
-                    'span'  => 12
+                'col'     => [
+                    'span' => 12
                 ],
-                'options'   => $formType,
+                'options' => $formType,
                 // 使用联动组件
-                'control'               => [
+                'control' => [
                     [
-                        'value'         => 'uploadify',
-                        'where'         => '==',
-                        'rule'          => [
+                        'value' => 'uploadify',
+                        'where' => '==',
+                        'rule'  => [
                             Elm::textarea('extra', '附件扩展')
                                 ->props([
-                                    'placeholder'   => '',
+                                    'placeholder' => '',
                                 ])
                         ],
                     ],
                     [
-                        'value'         => ['radio', 'checkbox', 'select'],
-                        'where'         => 'in',
-                        'rule'          => [
+                        'value' => ['radio', 'checkbox', 'select'],
+                        'where' => 'in',
+                        'rule'  => [
                             Elm::textarea('extra', '扩展数据', '0,关闭|1,开启')
                                 ->props([
-                                    'placeholder'   => '数据示例：0,关闭|1,开启'
+                                    'placeholder' => '数据示例：0,关闭|1,开启'
                                 ])
                         ],
                     ],
                 ],
             ])
             ->addRow('placeholder', 'input', '配置项描述', '', [
-                'col'       => [
-                    'span'  => 12
+                'col' => [
+                    'span' => 12
                 ],
             ])
             ->addRow('sort', 'input', '配置项排序', '0', [
-                'col'       => [
-                    'span'  => 12
+                'col' => [
+                    'span' => 12
                 ],
             ])
             ->setData($model)
@@ -335,12 +333,11 @@ class SystemConfigController extends BaseController
 
     /**
      * 删除配置项
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-06
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function del(Request $request)
     {
@@ -353,44 +350,48 @@ class SystemConfigController extends BaseController
 
     /**
      * 获取配置分组
-     *
      * @return array
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
      */
     private function getTabs(): array
     {
-        $list = SystemConfigGroup::distinct()->select()->toArray();
+        $list = SystemConfigGroup::order(['sort'=>'asc','id'=>'asc'])
+        ->distinct()
+        ->select()
+        ->toArray();
         $tabs = [];
         foreach ($list as $key => $value) {
-            $tabs[$key]                 = [
-                'title'                 => $value['title'],
-                'name'                  => $value['name'],
-                'icon'                  => $value['icon'],
+            $tabs[$key]             = [
+                'title' => $value['title'],
+                'name'  => $value['name'],
+                'icon'  => $value['icon'],
             ];
-            $col = ConfigGroupCol::getText($value['layout_col']);
-            $tabs[$key]['children']     = $this->getConfig($value['id'], (int)$col['col']);
+            $col                    = ConfigGroupCol::getText($value['layout_col']);
+            $tabs[$key]['children'] = $this->getConfig($value['id'], (int) $col['col']);
         }
-        $active                         = 0;
-        $data['active']                 = $list[$active]['name'];
-        $data['tabs']                   = $tabs;
+        $active         = 0;
+        $data['active'] = $list[$active]['name'];
+        $data['tabs']   = $tabs;
         return $data;
     }
 
     /**
      * 获取系统配置
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-06
-     * @param  integer $cid
-     * @param  integer $col
+     * @param int $cid
+     * @param int $col
      * @return array
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
      */
     private function getConfig(int $cid, int $col): array
     {
         $map['cid'] = $cid;
-        $list = SystemConfig::where($map)->select()->toArray();
-        $config = [];
-        $builder = new FormBuilder;
+        $list       = SystemConfig::where($map)->select()->toArray();
+        $config     = [];
+        $builder    = new FormBuilder;
         foreach ($list as $value) {
             // 设置数据
             $configValue = $value['value'];
@@ -400,24 +401,28 @@ class SystemConfigController extends BaseController
             $options = [];
             // 设置扩展数据
             $extra = [
-                'info'      => $value['placeholder'],
-                'col'       => [
-                    'span'  => $col
+                'info' => $value['placeholder'],
+                'col'  => [
+                    'span' => $col
                 ],
             ];
             if ($value['extra'] && in_array($value['component'], $this->componentType)) {
                 $extras = explode('|', $value['extra']);
                 foreach ($extras as $key2 => $value2) {
-                    list($optionValue, $label)  = explode(',', $value2);
-                    $options[$key2]['label']    = $label;
-                    $options[$key2]['value']    = $optionValue;
+                    list($optionValue, $label) = explode(',', $value2);
+                    $options[$key2]['label']   = $label;
+                    $options[$key2]['value']   = $optionValue;
                 }
                 $extra['options'] = $options;
             }
             if ($value['component'] == 'uploadify') {
                 // 重设的模型数据
-                $configValue = [Upload::model($configValue)];
-                $extra['props']['type'] = 'files';
+                if ($configValue) {
+                    $tempConfig  = array_filter(explode(',', $configValue));
+                    $configValue = Upload::urls($tempConfig);
+                }else{
+                    $configValue = [];
+                }
                 // 附件库
                 $builder->addComponent(
                     $value['name'],
@@ -426,7 +431,8 @@ class SystemConfigController extends BaseController
                     $configValue,
                     $extra
                 );
-            } else {
+            }
+            else {
                 // 普通组件
                 $builder->addRow(
                     $value['name'],

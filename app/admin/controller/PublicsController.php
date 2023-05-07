@@ -20,34 +20,56 @@ class PublicsController extends BaseController
 
     /**
      * 应用信息
-     *
-     * @return void
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
      */
     public function site()
     {
+        $moduleName = getModule('admin');
         $data = [
-            'web_name'          => getHpConfig('web_name'),
-            'web_title'         => '管理员登录',
-            'web_logo'          => getHpConfig('web_logo'),
-            'public_api'        => [
-                'login'         => 'Publics/login',
-                'loginout'      => 'Publics/loginout',
-                'user'          => 'Publics/user',
-                'menus'         => 'Publics/menus',
-                'clear'         => 'Index/clear',
-                'lock'          => 'Index/lock',
+            'web_name'       => getHpConfig('web_name'),
+            'web_title'      => '登录',
+            'web_logo'       => getHpConfig('web_logo'),
+            // 登录页链接
+            'login_link'     => [
+                'register'    => '',
+                'forget'      => '',
+                'other_login' => [],
             ],
-            'uploadify_api'     => [
-                'index'         => 'SystemUpload/index',
-                'upload'        => 'SystemUpload/upload',
-                'edit'          => 'SystemUpload/edit',
-                'del'           => 'SystemUpload/del',
+            // 公用接口
+            'public_api'     => [
+                'login'     => "{$moduleName}/Publics/login",
+                'loginout'  => "{$moduleName}/Publics/loginout",
+                'user'      => "{$moduleName}/Publics/user",
+                'menus'     => "{$moduleName}/Publics/menus",
+                'clear'     => "{$moduleName}/Index/clear",
+                'lock'      => "{$moduleName}/Index/lock",
+                "user_edit" => "{$moduleName}/SystemAdmin/editSelf",
             ],
-            'uploadify_cate'    => [
-                'index'         => 'SystemUploadCate/index',
-                'add'           => 'SystemUploadCate/add',
-                'edit'          => 'SystemUploadCate/edit',
-                'del'           => 'SystemUploadCate/del',
+            // 远程组件
+            'remote_url'     => [
+                // [
+                //     'title'  => '用户注册',
+                //     'path'   => '/register',
+                //     'remote' => 'remote/register'
+                // ],
+            ],
+            // 附件库API
+            'uploadify_api'  => [
+                'index'  => "{$moduleName}/SystemUpload/index",
+                'upload' => "{$moduleName}/SystemUpload/upload",
+                'edit'   => "{$moduleName}/SystemUpload/edit",
+                'del'    => "{$moduleName}/SystemUpload/del",
+                'move'   => "{$moduleName}/SystemUpload/move",
+            ],
+            // 附件库分类
+            'uploadify_cate' => [
+                'index' => "{$moduleName}/SystemUploadCate/index",
+                'add'   => "{$moduleName}/SystemUploadCate/add",
+                'edit'  => "{$moduleName}/SystemUploadCate/edit",
+                'del'   => "{$moduleName}/SystemUploadCate/del",
             ],
         ];
         return parent::successRes($data);
@@ -55,8 +77,12 @@ class PublicsController extends BaseController
 
     /**
      * 系统登录
-     *
-     * @return void
+     * @param Request $request
+     * @throws Exception
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
      */
     public function login(Request $request)
     {
@@ -81,7 +107,7 @@ class PublicsController extends BaseController
             throw new Exception('该用户已被冻结');
         }
         $session = $request->session();
-        $session->set('hp_admin', $adminModel);
+        $session->set('hp_admin', $adminModel->toArray());
 
         // 更新登录信息
         $ip = $request->getRealIp($safe_mode = true);
@@ -96,28 +122,38 @@ class PublicsController extends BaseController
 
     /**
      * 获取管理员数据
-     *
-     * @return void
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
      */
     public function user()
     {
-        $data = hp_admin([
-            'username',
-            'nickname',
-            'headimg',
-            'role',
-        ]);
+        $admin_id = hp_admin_id('hp_admin');
+        // 查询数据
+        $where      = [
+            'id' => $admin_id
+        ];
+        $adminModel = SystemAdmin::with(['role'])->where($where)->find();
+        $data       = $adminModel->toArray();
         return parent::successRes($data);
     }
 
     /**
      * 获取菜单数据
-     *
-     * @return void
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
      */
     public function menus()
     {
-        $admin = hp_admin();
+        $admin_id = hp_admin_id('hp_admin');
+
+        $where = [
+            'id'    => $admin_id
+        ];
+        $admin    = SystemAdmin::where($where)->find();
 
         $data = VueRoutesMgr::run($admin);
         return parent::successRes($data);
@@ -125,9 +161,11 @@ class PublicsController extends BaseController
 
     /**
      * 退出登录
-     *
      * @param Request $request
-     * @return void
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
      */
     public function loginout(Request $request)
     {

@@ -3,6 +3,7 @@
 namespace app\model;
 
 use app\Model;
+use app\service\Upload;
 use app\utils\Password;
 
 /**
@@ -19,19 +20,13 @@ class Store extends Model
         'password'
     ];
 
-    // 标记字段为附件类型
-    public $uploadify = [
-        'logo'   => 'image',
-    ];
-
     /**
      * 密码加密写入
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param mixed $value
+     * @return bool|string
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-08
-     * @param  type $value
-     * @return void
+     * @DateTime 2023-04-30
      */
     protected function setPasswordAttr($value)
     {
@@ -39,5 +34,18 @@ class Store extends Model
             return false;
         }
         return Password::passwordHash((string)$value);;
+    }
+
+    /**
+     * 获取LOGO
+     * @param mixed $value
+     * @return string
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-05-03
+     */
+    protected function getLogoAttr($value)
+    {
+        return $value ? Upload::url((string)$value) : '';
     }
 }

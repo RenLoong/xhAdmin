@@ -5,16 +5,22 @@ namespace app;
 use app\utils\EnumBaseic;
 use Exception;
 
+/**
+ * 枚举基类
+ * @copyright 贵州猿创科技有限公司
+ * @Email 416716328@qq.com
+ * @DateTime 2023-04-29
+ */
 abstract class Enum extends EnumBaseic
 {
     /**
      * 获取枚举值
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param string $key
+     * @throws Exception
+     * @return mixed
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-06
-     * @param  string $key
-     * @return void
+     * @DateTime 2023-04-29
      */
     public static function getText(string $key)
     {
@@ -27,11 +33,10 @@ abstract class Enum extends EnumBaseic
 
     /**
      * 获取枚举值列
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-12
      * @return array
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
      */
     public static function getEnumValues(): array
     {
@@ -45,11 +50,10 @@ abstract class Enum extends EnumBaseic
 
     /**
      * 获取组装完成数据
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-06
      * @return array
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
      */
     public static function parseData(): array
     {
@@ -62,14 +66,34 @@ abstract class Enum extends EnumBaseic
     }
 
     /**
-     * 获取字典数据枚举
-     *
-     * @Author 贵州猿创科技有限公司
+     * 别名解析
+     * @param mixed $field
+     * @return array<array>
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-22
-     * @return array
+     * @DateTime 2023-05-03
      */
-    public static function getDict(): array
+    public static function parseAlias(string $field)
+    {
+        $data = self::toArray();
+        $list = [];
+        foreach ($data as $value) {
+            $list[$value['value']] = [
+                $field      => $value['text'],
+                'value'     => $value['value']
+            ];
+        }
+        return $list;
+    }
+
+    /**
+     * 获取选择组件字典
+     * @return array
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-05-03
+     */
+    public static function dictOptions()
     {
         $data = self::toArray();
         $list = [];
@@ -81,11 +105,10 @@ abstract class Enum extends EnumBaseic
 
     /**
      * 获取元素所需数据
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-06
      * @return array
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
      */
     public static function getOptions(): array
     {
@@ -102,11 +125,10 @@ abstract class Enum extends EnumBaseic
 
     /**
      * 获取原始数据
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-06
      * @return array
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
      */
     public static function getData(): array
     {

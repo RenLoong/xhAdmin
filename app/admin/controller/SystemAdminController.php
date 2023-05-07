@@ -21,13 +21,12 @@ use support\Request;
 class SystemAdminController extends BaseController
 {
     /**
-     * 获取表格配置
-     *
-     * @Author 贵州猿创科技有限公司
+     * 获取表格
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-02-28
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function indexGetTable(Request $request)
     {
@@ -38,19 +37,21 @@ class SystemAdminController extends BaseController
             ])
             ->pageConfig()
             ->addTopButton('add', '添加', [
-                'api'           => '/admin/SystemAdmin/add',
+                'api'           => 'admin/SystemAdmin/add',
+                'path'          => '/SystemAdmin/add',
             ], [], [
                 'type'          => 'success'
             ])
             ->addRightButton('edit', '修改', [
-                'api'           => '/admin/SystemAdmin/edit',
+                'api'           => 'admin/SystemAdmin/edit',
+                'path'          => '/SystemAdmin/edit',
             ], [], [
                 'type'          => 'primary',
                 'link'          => true
             ])
             ->addRightButton('del', '删除', [
                 'type'          => 'confirm',
-                'api'           => '/admin/SystemAdmin/del',
+                'api'           => 'admin/SystemAdmin/del',
                 'method'        => 'delete',
             ], [
                 'title'         => '温馨提示',
@@ -70,16 +71,16 @@ class SystemAdminController extends BaseController
             ->addColumn('last_login_ip', '最近登录IP')
             ->addColumn('last_login_time', '最近登录时间')
             ->addColumnEle('status', '当前状态', [
-                'width'         => 90,
-                'params'        => [
-                    'type'      => 'tags',
-                    'options'   => ['禁用', '正常'],
-                    'props'     => [
+                'width'             => 90,
+                'params'            => [
+                    'type'          => 'tags',
+                    'options'       => ['禁用', '正常'],
+                    'style'         => [
                         [
-                            'type'  => 'danager'
+                            'type'  => 'error',
                         ],
                         [
-                            'type'  => 'success'
+                            'type'  => 'success',
                         ],
                     ],
                 ],
@@ -89,13 +90,12 @@ class SystemAdminController extends BaseController
     }
 
     /**
-     * 获取列表数据
-     * 
-     * @Author 贵州猿创科技有限公司
+     * 列表
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-02-28
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function index(Request $request)
     {
@@ -111,13 +111,12 @@ class SystemAdminController extends BaseController
     }
 
     /**
-     * 添加数据
-     * 
-     * @Author 贵州猿创科技有限公司
+     * 添加
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-01
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function add(Request $request)
     {
@@ -128,6 +127,9 @@ class SystemAdminController extends BaseController
 
             // 数据验证
             hpValidate(ValidateSystemAdmin::class, $post, 'add');
+
+            // 处理头像
+            $post['headimg'] = current($post['headimg']);
 
             $model = new SystemAdmin;
             if (!$model->save($post)) {
@@ -172,8 +174,7 @@ class SystemAdminController extends BaseController
                     'span'      => 12
                 ],
                 'props'         => [
-                    'type'      => 'image',
-                    'ext'       => ['jpg', 'png', 'gif']
+                    'format'    => ['jpg', 'png', 'gif']
                 ],
             ])
             ->create();
@@ -182,12 +183,11 @@ class SystemAdminController extends BaseController
 
     /**
      * 修改数据
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-01
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function edit(Request $request)
     {
@@ -251,8 +251,76 @@ class SystemAdminController extends BaseController
                     'span'      => 12
                 ],
                 'props'         => [
-                    'type'      => 'image',
-                    'ext'       => ['jpg', 'png', 'gif']
+                    'format' => ['jpg', 'png', 'gif']
+                ],
+            ])
+            ->setData($model)
+            ->create();
+        return parent::successRes($data);
+    }
+
+    /**
+     * 修改自身数据
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-30
+     */
+    public function editSelf(Request $request)
+    {
+        $admin_id = hp_admin_id('hp_admin');
+        $where    = [
+            ['id', '=', $admin_id]
+        ];
+        $model    = SystemAdmin::where($where)->find();
+        if (!$model) {
+            return parent::fail('该数据不存在');
+        }
+        if ($request->method() == 'PUT') {
+            $post = $request->post();
+
+            // 数据验证
+            hpValidate(ValidateSystemAdmin::class, $post, 'editSelf');
+
+            // 空密码，不修改
+            if (empty($post['password'])) {
+                unset($post['password']);
+            }
+            if (!$model->save($post)) {
+                return parent::fail('保存失败');
+            }
+            $adminModel = SystemAdmin::with(['role'])->where($where)->find();
+
+            $session = $request->session();
+            $session->set('hp_admin', $adminModel);
+            return parent::success('保存成功');
+        }
+        $builder = new FormBuilder;
+        $data    = $builder
+            ->setMethod('PUT')
+            ->addRow('username', 'input', '登录账号', '', [
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('password', 'input', '登录密码', '', [
+                'col'         => [
+                    'span' => 12
+                ],
+                'placeholder' => '不填写，则不修改密码',
+            ])
+            ->addRow('nickname', 'input', '用户昵称', '', [
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addComponent('headimg', 'uploadify', '用户头像', '', [
+                'col'   => [
+                    'span' => 12
+                ],
+                'props' => [
+                    'ext'  => ['jpg', 'png', 'gif']
                 ],
             ])
             ->setData($model)
@@ -262,16 +330,15 @@ class SystemAdminController extends BaseController
 
     /**
      * 删除数据
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-01
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-04-29
      */
     public function del(Request $request)
     {
-        $id = $request->get('id');
+        $id = $request->post('id');
         if (!SystemAdmin::destroy($id)) {
             return parent::fail('删除失败');
         }

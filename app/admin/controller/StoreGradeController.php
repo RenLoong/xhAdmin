@@ -35,25 +35,25 @@ class StoreGradeController extends BaseController
     }
 
     /**
-     * 表格列
-     *
-     * @Author 贵州猿创科技有限公司
+     * 表格
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-12
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-05-02
      */
     public function indexGetTable(Request $request)
     {
         $builder = new ListBuilder;
         $data = $builder
             ->addActionOptions('操作', [
-                'width'         => 130
+                'width'         => 180
             ])
             ->pageConfig()
             ->addTopButton('add', '添加', [
                 'type'          => 'modal',
-                'api'           => '/admin/StoreGrade/add',
+                'api'           => 'admin/StoreGrade/add',
+                'path'          => '/StoreGrade/add',
             ], [
                 'title'         => '添加等级',
             ], [
@@ -61,7 +61,8 @@ class StoreGradeController extends BaseController
             ])
             ->addRightButton('edit', '修改', [
                 'type'          => 'modal',
-                'api'           => '/admin/StoreGrade/edit',
+                'api'           => 'admin/StoreGrade/edit',
+                'path'          => '/StoreGrade/edit',
             ], [
                 'title'         => '修改等级',
             ], [
@@ -70,14 +71,13 @@ class StoreGradeController extends BaseController
             ])
             ->addRightButton('del', '删除', [
                 'type'          => 'confirm',
-                'api'           => '/admin/StoreGrade/del',
+                'api'           => 'admin/StoreGrade/del',
                 'method'        => 'delete',
             ], [
                 'title'         => '温馨提示',
                 'content'       => '是否确认删除该数据',
             ], [
-                'type'          => 'danger',
-                'link'          => true
+                'type'          => 'error',
             ])
             ->editConfig()
             ->addColumn('title', '等级名称')
@@ -117,7 +117,14 @@ class StoreGradeController extends BaseController
                 'params'        => [
                     'type'      => 'switch',
                     'api'       => '/admin/StoreGrade/rowEdit',
-                    'options'   => ['否', '是'],
+                    'checked'   => [
+                        'text'  => '默认',
+                        'value' => '1'
+                    ],
+                    'unchecked' => [
+                        'text'  => '不默认',
+                        'value' => '0'
+                    ]
                 ],
             ])
             ->addColumnEle('status', '等级状态', [
@@ -125,7 +132,14 @@ class StoreGradeController extends BaseController
                 'params'        => [
                     'type'      => 'switch',
                     'api'       => '/admin/StoreGrade/rowEdit',
-                    'options'   => ['禁用', '正常'],
+                    'checked'   => [
+                        'text'  =>'开启',
+                        'value' => '1'
+                    ],
+                    'unchecked' => [
+                        'text'  => '禁用',
+                        'value' => '0'
+                    ]
                 ],
             ])
             ->create();
@@ -134,12 +148,11 @@ class StoreGradeController extends BaseController
 
     /**
      * 列表
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-12
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-05-02
      */
     public function index(Request $request)
     {
@@ -151,12 +164,11 @@ class StoreGradeController extends BaseController
 
     /**
      * 添加
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-12
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-05-02
      */
     public function add(Request $request)
     {
@@ -202,12 +214,11 @@ class StoreGradeController extends BaseController
 
     /**
      * 修改
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-12
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-05-02
      */
     public function edit(Request $request)
     {
@@ -262,12 +273,11 @@ class StoreGradeController extends BaseController
 
     /**
      * 删除
-     *
-     * @Author 贵州猿创科技有限公司
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-03-12
-     * @param  Request $request
-     * @return void
+     * @DateTime 2023-05-02
      */
     public function del(Request $request)
     {

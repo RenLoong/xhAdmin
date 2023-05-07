@@ -37,10 +37,10 @@ class Auth
             return true;
         }
         // 获取登录信息
-        $admin = hp_admin();
+        $admin = hp_admin('hp_admin');
         if (!$admin) {
             // 10000 未登录固定的返回码
-            $code = 10000;
+            $code = 12000;
             $msg = '请先登录';
             return false;
         }
