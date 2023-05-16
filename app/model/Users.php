@@ -46,7 +46,7 @@ class Users extends Model
      */
     protected function setHeadimgAttr($value)
     {
-        return is_array($value) ? Upload::path($value) : '';
+        return $value ? Upload::path($value) : '';
     }
 
     /**

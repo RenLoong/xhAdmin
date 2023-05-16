@@ -20,7 +20,7 @@
         }
 
         .loading-title {
-          font-size: 1.1rem;
+          font-size: 1rem;
         }
 
         .loading-sub-title {

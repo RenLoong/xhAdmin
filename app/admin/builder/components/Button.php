@@ -33,10 +33,13 @@ trait Button
     {
         $field = 'rightButtonList';
         $extra = array_merge([
-            'width' => 'auto',
-            'fixed' => 'right',
-            'slots' => [
-                'default' => $field
+            'width'             => 'auto',
+            'fixed'             => 'right',
+            'slots'             => [
+                'default'       => $field
+            ],
+            'params'            => [
+                'group'         => false
             ],
         ], $extra);
         $this->addColumn($field, $title, $extra);

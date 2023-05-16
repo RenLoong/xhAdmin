@@ -30,9 +30,9 @@ class CloudService
     public static function login(string $username, string $password, string $scode): Response
     {
         $body = [
-            'username'      => $username,
-            'password'      => $password,
-            'scode'         => $scode
+            'username' => $username,
+            'password' => $password,
+            'scode'    => $scode
         ];
         return HttpService::send()->post('User/login', $body);
     }
@@ -65,35 +65,35 @@ class CloudService
 
     /**
      * 获取应用插件列表
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-23
-     * @param  integer  $page
-     * @param  integer  $limit
+     * @param array $query
      * @return Response
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-05-08
      */
-    public static function list(int $page, int $limit = 20): Response
+    public static function list(array $query): Response
     {
-        $query = [
-            'page'      => $page,
-            'limit'     => $limit
-        ];
+        $query = array_merge([
+            'page'  => 1,
+            'limit' => 20,
+        ], $query);
         return HttpService::send()->get('Plugin/list', $query);
     }
 
     /**
      * 获取应用插件详情
-     * @param string $name
+     * @param string|null $name
+     * @param string|null $version
      * @return Response
      * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-05-06
+     * @DateTime 2023-05-08
      */
-    public static function detail(string|null $name): Response
+    public static function detail(string|null $name, string|null $version): Response
     {
         $query = [
-            'name'         => $name
+            'name'    => $name,
+            'version' => $version
         ];
         return HttpService::send()->get('Plugin/detail', $query);
     }
@@ -106,10 +106,10 @@ class CloudService
      * @Email 416716328@qq.com
      * @DateTime 2023-05-06
      */
-    public static function buyApp(string|null $name): Response
+    public static function buyApp(string|null $name, string|null $version): Response
     {
         $query = [
-            'name'         => $name
+            'name' => $name
         ];
         return HttpService::send()->get('Plugin/buy', $query);
     }
@@ -130,20 +130,19 @@ class CloudService
     }
 
     /**
-     * 执行安装
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-23
-     * @param  string  $name
-     * @param  string   $step
+     * 获取下载KEY
+     * @param string|null $name
+     * @param string|null $version
      * @return Response
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-05-08
      */
-    public static function getDownKey(string|null $name, string $step): Response
+    public static function getDownKey(string|null $name, string|null $version): Response
     {
         $query = [
-            'name'          => $name,
-            'step'          => $step
+            'name'    => $name,
+            'version' => $version
         ];
         return HttpService::send()->get('Plugin/getKey', $query);
     }
@@ -157,13 +156,11 @@ class CloudService
      * @param  string   $key
      * @return Response
      */
-    public static function install(string $key): Response
+    public static function getZip(string $key): Response
     {
         $query = [
-            'key'           => $key
+            'key' => $key
         ];
-        return HttpService::send()
-            ->withStream(true)
-            ->get('Plugin/install', $query);
+        return HttpService::send()->get('Plugin/getZip', $query);
     }
 }

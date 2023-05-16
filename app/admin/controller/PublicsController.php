@@ -28,7 +28,7 @@ class PublicsController extends BaseController
     public function site()
     {
         $moduleName = getModule('admin');
-        $data = [
+        $data       = [
             'web_name'       => getHpConfig('web_name'),
             'web_title'      => '登录',
             'web_logo'       => getHpConfig('web_logo'),
@@ -40,13 +40,24 @@ class PublicsController extends BaseController
             ],
             // 公用接口
             'public_api'     => [
-                'login'     => "{$moduleName}/Publics/login",
-                'loginout'  => "{$moduleName}/Publics/loginout",
-                'user'      => "{$moduleName}/Publics/user",
-                'menus'     => "{$moduleName}/Publics/menus",
-                'clear'     => "{$moduleName}/Index/clear",
-                'lock'      => "{$moduleName}/Index/lock",
-                "user_edit" => "{$moduleName}/SystemAdmin/editSelf",
+                // 登录接口
+                'login'             => "{$moduleName}/Publics/login",
+                // 自定义登录页
+                'login_file'        => '',
+                // 退出接口
+                'loginout'          => "{$moduleName}/Publics/loginout",
+                // 获取用户信息
+                'user'              => "{$moduleName}/Publics/user",
+                // 获取权限菜单
+                'menus'             => "{$moduleName}/Publics/menus",
+                // 清除缓存
+                'clear'             => "{$moduleName}/Index/clear",
+                // 锁定页面
+                'lock'              => "{$moduleName}/Index/lock",
+                // 修改登录者信息
+                "user_edit"         => "{$moduleName}/SystemAdmin/editSelf",
+                // 头部toolBar远程文件
+                "header_right_file" => "remote/header-toolbar",
             ],
             // 远程组件
             'remote_url'     => [
@@ -92,15 +103,15 @@ class PublicsController extends BaseController
         hpValidate(ValidateSystemAdmin::class, $post, 'login');
 
         // 查询数据
-        $where = [
-            'username'          => $post['username']
+        $where      = [
+            'username' => $post['username']
         ];
         $adminModel = SystemAdmin::with(['role'])->where($where)->find();
         if (!$adminModel) {
             throw new Exception('登录账号错误');
         }
         // 验证登录密码
-        if (!Password::passwordVerify((string) $post['password'], (string)$adminModel->password)) {
+        if (!Password::passwordVerify((string) $post['password'], (string) $adminModel->password)) {
             throw new Exception('登录密码错误');
         }
         if ($adminModel->status == 0) {
@@ -110,8 +121,8 @@ class PublicsController extends BaseController
         $session->set('hp_admin', $adminModel->toArray());
 
         // 更新登录信息
-        $ip = $request->getRealIp($safe_mode = true);
-        $adminModel->last_login_ip = $ip;
+        $ip                          = $request->getRealIp($safe_mode = true);
+        $adminModel->last_login_ip   = $ip;
         $adminModel->last_login_time = date('Y-m-d H:i:s');
         $adminModel->save();
 
@@ -151,9 +162,9 @@ class PublicsController extends BaseController
         $admin_id = hp_admin_id('hp_admin');
 
         $where = [
-            'id'    => $admin_id
+            'id' => $admin_id
         ];
-        $admin    = SystemAdmin::where($where)->find();
+        $admin = SystemAdmin::where($where)->find();
 
         $data = VueRoutesMgr::run($admin);
         return parent::successRes($data);

@@ -87,7 +87,7 @@ class StoreGradeController extends BaseController
                     'api'       => '/admin/StoreGrade/rowEdit'
                 ],
             ])
-            ->addColumnEdit('platform_min_wechat', '微信小程序', [
+            ->addColumnEdit('platform_mini_wechat', '微信小程序', [
                 'params'        => [
                     'api'       => '/admin/StoreGrade/rowEdit'
                 ],

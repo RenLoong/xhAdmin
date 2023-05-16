@@ -3,15 +3,17 @@
 namespace app\admin\controller;
 
 use app\admin\builder\ListBuilder;
-use app\admin\model\Store;
+use app\admin\logic\PluginLogic;
 use app\admin\service\kfcloud\CloudService;
 use app\BaseController;
 use app\enum\PlatformTypes;
 use app\enum\PlatformTypesStyle;
 use app\enum\PluginType;
 use app\enum\PluginTypeStyle;
-use app\model\SystemPlugin;
+use app\utils\Utils;
+use process\Monitor;
 use support\Request;
+use ZipArchive;
 
 /**
  * 插件管理
@@ -21,23 +23,6 @@ use support\Request;
  */
 class PluginController extends BaseController
 {
-    /**
-     * 模型
-     * @var Store
-     */
-    protected $model;
-
-    /**
-     * 构造函数
-     * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-05-03
-     */
-    public function __construct()
-    {
-        $this->model = new SystemPlugin;
-    }
-
     /**
      * 表格
      * @param Request $request
@@ -65,7 +50,7 @@ class PluginController extends BaseController
                 ],
                 [
                     'title' => '云服务中心',
-                    'width' => '450px'
+                    'width' => '350px'
                 ],
                 [
                     'type' => 'success'
@@ -78,7 +63,8 @@ class PluginController extends BaseController
                     'type'        => 'link',
                     'api'         => 'admin/Plugin/getDoc',
                     'aliasParams' => [
-                        'name'
+                        'name',
+                        'version'
                     ],
                 ],
                 [],
@@ -87,23 +73,24 @@ class PluginController extends BaseController
                 ]
             )
             ->addRightButton(
-                'buy',
-                '购买',
+                'update',
+                '更新',
                 [
                     'type'        => 'remote',
                     'modal'       => true,
-                    'api'         => 'admin/Plugin/buy',
-                    'path'        => 'remote/cloud/buy',
-                    'aliasParams' => [
-                        'name'
-                    ],
+                    'api'         => 'admin/Plugin/update',
+                    'path'        => 'remote/cloud/update',
                     'params'      => [
-                        'field' => 'plugin_status',
-                        'value' => 'buy',
-                    ]
+                        'field' => 'is_update',
+                        'value' => 'update',
+                    ],
+                    'aliasParams' => [
+                        'name',
+                        'version'
+                    ],
                 ],
                 [
-                    'title' => '购买应用',
+                    'title' => '更新应用',
                     'width' => '45%',
                 ],
                 [
@@ -114,41 +101,18 @@ class PluginController extends BaseController
                 'install',
                 '安装',
                 [
-                    'type'   => 'remote',
-                    'modal'  => true,
-                    'api'    => 'admin/Plugin/install',
-                    'path'   => 'remote/cloud/install',
-                    'aliasParams' => [
-                        'name'
-                    ],
-                    'params' => [
-                        'field' => 'plugin_status',
+                    'type'        => 'remote',
+                    'modal'       => true,
+                    'api'         => 'admin/Plugin/install',
+                    'path'        => 'remote/cloud/install',
+                    'params'      => [
+                        'field' => 'installed',
                         'value' => 'install',
-                    ]
-                ],
-                [
-                    'title' => '应用安装',
-                    'width' => '45%',
-                ],
-                [
-                    'type' => 'success'
-                ]
-            )
-            ->addRightButton(
-                'update',
-                '更新',
-                [
-                    'type'   => 'remote',
-                    'modal'  => true,
-                    'api'    => 'admin/Plugin/update',
-                    'path'   => 'remote/cloud/update',
-                    'aliasParams' => [
-                        'name'
                     ],
-                    'params' => [
-                        'field' => 'plugin_status',
-                        'value' => 'update',
-                    ]
+                    'aliasParams' => [
+                        'name',
+                        'version'
+                    ],
                 ],
                 [
                     'title' => '应用安装',
@@ -162,52 +126,56 @@ class PluginController extends BaseController
                 'uninstall',
                 '卸载',
                 [
-                    'type'   => 'confirm',
-                    'api'    => 'admin/Plugin/uninstall',
-                    'path'   => 'remote/cloud/uninstall',
-                    'method' => 'delete',
-                    'params' => [
-                        'field' => 'plugin_status',
+                    'type'        => 'confirm',
+                    'api'         => 'admin/Plugin/uninstall',
+                    'path'        => 'remote/cloud/uninstall',
+                    'method'      => 'delete',
+                    'params'      => [
+                        'field' => 'installed',
                         'value' => 'uninstall',
-                    ]
+                    ],
+                    'aliasParams' => [
+                        'name',
+                        'version'
+                    ],
                 ],
                 [
                     'title'   => '温馨提示',
-                    'content' => '是否确认写在该应用插件？',
+                    'content' => "是否确认卸载该应用插件？\n该操作者将不可恢复数据，请自行备份应用数据",
                 ],
                 [
-                    'type' => 'danger'
+                    'type' => 'error'
                 ]
             )
             ->tabsConfig([
-                'active' => '',
-                'field'  => 'plugin',
+                'active' => '0',
+                'field'  => 'active',
                 'list'   => [
                     [
                         'label' => '全部',
-                        'value' => '',
-                    ],
-                    [
-                        'label' => '未安装',
                         'value' => '0',
                     ],
                     [
-                        'label' => '已安装',
+                        'label' => '未安装',
                         'value' => '1',
+                    ],
+                    [
+                        'label' => '已安装',
+                        'value' => '2',
                     ],
                 ]
             ])
-            ->addColumn('title', '应用名称')
-            ->addColumn('version', '应用版本', [
-                'width' => 100
+            ->addColumn('title', '名称')
+            ->addColumn('version_name', '版本', [
+                'width' => 150
             ])
             ->addColumn('dev.title', '开发者')
-            ->addColumnEle('money', '应用价格', [
+            ->addColumnEle('money', '价格', [
                 'params' => [
                     'type' => 'money'
                 ]
             ])
-            ->addColumnEle('logo', '应用图标', [
+            ->addColumnEle('logo', '图标', [
                 'width'  => 100,
                 'params' => [
                     'type' => 'image',
@@ -218,7 +186,7 @@ class PluginController extends BaseController
                 'params' => [
                     'type'    => 'tags',
                     'options' => PlatformTypes::dictOptions(),
-                    'style'=> PlatformTypesStyle::parseAlias('type'),
+                    'style'   => PlatformTypesStyle::parseAlias('type'),
                 ],
             ])
             ->addColumnEle('plugin_type', '应用类型', [
@@ -239,23 +207,29 @@ class PluginController extends BaseController
      * @return \support\Response
      * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-04-30
+     * @DateTime 2023-05-08
      */
     public function index(Request $request)
     {
-        // 分页
-        $page     = (int) $request->get('page', 1);
-        // 应用状态：空值为全部，0未安装，1已安装
-        $plugin     = (int) $request->get('plugin', '');
-        $response = CloudService::list($page)->array();
+        $page = (int) $request->get('page', 1);
+        $active   = $request->get('active', '0');
+        
+        $installed = PluginLogic::getLocalPlugins();
+        $query = [
+            'active'    => $active,
+            'page'      => $page,
+            'plugins'   => $installed
+        ];
+        $body = CloudService::list($query);
+        $response = $body->array();
         if (!$response) {
-            return $this->successRes([]);
+            return $this->fail('请求服务失败');
         }
         if ($response['code'] !== 200) {
-            return $this->successRes([]);
+            return json($response);
         }
-        $data = $this->getPluginList($response['data']);
-        return parent::successRes($data);
+        $data = $response['data'];
+        return $this->successRes($data);
     }
 
     /**
@@ -268,8 +242,9 @@ class PluginController extends BaseController
      */
     public function getDoc(Request $request)
     {
-        $name = $request->get('name');
-        $detail = CloudService::detail($name)->array();
+        $name   = $request->get('name');
+        $version   = $request->get('version');
+        $detail = CloudService::detail($name,$version)->array();
         if (!$detail) {
             return $this->fail('获取应用失败');
         }
@@ -285,123 +260,257 @@ class PluginController extends BaseController
     /**
      * 购买应用
      * @param Request $request
-     * @return \yzh52521\EasyHttp\Response
+     * @return \support\Response
      * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-05-06
+     * @DateTime 2023-05-08
      */
     public function buy(Request $request)
     {
-        $name = $request->get('name');
-        return CloudService::buyApp($name);
+        $name = $request->post('name');
+        $version = $request->post('version');
+        return json(CloudService::buyApp($name,$version)->array());
     }
 
     /**
      * 应用插件详情
      * @param Request $request
-     * @return \yzh52521\EasyHttp\Response
+     * @return \support\Response
      * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-05-06
+     * @DateTime 2023-05-08
      */
     public function detail(Request $request)
     {
         $name = $request->get('name');
-        return CloudService::detail($name);
+        $version = $request->get('version');
+        return json(CloudService::detail($name,$version)->array());
     }
 
     /**
      * 安装应用
      * @param Request $request
-     * @return void
+     * @return \support\Response
      * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-05-05
+     * @DateTime 2023-05-08
      */
     public function install(Request $request)
     {
+        $name              = $request->post('name');
+        $version           = $request->post('version');
+        $installed_version = PluginLogic::getPluginVersion($name);
+        if ($installed_version) {
+            return $this->fail('该应用已安装');
+        }
+
+        // 获取插件信息
+        $plugin = CloudService::detail($name, $version)->array();
+        if (!$plugin) {
+            return $this->fail('获取插件失败');
+        }
+        if ($plugin['code'] !== 200) {
+            return json($plugin);
+        }
+        // 获取下载文件url
+        $data = CloudService::getDownKey($name,$version)->array();
+        if ($data['code'] !== 200) {
+            return json($data);
+        }
+        if (!isset($data['data']['key'])) {
+            return $this->fail('获取下载KEY失败');
+        }
+        // 下载zip文件
+        $base_path  = base_path("/plugin/{$name}");
+        $zip_file   = "{$base_path}.zip";
+        $extract_to = base_path('/plugin/');
+        PluginLogic::downloadZipFile($data['data']['key'], $zip_file);
+        // 效验系统函数
+        $has_zip_archive = class_exists(ZipArchive::class, false);
+        if (!$has_zip_archive) {
+            $cmd = PluginLogic::getUnzipCmd($zip_file, $extract_to);
+            if (!$cmd) {
+                return $this->fail('请给php安装zip模块或者给系统安装unzip命令');
+            }
+            if (!function_exists('proc_open')) {
+                return $this->fail('请解除proc_open函数的禁用或者给php安装zip模块');
+            }
+        }
+        
+        $monitor_support_pause = method_exists(Monitor::class, 'pause');
+        if ($monitor_support_pause) {
+            Monitor::pause();
+        }
+        try {
+            // 解压zip到plugin目录
+            if ($has_zip_archive) {
+                $zip = new ZipArchive;
+                $zip->open($zip_file, ZIPARCHIVE::CHECKCONS);
+            }
+            $install_class = "\\plugin\\{$name}\\api\\Install";
+            if (!empty($zip)) {
+                $zip->extractTo(base_path('/plugin/'));
+                unset($zip);
+            } else {
+                PluginLogic::unzipWithCmd($cmd);
+            }
+            unlink($zip_file);
+            // 执行install安装
+            if (class_exists($install_class) && method_exists($install_class, 'install')) {
+                call_user_func([$install_class, 'install'], $version);
+            }
+        } finally {
+            if ($monitor_support_pause) {
+                Monitor::resume();
+            }
+        }
+        // 重启框架
+        Utils::reloadWebman();
+
+        // 执行返回
+        return $this->success('安装成功');
     }
 
     /**
-     * 更新应用
+     * 更新
      * @param Request $request
-     * @return void
+     * @return \support\Response
      * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-05-05
+     * @DateTime 2023-05-09
      */
     public function update(Request $request)
     {
+        $name              = $request->post('name');
+        $version           = $request->post('version');
+        $installed_version = PluginLogic::getPluginVersion($name);
+        if (!$installed_version) {
+            return $this->fail('该应用可能未安装');
+        }
+
+        // 获取插件信息
+        $plugin = CloudService::detail($name, $version)->array();
+        if (!$plugin) {
+            return $this->fail('获取插件失败');
+        }
+        if ($plugin['code'] !== 200) {
+            return json($plugin);
+        }
+        // 获取下载文件url
+        $data = CloudService::getDownKey($name, $version)->array();
+        if ($data['code'] !== 200) {
+            return json($data);
+        }
+        if (!isset($data['data']['key'])) {
+            return $this->fail('获取下载KEY失败');
+        }
+        // 下载zip文件
+        $base_path  = base_path("/plugin/{$name}");
+        $zip_file   = "{$base_path}.zip";
+        $extract_to = base_path('/plugin/');
+        PluginLogic::downloadZipFile($data['data']['key'], $zip_file);
+        // 效验系统函数
+        $has_zip_archive = class_exists(ZipArchive::class, false);
+        if (!$has_zip_archive) {
+            $cmd = PluginLogic::getUnzipCmd($zip_file, $extract_to);
+            if (!$cmd) {
+                return $this->fail('请给php安装zip模块或者给系统安装unzip命令');
+            }
+            if (!function_exists('proc_open')) {
+                return $this->fail('请解除proc_open函数的禁用或者给php安装zip模块');
+            }
+        }
+
+        $monitor_support_pause = method_exists(Monitor::class, 'pause');
+        if ($monitor_support_pause) {
+            Monitor::pause();
+        }
+        try {
+            // 解压zip到plugin目录
+            if ($has_zip_archive) {
+                $zip = new ZipArchive;
+                $zip->open($zip_file, ZIPARCHIVE::CHECKCONS);
+            }
+
+            $context       = null;
+            $install_class = "\\plugin\\{$name}\\api\\Install";
+            // 执行beforeUpdate
+            if (class_exists($install_class) && method_exists($install_class, 'beforeUpdate')) {
+                $context = call_user_func([$install_class, 'beforeUpdate'], $installed_version, $version);
+            }
+
+            if (!empty($zip)) {
+                $zip->extractTo(base_path('/plugin/'));
+                unset($zip);
+            }
+            else {
+                PluginLogic::unzipWithCmd($cmd);
+            }
+            unlink($zip_file);
+            // 执行update更新
+            if (class_exists($install_class) && method_exists($install_class, 'update')) {
+                call_user_func([$install_class, 'update'], $installed_version, $version, $context);
+            }
+        } finally {
+            if ($monitor_support_pause) {
+                Monitor::resume();
+            }
+        }
+        // 重启框架
+        Utils::reloadWebman();
+
+        // 执行返回
+        return $this->success('更新成功');
     }
 
     /**
      * 卸载应用
      * @param Request $request
-     * @return void
+     * @return \support\Response
      * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-05-05
+     * @DateTime 2023-05-08
      */
     public function uninstall(Request $request)
     {
-    }
 
-    /**
-     * 处理应用插件状态
-     * @param array $data
-     * @return array
-     * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-05-06
-     */
-    private function getPluginList(array $data)
-    {
-        // 空数据不处理
-        if (empty($data)) {
-            return $data;
+        $name    = $request->post('name');
+        $version = $request->post('version');
+        if (!$name || !preg_match('/^[a-zA-Z0-9_]+$/', $name)) {
+            return $this->fail('参数错误');
         }
-        // 已安装应用标识
-        $pluginNames = SystemPlugin::order('id asc')->column('name');
-        // 已安装应用版本
-        $pluginVersion = $this->getPluginVersion();
-        foreach ($data['data'] as $key => $value) {
-            // 是否已购买
-            $money = (float) $value['money'];
-            if ($money > 0 && !isset($value['order']['order_no'])) {
-                $data['data'][$key]['plugin_status'] = 'buy';
-            }
-            // 是否可安装
-            if (isset($value['order']['order_no']) && $value['order']['order_no']) {
-                $data['data'][$key]['plugin_status'] = 'install';
-            }
-            // 是否可卸载
-            if (in_array($value['name'], $pluginNames)) {
-                $data['data'][$key]['plugin_status'] = 'uninstall';
-            }
-            // 是否可更新
-            $version        = (float) $value['version'];
-            $currentVersion = isset($pluginVersion[$value['name']]) ? (float) $pluginVersion[$value['name']] : 0;
-            if ($currentVersion > $version) {
-                $data['data'][$key]['plugin_status'] = 'update';
-            }
-        }
-        return $data;
-    }
 
-    /**
-     * 获取版本
-     * @return array
-     * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-05-06
-     */
-    private function getPluginVersion()
-    {
-        $list = SystemPlugin::order('id asc')->column('name,version');
-        $data = [];
-        foreach ($list as $value) {
-            $data[$value['name']] = $value['version'];
+        // 获得插件路径
+        clearstatcache();
+        $path = get_realpath(base_path("/plugin/{$name}"));
+        if (!$path || !is_dir($path)) {
+            return $this->success('卸载成功');
         }
-        return $data;
+
+        // 执行uninstall卸载
+        $install_class = "\\plugin\\{$name}\\api\\Install";
+        if (class_exists($install_class) && method_exists($install_class, 'uninstall')) {
+            call_user_func([$install_class, 'uninstall'], $version);
+        }
+
+        // 删除目录
+        clearstatcache();
+        if (is_dir($path)) {
+            $monitor_support_pause = method_exists(Monitor::class, 'pause');
+            if ($monitor_support_pause) {
+                Monitor::pause();
+            }
+            try {
+                PluginLogic::rmDir($path);
+            } finally {
+                if ($monitor_support_pause) {
+                    Monitor::resume();
+                }
+            }
+        }
+        clearstatcache();
+
+        Utils::reloadWebman();
+        return $this->success('卸载成功');
     }
 }

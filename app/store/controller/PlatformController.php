@@ -9,6 +9,7 @@ use app\BaseController;
 use app\enum\config\PlatformConfigForm;
 use app\enum\PlatformTypes;
 use app\enum\PlatformTypesStyle;
+use app\manager\StorePlatforms;
 use app\service\Upload;
 use app\store\model\StorePlatformConfig;
 use Exception;
@@ -114,7 +115,7 @@ class PlatformController extends BaseController
             ->addColumn('configs.web_name', '平台名称')
             ->addColumnEle('configs.logo', '平台图标', [
                 'params' => [
-                    'type'  => 'image',
+                    'type' => 'image',
                 ],
             ])
             ->addColumnEle('platform_type', '平台类型', [
@@ -168,9 +169,9 @@ class PlatformController extends BaseController
      */
     public function index(Request $request)
     {
-        $status  = $request->get('status', '1');
-        $where   = [
-            'status' => $status
+        $status = $request->get('status', '1');
+        $where[] = [
+            ['status', '=', $status]
         ];
         $orderBy = [
             'id' => 'desc'
@@ -180,7 +181,7 @@ class PlatformController extends BaseController
             ->fetchSql(true)
             ->order($orderBy)
             ->paginate()
-        ->toArray();
+            ->toArray();
         return parent::successRes($data);
     }
 
@@ -194,17 +195,29 @@ class PlatformController extends BaseController
      */
     public function add(Request $request)
     {
+        $store_id   = hp_admin_id('hp_store');
+        $model =$this->model;
         if ($request->method() === 'POST') {
-            $post = $request->post();
-            $store_id         = hp_admin_id('hp_store');
+            $post             = $request->post();
             $post['store_id'] = $store_id;
 
+            // 数据验证
+            hpValidate(StorePlatform::class, $post, 'add');
+
+            // 验证参数可创建数量
+            $surplusNum = StorePlatforms::surplusNum($store_id);
+            if (!isset($surplusNum[$post['platform_type']])) {
+                throw new Exception('平台类型参数错误');
+            }
+            $surplusNum = $surplusNum[$post['platform_type']];
+            if ($surplusNum<=0) {
+                throw new Exception("您该平台类型已使用完");
+            }
+
+            // 事务
             Db::startTrans();
             try {
-                // 数据验证
-                hpValidate(StorePlatform::class, $post, 'add');
-
-                $model = $this->model;
+                $model        = $this->model;
                 $platformData = [
                     'store_id'      => $store_id,
                     'platform_type' => $post['platform_type']
@@ -243,6 +256,7 @@ class PlatformController extends BaseController
                 return parent::fail($e->getMessage());
             }
         }
+        $platformTypeOptions = StorePlatforms::getSelectOptions($store_id,true);
         $builder = new FormBuilder;
         $builder->setMethod('POST');
         $builder->addRow('title', 'input', '平台名称', '', [
@@ -259,7 +273,7 @@ class PlatformController extends BaseController
             'col'     => [
                 'span' => 12
             ],
-            'options' => PlatformTypes::getOptions()
+            'options' => $platformTypeOptions
         ]);
         $builder->addComponent('logo', 'uploadify', '平台图标', '', [
             'col'   => [
@@ -455,5 +469,28 @@ class PlatformController extends BaseController
     {
         $data = PlatformConfigForm::getConfig($model['platform_type']);
         return $data;
+    }
+
+    /**
+     * 获取平台详情
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-05-10
+     */
+    public function detail(Request $request)
+    {
+        $id    = $request->get('id');
+        $model = $this->model;
+        $where = [
+            'id' => $id,
+        ];
+        $model = $model->where($where)->find();
+        if (!$model) {
+            return $this->fail('该平台不存在在');
+        }
+        $data = $model->toArray();
+        return $this->successRes($data);
     }
 }

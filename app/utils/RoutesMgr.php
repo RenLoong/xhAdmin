@@ -2,7 +2,7 @@
 
 namespace app\utils;
 
-use app\model\SystemPlugin;
+use app\admin\logic\PluginLogic;
 use Exception;
 use app\admin\middleware\AccessMiddleware;
 use app\admin\model\SystemAuthRule;
@@ -54,22 +54,21 @@ class RoutesMgr
      */
     private static function installPluginAdminView()
     {
-        $where      = [
-            'status'    => '1'
-        ];
-        $plugin = SystemPlugin::where($where)->field('name')->find();
-        if (!$plugin) {
+        $plugins    = PluginLogic::getLocalPlugins();
+        if (!$plugins) {
             return;
         }
-        $configPath = base_path("/plugin/{$plugin['name']}/config/admin.php");
-        if (file_exists($configPath)) {
-            $data = require $configPath;
-            foreach ($data as $key => $value) {
-                $adminName  = $value ? "/{$value}" : '';
-                $data[$key] = "app/{$plugin['name']}{$adminName}";
+        foreach ($plugins as $plugin_name => $version) {
+            $configPath = base_path("/plugin/{$plugin_name}/config/admin.php");
+            if (file_exists($configPath)) {
+                $data = require $configPath;
+                foreach ($data as $key => $value) {
+                    $adminName  = $value ? "/{$value}" : '';
+                    $data[$key] = "app/{$plugin_name}{$adminName}";
+                }
+                // 注册插件后台视图
+                self::installAdminView($data);
             }
-            // 注册插件后台视图
-            self::installAdminView($data);
         }
     }
 
@@ -142,8 +141,11 @@ class RoutesMgr
 
     /**
      * 注册已安装路由
-     *
+     * @throws Exception
      * @return void
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-05-12
      */
     private static function installed()
     {
@@ -176,8 +178,10 @@ class RoutesMgr
 
     /**
      * 注册未安装路由
-     *
      * @return void
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-05-12
      */
     private static function install()
     {

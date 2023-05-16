@@ -27,6 +27,7 @@ class SystemUploadController extends BaseController
     public function index(Request $request)
     {
         list($where, $orderBy, $limit) = $this->getParams($request);
+        $orderBy = empty($orderBy) ? ['id'=>'desc'] : $orderBy;
         $data = SystemUpload::with(['category'])
             ->where($where)
             ->order($orderBy)

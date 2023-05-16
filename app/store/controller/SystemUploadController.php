@@ -157,12 +157,10 @@ class SystemUploadController extends BaseController
     {
         $file = $request->file('file');
         $cid = (int)$request->post('cid');
-        if (!$cid) {
-            return parent::fail('请选择分类上传');
+        $data = Upload::upload($file, $cid);
+        if (!$data) {
+            return $this->fail('上传失败');
         }
-        if (!Upload::upload($file, $cid)) {
-            return parent::fail('上传失败');
-        }
-        return parent::success('上传成功');
+        return $this->successFul('上传成功', $data);
     }
 }

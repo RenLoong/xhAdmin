@@ -566,11 +566,6 @@ trait Table
      */
     public function addColumnEdit(string $field, string $title, array $extra = []): ListBuilder
     {
-        /**
-         * 
-         * { field: 'name', title: 'app.body.label.name', span: 8, titlePrefix: { message: 'app.body.valid.rName', icon: 
-         * 'vxe-icon-question-circle-fill' }, itemRender: { name: '$input', props: { placeholder: '请输入名称' } } },
-         */
         $extra = array_merge([
             'editRender' => [
                 'name'  => 'input',

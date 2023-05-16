@@ -2,6 +2,7 @@
 
 namespace app\model;
 
+use app\enum\PlatformTypes;
 use app\Model;
 use app\service\Upload;
 
@@ -79,6 +80,19 @@ class StorePlatform extends Model
     protected function getLogoAttr($value)
     {
         return $value ? Upload::url((string) $value) : '';
+    }
+
+    /**
+     * 获取平台类型名称
+     * @param mixed $value
+     * @return mixed
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-05-11
+     */
+    protected function getPlatformTypeTextAttr($value,$data)
+    {
+        return PlatformTypes::getText($data['platform_type'])['text'];
     }
 
     /**

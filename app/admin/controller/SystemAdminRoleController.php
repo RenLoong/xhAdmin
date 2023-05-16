@@ -85,7 +85,7 @@ class SystemAdminRoleController extends BaseController
     public function index(Request $request)
     {
         $page = $request->get('page', 10);
-        $admin_id = hp_admin_id();
+        $admin_id = hp_admin_id('hp_admin');
         $where = [
             ['pid', '=', $admin_id],
         ];
@@ -103,9 +103,9 @@ class SystemAdminRoleController extends BaseController
      */
     public function add(Request $request)
     {
+        $admin_id = hp_admin_id('hp_admin');
         if ($request->method() == 'POST') {
             $post = $request->post();
-            $admin_id = hp_admin_id();
             $post['pid'] = $admin_id;
             // 默认权限
             $post['rule'] = self::getDefaultRule();

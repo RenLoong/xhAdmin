@@ -15,10 +15,27 @@ use app\utils\Password;
  */
 class Store extends Model
 {
+    // 设置JSON字段转换
+    protected $json = ['plugins_name'];
+    // 设置JSON数据返回数组
+    protected $jsonAssoc = true;
+
     // 隐藏字段
     protected $hidden = [
         'password'
     ];
+    
+    /**
+     * 一对一关联租户等级
+     * @return \think\model\relation\HasOne
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-05-02
+     */
+    public function grade()
+    {
+        return $this->hasOne(StoreGrade::class, 'id', 'grade_id');
+    }
 
     /**
      * 密码加密写入

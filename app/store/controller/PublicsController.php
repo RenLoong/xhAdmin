@@ -102,8 +102,16 @@ class PublicsController extends BaseController
         if (!Password::passwordVerify((string) $post['password'], (string)$adminModel->password)) {
             throw new Exception('登录密码错误');
         }
+        // 判断状态
         if ($adminModel->status === '0') {
             throw new Exception('该用户已被冻结');
+        }
+        // 判断是否受限过期租户
+        if ($adminModel->expire_time) {
+            $expire_time = strtotime($adminModel->expire_time);
+            if (time() > $expire_time) {
+            throw new Exception('该用户使用权益已过期');
+            }
         }
         $session = $request->session();
         $session->set('hp_store', $adminModel->toArray());
@@ -141,6 +149,7 @@ class PublicsController extends BaseController
             'id'        => $storeModel['id'],
             'nickname'  => $storeModel['title'],
             'headimg'   => $storeModel['logo'],
+            'plugins'   => $storeModel['plugins_name'],
             'role'      => [
                 'title' => $storeModel['grade']['title']
             ],

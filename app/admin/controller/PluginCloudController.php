@@ -4,8 +4,8 @@ namespace app\admin\controller;
 
 use app\admin\service\kfcloud\CloudService;
 use app\BaseController;
+use support\Redis;
 use support\Request;
-use think\facade\Cache;
 
 /**
  * 云服务中心
@@ -26,10 +26,13 @@ class PluginCloudController extends BaseController
     public function index(Request $request)
     {
         // 检测云服务是否登录
-        if (!Cache::has(CloudService::$loginToken)) {
+        if (!Redis::get(CloudService::$loginToken)) {
             return $this->failFul('请先登录', 11000);
         }
         $data = CloudService::user()->array();
+        if (!$data) {
+            return $this->failFul('请求服务失败，请重新登录', 11000);
+        }
         return json($data);
     }
 
@@ -59,7 +62,7 @@ class PluginCloudController extends BaseController
             (string) $post['scode']
         )->array();
         if ($response['code'] == 200) {
-            Cache::set('kf_user_token', $response['data']['token'], 0);
+            Redis::set(CloudService::$loginToken, $response['data']['token'], 0);
         }
         return json($response);
     }

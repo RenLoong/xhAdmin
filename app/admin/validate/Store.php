@@ -8,7 +8,7 @@ use think\Validate;
 class Store extends Validate
 {
     protected $rule =   [
-        'username'          => 'require|verifyUsername',
+        'username'          => 'require|mobile|verifyUsername',
         'password'          => 'require',
         'title'             => 'require|verifyTitle',
         'contact'           => 'require',
@@ -19,6 +19,7 @@ class Store extends Validate
 
     protected $message  =   [
         'username.require'  => '请输入租户账号',
+        'username.mobile'   => '租户账号必须是手机号',
         'password.require'  => '请输入租户密码',
         'title.require'     => '请输入租户名称',
         'contact.require'   => '请输入联系人姓名',

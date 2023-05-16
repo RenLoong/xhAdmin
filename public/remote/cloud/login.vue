@@ -50,15 +50,17 @@ export default {
   },
   methods: {
     openWin(path) {
-      this.$emit("openWin", path);
+      this.$emit("update:openWin", path);
     },
     onSubmit() {
       var _this = this;
       _this.$http.usePost("admin/PluginCloud/login", _this.form)
-        .then((e) => {
-          const { msg } = e;
+        .then((res) => {
           _this.openWin("remote/cloud/index");
-          _this.$notifyMsg.useNotification(msg);
+          _this.$useNotification?.success({
+            title: res?.msg ?? '操作成功',
+            duration: 1500
+          });
         });
     },
     // 获取验证码

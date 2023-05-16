@@ -39,9 +39,7 @@ class SystemConfigController extends BaseController
         $cid     = $request->get('cid');
         $builder = new ListBuilder;
         $data    = $builder
-            ->addActionOptions('操作', [
-                'width' => 130
-            ])
+            ->addActionOptions('操作')
             ->pageConfig()
             ->addTopButton('add', '添加', [
                 'api'         => "admin/SystemConfig/add",
@@ -53,7 +51,7 @@ class SystemConfigController extends BaseController
                     'type' => 'success',
                 ])
             ->addRightButton('edit', '修改', [
-                'api'         => '/SystemConfig/edit',
+                'api'         => 'admin/SystemConfig/edit',
                 'path'        => '/SystemConfig/edit',
                 'queryParams' => [
                     'cid' => $cid
@@ -64,7 +62,7 @@ class SystemConfigController extends BaseController
                 ])
             ->addRightButton('del', '删除', [
                 'type'   => 'confirm',
-                'api'    => '/SystemConfig/del',
+                'api'    => 'admin/SystemConfig/del',
                 'method' => 'delete',
             ], [
                     'title'   => '温馨提示',

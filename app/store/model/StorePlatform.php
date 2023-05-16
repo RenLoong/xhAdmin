@@ -2,8 +2,6 @@
 
 namespace app\store\model;
 
-use app\service\Upload;
-
 /**
  * 商户平台
  *
@@ -13,6 +11,10 @@ use app\service\Upload;
  */
 class StorePlatform extends \app\model\StorePlatform
 {
+    protected $append = [
+        'configs',
+        'platform_type_text',
+    ];
 
     // 定义全局查询范围
     protected $globalScope = ['store'];

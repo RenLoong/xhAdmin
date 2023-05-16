@@ -2,7 +2,7 @@
 
 namespace app\admin\service\kfcloud;
 
-use think\facade\Cache;
+use support\Redis;
 use yzh52521\EasyHttp\Http;
 use yzh52521\EasyHttp\Request;
 
@@ -28,10 +28,11 @@ class HttpService
      */
     public static function send(): Request
     {
-        $token = Cache::has(CloudService::$loginToken) ? Cache::get(CloudService::$loginToken) : request()->sessionId();
+        $token = Redis::get(CloudService::$loginToken) ?? request()->sessionId();
         return Http::withHost(self::$host)->withHeaders(
             [
                 'Authorization'    => $token,
+                'Referer'          => \request()->fullUrl(),
                 'X-Requested-With' => 'XMLHttpRequest',
             ]
         );

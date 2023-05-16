@@ -120,8 +120,8 @@ export default {
           _this.isLogin = true;
         })
         .catch((err) => {
-          if (err?.code == 11000) {
-            _this.$emit('openWin', 'remote/cloud/login')
+          if (err?.code === 600) {
+            _this.$emit('update:openWin', 'remote/cloud/login')
           }
         });
     },

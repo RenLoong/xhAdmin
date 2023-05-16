@@ -99,7 +99,7 @@ class SystemAdminController extends BaseController
      */
     public function index(Request $request)
     {
-        $admin_id = hp_admin_id();
+        $admin_id = hp_admin_id('hp_admin');
         $where = [
             ['pid', '=', $admin_id]
         ];
@@ -120,9 +120,9 @@ class SystemAdminController extends BaseController
      */
     public function add(Request $request)
     {
+        $admin_id = hp_admin_id('hp_admin');
         if ($request->method() == 'POST') {
             $post = $request->post();
-            $admin_id = hp_admin_id();
             $post['pid'] = $admin_id;
 
             // 数据验证
@@ -137,7 +137,6 @@ class SystemAdminController extends BaseController
             }
             return parent::success('保存成功');
         }
-        $admin_id = hp_admin_id();
         $builder = new FormBuilder;
         $data = $builder
             ->setMethod('POST')
@@ -191,6 +190,7 @@ class SystemAdminController extends BaseController
      */
     public function edit(Request $request)
     {
+        $admin_id = hp_admin_id('hp_admin');
         $id = $request->get('id');
         $where = [
             ['id', '=', $id]
@@ -214,7 +214,6 @@ class SystemAdminController extends BaseController
             }
             return parent::success('保存成功');
         }
-        $admin_id = hp_admin_id();
         $builder = new FormBuilder;
         $data = $builder
             ->setMethod('PUT')

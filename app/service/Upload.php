@@ -22,22 +22,19 @@ class Upload
      * @param mixed $file
      * @param int $cid
      * @param array $config TODO:该参数预留后续使用
-     * @throws Exception
-     * @return bool|string
+     * @return array|bool|mixed
      * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-05-05
+     * @DateTime 2023-05-11
      */
-    public static function upload($file, int $cid, array $config = []): bool|string
+    public static function upload($file, int $cid, array $config = [])
     {
         try {
             $category = self::getCategory($cid);
             $path     = "upload/{$category['dir_name']}";
             $result   = (new Storage)->path($path)->upload($file, false);
-            if (!self::addUpload($result, $category)) {
-                throw new Exception('文件保存失败');
-            }
-            return $path;
+            $data = self::addUpload($result, $category);
+            return $data;
         } catch (\Throwable $e) {
             Log::error($e->getMessage());
             return false;
@@ -140,33 +137,40 @@ class Upload
         }
     }
 
+
     /**
      * 附件储存
      * @param mixed $result
      * @param array $category
-     * @return bool
+     * @throws Exception
+     * @return array|mixed
      * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
-     * @DateTime 2023-04-29
+     * @DateTime 2023-05-11
      */
-    private static function addUpload($result, array $category): bool
+    private static function addUpload($result, array $category)
     {
-        $appid             = request()->header('appid');
+        $appid             = request()->header('appid','');
         $fiel_name         = basename($result->file_name);
         $where['filename'] = $fiel_name;
-        $fileModel         = SystemUpload::where($where)->count();
+        $fileModel         = SystemUpload::where($where)->find();
         if ($fileModel) {
-            return true;
+            return $fileModel->toArray();
         }
         $data['cid']      = $category['id'];
-        $data['appid']    = $appid;
         $data['title']    = $result->origin_name;
         $data['filename'] = basename($result->file_name);
         $data['path']     = $result->file_name;
         $data['format']   = $result->extension;
         $data['size']     = $result->size;
         $data['adapter']  = $result->adapter;
-        return (new SystemUpload)->save($data);
+        if ($appid) {
+            $data['appid'] = $appid;
+        }
+        if (!(new SystemUpload)->save($data)) {
+            throw new Exception('附件上传失败');
+        }
+        return $data;
     }
 
     /**
