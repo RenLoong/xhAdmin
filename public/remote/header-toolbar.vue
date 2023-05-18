@@ -21,6 +21,7 @@ export default {
             toolbar: [
                 {
                     title: '全屏缩放',
+                    name:'zoom',
                     icon: 'ExpandOutlined',
                     hanlder: () => {
                         const element = document.documentElement
@@ -54,11 +55,20 @@ export default {
                 },
                 {
                     title: '系统设置',
+                    name:'settings',
                     icon: 'SettingOutlined',
                     hanlder: () => {
                         console.log('系统设置');
                     },
                 },
+                {
+                    title: '在线升级',
+                    name:'update',
+                    icon: 'RocketOutlined',
+                    hanlder: () => {
+                        this.$routerApp.push('/Index/updateCheck')
+                    },
+                }
             ]
         }
     },
@@ -68,16 +78,15 @@ export default {
     methods: {
         openUpdate() {
             const _this = this
-            _this.toolbar.push(
-                {
-                    title: '有新版本',
-                    icon: 'RocketOutlined',
-                    isUpdate: true,
-                    hanlder: () => {
-                        _this.$routerApp.push('/Index/updateCheck')
-                    },
+            _this.toolbar.forEach((item, index) => {
+                if (item.name === 'update') {
+                    _this.toolbar[index] = {
+                        ...item,
+                        isUpdate: true,
+                        title: '有新版本更新啦~',
+                    }
                 }
-            )
+            })
         },
         checking() {
             const _this = this

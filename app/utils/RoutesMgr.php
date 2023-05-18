@@ -26,12 +26,7 @@ class RoutesMgr
      */
     public static function init()
     {
-        // 安装完成
-        Route::add(['GET', 'POST'], '/install/step5', '\app\install\Install@step5')
-            ->middleware([
-                AccessMiddleware::class,
-            ]);
-        // 检测是未安装（注册路由）
+        // 注册已安装路由
         if (file_exists(base_path() . '/.env')) {
             // 注册基础路由
             self::installed();
@@ -40,8 +35,6 @@ class RoutesMgr
             self::installAdminView($modules);
             // 注册插件后台视图
             self::installPluginAdminView();
-        } else {
-            self::install();
         }
     }
 
@@ -173,59 +166,6 @@ class RoutesMgr
                 $namespace                 = "{$value['namespace']}{$controller}{$_suffix}@{$action}";
                 Route::add($value['method'], $path, $namespace);
             }
-        });
-    }
-
-    /**
-     * 注册未安装路由
-     * @return void
-     * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-05-12
-     */
-    private static function install()
-    {
-        // 安装目录
-        $installPath = str_replace('\\', '/', dirname(__DIR__)) . '/install';
-        // 跳转安装
-        Route::add(['GET'], '/', '\Hangpu8\Admin\install\InstallController@index');
-        // 安装业务流程
-        Route::group('/install', function () use ($installPath) {
-            // 安装首页
-            Route::add(['GET'], '/step1', '\Hangpu8\Admin\install\InstallController@step1');
-            // 检测环境
-            Route::add(['GET'], '/step2', '\Hangpu8\Admin\install\InstallController@step2');
-            // 数据库设置
-            Route::add(['GET', 'POST'], '/step3', '\Hangpu8\Admin\install\InstallController@step3');
-            // 开始安装
-            Route::add(['POST'], '/step4', '\Hangpu8\Admin\install\InstallController@step4');
-            // 加载视图
-            Route::any('/view/', function (Request $request, $path = '') use ($installPath) {
-                // 安全检查，避免url里 /../../../password 这样的非法访问
-                if (strpos($path, '..') !== false) {
-                    return response('<h1>400 Bad Request</h1>', 400);
-                }
-                $file = "{$installPath}/view/index.html";
-                if (!is_file($file)) {
-                    return response('<h1>404 Not Found</h1>', 404);
-                }
-                return response()->file($file);
-            });
-        })->middleware([
-            AccessMiddleware::class
-        ]);
-        // 静态资源
-        Route::any('/hpadmin/[{path:.+}]', function (Request $request, $path = '') use ($installPath) {
-            // 安全检查，避免url里 /../../../password 这样的非法访问
-            if (strpos($path, '..') !== false) {
-                return response('<h1>400 Bad Request</h1>', 400);
-            }
-            // 文件
-            $file = "{$installPath}/view/hpadmin/{$path}";
-            if (!is_file($file)) {
-                return response('<h1>404 Not Found</h1>', 404);
-            }
-            return response()->withFile($file);
         });
     }
 }

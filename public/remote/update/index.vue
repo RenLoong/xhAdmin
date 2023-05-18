@@ -1,10 +1,11 @@
 <template>
     <div class="update-container">
-        <div class="title">{{ updated.title }}</div>
-        <n-form labn-position="left" class="form-container" v-if="loading.code === 200">
-            <n-form-item label="版本控制">
-                本地版本：{{ updated.client_version_name }}（最新版本：{{ updated.version_name }}）
-            </n-form-item>
+        <div class="logo-container">
+            <img class="logo" src="/image/logo.png" />
+            <div class="logo-title">KFAdmin</div>
+            <div class="version">当前版本：{{ updated.client_version_name }} （最新版：{{ updated.version_name }}）</div>
+        </div>
+        <n-form labn-position="left" class="form-container" v-if="updated.version > updated.client_version">
             <n-form-item label="更新内容">
                 <n-input type="textarea" :value="updated.content" :autosize="{ minRows: 6, maxRows: 10 }" placeholder="无"
                     disabled />
@@ -18,14 +19,14 @@
                 <n-button type="warning" @click="hanldCancel">忽略更新</n-button>
             </div>
         </n-form>
-        <div v-else>
+        <div class="empty-container" v-else>
             <n-empty :show-description="false">
                 <template #icon>
                     <AppIcons icon="CheckCircleOutlined" :size="48" color="#18a058" />
                 </template>
                 <template #extra="">
                     <div class="mt-5">
-                        {{ loading.text }}
+                    当前已经是最新版
                     </div>
                 </template>
             </n-empty>
@@ -39,7 +40,6 @@ export default {
         return {
             loading: {
                 text: '',
-                code: 0
             },
             updated: {
                 title: '',
@@ -99,10 +99,6 @@ export default {
             _this.$http.usePut('admin/Index/updateCheck').then((res) => {
                 const { data } = res
                 _this.updated = data
-                _this.loading.code = res?.code ?? 200
-            }).catch((err) => {
-                _this.loading.code = err?.code ?? 404
-                _this.loading.text = err?.msg ?? '获取失败'
             })
         }
     },
@@ -119,11 +115,29 @@ export default {
     justify-content: center;
     overflow-y: auto;
     overflow-x: hidden;
+    .logo-container{
+        text-align: center;
+        .logo{
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+            border-radius: 10px;
+        }
+        .logo-title{
+            font-size: 20px;
+            font-weight: 700;
+        margin-top:5px;
+        }
+    }
+    .empty-container{
+        margin-top:100px;
+    }
 
     .title {
         text-align: center;
-        font-size: 20px;
+        font-size: 18px;
         font-weight: 700;
+        margin-top: 20px;
     }
 
     .form-container {

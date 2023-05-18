@@ -1,0 +1,12 @@
+APP_DEBUG = true
+
+DEFAULT_TIMEZONE = Asia/Shanghai
+
+TYPE = mysql
+HOSTNAME = 127.0.0.1
+DATABASE = cloud8_hangpu_ne
+USERNAME = cloud8_hangpu_ne
+PASSWORD = WmKaKRwKF7KZi3NR
+HOSTPORT = 3306
+CHARSET = utf8mb4
+PREFIX = php_

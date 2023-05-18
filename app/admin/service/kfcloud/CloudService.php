@@ -27,13 +27,15 @@ class CloudService
      * @param  string   $scode
      * @return Response
      */
-    public static function login(string $username, string $password, string $scode): Response
+    public static function login(string $username, string $password, string $scode = ''): Response
     {
         $body = [
             'username' => $username,
             'password' => $password,
-            'scode'    => $scode
         ];
+        if ($scode) {
+            $body['scode'] = $scode;
+        }
         return HttpService::send()->post('User/login', $body);
     }
 

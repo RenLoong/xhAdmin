@@ -32,7 +32,7 @@ class SystemInfo
         ],
     ];
     // 咨询微信
-    public static $service_wx = '';
+    public static $service_wx = '18786709420（微信同号）';
 
     /**
      * 获取系统信息
