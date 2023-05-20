@@ -5,6 +5,7 @@ namespace app\model;
 use app\Model;
 use app\service\Upload;
 use app\utils\Password;
+use Exception;
 
 /**
  * 商户
@@ -60,5 +61,79 @@ class Users extends Model
     protected function getHeadimgAttr($value)
     {
         return $value ? Upload::url((string)$value) : '';
+    }
+
+    /**
+     * 操作用户积分
+     * @param int $uid
+     * @param int $type
+     * @param int $value
+     * @param string $remarks
+     * @throws Exception
+     * @return bool
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-05-20
+     */
+    public static function actionIntegral(int $uid, int $type, int $value, string $remarks): bool
+    {
+        $where = [
+            'id' => $uid
+        ];
+        $model = self::where($where)->find();
+        if (!$model) {
+            throw new Exception('该用户不存在');
+        }
+        UsersIntegralBill::addBill($model, $type, $value, $remarks);
+        if ($type == 1) {
+            $model->integral = $model->integral + $value;
+        }
+        else if ($type === 0) {
+            if ($value > $model->integral) {
+                throw new Exception('用户积分不足');
+            }
+            $model->integral = $model->integral - $value;
+        }
+        if (!$model->save()) {
+            throw new Exception('操作用户积分失败');
+        }
+        return true;
+    }
+
+    /**
+     * 操作用户余额
+     * @param int $uid
+     * @param int $type
+     * @param float $value
+     * @param string $remarks
+     * @throws Exception
+     * @return bool
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-05-20
+     */
+    public static function actionMoney(int $uid, int $type, float $value, string $remarks)
+    {
+        $where = [
+            'id' => $uid
+        ];
+        $model = self::where($where)->find();
+        if (!$model) {
+            throw new Exception('该用户不存在');
+        }
+        UsersMoneyBill::addBill($model, $type, $value, $remarks);
+        if ($type == 1) {
+            $model->money = $model->money + $value;
+        }
+        else if ($type === 0) {
+            if ($value > $model->money) {
+                throw new Exception('用户余额不足');
+            }
+            $model->money = $model->money - $value;
+        }
+        if (!$model->save()) {
+            throw new Exception('操作余额失败');
+        }
+        return true;
     }
 }

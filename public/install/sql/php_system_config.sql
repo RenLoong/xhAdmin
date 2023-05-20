@@ -34,12 +34,11 @@ CREATE TABLE `php_system_config`  (
   `placeholder` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '配置描述',
   `sort` int(11) NULL DEFAULT 0 COMMENT '配置排序',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-配置项' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-配置项' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of php_system_config
 -- ----------------------------=
 INSERT INTO `php_system_config` VALUES (3, '2023-03-12 14:06:09', '2023-05-03 16:44:15', 1, '后台图标', 'admin_logo', 'upload/user/e696862766470b7442d179168f9d732d.jpeg', 'uploadify', '', '请上传后台图标', 0);
-INSERT INTO `php_system_config` VALUES (4, '2023-04-21 18:42:14', '2023-04-21 18:42:14', 2, 'app_id', 'wx_app_id', '', 'input', '', '请输入微信APP_ID', 0);
 
 SET FOREIGN_KEY_CHECKS = 1;

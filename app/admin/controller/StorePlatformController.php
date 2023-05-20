@@ -9,8 +9,12 @@ use app\admin\validate\StorePlatform;
 use app\BaseController;
 use app\enum\PlatformTypes;
 use app\enum\StorePlatformStatus;
+use app\manager\StorePlatforms;
+use app\model\StorePlatformConfig;
 use app\service\Upload;
+use Exception;
 use support\Request;
+use think\facade\Db;
 
 /**
  * 商户平台管理
@@ -148,13 +152,60 @@ class StorePlatformController extends BaseController
             // 数据验证
             hpValidate(StorePlatform::class, $post, 'add');
 
+            // 验证参数可创建数量
+            $surplusNum = StorePlatforms::surplusNum($store_id);
+            if (!isset($surplusNum[$post['platform_type']])) {
+                throw new Exception('平台类型参数错误');
+            }
+            $surplusNum = $surplusNum[$post['platform_type']];
+            if ($surplusNum <= 0) {
+                throw new Exception("您该平台类型已使用完");
+            }
+
             $post['logo'] = Upload::path($post['logo']);
 
-            $model = $this->model;
-            if (!$model->save($post)) {
-                return parent::fail('保存失败');
+
+            // 事务
+            Db::startTrans();
+            try {
+                $model        = $this->model;
+                $platformData = [
+                    'store_id'      => $store_id,
+                    'platform_type' => $post['platform_type']
+                ];
+                if (!$model->save($platformData)) {
+                    throw new Exception('保存失败');
+                }
+                // 保存配置项
+                $configData = [
+                    'store_id'    => $store_id,
+                    'platform_id' => $model->id,
+                ];
+                $fields     = [
+                    'web_name'    => $post['title'],
+                    'domain'      => $post['domain'],
+                    'logo'        => Upload::path($post['logo']),
+                    'description' => '',
+                ];
+                if ($post['platform_type'] === 'wechat') {
+                    $apiUrl                            = "/store/Wechat?store_id={$store_id}";
+                    $fields['wechat_api_url']          = $apiUrl;
+                    $fields['wechat_token']            = md5(time());
+                    $fields['wechat_encoding_aes_key'] = md5($model->id . time());
+                }
+                foreach ($fields as $field => $val) {
+                    $configData['config_field'] = $field;
+                    $configData['config_value'] = $val;
+                    if (!(new StorePlatformConfig)->save($configData)) {
+                        throw new Exception('保存配置项失败');
+                    }
+                }
+                Db::commit();
+                return parent::success('保存成功');
+            } catch (\Throwable $e) {
+                Db::rollback();
+                return parent::fail($e->getMessage());
             }
-            return parent::success('保存成功');
         }
         $builder = new FormBuilder;
         $builder->setMethod('POST');
@@ -210,38 +261,62 @@ class StorePlatformController extends BaseController
      */
     public function edit(Request $request)
     {
-        $id = $request->get('id', '');
+        $id    = $request->get('id', '');
         $model = $this->model;
         $where = [
-            ['id','=',$id],
+            ['id', '=', $id],
         ];
         $model = $model->where($where)->find();
         if (!$model) {
-            return $this->fail('该数据不存在');
+            return $this->fail('该平台不存在');
         }
-        if ($request->method() == 'POST') {
+        if ($request->method() == 'PUT') {
             $post = $request->post();
 
-            $post['store_id'] = $model->store_id;
-
-            // 数据验证
-            hpValidate(StorePlatform::class, $post, 'edit');
-
-            $post['logo'] = Upload::path($post['logo']);
-
-            if (!$model->save($post)) {
-                return parent::fail('保存失败');
+            // 事务
+            Db::startTrans();
+            try {
+                // 保存配置项
+                $where       = [
+                    ['platform_id', '=', $id],
+                    ['config_field', 'in', ['web_name', 'logo']],
+                ];
+                $configModel = StorePlatformConfig::where($where)->select();
+                if (!$configModel) {
+                    throw new Exception('该平台图置不存在');
+                }
+                foreach ($configModel as $model) {
+                    if ($model->config_field === 'web_name') {
+                        $model->config_value = $post['title'];
+                    }
+                    if ($model->config_field === 'logo') {
+                        $model->config_value = Upload::path($post['logo']);
+                    }
+                    if (!$model->save()) {
+                        throw new Exception('保存平台配置失败');
+                    }
+                }
+                // 保存平台数据
+                $platformData = [
+                    'status'  => $post['status'],
+                    'remarks' => $post['remarks'],
+                ];
+                if (!$model->save($platformData)) {
+                    throw new Exception('保存失败');
+                }
+                Db::commit();
+                return parent::success('保存成功');
+            } catch (\Throwable $e) {
+                Db::rollback();
+                return parent::fail($e->getMessage());
             }
-            return parent::success('保存成功');
         }
+        $platformData          = $model->toArray();
+        $platformData['title'] = $platformData['configs']['web_name'];
+        $platformData['logo']  = $platformData['configs']['logo'];
+
         $builder = new FormBuilder;
-        $builder->setMethod('POST');
-        $builder->addRow('platform_type', 'select', '平台类型', 'other', [
-            'col'     => [
-                'span' => 12
-            ],
-            'options' => PlatformTypes::getOptions()
-        ]);
+        $builder->setMethod('PUT');
         $builder->addRow('title', 'input', '平台名称', '', [
             'col' => [
                 'span' => 12
@@ -266,7 +341,7 @@ class StorePlatformController extends BaseController
                 'span' => 12
             ],
         ]);
-        $builder->setData($model);
+        $builder->setFormData($platformData);
         $data = $builder->create();
         return parent::successRes($data);
     }
@@ -281,14 +356,27 @@ class StorePlatformController extends BaseController
      */
     public function del(Request $request)
     {
-        $id = $request->post('id');
-        $where = [
-            'id'        => $id
-        ];
-        $model = $this->model;
-        if (!$model::where($where)->delete()) {
-            return parent::fail('删除失败');
+        Db::startTrans();
+        try {
+            $id    = $request->post('id');
+            $where = [
+                'id' => $id
+            ];
+            $model = $this->model;
+            if (!$model::where($where)->delete()) {
+                throw new Exception('删除平台失败');
+            }
+            $where = [
+                'platform_id' => $id
+            ];
+            if (StorePlatformConfig::where($where)->delete()) {
+                throw new Exception('删除平台配置失败');
+            }
+            Db::commit();
+            return parent::success('删除成功');
+        } catch (\Throwable $e) {
+            Db::rollback();
+            return $this->fail($e->getMessage());
         }
-        return parent::success('删除成功');
     }
 }

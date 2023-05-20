@@ -30,12 +30,11 @@ CREATE TABLE `php_system_admin_role`  (
   `rule` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '部门权限',
   `is_system` enum('0','1') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '0' COMMENT '是否系统：0不是系统，1是系统',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-角色管理' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-角色管理' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of php_system_admin_role
 -- ----------------------------
 INSERT INTO `php_system_admin_role` VALUES (1, '2022-10-28 07:11:51', '2022-11-16 11:30:39', 0, '系统管理员', '[\"Index\\/index\",\"SystemConfigGroup\\/table\",\"Plugin\\/create\"]', '1');
-INSERT INTO `php_system_admin_role` VALUES (5, '2023-04-30 04:15:22', '2023-04-30 04:15:22', 1, '测试', '[1,2,3,4,5,6,41,42,43,44,45,46,47,48,49,50,51,83,84]', '0');
 
 SET FOREIGN_KEY_CHECKS = 1;

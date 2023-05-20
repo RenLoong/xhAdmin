@@ -7,6 +7,26 @@ define('ROOT_PATH', dirname(dirname(__DIR__)));
 class Install
 {
     /**
+     * 构造函数
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-05-19
+     */
+    public function __construct()
+    {
+        // 检测是否安装
+        if (file_exists(ROOT_PATH . '/.env')) {
+            exit(json_encode([
+                'msg'  => '小贼，别乱搞',
+                'code' => 200,
+                'data' => [
+                    'install' => 'ok'
+                ]
+            ]));
+        }
+    }
+
+    /**
      * 欢迎使用安装程序
      * @return bool|string
      * @copyright 贵州猿创科技有限公司
@@ -15,7 +35,22 @@ class Install
      */
     public function index()
     {
-        return $this->json('欢迎使用安装程序');
+        return $this->json('欢迎使用安装程序', 200);
+    }
+
+    /**
+     * 安装协议
+     * @return bool|string
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-05-20
+     */
+    public function step1()
+    {
+        $content = file_get_contents(__DIR__ . '/agreement.txt');
+        return $this->json('success', 200, [
+            'text' => $content
+        ]);
     }
 
     /**
@@ -367,7 +402,6 @@ class Install
      */
     public function step5()
     {
-        unlink(__DIR__.'/');
         return $this->json('',200);
     }
 

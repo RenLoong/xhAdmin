@@ -32,12 +32,6 @@ CREATE TABLE `php_store_app`  (
   `logo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '应用LOGO',
   `status` enum('0','1') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1' COMMENT '应用状态',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '租户-平台应用' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of php_store_app
--- ----------------------------
-INSERT INTO `php_store_app` VALUES (1, '2023-05-11 19:01:18', '2023-05-12 19:10:10', 4, 1, '测试', 'yc_test', 'upload/user/e696862766470b7442d179168f9d732d.jpeg', '0');
-INSERT INTO `php_store_app` VALUES (2, '2023-05-12 19:10:22', '2023-05-12 19:10:22', 4, 1, '超级SEO', 'superseo', 'upload/user/e696862766470b7442d179168f9d732d.jpeg', '1');
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '租户-平台应用' ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;

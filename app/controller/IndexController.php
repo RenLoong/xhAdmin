@@ -22,6 +22,10 @@ class IndexController extends BaseController
      */
     public function index(Request $request)
     {
+        // 检测是否安装
+        if (!file_exists(base_path('/.env'))) {
+            return redirect('/install/');
+        }
         return redirect('/store/');
     }
 }

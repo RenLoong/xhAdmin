@@ -32,10 +32,4 @@ CREATE TABLE `php_store_platform`  (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '商户-平台数据' ROW_FORMAT = DYNAMIC;
 
--- ----------------------------
--- Records of php_store_platform
--- ----------------------------
-INSERT INTO `php_store_platform` VALUES (1, '2023-05-11 18:44:41', '2023-05-11 18:44:41', 4, 'wechat', '1', NULL);
-INSERT INTO `php_store_platform` VALUES (2, '2023-05-18 16:23:41', '2023-05-18 16:23:41', 4, 'h5', '1', NULL);
-
 SET FOREIGN_KEY_CHECKS = 1;

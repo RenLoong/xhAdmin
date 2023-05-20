@@ -37,13 +37,10 @@ CREATE TABLE `php_store_grade`  (
   `expire_day` int(11) NULL DEFAULT 0 COMMENT '使用期限（天）0则无限期',
   `sort` int(11) NULL DEFAULT 0 COMMENT '排序',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '商户-商户等级' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '商户-商户等级' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of php_store_grade
 -- ----------------------------
-INSERT INTO `php_store_grade` VALUES (1, '2023-05-01 00:16:29', '2023-05-11 18:54:18', '高级', '1', '0', 20, 20, 20, 20, 20, 20, 30, 0);
-INSERT INTO `php_store_grade` VALUES (2, '2023-05-01 00:39:32', '2023-05-11 18:54:14', '中级', '1', '0', 15, 15, 15, 15, 15, 15, 15, 0);
-INSERT INTO `php_store_grade` VALUES (3, '2023-05-01 05:54:53', '2023-05-11 18:53:51', '基础', '1', '1', 7, 7, 7, 7, 7, 7, 7, 0);
-
+INSERT INTO `php_store_grade` VALUES (1, '2023-05-01 00:16:29', '2023-05-11 18:54:18', '普通租户等级', '1', '0', 10, 10, 10, 10, 10, 10, 30, 0);
 SET FOREIGN_KEY_CHECKS = 1;
