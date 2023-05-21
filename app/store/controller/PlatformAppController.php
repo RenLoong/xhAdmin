@@ -133,6 +133,9 @@ class PlatformAppController extends BaseController
         if (!$data) {
             return $this->successRes([]);
         }
+        if ($data['code'] !== 200) {
+            return $this->successRes([]);
+        }
         return $this->successRes($data['data']['data']);
     }
 

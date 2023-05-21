@@ -550,6 +550,13 @@ class Install
                 'value'  => 'fail'
             ],
             [
+                'title'  => 'swoole',
+                'name'   => 'swoole',
+                'type'   => 'extra',
+                'status' => false,
+                'value'  => 'fail'
+            ],
+            [
                 'title'  => 'redis',
                 'name'   => 'redis',
                 'type'   => 'extra',

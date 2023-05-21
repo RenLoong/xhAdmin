@@ -5,6 +5,7 @@ namespace app\store\controller;
 use app\admin\builder\ListBuilder;
 use app\BaseController;
 use support\Request;
+use app\store\model\Users;
 
 /**
  * 用户管理
@@ -17,7 +18,7 @@ class UsersController extends BaseController
 {
     /**
      * 模型
-     * @var \app\admin\model\StorePlatform
+     * @var Users
      */
     public $model;
 
@@ -29,7 +30,7 @@ class UsersController extends BaseController
      */
     public function __construct()
     {
-        $this->model = new \app\store\model\Users;
+        $this->model = new Users;
     }
 
     /**
@@ -44,12 +45,9 @@ class UsersController extends BaseController
     {
         $builder = new ListBuilder;
         $data    = $builder
-            ->addActionOptions('操作', [
-                'width' => 210
-            ])
             ->pageConfig()
-            ->addColumn('platform.title', '所属平台')
-            ->addColumn('app.title', '所属应用')
+            ->addColumn('platform.configs.web_name', '所属平台')
+            ->addColumn('platform_app.title', '所属应用')
             ->addColumn('username', '登录账号')
             ->addColumnEle('headimg', '头像', [
                 'params' => [
@@ -87,12 +85,12 @@ class UsersController extends BaseController
      */
     public function index(Request $request)
     {
-        $where    = [];
+        $where   = [];
         $orderBy = [
             'id' => 'desc'
         ];
         $model   = $this->model;
-        $data    = $model->with(['store'])
+        $data    = $model->with(['store', 'platform', 'platform_app'])
             ->where($where)
             ->order($orderBy)
             ->paginate()

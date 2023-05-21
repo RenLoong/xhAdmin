@@ -566,7 +566,7 @@ trait Table
      */
     public function addColumnEdit(string $field, string $title, array $extra = []): ListBuilder
     {
-        $extra = array_merge([
+        $extra = array_merge_recursive([
             'editRender' => [
                 'name'  => 'input',
                 'attrs' => [

@@ -48,23 +48,40 @@ class StorePlatforms
      */
     public static function surplusNum(int $store_id)
     {
+        # 平台类型枚举
+        $platformTypes = PlatformTypes::getData();
+        $data          = [];
+        foreach ($platformTypes as $value) {
+            $platformSurplusNum = self::platformSurplusNum($store_id, $value['value']);
+            $data[$value['value']] = $platformSurplusNum['surplusNum'];
+        }
+        return $data;
+    }
+
+    /**
+     * 计算租户平台资产
+     * @param int $store_id
+     * @param string $platform
+     * @return array
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-05-21
+     */
+    public static function platformSurplusNum(int $store_id,string $platform)
+    {
         # 总数量
         $sumNum = self::storeGradeNum($store_id);
         # 已创建数量
         $createdNum = self::createdNum($store_id);
-        # 平台类型枚举
-        $platformTypes = PlatformTypes::getData();
+        # 总数量 - 已创建数量 = 剩余可创建
+        $surplusNum =  $sumNum[$platform] - $createdNum[$platform];
 
-        $data = [];
-        foreach ($platformTypes as $value) {
-            $surplus = 0;
-            if ($sumNum[$value['value']]) {
-                # 总数量 - 已创建数量 = 剩余可创建
-                $surplus = $sumNum[$value['value']] - $createdNum[$value['value']];
-            }
-            $data[$value['value']] = $surplus;
-        }
-        return $data;
+        #返回----总数量--已创建--剩余
+        return [
+            'sumNum'        => $sumNum[$platform],
+            'createdNum'    => $createdNum[$platform],
+            'surplusNum'    => $surplusNum,
+        ];
     }
 
     /**

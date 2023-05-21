@@ -3,8 +3,6 @@
 namespace app\store\controller;
 
 use app\admin\builder\FormBuilder;
-use app\admin\builder\ListBuilder;
-use app\admin\model\Store;
 use app\admin\validate\StorePlatform;
 use app\BaseController;
 use app\enum\PlatformTypes;

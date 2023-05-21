@@ -6,7 +6,7 @@
                     <AppIcons :icon="item.icon" :size="18" :color="item.isUpdate ? '#ff0000' : '#555'" />
                 </div>
             </template>
-            {{ item.title }}
+            {{ item?.title ?? '未知' }}
         </n-tooltip>
     </div>
 </template>
@@ -21,7 +21,7 @@ export default {
             toolbar: [
                 {
                     title: '全屏缩放',
-                    name:'zoom',
+                    name: 'zoom',
                     icon: 'ExpandOutlined',
                     hanlder: () => {
                         const element = document.documentElement
@@ -55,7 +55,7 @@ export default {
                 },
                 {
                     title: '系统设置',
-                    name:'settings',
+                    name: 'settings',
                     icon: 'SettingOutlined',
                     hanlder: () => {
                         console.log('系统设置');
@@ -63,7 +63,7 @@ export default {
                 },
                 {
                     title: '在线升级',
-                    name:'update',
+                    name: 'update',
                     icon: 'RocketOutlined',
                     hanlder: () => {
                         this.$routerApp.push('/Index/updateCheck')
@@ -101,7 +101,7 @@ export default {
                 const ignoreVersion = localStorage.getItem('system_updated')
                 if (ignoreVersion) {
                     if (parseInt(ignoreVersion) !== data.version) {
-                        _this.openUpdate()                        
+                        _this.openUpdate()
                     }
                 } else {
                     _this.openUpdate()

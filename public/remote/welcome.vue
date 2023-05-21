@@ -3,9 +3,9 @@
     <!-- 平台应用 -->
     <div class="platform-count">
       <n-grid :cols="5" :x-gap="24" :y-gap="12" class="num-container">
-        <n-grid-item class="item wechat">
+        <n-grid-item class="item">
           <div class="logo-container">
-            <img src="/image/weixin.png" class="logo" alt="">
+            <img src="/image/new_wechat.png" class="logo" alt="">
           </div>
           <div class="content">
             <n-statistic tabular-nums>
@@ -18,9 +18,9 @@
             </n-statistic>
           </div>
         </n-grid-item>
-        <n-grid-item class="item mini-wechat">
+        <n-grid-item class="item">
           <div class="logo-container">
-            <img src="/image/mini_wechat.png" class="logo" alt="">
+            <img src="/image/new_wx_mini.png" class="logo" alt="">
           </div>
           <div class="content">
             <n-statistic tabular-nums>
@@ -33,9 +33,9 @@
             </n-statistic>
           </div>
         </n-grid-item>
-        <n-grid-item class="item douyin">
+        <n-grid-item class="item">
           <div class="logo-container">
-            <img src="/image/douyin.png" class="logo" alt="">
+            <img src="/image/new_douyin.png" class="logo" alt="">
           </div>
           <div class="content">
             <n-statistic tabular-nums>
@@ -48,9 +48,9 @@
             </n-statistic>
           </div>
         </n-grid-item>
-        <n-grid-item class="item h5">
+        <n-grid-item class="item">
           <div class="logo-container">
-            <img src="/image/h5.png" class="logo" alt="">
+            <img src="/image/new_h5.png" class="logo" alt="">
           </div>
           <div class="content">
             <n-statistic tabular-nums>
@@ -63,9 +63,9 @@
             </n-statistic>
           </div>
         </n-grid-item>
-        <n-grid-item class="item other">
+        <n-grid-item class="item">
           <div class="logo-container">
-            <img src="/image/other.png" class="logo" alt="">
+            <img src="/image/new_other.png" class="logo" alt="">
           </div>
           <div class="content">
             <n-statistic tabular-nums>
@@ -210,8 +210,7 @@ export default {
   height: 100%;
 
   .platform-count {
-    background: #fff;
-    padding: 0 20px 20px 20px;
+    padding: 0 0 20px 0;
 
     .num-container {
       .item {
@@ -220,6 +219,7 @@ export default {
         justify-content: center;
         align-items: center;
         border-radius: 5px;
+        background: #fff;
 
         .logo-container {
           width: 120px;
@@ -243,7 +243,6 @@ export default {
           .count-label {
             width: 100px;
             text-align: center;
-            color: #fff;
             font-size: 1rem;
             user-select: none;
           }
@@ -253,41 +252,10 @@ export default {
             text-align: center;
 
             .n-statistic-value__content {
-              color: #fff;
               user-select: none;
             }
           }
         }
-      }
-
-      .wechat {
-        background: url('/image/1.jpg');
-        background-color: #3CB371;
-        background-size: 100% 100%;
-      }
-
-      .mini-wechat {
-        background: url('/image/2.jpg');
-        background-color: #008B8B;
-        background-size: 100% 100%;
-      }
-
-      .douyin {
-        background: url('/image/3.jpg');
-        background-color: #4682B4;
-        background-size: 100% 100%;
-      }
-
-      .h5 {
-        background: url('/image/4.jpg');
-        background-color: #FF7F50;
-        background-size: 100% 100%;
-      }
-
-      .other {
-        background: url('/image/5.jpg');
-        background-color: #6A5ACD;
-        background-size: 100% 100%;
       }
     }
   }

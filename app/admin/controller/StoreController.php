@@ -9,6 +9,8 @@ use app\admin\model\StoreGrade as modelStoreGrade;
 use app\admin\model\Store;
 use app\admin\validate\Store as ValidateStore;
 use app\BaseController;
+use app\enum\PlatformTypes;
+use app\manager\StorePlatforms;
 use app\service\Upload;
 use support\Request;
 
@@ -48,6 +50,11 @@ class StoreController extends BaseController
      */
     public function indexGetTable(Request $request)
     {
+        $platformAssets = PlatformTypes::getData();
+        foreach ($platformAssets as $key => $value) {
+            $platformAssets[$key]['title'] = $value['text'];
+            $platformAssets[$key]['field'] = $value['value'];
+        }
         $builder = new ListBuilder;
         $data    = $builder
             ->addActionOptions('操作', [
@@ -57,6 +64,10 @@ class StoreController extends BaseController
                 ]
             ])
             ->pageConfig()
+            ->editConfig()
+            ->rowConfig([
+                'height' => 70
+            ])
             ->addTopButton('add', '开通', [
                 'type' => 'page',
                 'api'  => 'admin/Store/add',
@@ -66,16 +77,23 @@ class StoreController extends BaseController
                 ], [
                     'type' => 'success'
                 ])
-            ->addRightButton('toStore', '管理租户', [
-                'type'        => 'link',
-                'api'         => 'admin/Store/login',
-                'aliasParams' => [
-                    'id' => 'store_id'
+            ->addRightButton(
+                'toStore',
+                '管理租户',
+                [
+                    'type'        => 'link',
+                    'api'         => 'admin/Store/login',
+                    'aliasParams' => [
+                        'id' => 'store_id'
+                    ],
                 ],
-            ], [], [
+                []
+                ,
+                [
                     'type' => 'warning',
                     'icon' => 'CodeSandboxOutlined'
-                ])
+                ]
+            )
             ->addRightButton('storeApp', '授权应用', [
                 'type'        => 'page',
                 'api'         => 'admin/StoreApp/index',
@@ -119,28 +137,44 @@ class StoreController extends BaseController
             ->addColumn('title', '名称')
             ->addColumn('username', '账号')
             ->addColumnEle('logo', '图标', [
+                'width'     => 60,
                 'params' => [
                     'type' => 'image',
                 ],
             ])
             ->addColumnEle('status', '状态', [
-                'width'  => 80,
+                'width'  => 100,
                 'params' => [
-                    'type'    => 'tags',
-                    'options' => ['冻结', '正常'],
-                    'style'   => [
-                        [
-                            'type' => 'error'
-                        ],
-                        [
-                            'type' => 'success'
-                        ],
+                    'type'      => 'switch',
+                    'api'       => '/admin/Store/rowEdit',
+                    'checked'   => [
+                        'text'  => '正常',
+                        'value' => '1'
+                    ],
+                    'unchecked' => [
+                        'text'  => '冻结',
+                        'value' => '0'
+                    ]
+                ],
+            ])
+            ->addColumnEle('surplusNum', '租户资产：已创建/总数量', [
+                'minWidth' => '100px',
+                'params'   => [
+                    'type'     => 'assets',
+                    'resource' => $platformAssets,
+                ]
+            ])
+            ->addColumnEdit('expire_time', '过期时间', [
+                'params'     => [
+                    'api' => '/admin/Store/rowEdit'
+                ],
+                'editRender' => [
+                    'attrs' => [
+                        'type'     => 'date',
+                        'transfer' => true,
                     ],
                 ],
             ])
-            ->addColumn('grade.title', '等级')
-            ->addColumn('platform_assets', '平台资产')
-            ->addColumn('expire_time', '过期时间')
             ->create();
         return parent::successRes($data);
     }
@@ -155,11 +189,20 @@ class StoreController extends BaseController
      */
     public function index(Request $request)
     {
+        $platforms = PlatformTypes::getData();
         $model = $this->model;
         $data  = $model->with(['grade'])->order(['id' => 'desc'])
             ->paginate()
-            ->each(function ($e) {
-                $e->platform_assets = "公众号:{$e->grade->platform_wechat} 小程序:{$e->grade->platform_min_wechat}APP:{$e->grade->platform_app}H5:{$e->grade->platform_h5}抖音:{$e->grade->platform_douyin}其他:{$e->grade->platform_other}";
+            ->each(function ($e)use($platforms) {
+                foreach ($platforms as $value) {
+                    // 计算租户剩余资产
+                    $surplusNum = StorePlatforms::platformSurplusNum((int) $e->id,(string)$value['value']);
+                    // 拼接显示 --- 剩余/总数量
+                    $surplusText = "{$surplusNum['createdNum']} / {$surplusNum['sumNum']}";
+                    $surplus[$value['value']] = $surplusText;
+                    // 获得显示数据
+                    $e->surplusNum = $surplus;
+                }
                 return $e;
             })
             ->toArray();
