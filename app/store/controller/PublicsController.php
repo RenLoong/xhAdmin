@@ -96,21 +96,21 @@ class PublicsController extends BaseController
         ];
         $adminModel = Store::where($where)->find();
         if (!$adminModel) {
-            throw new Exception('登录账号错误');
+            return $this->fail('登录账号错误');
         }
         // 验证登录密码
         if (!Password::passwordVerify((string) $post['password'], (string)$adminModel->password)) {
-            throw new Exception('登录密码错误');
+            return $this->fail('登录密码错误');
         }
         // 判断状态
         if ($adminModel->status === '0') {
-            throw new Exception('该用户已被冻结');
+            return $this->fail('该用户已被冻结');
         }
         // 判断是否受限过期租户
         if ($adminModel->expire_time) {
             $expire_time = strtotime($adminModel->expire_time);
             if (time() > $expire_time) {
-            throw new Exception('该用户使用权益已过期');
+                return $this->fail('该用户使用权益已过期');
             }
         }
         $session = $request->session();
@@ -143,16 +143,13 @@ class PublicsController extends BaseController
         $where    = [
             'id'    => $admin_id
         ];
-        $model      = Store::with(['grade'])->where($where)->find();
+        $model      = Store::where($where)->find();
         $storeModel  = $model->toArray();
         $data       = [
             'id'        => $storeModel['id'],
             'nickname'  => $storeModel['title'],
             'headimg'   => $storeModel['logo'],
             'plugins'   => $storeModel['plugins_name'],
-            'role'      => [
-                'title' => $storeModel['grade']['title']
-            ],
         ];
         return parent::successRes($data);
     }

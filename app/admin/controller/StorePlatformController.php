@@ -155,11 +155,11 @@ class StorePlatformController extends BaseController
             // 验证参数可创建数量
             $surplusNum = StorePlatforms::surplusNum($store_id);
             if (!isset($surplusNum[$post['platform_type']])) {
-                throw new Exception('平台类型参数错误');
+                return $this->fail('平台类型参数错误');
             }
             $surplusNum = $surplusNum[$post['platform_type']];
             if ($surplusNum <= 0) {
-                throw new Exception("您该平台类型已使用完");
+                return $this->fail('您该平台类型已使用完');
             }
 
             $post['logo'] = Upload::path($post['logo']);

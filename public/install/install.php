@@ -323,10 +323,14 @@ class Install
         }
         // 设置配置文件
         if ($step === 'config') {
-            if (!$this->installEnv($post)) {
-                return $this->json('安装失败配置文件失败...');
+            try {
+                // 设置Env配置文件
+                $this->installEnv($post);
+                // 成功
+                return $this->json('安装配置文件完成，准备跳转中...', 200);
+            } catch (\Throwable $e) {
+                return $this->json($e->getMessage(),404);
             }
-            return $this->json('安装配置文件完成，准备跳转中...', 200);
         }
         return $this->json('安装失败');
     }
@@ -344,6 +348,7 @@ class Install
     {
         // 数据库获取参数
         $database = isset($post['database']) ? $post['database'] : null;
+        $site = isset($post['site']) ? $post['site'] : null;
         if (!$database) {
             throw new Exception('获取安装数据失败');
         }
@@ -355,6 +360,7 @@ class Install
         $password = isset($database['password']) ? trim($database['password']) : '';
         $charset  = isset($database['charset']) ? trim($database['charset']) : '';
         $prefix   = isset($database['prefix']) ? trim($database['prefix']) : '';
+        $web_url   = isset($site['web_url']) ? trim($site['web_url']) : '';
 
         // 拼接配置文件路径
         $envTplPath = __DIR__ . "/env.tpl";
@@ -364,8 +370,28 @@ class Install
         $envConfig = file_get_contents($envTplPath);
 
         // 替换配置文件参数
-        $str1      = ["{TYPE}", "{HOSTNAME}", "{DATABASE}", "{USERNAME}", "{PASSWORD}", "{HOSTPORT}", "{CHARSET}", "{PREFIX}"];
-        $str2      = [$type, $host, $databaseName, $user, $password, $port, $charset, $prefix];
+        $str1      = [
+            "{TYPE}",
+            "{HOSTNAME}",
+            "{DATABASE}",
+            "{USERNAME}",
+            "{PASSWORD}",
+            "{HOSTPORT}",
+            "{CHARSET}",
+            "{PREFIX}",
+            "{UPLOAD_PUBLIC_URL}"
+        ];
+        $str2      = [
+            $type,
+            $host,
+            $databaseName,
+            $user,
+            $password,
+            $port,
+            $charset,
+            $prefix,
+            $web_url
+        ];
         $envConfig = str_replace($str1, $str2, $envConfig);
 
         // 写入配置文件

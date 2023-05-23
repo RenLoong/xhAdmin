@@ -4,13 +4,10 @@ namespace app\admin\controller;
 
 use app\admin\builder\FormBuilder;
 use app\admin\builder\ListBuilder;
-use app\admin\logic\StoreGrade;
-use app\admin\model\StoreGrade as modelStoreGrade;
 use app\admin\model\Store;
 use app\admin\validate\Store as ValidateStore;
 use app\BaseController;
 use app\enum\PlatformTypes;
-use app\manager\StorePlatforms;
 use app\service\Upload;
 use support\Request;
 
@@ -73,10 +70,10 @@ class StoreController extends BaseController
                 'api'  => 'admin/Store/add',
                 'path' => '/Store/add',
             ], [
-                    'title' => '开通租户',
-                ], [
-                    'type' => 'success'
-                ])
+                'title' => '开通租户',
+            ], [
+                'type' => 'success'
+            ])
             ->addRightButton(
                 'toStore',
                 '管理租户',
@@ -87,8 +84,7 @@ class StoreController extends BaseController
                         'id' => 'store_id'
                     ],
                 ],
-                []
-                ,
+                [],
                 [
                     'type' => 'warning',
                     'icon' => 'CodeSandboxOutlined'
@@ -102,38 +98,38 @@ class StoreController extends BaseController
                     'id' => 'store_id'
                 ],
             ], [], [
-                    'type' => 'warning',
-                    'icon' => 'CompassOutlined'
-                ])
+                'type' => 'warning',
+                'icon' => 'CompassOutlined'
+            ])
             ->addRightButton('platforms', '平台管理', [
                 'type' => 'page',
                 'api'  => 'admin/StorePlatform/index',
                 'path' => '/StorePlatform/index',
             ], [], [
-                    'type' => 'info',
-                    'icon' => 'DesktopOutlined'
-                ])
+                'type' => 'info',
+                'icon' => 'DesktopOutlined'
+            ])
             ->addRightButton('edit', '修改租户', [
                 'type' => 'page',
                 'api'  => 'admin/Store/edit',
                 'path' => '/Store/edit',
             ], [
-                    'title' => '修改租户',
-                ], [
-                    'type' => 'primary',
-                    'icon' => 'EditOutlined'
-                ])
+                'title' => '修改租户',
+            ], [
+                'type' => 'primary',
+                'icon' => 'EditOutlined'
+            ])
             ->addRightButton('del', '删除租户', [
                 'type'   => 'confirm',
                 'api'    => 'admin/Store/del',
                 'method' => 'delete',
             ], [
-                    'title'   => '温馨提示',
-                    'content' => '是否确认删除该数据',
-                ], [
-                    'type' => 'error',
-                    'icon' => 'RestOutlined'
-                ])
+                'title'   => '温馨提示',
+                'content' => '是否确认删除该数据',
+            ], [
+                'type' => 'error',
+                'icon' => 'RestOutlined'
+            ])
             ->addColumn('title', '名称')
             ->addColumn('username', '账号')
             ->addColumnEle('logo', '图标', [
@@ -189,20 +185,10 @@ class StoreController extends BaseController
      */
     public function index(Request $request)
     {
-        $platforms = PlatformTypes::getData();
         $model = $this->model;
-        $data  = $model->with(['grade'])->order(['id' => 'desc'])
+        $data  = $model->order(['id' => 'desc'])
             ->paginate()
-            ->each(function ($e)use($platforms) {
-                foreach ($platforms as $value) {
-                    // 计算租户剩余资产
-                    $surplusNum = StorePlatforms::platformSurplusNum((int) $e->id,(string)$value['value']);
-                    // 拼接显示 --- 剩余/总数量
-                    $surplusText = "{$surplusNum['createdNum']} / {$surplusNum['sumNum']}";
-                    $surplus[$value['value']] = $surplusText;
-                    // 获得显示数据
-                    $e->surplusNum = $surplus;
-                }
+            ->each(function ($e) {
                 return $e;
             })
             ->toArray();
@@ -226,18 +212,6 @@ class StoreController extends BaseController
             hpValidate(ValidateStore::class, $post, 'add');
 
             $post['logo'] = Upload::path($post['logo']);
-            // 查询等级
-            $where      = [
-                'id' => $post['grade_id']
-            ];
-            $gradeModel = modelStoreGrade::where($where)->find();
-            if (!$gradeModel) {
-                return parent::fail('该租户等级不存在');
-            }
-            $post['expire_time'] = date('Y-m-d 00:00:00');
-            if ($gradeModel->expire_day) {
-                $post['expire_time'] = date('Y-m-d 00:00:00', strtotime("+{$gradeModel->expire_day}day"));
-            }
             $model = $this->model;
             if (!$model->save($post)) {
                 return parent::fail('保存失败');
@@ -262,11 +236,12 @@ class StoreController extends BaseController
                     'span' => 12
                 ],
             ])
-            ->addRow('grade_id', 'select', '租户等级', '', [
-                'col'     => [
+            ->addRow('expire_time', 'input', '过期时间', '', [
+                'col' => [
                     'span' => 12
                 ],
-                'options' => StoreGrade::getOptions()
+                'type' => 'date',
+                'placeholder' => ''
             ])
             ->addRow('contact', 'input', '联系人姓名', '', [
                 'col' => [
@@ -288,8 +263,38 @@ class StoreController extends BaseController
                 ],
             ])
             ->addRow('remarks', 'textarea', '租户备注', '', [
-                'col' => [
+                'col'   => [
                     'span' => 18
+                ],
+            ])
+            ->addRow('wechat', 'input', '公众号数量', '', [
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('mini_wechat', 'input', '微信小程序', '', [
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('douyin', 'input', '抖音小程序', '', [
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('h5', 'input', '网页应用', '', [
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('app', 'input', 'APP应用', '', [
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('other', 'input', '其他应用', '', [
+                'col' => [
+                    'span' => 12
                 ],
             ])
             ->create();
@@ -323,22 +328,6 @@ class StoreController extends BaseController
 
             $post['logo'] = Upload::path($post['logo']);
 
-            // 修改等级，重新计算时间
-            if ($model->grade_id != $post['grade_id']) {
-                // 查询等级
-                $where      = [
-                    'id' => $post['grade_id']
-                ];
-                $gradeModel = modelStoreGrade::where($where)->find();
-                if (!$gradeModel) {
-                    return parent::fail('该租户等级不存在');
-                }
-                $post['expire_time'] = date('Y-m-d 00:00:00');
-                if ($gradeModel->expire_day) {
-                    $post['expire_time'] = date('Y-m-d 00:00:00', strtotime("+{$gradeModel->expire_day}day"));
-                }
-            }
-
             if (!$model->save($post)) {
                 return parent::fail('保存失败');
             }
@@ -362,11 +351,12 @@ class StoreController extends BaseController
                     'span' => 12
                 ],
             ])
-            ->addRow('grade_id', 'select', '租户等级', '', [
-                'col'     => [
+            ->addRow('expire_time', 'input', '过期时间', '', [
+                'col' => [
                     'span' => 12
                 ],
-                'options' => StoreGrade::getOptions()
+                'type' => 'date',
+                'placeholder' => ''
             ])
             ->addRow('contact', 'input', '联系人姓名', '', [
                 'col' => [
@@ -388,8 +378,38 @@ class StoreController extends BaseController
                 ],
             ])
             ->addRow('remarks', 'textarea', '租户备注', '', [
-                'col' => [
+                'col'   => [
                     'span' => 18
+                ],
+            ])
+            ->addRow('wechat', 'input', '公众号数量', '', [
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('mini_wechat', 'input', '微信小程序', '', [
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('douyin', 'input', '抖音小程序', '', [
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('h5', 'input', '网页应用', '', [
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('app', 'input', 'APP应用', '', [
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('other', 'input', '其他应用', '', [
+                'col' => [
+                    'span' => 12
                 ],
             ])
             ->setData($model)
@@ -441,7 +461,7 @@ class StoreController extends BaseController
         $where      = [
             'id' => $store_id
         ];
-        $adminModel = Store::with(['grade'])->where($where)->find();
+        $adminModel = Store::where($where)->find();
         if (!$adminModel) {
             return parent::fail('登录错误');
         }
@@ -449,7 +469,7 @@ class StoreController extends BaseController
         $session   = $request->session();
         $session->set('hp_store', $adminModel->toArray());
 
-        $url = "store/#/Index/index?token={$sessionId}";
+        $url = "/store/#/Index/index?token={$sessionId}";
         return $this->successRes(['url' => $url]);
     }
 }

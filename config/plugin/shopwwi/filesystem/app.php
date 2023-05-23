@@ -10,7 +10,7 @@ return [
         'public' => [
             'driver' => \Shopwwi\WebmanFilesystem\Adapter\LocalAdapterFactory::class,
             'root' => public_path(),
-            'url' => 'http://cloud8.hangpu.net' // 静态文件访问域名
+            'url' => env('UPLOAD_PUBLIC_URL','') // 静态文件访问域名
         ],
         // 阿里云驱动
         'oss' => [
@@ -19,7 +19,7 @@ return [
             'accessSecret' => 'OSS_ACCESS_SECRET',
             'bucket' => 'OSS_BUCKET',
             'endpoint' => 'OSS_ENDPOINT',
-            'url' => '' // 静态文件访问域名
+            'url' => env('UPLOAD_OSS_URL','') // 静态文件访问域名
             // 'timeout' => 3600,
             // 'connectTimeout' => 10,
             // 'isCName' => false,
@@ -33,7 +33,7 @@ return [
             'secretKey' => 'QINIU_SECRET_KEY',
             'bucket' => 'QINIU_BUCKET',
             'domain' => 'QINBIU_DOMAIN',
-            'url' => '' // 静态文件访问域名
+            'url' => env('UPLOAD_QINIU_URL','') // 静态文件访问域名
         ],
         // 腾讯云驱动
         'cos' => [
@@ -46,7 +46,7 @@ return [
             // 'signed_url' => false,
             'bucket' => 'COS_BUCKET',
             'read_from_cdn' => false,
-            'url' => '' // 静态文件访问域名
+            'url' => env('UPLOAD_COS_URL','') // 静态文件访问域名
             // 'timeout' => 60,
             // 'connect_timeout' => 60,
             // 'cdn' => '',

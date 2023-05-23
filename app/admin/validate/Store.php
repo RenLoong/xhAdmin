@@ -11,21 +11,34 @@ class Store extends Validate
         'username'          => 'require|mobile|verifyUsername',
         'password'          => 'require',
         'title'             => 'require|verifyTitle',
+        'expire_time'       => 'require',
         'contact'           => 'require',
-        'mobile'            => 'require',
+        'mobile'            => 'require|mobile',
         'logo'              => 'require',
-        'grade_id'          => 'require',
+        'wechat'            => 'require',
+        'mini_wechat'       => 'require',
+        'douyin'            => 'require',
+        'h5'                => 'require',
+        'app'               => 'require',
+        'other'             => 'require',
     ];
 
     protected $message  =   [
         'username.require'  => '请输入租户账号',
         'username.mobile'   => '租户账号必须是手机号',
         'password.require'  => '请输入租户密码',
-        'title.require'     => '请输入租户名称',
+        'title.require'         => '请输入租户名称',
+        'expire_time.require'   => '请选择租户过期时间',
         'contact.require'   => '请输入联系人姓名',
-        'mobile.require'    => '请输入联系电话',
+        'mobile.require'    => '请输入联系手机',
+        'mobile.mobile'     => '请输入正确的联系手机',
         'logo.require'      => '请上传租户图标',
-        'grade_id.require'  => '请选择租户等级',
+        'wechat.require'      => '请输入公众号数量',
+        'mini_wechat.require'      => '请输入微信小程序数量',
+        'douyin.require'      => '请输入抖音小程序数量',
+        'h5.require'      => '请输入网页应用数量',
+        'app.require'      => '请输入APP数量',
+        'other.require'      => '请输入其他应用数量',
     ];
 
     /**
@@ -61,10 +74,16 @@ class Store extends Validate
                 'username',
                 'password',
                 'title',
+                'expire_time',
                 'contact',
                 'mobile',
                 'logo',
-                'grade_id',
+                'wechat',
+                'mini_wechat',
+                'douyin',
+                'h5',
+                'app',
+                'other',
             ]);
     }
 
@@ -82,10 +101,16 @@ class Store extends Validate
             ->only([
                 'username',
                 'title',
+                'expire_time',
                 'contact',
                 'mobile',
                 'logo',
-                'grade_id',
+                'wechat',
+                'mini_wechat',
+                'douyin',
+                'h5',
+                'app',
+                'other',
             ])
             ->remove('username', ['verifyUsername'])
             ->remove('title', ['verifyTitle']);

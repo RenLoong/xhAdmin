@@ -60,6 +60,16 @@
                         </n-form-item>
                     </n-grid-item>
                     <n-grid-item>
+                        <n-form-item label="管理员账户">
+                            <n-input placeholder="请输入管理员账户" v-model:value="form.username" />
+                        </n-form-item>
+                    </n-grid-item>
+                    <n-grid-item>
+                        <n-form-item label="管理员密码">
+                            <n-input placeholder="请输入管理员密码" v-model:value="form.password" />
+                        </n-form-item>
+                    </n-grid-item>
+                    <n-grid-item>
                         <n-form-item label="应用图标">
                             <div class="upload-container">
                                 <div class="upload">
@@ -113,6 +123,8 @@ export default {
                 title: '',
                 name: '',
                 logo: '',
+                username: '',
+                password: '',
             },
             upload: {
                 action: 'SystemUpload/upload',

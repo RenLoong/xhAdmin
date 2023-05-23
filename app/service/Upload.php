@@ -131,8 +131,7 @@ class Upload
                 $data[] = str_replace($configUrl, '', $value);
             }
             return count($data) === 1 ? current($data) : $data;
-        }
-        else {
+        } else {
             return str_replace($configUrl, '', $url);
         }
     }
@@ -150,7 +149,7 @@ class Upload
      */
     private static function addUpload($result, array $category)
     {
-        $appid             = request()->header('appid','');
+        $appid             = request()->header('appid', '');
         $fiel_name         = basename($result->file_name);
         $where['filename'] = $fiel_name;
         $fileModel         = SystemUpload::where($where)->find();
@@ -170,6 +169,7 @@ class Upload
         if (!(new SystemUpload)->save($data)) {
             throw new Exception('附件上传失败');
         }
+        $data['url'] = self::url($result->file_name);
         return $data;
     }
 
@@ -185,8 +185,7 @@ class Upload
     {
         if ($cid) {
             $where[] = ['id', '=', $cid];
-        }
-        else {
+        } else {
             $where[] = ['is_system', '=', '1'];
         }
         $category = SystemUploadCate::where($where)->find();

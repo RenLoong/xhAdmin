@@ -8,6 +8,7 @@ use app\BaseController;
 use app\store\validate\StoreApp;
 use Exception;
 use support\Request;
+use think\facade\Db;
 
 /**
  * 应用管理
@@ -47,12 +48,12 @@ class PlatformAppController extends BaseController
         $model = $this->model;
         $platform_id = $request->get('id');
         $where = [
-            ['platform_id','=',$platform_id],
+            ['platform_id', '=', $platform_id],
         ];
         $data = $model->where($where)
-        ->order(['id'=>'desc'])
-        ->select()
-        ->toArray();
+            ->order(['id' => 'desc'])
+            ->select()
+            ->toArray();
         return parent::successRes($data);
     }
 
@@ -70,13 +71,24 @@ class PlatformAppController extends BaseController
             $post = $request->post();
             $post['store_id'] = hp_admin_id('hp_store');
 
-            hpValidate(StoreApp::class, $post);
-
-            $model = $this->model;
-            if (!$model->save($post)) {
+            hpValidate(StoreApp::class, $post, 'add');
+            Db::startTrans();
+            try {
+                $model = $this->model;
+                $model->save($post);
+                // 执行应用插件方法
+                $class = "\\plugin\\{$model->name}\\api\\Created";
+                if (method_exists($class, 'createAdmin')) {
+                    $post['id'] = $model->id;
+                    $logicCls = new $class;
+                    $logicCls->createAdmin($post);
+                }
+                Db::commit();
+                return $this->success('操作成功');
+            } catch (\Throwable $th) {
+                Db::rollback();
                 return $this->fail('操作失败');
             }
-            return $this->success('操作成功');
         }
         return $this->fail('请求类型错误');
     }
@@ -94,7 +106,7 @@ class PlatformAppController extends BaseController
         $app_id = $request->get('app_id');
         $model  = $this->model;
         $where  = [
-            ['id','=',$app_id],
+            ['id', '=', $app_id],
         ];
         $model  = $model->where($where)->find();
         if (!$model) {
@@ -103,7 +115,7 @@ class PlatformAppController extends BaseController
         if ($request->method() === 'POST') {
             $post = $request->post();
 
-            hpValidate(StoreApp::class, $post);
+            hpValidate(StoreApp::class, $post, 'edit');
 
             if (!$model->save($post)) {
                 return $this->fail('操作失败');

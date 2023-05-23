@@ -23,8 +23,32 @@ class StoreApp extends Validate
         'logo.require'              => '请上传应用图标',
     ];
 
+    public function sceneAdd()
+    {
+        return $this
+            ->only([
+                'store_id',
+                'platform_id',
+                'title',
+                'name',
+                'logo',
+            ]);
+    }
+    public function sceneEdit()
+    {
+        return $this
+            ->only([
+                'store_id',
+                'platform_id',
+                'title',
+                'name',
+                'logo',
+            ])
+            ->remove('title', ['verifyTitle']);
+    }
+
     /**
-     * 天
+     * 添加验证
      * @param mixed $value
      * @return bool|string
      * @copyright 贵州猿创科技有限公司

@@ -11,6 +11,7 @@ use app\enum\PlatformTypes;
 use app\enum\PlatformTypesStyle;
 use app\manager\StorePlatforms;
 use app\service\Upload;
+use app\store\model\Store;
 use app\store\model\StorePlatformConfig;
 use Exception;
 use support\Request;
@@ -78,10 +79,10 @@ class PlatformController extends BaseController
                 'api'  => 'store/Platform/add',
                 'path' => '/Platform/add',
             ], [
-                    'title' => '开通平台',
-                ], [
-                    'type' => 'success'
-                ])
+                'title' => '开通平台',
+            ], [
+                'type' => 'success'
+            ])
             ->addRightButton(
                 'app',
                 '应用管理',
@@ -196,7 +197,7 @@ class PlatformController extends BaseController
     public function add(Request $request)
     {
         $store_id   = hp_admin_id('hp_store');
-        $model =$this->model;
+        $model = $this->model;
         if ($request->method() === 'POST') {
             $post             = $request->post();
             $post['store_id'] = $store_id;
@@ -210,7 +211,7 @@ class PlatformController extends BaseController
                 throw new Exception('平台类型参数错误');
             }
             $surplusNum = $surplusNum[$post['platform_type']];
-            if ($surplusNum<=0) {
+            if ($surplusNum <= 0) {
                 throw new Exception("您该平台类型已使用完");
             }
 
@@ -249,6 +250,13 @@ class PlatformController extends BaseController
                         throw new Exception('保存配置项失败');
                     }
                 }
+                // 扣除平台数量
+                $where = [
+                    'id'        => $model->store_id
+                ];
+                if (!Store::where($where)->setDec($post['platform_type'], 1)) {
+                    throw new Exception('创建平台失败');
+                }
                 Db::commit();
                 return parent::success('保存成功');
             } catch (\Throwable $e) {
@@ -256,7 +264,7 @@ class PlatformController extends BaseController
                 return parent::fail($e->getMessage());
             }
         }
-        $platformTypeOptions = StorePlatforms::getSelectOptions($store_id,true);
+        $platformTypeOptions = StorePlatforms::getSelectOptions($store_id, true);
         $builder = new FormBuilder;
         $builder->setMethod('POST');
         $builder->addRow('title', 'input', '平台名称', '', [
@@ -314,8 +322,7 @@ class PlatformController extends BaseController
                     $platformConfig->platform_id  = $platform_id;
                     $platformConfig->config_field = $field;
                     $platformConfig->config_value = $value;
-                }
-                else {
+                } else {
                     $platformConfig->config_value = $value;
                 }
                 if (!$platformConfig->save()) {
@@ -403,8 +410,7 @@ class PlatformController extends BaseController
                     $value['value'],
                     $extra
                 );
-            }
-            else {
+            } else {
                 $builder = $builder->addRow(
                     $value['field'],
                     $value['type'],
