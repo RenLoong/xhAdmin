@@ -8,6 +8,7 @@ use app\BaseController;
 use app\enum\PlatformTypes;
 use app\enum\StorePlatformStatus;
 use app\service\Upload;
+use app\store\validate\Store;
 use support\Request;
 
 /**
@@ -33,7 +34,7 @@ class StoreController extends BaseController
      */
     public function __construct()
     {
-        $this->model = new \app\store\model\StorePlatform;
+        $this->model = new \app\store\model\Store;
     }
 
     /**
@@ -46,10 +47,10 @@ class StoreController extends BaseController
      */
     public function edit(Request $request)
     {
-        $id = $request->get('id', '');
+        $store_id = hp_admin_id('hp_store');
         $model = $this->model;
         $where = [
-            ['id','=',$id],
+            ['id','=',$store_id],
         ];
         $model = $model->where($where)->find();
         if (!$model) {
@@ -61,7 +62,7 @@ class StoreController extends BaseController
             $post['store_id'] = $model->store_id;
 
             // 数据验证
-            hpValidate(StorePlatform::class, $post, 'edit');
+            hpValidate(Store::class, $post, 'edit');
 
             $post['logo'] = Upload::path($post['logo']);
 
@@ -71,35 +72,34 @@ class StoreController extends BaseController
             return parent::success('保存成功');
         }
         $builder = new FormBuilder;
-        $builder->setMethod('POST');
-        $builder->addRow('platform_type', 'select', '平台类型', 'other', [
-            'col'     => [
-                'span' => 12
-            ],
-            'options' => PlatformTypes::getOptions()
-        ]);
-        $builder->addRow('title', 'input', '平台名称', '', [
+        $builder->setMethod('POST')
+        ->addRow('title', 'input', '租户名称', '', [
             'col' => [
                 'span' => 12
             ],
-        ]);
-        $builder->addComponent('logo', 'uploadify', '平台图标', '', [
-            'col'   => [
+        ])
+        ->addRow('password', 'input', '登录密码', '', [
+            'col' => [
                 'span' => 12
+            ],
+        ])
+        ->addRow('contact', 'input', '联系人姓名', '', [
+            'col' => [
+                'span' => 12
+            ],
+        ])
+        ->addRow('mobile', 'input', '联系电话', '', [
+            'col' => [
+                'span' => 12
+            ],
+        ])
+        ->addComponent('logo', 'uploadify', '租户图标', '', [
+            'col'   => [
+                'span' => 6
             ],
             'props' => [
+                'type'   => 'image',
                 'format' => ['jpg', 'png', 'gif']
-            ],
-        ]);
-        $builder->addRow('status', 'radio', '平台状态', '1', [
-            'col'     => [
-                'span' => 12
-            ],
-            'options' => StorePlatformStatus::getOptions()
-        ]);
-        $builder->addRow('remarks', 'textarea', '平台备注', '', [
-            'col' => [
-                'span' => 12
             ],
         ]);
         $builder->setData($model);

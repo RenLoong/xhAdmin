@@ -16,7 +16,7 @@ use yzh52521\EasyHttp\Request;
 class HttpService
 {
     // 服务端接口地址
-    public static $host = 'http://server8.kaifa.cc/api/';
+    public static $url = 'http://www.kfadmin.net/api/';
 
     /**
      * 实例请求
@@ -30,7 +30,7 @@ class HttpService
     {
         $token   = Redis::get(CloudService::$loginToken) ?? request()->sessionId();
         $fullUrl = request()->fullUrl();
-        return Http::withHost(self::$host)->withHeaders(
+        return Http::withHost(self::$url)->withHeaders(
             [
                 'Authorization'    => $token,
                 'Referer'          => $fullUrl,

@@ -165,6 +165,30 @@ class PluginController extends BaseController
                     ],
                 ]
             ])
+            ->formConfig([
+                'items' => [
+                    [
+                        'field'      => 'keyword',
+                        'title'      => '手机号码',
+                        'itemRender' => [
+                            'name'  => '$input',
+                            'props' => [
+                                'placeholder' => '请输入手机号码'
+                            ],
+                        ],
+                    ],
+                    [
+                        'itemRender' => [
+                            'name'  => '$button',
+                            'props' => [
+                                'type'    => 'submit',
+                                'status'  => 'primary',
+                                'content' => '查询',
+                            ],
+                        ],
+                    ],
+                ],
+            ])
             ->addColumn('title', '名称')
             ->addColumn('version_name', '版本', [
                 'width' => 150

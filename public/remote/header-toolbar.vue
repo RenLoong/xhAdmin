@@ -53,14 +53,14 @@ export default {
                         this.fullscreen = !this.fullscreen
                     },
                 },
-                {
-                    title: '系统设置',
-                    name: 'settings',
-                    icon: 'SettingOutlined',
-                    hanlder: () => {
-                        console.log('系统设置');
-                    },
-                },
+                // {
+                //     title: '系统设置',
+                //     name: 'settings',
+                //     icon: 'SettingOutlined',
+                //     hanlder: () => {
+                //         console.log('系统设置');
+                //     },
+                // },
                 {
                     title: '在线升级',
                     name: 'update',
