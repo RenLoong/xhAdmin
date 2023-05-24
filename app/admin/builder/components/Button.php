@@ -191,7 +191,7 @@ trait Button
         }
         // 设置模态框专有属性
         if (in_array($btnData['pageData']['type'], ['form', 'table', 'remote']) && $btnData['pageData']['modal']) {
-            $btnData['message']['style']['width']  = '45%';
+            $btnData['message']['style']['width']  = '40%';
             $btnData['message']['style']['height'] = '650px';
             $btnData['message']['showIcon']        = false;
             $btnData['message']['maskClosable']    = false;

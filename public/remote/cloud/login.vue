@@ -16,8 +16,8 @@
           </n-input-group>
         </n-form-item>
         <div class="action-btn">
-          <a href="http://kfadmin.net/user/#/register" target="_blank">注册账号</a>
-          <a href="http://kfadmin.net/user/#/forgot" target="_blank">忘记密码</a>
+          <a href="http://kfadmin.net/#/register" target="_blank">注册账号</a>
+          <a href="http://kfadmin.net/#/forgot" target="_blank">忘记密码</a>
         </div>
         <div class="submit-button">
           <n-button type="primary" block @click="onSubmit">

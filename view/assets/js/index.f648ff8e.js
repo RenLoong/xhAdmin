@@ -1,1 +1,0 @@
-import{d as o,B as s,W as r,G as n,o as c}from"./.pnpm.406c1252.js";const l=o({__name:"index",setup(p){const a=s(),e=r(),t=a.params;return t.path?e.replace(t.path):e.replace("/"),(u,m)=>(c(),n("div"))}});export{l as default};

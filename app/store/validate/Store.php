@@ -9,17 +9,17 @@ class Store extends Validate
 {
     protected $rule =   [
         'title'             => 'require|verifyTitle',
-        'password'          => 'require',
         'contact'           => 'require',
         'mobile'            => 'require|mobile',
+        'logo'              => 'require',
     ];
 
     protected $message  =   [
         'title.require'     => '请输入租户名称',
-        'password.require'  => '请输入租户密码',
         'contact.require'   => '请输入租户密码',
         'mobile.require'    => '请输入联系手机',
         'mobile.mobile'     => '请输入正确的联系手机',
+        'logo.require'      => '请上传租户图标',
     ];
 
     /**
@@ -33,8 +33,10 @@ class Store extends Validate
      */
     protected function verifyTitle($value)
     {
+        $store_id = hp_admin_id('hp_store');
         $where = [
-            'title'  => $value
+            ['title','=',$value],
+            ['id','<>',$store_id]
         ];
         if (ModelStore::where($where)->count()) {
             return '该租户名称已存在';

@@ -4,7 +4,6 @@ namespace app\utils;
 
 use app\admin\logic\PluginLogic;
 use Exception;
-use app\admin\middleware\AccessMiddleware;
 use app\admin\model\SystemAuthRule;
 use Webman\Route;
 use support\Request;
@@ -19,6 +18,13 @@ use support\Request;
  */
 class RoutesMgr
 {
+    // gzip开启对应文件返回类型
+    private static $mimeContentType = [
+        'js'   => 'application/javascript',
+        'json' => 'application/json',
+        'css'  => 'text/css',
+    ];
+
     /**
      * 初始化路由
      *
@@ -27,13 +33,14 @@ class RoutesMgr
     public static function init()
     {
         // 注册已安装路由
-        if (file_exists(base_path() . '/.env')) {
+        if (file_exists(base_path('/.env'))) {
             // 注册基础路由
             self::installed();
             // 映射模块名
-            $modules = config('admin',[]);
+            $modules = config('admin', []);
+            // 注册后台视图路由
             self::installAdminView($modules);
-            // 注册插件后台视图
+            // 注册应用插件后台视图
             self::installPluginAdminView();
         }
     }
@@ -47,8 +54,8 @@ class RoutesMgr
      */
     private static function installPluginAdminView()
     {
-        $plugins    = PluginLogic::getLocalPlugins();
-        if (!$plugins) {
+        $plugins = PluginLogic::getLocalPlugins();
+        if (! $plugins) {
             return;
         }
         foreach ($plugins as $plugin_name => $version) {
@@ -74,50 +81,44 @@ class RoutesMgr
      */
     private static function installAdminView(array $modules)
     {
-        if (!$modules) {
+        if (! $modules) {
             return;
         }
-        // gzip开启对应文件返回类型
-        $mimeContentType = [
-            'js'   => 'application/javascript',
-            'json' => 'application/json',
-            'css'  => 'text/css',
-        ];
+        // 视图路径
+        $viewPath       = str_replace('\\', '/', base_path('/view'));
         // 批量注册静态模块路由
         foreach ($modules as $moduleAlias) {
-            Route::group("/{$moduleAlias}", function () use ($mimeContentType) {
-                // 注册视图路由
-                $viewPath = str_replace('\\', '/', base_path('/view'));
+            Route::group("/{$moduleAlias}",function()use($viewPath){
                 // 注册访问地址
-                Route::any('/', function (Request $request, $path = '') use ($viewPath) {
+                Route::get("/", function (Request $request, $path = '') use ($viewPath) {
                     if (strpos($path, '..') !== false) {
                         return response('<h1>400 Bad Request</h1>', 400);
                     }
                     $file = "{$viewPath}/index.html";
-                    if (!is_file($file)) {
+                    if (! is_file($file)) {
                         return response('<h1>404 Not Found</h1>', 404);
                     }
                     return response()->withFile($file);
                 });
                 // 注册静态资源
-                Route::any(
-                    '/assets/[{path:.+}]',
-                    function (Request $request, $path = '') use ($viewPath, $mimeContentType) {
+                Route::get(
+                    "/assets/[{path:.+}]",
+                    function (Request $request, $path = '') use ($viewPath) {
                         if (strpos($path, '..') !== false) {
                             return response('<h1>400 Bad Request</h1>', 400);
                         }
                         $file = "{$viewPath}/assets/{$path}";
-                        if (!is_file($file)) {
+                        if (! is_file($file)) {
                             return response('<h1>404 Not Found</h1>', 404);
                         }
                         $response = response();
                         // 开启GZIP压缩
-                        $gzipFile = $file . '.gz';
+                        $gzipFile = "{$file}.gz";
                         if (file_exists($gzipFile)) {
                             $extension         = pathinfo($file, PATHINFO_EXTENSION);
                             $mime_content_type = 'text/plain';
-                            if (isset($mimeContentType[$extension])) {
-                                $mime_content_type = $mimeContentType[$extension];
+                            if (isset(self::$mimeContentType[$extension])) {
+                                $mime_content_type = self::$mimeContentType[$extension];
                             }
                             $file = $gzipFile;
                             $response->withHeaders([
@@ -133,7 +134,7 @@ class RoutesMgr
     }
 
     /**
-     * 注册已安装路由
+     * 注册已安装路由（接口）
      * @throws Exception
      * @return void
      * @copyright 贵州猿创科技有限公司
@@ -142,9 +143,9 @@ class RoutesMgr
      */
     private static function installed()
     {
-        $order = [
-            'sort'      => 'asc',
-            'id'        => 'asc'
+        $order  = [
+            'sort' => 'asc',
+            'id'   => 'asc'
         ];
         $routes = SystemAuthRule::where('is_api', '1')
             ->order($order)
@@ -152,12 +153,13 @@ class RoutesMgr
             ->toArray();
 
         // 是否启用控制器后缀
-        $_suffix = config('app.controller_suffix');
+        $_suffix = config('app.controller_suffix', '');
         // 动态注册所有路由
         Route::group('/', function () use ($routes, $_suffix) {
             foreach ($routes as $value) {
                 if (strpos($value['path'], '/') === false) {
-                    throw new Exception("路由注册失败,path不符合规则,路由{$value['path']}");
+                    echo "路由注册失败,path不符合规则,路由{$value['path']}";
+                    continue;
                 }
                 list($controller, $action) = explode('/', $value['path']);
                 $controller                = ucfirst($controller);

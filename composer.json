@@ -42,7 +42,9 @@
     "overtrue/flysystem-qiniu": "^2.0",
     "overtrue/flysystem-cos": "^4.0",
     "illuminate/redis": "^9.52",
-    "symfony/cache": "^6.0"
+    "symfony/cache": "^6.0",
+    "phpoffice/phpword": "^1.0",
+    "alibabacloud/dysmsapi-20170525": "^2.0"
   },
   "suggest": {
     "ext-event": "For better performance. "

@@ -58,13 +58,13 @@ class StoreController extends BaseController
         }
         if ($request->method() == 'POST') {
             $post = $request->post();
-
-            $post['store_id'] = $model->store_id;
-
             // 数据验证
             hpValidate(Store::class, $post, 'edit');
 
             $post['logo'] = Upload::path($post['logo']);
+            if (isset($post['password']) && empty($post['password'])) {
+                unset($post['password']);
+            }
 
             if (!$model->save($post)) {
                 return parent::fail('保存失败');
@@ -82,6 +82,7 @@ class StoreController extends BaseController
             'col' => [
                 'span' => 12
             ],
+            'placeholder'=> '不填写则不修改',
         ])
         ->addRow('contact', 'input', '联系人姓名', '', [
             'col' => [
