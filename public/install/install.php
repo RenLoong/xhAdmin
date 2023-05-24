@@ -541,6 +541,21 @@ class Install
                 'status' => false,
                 'value'  => 'fail'
             ],
+            [
+                'name'   => 'proc_get_status',
+                'status' => false,
+                'value'  => 'fail'
+            ],
+            [
+                'name'   => 'proc_close',
+                'status' => false,
+                'value'  => 'fail'
+            ],
+            [
+                'name'   => 'shell_exec',
+                'status' => false,
+                'value'  => 'fail'
+            ],
         ];
         foreach ($data as $key => $value) {
             $data[$key]['status'] = function_exists($value['name']) ? true : false;
