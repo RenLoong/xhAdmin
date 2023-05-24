@@ -44,7 +44,10 @@
     "illuminate/redis": "^9.52",
     "symfony/cache": "^6.0",
     "phpoffice/phpword": "^1.0",
-    "alibabacloud/dysmsapi-20170525": "^2.0"
+    "alibabacloud/dysmsapi-20170525": "^2.0",
+    "workerman/crontab": "^1.0",
+    "webman/redis-queue": "^1.2",
+    "zoujingli/wechat-developer": "^1.2"
   },
   "suggest": {
     "ext-event": "For better performance. "
