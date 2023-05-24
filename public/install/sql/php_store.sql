@@ -25,7 +25,6 @@ CREATE TABLE `php_store`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `create_at` datetime NULL DEFAULT NULL,
   `update_at` datetime NULL DEFAULT NULL,
-  `grade_id` int(11) NULL DEFAULT NULL COMMENT '商户等级',
   `expire_time` datetime NULL DEFAULT NULL COMMENT '过期时间',
   `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商户名称',
   `username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商户账号',
