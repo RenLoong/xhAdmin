@@ -8,3 +8,4 @@
 .user.ini
 /public/.user.ini
 /plugin
+/app/Install.php

@@ -194,21 +194,31 @@ class IndexController extends BaseController
                     $zip->open($zip_file, ZIPARCHIVE::CHECKCONS);
                 }
 
-                $install_class = "\\app\\Install";
                 if (!empty($zip)) {
                     $zip->extractTo(base_path());
-                    echo "框架更新成功...\n";
+                    echo "框架代码更新成功...\n";
                     unset($zip);
                 }
                 else {
                     PluginLogic::unzipWithCmd($cmd);
                 }
-                unlink($zip_file);
-                // 执行install安装
-                if (class_exists($install_class) && method_exists($install_class, 'install')) {
-                    call_user_func([$install_class, 'install'], $version);
-                    echo "执行更新安装成功...\n";
-                    unlink($install_class);
+                // 更新类路径
+                $install_class = "\\app\\Install";
+                if (class_exists($install_class)) {
+                    // 执行更新前置
+                    $context       = null;
+                    if (method_exists($install_class, 'beforeUpdate')) {
+                        $context = call_user_func([$install_class, 'beforeUpdate'], $version);
+                        echo "框架前置更新成功...\n";
+                    }
+                    unlink($zip_file);
+                    // 执行update更新
+                    if (method_exists($install_class, 'update')) {
+                        call_user_func([$install_class, 'update'], $version,$context);
+                        echo "执行更新安装成功...\n";
+                    }
+                    // 删除更新类
+                    unlink(app_path('/Install.php'));
                 }
             } finally {
                 if ($monitor_support_pause) {
