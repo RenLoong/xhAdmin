@@ -6,8 +6,8 @@
     "high performance",
     "http service"
   ],
-  "homepage": "https://www.workerman.net",
-  "license": "MIT",
+  "homepage": "https://www.kfadmin.net",
+  "license": "Apache",
   "description": "High performance HTTP Service Framework.",
   "authors": [
     {

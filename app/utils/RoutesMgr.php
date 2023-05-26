@@ -88,8 +88,12 @@ class RoutesMgr
         $viewPath       = str_replace('\\', '/', base_path('/view'));
         // 批量注册静态模块路由
         foreach ($modules as $moduleAlias) {
-            Route::group("/{$moduleAlias}",function()use($viewPath){
-                // 注册访问地址
+            Route::group("/{$moduleAlias}",function()use($viewPath,$moduleAlias){
+                // 注册不带结尾斜杠跳转
+                Route::get('',function()use($moduleAlias){
+                    return redirect("/{$moduleAlias}/");
+                });
+                // 注册实际后台访问静态页面
                 Route::get("/", function (Request $request, $path = '') use ($viewPath) {
                     if (strpos($path, '..') !== false) {
                         return response('<h1>400 Bad Request</h1>', 400);
