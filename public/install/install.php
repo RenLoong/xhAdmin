@@ -2,6 +2,8 @@
 use app\admin\service\kfcloud\CloudService;
 use app\admin\service\kfcloud\HttpService;
 use app\utils\Password;
+use Illuminate\Support\Facades\Redis;
+use Webman\Config;
 
 define('ROOT_PATH', dirname(dirname(__DIR__)));
 class Install
@@ -24,6 +26,8 @@ class Install
                 ]
             ]));
         }
+        // 加载配置项
+        Config::load(ROOT_PATH.'/config');
     }
 
     /**
@@ -199,15 +203,22 @@ class Install
             throw new Exception($response['msg'], $response['code']);
         }
         // 缓存Redis
-        $config = require ROOT_PATH . "/config/redis.php";
-        $config = isset($config['default']) ? $config['default'] : $config;
-        $redis  = new \Redis;
-        $redis->connect($config['host'], $config['port']);
+        $redis = self::connectRedis();
         $loginStatus = $redis->set(CloudService::$loginToken, $response['data']['token']);
         if (!$loginStatus) {
             throw new Exception('登录云服务失败');
         }
         return $data;
+    }
+
+    // 链接redis
+    private static function connectRedis()
+    {
+        $config = require ROOT_PATH . "/config/redis.php";
+        $config = isset($config['default']) ? $config['default'] : $config;
+        $redis  = new \Redis;
+        $redis->connect($config['host'], $config['port']);
+        return $redis;
     }
 
     /**
@@ -368,6 +379,21 @@ class Install
 
         // 读取配置文件
         $envConfig = file_get_contents($envTplPath);
+        
+        // 云服务
+        $response = CloudService::installSite(
+            $site['web_name'],
+            $site['web_url']
+        )->array();
+        if (!$response) {
+            throw new Exception('安装云站点失败',404);
+        }
+        if (!isset($response['code'])) {
+            throw new Exception('安装云站点失败！', 404);
+        }
+        if ($response['code'] !== 200) {
+            throw new Exception($response['msg'],$response['code']);
+        }
 
         // 替换配置文件参数
         $str1      = [

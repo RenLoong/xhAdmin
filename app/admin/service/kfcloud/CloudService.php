@@ -39,6 +39,27 @@ class CloudService
         return HttpService::send()->post('User/login', $body);
     }
 
+
+    /**
+     * 站点安装
+     *
+     * @Author 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-03-23
+     * @param  string   $title
+     * @param  string   $domain
+     * @param  string   $ip
+     * @return Response
+     */
+    public static function installSite(string $title,string $domain)
+    {
+        $data = [
+            'title'     => $title,
+            'domain'    => $domain
+        ];
+        return HttpService::send()->post('Site/install', $data);
+    }
+
     /**
      * 获取图像验证码
      *

@@ -2,7 +2,7 @@
 
 namespace app\admin\validate;
 
-use think\Validate;
+use yzh52521\validate\Validate;
 
 class SystemAuthRule extends Validate
 {

@@ -3,7 +3,7 @@
 namespace app\admin\validate;
 
 use app\store\model\StorePlatformConfig;
-use think\Validate;
+use yzh52521\validate\Validate;
 
 class StorePlatform extends Validate
 {

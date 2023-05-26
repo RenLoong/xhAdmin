@@ -16,7 +16,8 @@ use yzh52521\EasyHttp\Request;
 class HttpService
 {
     // 服务端接口地址
-    public static $url = 'https://www.kfadmin.net/api/';
+    // public static $url = 'https://www.kfadmin.net/api/';
+    public static $url = 'http://server8.kaifa.cc/api/';
 
     /**
      * 实例请求
@@ -28,8 +29,14 @@ class HttpService
      */
     public static function send(): Request
     {
-        $token   = Redis::get(CloudService::$loginToken) ?? request()->sessionId();
-        $fullUrl = request()->fullUrl();
+        $token = Redis::get(CloudService::$loginToken) ?? request()->sessionId();
+        if (!preg_match("/cli/i", php_sapi_name())) {
+            $scheme = isset($_SERVER['REQUEST_SCHEME']) ? $_SERVER['SERVER_NAME'] : '';
+            $host = isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : '';
+            $fullUrl = $scheme && $host ? "{$scheme}://{$host}" : '';
+        }else{
+            $fullUrl = request()->fullUrl();
+        }
         return Http::withHost(self::$url)->withHeaders(
             [
                 'Authorization'    => $token,

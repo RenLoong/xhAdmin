@@ -3,7 +3,7 @@
 namespace app\admin\validate;
 
 use app\admin\model\SystemAdmin as ModelSystemAdmin;
-use think\Validate;
+use yzh52521\validate\Validate;
 
 class SystemAdmin extends Validate
 {

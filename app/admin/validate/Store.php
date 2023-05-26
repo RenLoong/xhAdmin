@@ -3,7 +3,7 @@
 namespace app\admin\validate;
 
 use app\admin\model\Store as ModelStore;
-use think\Validate;
+use yzh52521\validate\Validate;
 
 class Store extends Validate
 {
