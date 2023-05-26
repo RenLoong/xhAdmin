@@ -337,6 +337,9 @@ class PluginController extends BaseController
                 return $this->fail('请解除proc_open函数的禁用或者给php安装zip模块');
             }
         }
+        if (! function_exists('shell_exec')) {
+            return $this->fail('请开启shell_exec函数');
+        }
         
         $monitor_support_pause = method_exists(Monitor::class, 'pause');
         if ($monitor_support_pause) {
@@ -422,6 +425,9 @@ class PluginController extends BaseController
             if (!function_exists('proc_open')) {
                 return $this->fail('请解除proc_open函数的禁用或者给php安装zip模块');
             }
+        }
+        if (!function_exists('shell_exec')) {
+            return $this->fail('请开启shell_exec函数');
         }
 
         $monitor_support_pause = method_exists(Monitor::class, 'pause');
