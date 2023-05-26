@@ -107,7 +107,7 @@ Redis
 
 开源不易，以下如果有需要，请支持一下，感谢您的支持，让我们更多动力！
 
-[![](readme/pic/gitee2.png)](https://www.crmeb.com/index/criteria)
+[![](readme/pic/gitee2.png)](https://www.kfadmin.net/)
 
 欢迎反馈问题 [反馈问题](https://gitee.com/yc_open/kfadmin-cloud/issues)。
 
