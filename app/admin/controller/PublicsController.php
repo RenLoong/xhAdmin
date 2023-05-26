@@ -27,11 +27,17 @@ class PublicsController extends BaseController
      */
     public function site()
     {
+        $empower_token = empowerFile('token');
+        $private_key = empowerFile('private_key');
         $moduleName = getModule('admin');
         $data       = [
             'web_name'       => getHpConfig('web_name'),
             'web_title'      => '登录',
             'web_logo'       => getHpConfig('web_logo'),
+            // 版权token
+            'empower_token' => $empower_token,
+            // 版权私钥
+            'empower_private_key' => $private_key,
             // 登录页链接
             'login_link'     => [
                 'register'    => '',
@@ -61,11 +67,11 @@ class PublicsController extends BaseController
             ],
             // 远程组件
             'remote_url'     => [
-                // [
-                //     'title'  => '用户注册',
-                //     'path'   => '/register',
-                //     'remote' => 'remote/register'
-                // ],
+                /* [
+                    'title'  => '用户注册',
+                    'path'   => '/register',
+                    'remote' => 'remote/register'
+                ], */
             ],
             // 附件库API
             'uploadify_api'  => [

@@ -121,7 +121,7 @@ class Install
             'scode'    => 'no'
         ];
         $referer = $_SERVER['HTTP_REFERER'];
-        $url     = HttpService::$host . 'User/login';
+        $url     = HttpService::$url . 'User/login';
         $headers = [
             'X-Requested-With:XMLHttpRequest',
         ];

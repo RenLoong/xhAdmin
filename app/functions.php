@@ -384,3 +384,23 @@ function p($str, $remarks = '日志：')
         echo PHP_EOL;
     }
 }
+
+/**
+ * 获取授权内容
+ *
+ * @param string $fileName
+ * @param string $default
+ * @return mixed
+ */
+function empowerFile(string $fileName,$default = '')
+{
+    $path = base_path("/{$fileName}.pem");
+    if (!file_exists($path)) {
+        return $default;
+    }
+    $content = file_get_contents($path);
+    if (!$content) {
+        return $default;
+    }
+    return $default;
+}

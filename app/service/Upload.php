@@ -154,6 +154,8 @@ class Upload
         $where['filename'] = $fiel_name;
         $fileModel         = SystemUpload::where($where)->find();
         if ($fileModel) {
+            $fileModel->update_at = date('Y-m-d H:i:s');
+            $fileModel->save();
             return $fileModel->toArray();
         }
         $data['cid']      = $category['id'];

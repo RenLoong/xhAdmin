@@ -5,6 +5,7 @@ namespace app\admin\controller;
 use app\admin\builder\FormBuilder;
 use app\admin\builder\ListBuilder;
 use app\admin\model\SystemConfigGroup;
+use app\admin\validate\SystemConfigGroup as ValidateSystemConfigGroup;
 use app\BaseController;
 use support\Request;
 
@@ -107,6 +108,10 @@ class SystemConfigGroupController extends BaseController
     {
         if ($request->method() == 'POST') {
             $post = $request->post();
+
+            // 数据验证
+            hpValidate(ValidateSystemConfigGroup::class,$post,'add');
+
             $model = new SystemConfigGroup;
             if (!$model->save($post)) {
                 return parent::fail('保存失败');
@@ -157,6 +162,10 @@ class SystemConfigGroupController extends BaseController
         }
         if ($request->method() == 'PUT') {
             $post = $request->post();
+
+            // 数据验证
+            hpValidate(ValidateSystemConfigGroup::class,$post,'edit');
+
             if (!$model->save($post)) {
                 return parent::fail('保存失败');
             }
