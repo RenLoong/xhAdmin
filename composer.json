@@ -6,23 +6,21 @@
     "high performance",
     "http service"
   ],
-  "homepage": "https://www.kfadmin.net",
+  "homepage": "https://www.kfadmin.net/",
   "license": "Apache",
   "description": "High performance HTTP Service Framework.",
   "authors": [
     {
-      "name": "walkor",
-      "email": "walkor@workerman.net",
-      "homepage": "https://www.workerman.net",
+      "name": "贵州猿创科技有限公司",
+      "homepage": "https://www.kfadmin.net/",
       "role": "Developer"
     }
   ],
   "support": {
-    "email": "walkor@workerman.net",
-    "issues": "https://github.com/walkor/webman/issues",
-    "forum": "https://wenda.workerman.net/",
-    "wiki": "https://workerman.net/doc/webman",
-    "source": "https://github.com/walkor/webman"
+    "issues": "https://gitee.com/yc_open/kfadmin-cloud/issues",
+    "forum": "https://www.kfadmin.net/",
+    "wiki": "https://gitee.com/yc_open/kfadmin-cloud/wikis",
+    "source": "https://gitee.com/yc_open/kfadmin-cloud"
   },
   "require": {
     "php": ">=7.2",
