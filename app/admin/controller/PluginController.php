@@ -5,6 +5,7 @@ namespace app\admin\controller;
 use app\admin\builder\ListBuilder;
 use app\admin\logic\PluginLogic;
 use app\admin\service\kfcloud\CloudService;
+use app\admin\utils\ComposerMgr;
 use app\BaseController;
 use app\enum\PlatformTypes;
 use app\enum\PlatformTypesStyle;
@@ -359,6 +360,8 @@ class PluginController extends BaseController
             if (class_exists($install_class) && method_exists($install_class, 'install')) {
                 call_user_func([$install_class, 'install'], $version);
             }
+            // 执行检测并安装composer包
+            ComposerMgr::check_plugin_dependencies($name);
         } finally {
             if ($monitor_support_pause) {
                 Monitor::resume();
@@ -451,6 +454,8 @@ class PluginController extends BaseController
             if (class_exists($install_class) && method_exists($install_class, 'update')) {
                 call_user_func([$install_class, 'update'], $installed_version, $version, $context);
             }
+            // 执行检测并更新composer包
+            ComposerMgr::check_plugin_dependencies($name,true);
         } finally {
             if ($monitor_support_pause) {
                 Monitor::resume();
