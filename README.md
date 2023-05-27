@@ -8,7 +8,7 @@
 
 <div align="center" >
     <a href="https://kfadmin.net/">
-        <img src="https://img.shields.io/badge/Licence-GPL3.0-green.svg?style=flat" />
+        <img src="https://img.shields.io/badge/license-Apache%202-blue.svg" />
     </a>
     <a href="https://kfadmin.net/">
         <img src="https://img.shields.io/badge/Edition-4.5-blue.svg" />
@@ -85,11 +85,6 @@ Redis
 ![输入图片说明](https://img.alicdn.com/imgextra/i4/2064565174/O1CN01kUKrGT1o5k5QMR0G4_!!2064565174.png)
 ![输入图片说明](https://img.alicdn.com/imgextra/i1/2064565174/O1CN01qi54gf1o5k5WbnTzB_!!2064565174.png)
 
-<div align="center">
-<a href='http://s.crmeb.com/goods_detail/739' target='_blank'>点击查看高清版全套UI设计图</a>
-</div>
-
-
 ### 产品生态
 
 | 项目名称       | 关注量 | 项目介绍                |
@@ -107,8 +102,6 @@ Redis
 
 开源不易，以下如果有需要，请支持一下，感谢您的支持，让我们更多动力！
 
-[![](readme/pic/gitee2.png)](https://www.kfadmin.net/)
-
 欢迎反馈问题 [反馈问题](https://gitee.com/yc_open/kfadmin-cloud/issues)。
 
 欢迎提交代码 [提交代码](https://gitee.com/yc_open/kfadmin-cloud/pulls)。
@@ -121,7 +114,7 @@ Redis
 
 产品：张宇凡
 
-技术：余心、楚羽幽、杨漂
+研发：余心、楚羽幽、杨漂
 
 UI：Hmm、林深见灵鹿`
 
