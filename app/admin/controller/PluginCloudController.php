@@ -79,6 +79,8 @@ class PluginCloudController extends BaseController
      */
     public function bill(Request $request)
     {
+        $params = $request->get();
+        return json(CloudService::bill($params)->array());
     }
 
     /**

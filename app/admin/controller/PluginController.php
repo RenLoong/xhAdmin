@@ -168,26 +168,25 @@ class PluginController extends BaseController
             ])
             ->addColumn('title', '名称')
             ->addColumn('version_name', '版本', [
-                'width' => 150
+                'width' => 100
             ])
             ->addColumn('dev.title', '开发者')
             ->addColumnEle('money', '价格', [
+                'width'  => 150,
                 'params' => [
                     'type' => 'money'
                 ]
             ])
             ->addColumnEle('logo', '图标', [
-                'width'  => 100,
+                'width'  => 80,
                 'params' => [
                     'type' => 'image',
                 ],
             ])
-            ->addColumnEle('platform', '平台类型', [
-                'width'  => 120,
+            ->addColumnEle('platform_icon', '支持平台', [
                 'params' => [
-                    'type'    => 'tags',
-                    'options' => PlatformTypes::dictOptions(),
-                    'style'   => PlatformTypesStyle::parseAlias('type'),
+                    'type' => 'images',
+                    'previewDisabled' => true
                 ],
             ])
             ->addColumnEle('plugin_type', '应用类型', [
@@ -214,7 +213,7 @@ class PluginController extends BaseController
     {
         $page = (int) $request->get('page', 1);
         $active   = $request->get('active', '0');
-        
+
         $installed = PluginLogic::getLocalPlugins();
         $query = [
             'active'    => $active,
@@ -245,7 +244,7 @@ class PluginController extends BaseController
     {
         $name   = $request->get('name');
         $version   = $request->get('version');
-        $detail = CloudService::detail($name,$version)->array();
+        $detail = CloudService::detail($name, $version)->array();
         if (!$detail) {
             return $this->fail('获取应用失败');
         }
@@ -270,7 +269,7 @@ class PluginController extends BaseController
     {
         $name = $request->post('name');
         $version = $request->post('version');
-        return json(CloudService::buyApp($name,$version)->array());
+        return json(CloudService::buyApp($name, $version)->array());
     }
 
     /**
@@ -285,7 +284,7 @@ class PluginController extends BaseController
     {
         $name = $request->get('name');
         $version = $request->get('version');
-        return json(CloudService::detail($name,$version)->array());
+        return json(CloudService::detail($name, $version)->array());
     }
 
     /**
@@ -314,7 +313,7 @@ class PluginController extends BaseController
             return json($plugin);
         }
         // 获取下载文件url
-        $data = CloudService::getDownKey($name,$version)->array();
+        $data = CloudService::getDownKey($name, $version)->array();
         if ($data['code'] !== 200) {
             return json($data);
         }
@@ -337,10 +336,10 @@ class PluginController extends BaseController
                 return $this->fail('请解除proc_open函数的禁用或者给php安装zip模块');
             }
         }
-        if (! function_exists('shell_exec')) {
+        if (!function_exists('shell_exec')) {
             return $this->fail('请开启shell_exec函数');
         }
-        
+
         $monitor_support_pause = method_exists(Monitor::class, 'pause');
         if ($monitor_support_pause) {
             Monitor::pause();
@@ -358,13 +357,15 @@ class PluginController extends BaseController
             } else {
                 PluginLogic::unzipWithCmd($cmd);
             }
+            // 执行检测并安装composer包
+            ComposerMgr::check_plugin_dependencies($name);
+            // 删除压缩包
             unlink($zip_file);
             // 执行install安装
             if (class_exists($install_class) && method_exists($install_class, 'install')) {
                 call_user_func([$install_class, 'install'], $version);
             }
-            // 执行检测并安装composer包
-            ComposerMgr::check_plugin_dependencies($name);
+            echo "{$name} --- 安装完成".PHP_EOL;
         } finally {
             if ($monitor_support_pause) {
                 Monitor::resume();
@@ -391,7 +392,7 @@ class PluginController extends BaseController
         $version           = $request->post('version');
         $installed_version = PluginLogic::getPluginVersion($name);
         if (!$installed_version) {
-            return $this->fail('该应用可能未安装');
+            return $this->fail('该应用未安装');
         }
 
         // 获取插件信息
@@ -451,17 +452,18 @@ class PluginController extends BaseController
             if (!empty($zip)) {
                 $zip->extractTo(base_path('/plugin/'));
                 unset($zip);
-            }
-            else {
+            } else {
                 PluginLogic::unzipWithCmd($cmd);
             }
+            // 执行检测并更新composer包
+            ComposerMgr::check_plugin_dependencies($name, true);
+            // 删除压缩包
             unlink($zip_file);
             // 执行update更新
             if (class_exists($install_class) && method_exists($install_class, 'update')) {
                 call_user_func([$install_class, 'update'], $installed_version, $version, $context);
             }
-            // 执行检测并更新composer包
-            ComposerMgr::check_plugin_dependencies($name,true);
+            echo "{$name} --- 更新完成" . PHP_EOL;
         } finally {
             if ($monitor_support_pause) {
                 Monitor::resume();

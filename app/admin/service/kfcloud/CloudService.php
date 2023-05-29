@@ -87,6 +87,17 @@ class CloudService
     }
 
     /**
+     * 获取用户账单记录
+     *
+     * @param  array                       $data
+     * @return \yzh52521\EasyHttp\Response
+     */
+    public static function bill(array $data = []): Response
+    {
+        return HttpService::send()->get('User/getUserBill',$data);
+    }
+
+    /**
      * 获取应用插件列表
      * @param array $query
      * @return Response

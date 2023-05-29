@@ -1,77 +1,56 @@
 <template>
   <div class="cloud-container">
-    <!-- 用户块 -->
-    <div class="user-center" v-if="isLogin">
-      <div class="user">
-        <!-- 用户 -->
-        <div class="user-info">
-          <n-avatar :src="user.headimg" size="large" />
-          <div class="info">
-            <div class="nickname">
-              <span class="fa fa-user-o"></span>
-              {{ user.nickname ? user.nickname : "未设置昵称" }}
+    <div class="bill-container">
+      <div class="bill-title">账单流水</div>
+      <div class="bill-list" ref="billListRef">
+        <div class="item" v-for="(item,index) in datalist" :key="index">
+          <!-- <div class="order_no">订单编号：dsadsadas</div> -->
+          <div class="info-container">
+          <img src="/image/bill-icon.png" class="bill-icon" alt="">
+            <div class="info">
+              <div class="title">{{ item.remarks }}</div>
+              <div class="date">账单时间：{{ item.create_at }}</div>
             </div>
-            <div class="money">
-              <span class="fa fa-cny"></span>
-              {{ user.money ? user.money : "0.00" }}
+            <div class="price" :class="item.bill_type === 1 ? 'inc' : 'dec'">
+            {{item.bill_type === 1 ? '+' : '-'}}￥{{ item.money }}
             </div>
           </div>
         </div>
-        <!-- 充值 -->
-        <div class="recharge">
-          <n-button type="success" @click="hanldOpenBrowser('user/recharge')">
-            <template #icon>
-              <app-icons icon="CreditCardOutlined" />
-            </template>
-            <span>充值</span>
-          </n-button>
+        <div ref="bottomRef"></div>
+      </div>
+    </div>
+    <div class="user-container">
+      <div class="user-block">
+        <div class="user-title">个人中心</div>
+        <div class="user">
+          <img :src="user?.headimg" class="headimg" />
+          <div class="nickname">{{ user?.nickname ?? '未设置昵称' }}</div>
+          <div class="username">{{ user?.username ?? '未设置账号' }}</div>
+          <div class="last-date">最后登录 {{ user?.last_login_time }}</div>
+        </div>
+        <div class="tools">
+          <div class="item" @click="hanldOpen('/#/control/user')">
+            <img src="/image/personal.png" class="icon" />
+            <div class="title">个人资料</div>
+          </div>
+          <div class="item" @click="hanldOpen('/#/control/wallet')">
+            <img src="/image/wallet.png" class="icon" />
+            <div class="title">我的钱包</div>
+          </div>
+          <div class="item" @click="hanldOpen('/#/control/apps')">
+            <img src="/image/application.png" class="icon" />
+            <div class="title">我的应用</div>
+          </div>
+          <div class="item" @click="hanldOpen('/#/control/orders')">
+            <img src="/image/application.png" class="icon" />
+            <div class="title">我的订单</div>
+          </div>
+          <div class="item" @click="hanldOpen('/#/control/site')">
+            <img src="/image/user-site.png" class="icon" />
+            <div class="title">我的站点</div>
+          </div>
         </div>
       </div>
-    </div>
-    <!-- 工具块 -->
-    <div class="block-container">
-      <div class="title">
-        <span class="fa fa-tv"></span>
-        <span class="ml-2">工具服务</span>
-      </div>
-      <n-grid :cols="4">
-        <n-grid-item class="tool-col">
-          <div class="item" @click="hanldOpenBrowser('perfect')">
-            <n-image src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png" class="tool-logo" />
-            <div>个人资料</div>
-          </div>
-        </n-grid-item>
-        <n-grid-item class="tool-col">
-          <div class="item" @click="hanldOpenBrowser('wallet')">
-            <n-image src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png" class="tool-logo" />
-            <div>我的钱包</div>
-          </div>
-        </n-grid-item>
-        <n-grid-item class="tool-col">
-          <div class="item" @click="hanldOpenBrowser('plugin')">
-            <n-image src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png" class="tool-logo" />
-            <div>我的应用</div>
-          </div>
-        </n-grid-item>
-        <n-grid-item class="tool-col">
-          <div class="item" @click="hanldOpenBrowser('site')">
-            <n-image src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png" class="tool-logo" />
-            <div>我的站点</div>
-          </div>
-        </n-grid-item>
-      </n-grid>
-    </div>
-    <!-- 账单流水 -->
-    <div class="block-container">
-      <div class="title">
-        <span class="fa fa-file-text-o"></span>
-        <span class="ml-2">账单流水</span>
-      </div>
-      <!-- <el-table :data="datalist" stripe border>
-        <el-table-column prop="date" label="账单时间" width="180" />
-        <el-table-column prop="name" label="账单金额" width="150" />
-        <el-table-column prop="address" label="账单备注" />
-      </el-table> -->
     </div>
   </div>
 </template>
@@ -83,34 +62,29 @@ export default {
       isLogin: false,
       user: {
         username: "",
+        headimg: "",
       },
+      page:1,
       datalist: [],
     };
   },
-  props: {
-    url: String,
-  },
   created() {
+    this.ob=new IntersectionObserver(e=>{
+      if(e[0].isIntersecting){
+        this.getBill();
+      }
+    });
+    this.$nextTick(()=>{
+      this.ob.observe(this.$refs.bottomRef);
+    })
     this.init();
   },
   methods: {
-    /**
-     * 打开新的浏览器窗口
-     * @param {*} path 
-     */
-    hanldOpenBrowser(path) {
-      const url = `http://kfadmin.net/user/#/${path}`;
-      window.open(url);
+    hanldOpen(path){
+        const url = `http://www.kfadmin.net${path}`;
+        window.open(url);
     },
-    /**
-     * 打开新页面
-     * @param {*} path 
-     */
-    openWin(path) {
-      this.$emit("openWin", path);
-    },
-    // 初始化业务
-    init() {
+    getUser(){
       var _this = this;
       _this.$http
         .useGet("/admin/PluginCloud/index")
@@ -122,9 +96,42 @@ export default {
         .catch((err) => {
           console.log(err);
           if (err?.code === 600 || err?.code === 11000) {
+            _this.$emit("update:openWin", "remote/cloud/login");
+          }
+        });
+      },
+    getBill(){
+      var _this = this;
+      _this.$http
+        .useGet("/admin/PluginCloud/bill",{page:this.page})
+        .then((e) => {
+          const { data } = e;
+          if(data.current_page>=data.last_page){
+            this.ob.unobserve(this.$refs.bottomRef);
+          }
+          this.page++;
+          const pageData=data.data;
+          for (let index = 0; index < pageData.length; index++) {
+            const element = pageData[index];
+            this.datalist.push(element);
+          }
+          this.$nextTick(()=>{
+            if(this.$refs.billListRef.scrollHeight<=this.$refs.billListRef.clientHeight){
+              setTimeout(() => {
+                this.getBill();
+              }, 300);
+            }
+          })
+        })
+        .catch((err) => {
+          if (err?.code === 600 || err?.code === 11000) {
             _this.$emit('update:openWin', 'remote/cloud/login')
           }
         });
+    },
+    // 初始化业务
+    init() {
+      this.getUser();
     },
   },
 };
@@ -132,58 +139,134 @@ export default {
 
 <style lang="scss" scoped>
 .cloud-container {
-  padding: 20px;
-
-  .user-center {
-    .user {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #ddd;
-      padding: 10px 0;
-
-      .user-info {
-        display: flex;
-        align-items: center;
-
-        .info {
-          padding: 3px 0 0 8px;
-          font-size: 14px;
-        }
-      }
-
-      .recharge {}
-    }
-  }
-
-  .block-container {
-    margin-top: 20px;
-
-    .title {
-      font-size: 16px;
+  display: flex;
+  padding: 10px;
+  height: 100%;
+  margin-bottom: 10px;
+  background: #f5f5f5;
+  .bill-container {
+    flex: 1;
+    padding: 10px;
+    .bill-title {
+      font-size: 15px;
       font-weight: 700;
       padding: 10px 0;
-      user-select: none;
     }
-
-    .tool-col {
-      text-align: center;
-
+    .bill-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      height: 90%;
+      overflow-y: auto;
+      padding-right:10px;
       .item {
-        cursor: pointer;
-        display: inline-block;
         background: #fff;
-        padding: 10px 15px;
-        border-radius: 3px;
-
-        .tool-logo {
-          width: 40px;
-          height: 40px;
+        box-shadow: 2px 3px 3px #e5e5e5;
+        .order_no {
+            border-bottom: 1px solid #e5e5e5;
+            padding: 10px;
+            font-size: 14px;
+            color:#888;
+        }
+        .info-container{
+            display: flex;
+            padding: 10px;
+            .bill-icon{
+                width: 45px;
+                height: 45px;
+            }
+            .info{
+                flex: 1;
+                padding-left: 10px;
+                .title{
+                    font-size: 16px;
+                    font-weight: 700;
+                }
+                .date{
+                    color:#888;
+                    font-size: 14px;
+                }
+            }
+            .price{
+                width: 150px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 18px;
+            }
+            .inc{
+                color:#18a058;
+            }
+            .dec{
+                color:red;
+            }
         }
       }
-
-      .item:hover {
-        background: #f1f1f1;
+    }
+  }
+  .user-container {
+    width: 230px;
+    .user-block {
+      border: 1px solid #e5e5e5;
+      border-radius: 10px;
+      box-shadow: 3px 3px 3px #f1f1f1;
+      padding: 20px;
+      background: #fff;
+      .user-title {
+        font-size: 15px;
+        font-weight: 700;
+      }
+      .user {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        line-height: 25px;
+        .headimg {
+          width: 100px;
+          height: 100px;
+          margin: 0 auto 10px auto;
+          border-radius: 50%;
+        }
+        .nickname{
+            font-size:18px;
+        }
+        .username {
+            font-size: 14px;
+        }
+        .last-date {
+          font-size: 14px;
+          color: #888;
+        }
+      }
+      .tools {
+        display: flex;
+        flex-direction: column;
+        margin-top: 10px;
+        gap: 10px;
+        .item {
+          display: flex;
+          background: #fff;
+          padding: 10px 20px;
+          box-shadow: 2px 2px 3px #e5e5e5;
+          border-radius: 3px;
+          user-select: none;
+          cursor: pointer;
+          .icon {
+            width: 35px;
+            height: 35px;
+          }
+          .title {
+            flex: 1;
+            font-size: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+        }
+        .item:hover {
+          background: #f8f8f8;
+        }
       }
     }
   }

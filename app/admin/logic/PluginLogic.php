@@ -48,7 +48,7 @@ class PluginLogic
         $data = CloudService::getZip($key);
         $response = $data->array();
         if (is_array($response) && isset($response['code'])) {
-            throw new Exception($response['msg']);
+            throw new Exception($response['msg'],$response['code']);
         }
         $zip_content = $data->body();
         file_put_contents($file, $zip_content);
