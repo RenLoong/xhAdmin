@@ -67,7 +67,7 @@ Redis
 ### 安装教程
 
 #### 1、下载框架
- <a href="https://gitee.com/yc_open/kfadmin-cloud/archive/refs/tags/1.1.5.zip" target="_blank">点击下载KFAdmin框架</a>
+ <a href="https://gitee.com/yc_open/kfadmin-cloud/repository/archive/master.zip" target="_blank">点击下载KFAdmin框架</a>
 #### 2、将代码上传至站点根目录
 #### 3、设置站点根目录为public
 #### 4、访问域名自己的域名，http://xxx.com 根据步骤进行安装
