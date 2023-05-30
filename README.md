@@ -65,16 +65,19 @@ Redis
 
 ### 安装教程
 
-1、下载框架
+> 1、下载框架
 
  <a href="https://gitee.com/yc_open/kfadmin-cloud/repository/archive/master.zip" target="_blank">
  点击下载KFAdmin框架
  </a>
 
-2、将代码上传至站点根目录
-3、设置站点根目录为public
-4、设置nginx配置
-在server外部设置
+> 2、将代码上传至站点根目录
+
+> 3、设置站点根目录为public
+
+> 4、设置nginx配置
+
+> 在server外部设置
 ```
 upstream cloud8_dev {
   # HPAdmin HTTP Server 的 IP 及 端口
@@ -124,10 +127,10 @@ location / {
     }
 }
 ```
-5、执行框架启动：执行php webman start 启动框架
+> 5、执行框架启动：执行php webman start 启动框架
 
-6、执行数据配置安装
-访问域名，http://你自己的域名 根据步骤进行安装
+> 6、执行数据配置安装
+> 访问域名，http://你自己的域名 根据步骤进行安装
 
 
 ### 部署教程
