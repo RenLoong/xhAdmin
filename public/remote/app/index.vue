@@ -56,7 +56,7 @@
                     </n-grid-item>
                     <n-grid-item>
                         <n-form-item label="应用选择">
-                            <n-select v-model:value="form.name" :options="pluginOpptions" placeholder="请选择应用" />
+                            <n-select v-model:value="form.name" :options="pluginOptions" placeholder="请选择应用" />
                         </n-form-item>
                     </n-grid-item>
                     <n-grid-item>
@@ -117,7 +117,7 @@ export default {
                 class: 'app-dialog',
             },
             pluginList: [],
-            pluginOpptions: [],
+            pluginOptions: [],
             form: {
                 id: '',
                 title: '',
@@ -159,7 +159,7 @@ export default {
         },
         // 错误回调
         onError(e) {
-            console.log(e);
+            console.error(e);
             this.$useNotification?.error({
                 title: '上传失败',
                 duration: 1500,
@@ -297,25 +297,32 @@ export default {
         },
         // 获取已安装应用
         getPluginsApps() {
+            // 获取平台详情
             const platform = this.platform;
-            const plugins = this.$userApp.userInfo.plugins;
+            // 已授权应用名称
+            const plugins_names = this.$userApp.userInfo.plugins;
+            // 已安装应用列表
             const pluginList = this.pluginList;
-            let pluginOpptions = [];
+            let pluginOptions = [];
             for (let index = 0; index < pluginList.length; index++) {
                 const item = pluginList[index];
-                const _plugin = plugins.find((plugin_name) => {
-                    if (plugin_name === item.name && item.platform === platform.platform_type) {
+                const _plugin = plugins_names.find((plugin_name) => {
+                    if (
+                        plugin_name === item.name
+                        &&
+                        item.platform.find((inst_platform) => inst_platform === platform.platform_type)
+                    ) {
                         return plugin_name
                     }
                 })
                 if (_plugin) {
-                    pluginOpptions.push({
+                    pluginOptions.push({
                         label: `${item.title} -- [${item.platform_text}}]`,
                         value: item.name
                     })
                 }
             }
-            this.pluginOpptions = pluginOpptions;
+            this.pluginOptions = pluginOptions;
         },
         // 获取插件列表
         getPlugins() {
