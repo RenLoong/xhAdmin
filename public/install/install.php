@@ -289,13 +289,17 @@ class Install
                 $sql = $this->strReplace($sqlItem['path'], $database['prefix']);
                 $SQLstatus = $pdo->query($sql);
                 $installName = str_replace(['.sql', 'php_'], '', $sqlItem['filename']);
-                if (!$SQLstatus) {
+                if ($SQLstatus===false) {
                     throw new PDOException("安装 【{$installName}】 数据表结构失败");
                 }
-                return $this->json("安装 【{$installName}】 数据表成功", 200, [
-                    'next'  => 'structure',
-                    'total' => $total + 1
-                ]);
+                if(is_object($SQLstatus)){
+                    $SQLstatus->fetchAll(PDO::FETCH_ASSOC);
+                    return $this->json("安装 【{$installName}】 数据表成功", 200, [
+                        'next'  => 'structure',
+                        'total' => $total + 1
+                    ]);
+                }
+                throw new PDOException("安装 【{$installName}】 数据表结构失败");
             } catch (PDOException $e) {
                 return $this->json($e->getMessage(), 404);
             }
