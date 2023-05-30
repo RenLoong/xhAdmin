@@ -287,8 +287,11 @@ class Install
                 }
                 // 替换SQL
                 $sql = $this->strReplace($sqlItem['path'], $database['prefix']);
-                $pdo->query($sql);
+                $SQLstatus = $pdo->query($sql);
                 $installName = str_replace(['.sql', 'php_'], '', $sqlItem['filename']);
+                if (!$SQLstatus) {
+                    throw new PDOException("安装 【{$installName}】 数据表结构失败");
+                }
                 return $this->json("安装 【{$installName}】 数据表成功", 200, [
                     'next'  => 'structure',
                     'total' => $total + 1
