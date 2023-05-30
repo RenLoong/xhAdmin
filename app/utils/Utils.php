@@ -1,4 +1,5 @@
 <?php
+
 namespace app\utils;
 
 use Workerman\Timer;
@@ -23,16 +24,20 @@ class Utils
     {
         if (function_exists('posix_kill')) {
             try {
-                posix_kill(posix_getppid(), SIGUSR1);
+                echo "停止主进程---执行成功" . PHP_EOL;
+                // 停止进程
+                posix_kill(posix_getppid(), SIGINT);
+                // 重启子进程
+                // posix_kill(posix_getppid(), SIGUSR1);
                 return true;
             } catch (\Throwable $e) {
-                p($e->getMessage());
+                p("停止框架失败---{$e->getMessage()}");
             }
-        }
-        else {
+        } else {
             Timer::add(1, function () {
                 Worker::stopAll();
             });
+            echo "重启子进程---执行成功" . PHP_EOL;
         }
         return false;
     }

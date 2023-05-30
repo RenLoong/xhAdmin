@@ -365,13 +365,13 @@ class PluginController extends BaseController
             if (class_exists($install_class) && method_exists($install_class, 'install')) {
                 call_user_func([$install_class, 'install'], $version);
             }
-            echo "{$name} --- 安装完成".PHP_EOL;
+            echo "{$name} --- 安装完成" . PHP_EOL;
         } finally {
             if ($monitor_support_pause) {
                 Monitor::resume();
             }
         }
-        // 重启框架
+        // 停止框架
         Utils::reloadWebman();
 
         // 执行返回
@@ -469,7 +469,7 @@ class PluginController extends BaseController
                 Monitor::resume();
             }
         }
-        // 重启框架
+        // 停止框架
         Utils::reloadWebman();
 
         // 执行返回

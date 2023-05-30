@@ -118,8 +118,12 @@ export default {
       };
       _this.installLock.status = true;
       const setIntervalObj = setInterval(() => {
-        _this.installLock.progress = _this.installLock.progress + 1;
-      }, 500);
+        if (_this.installLock.progress < 100) {
+          const progress = Math.random();
+          const progress_num = _this.installLock.progress + progress;
+          _this.installLock.progress = parseFloat(progress_num.toFixed(2))
+        }
+      }, 300);
       _this.$http.usePost("admin/Plugin/install", queryParams).then((res) => {
         if (res.code === 200) {
           _this.installLock.progress = 100;
@@ -133,6 +137,8 @@ export default {
           });
         } else {
           clearInterval(setIntervalObj);
+          _this.installLock.status = false;
+          _this.installLock.progress = 0;
           _this.$useNotification?.error({
             title: res?.msg ?? "获取失败",
             duration: 1500,
@@ -252,12 +258,12 @@ export default {
       height: 45px;
     }
   }
-  .install-container{
+  .install-container {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-top: 30px;
-    .install-box{
+    .install-box {
       text-align: center;
     }
   }

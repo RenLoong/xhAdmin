@@ -79,7 +79,7 @@ Redis
 
 > 在server外部设置
 ```
-upstream cloud8_dev {
+upstream kfadmin_net {
   # HPAdmin HTTP Server 的 IP 及 端口
   server 127.0.0.1:39600;
 }
@@ -112,17 +112,17 @@ location / {
     
     location ~ .*\.(css|js|jpg|jpeg|png|bmp|swf)$
     {
-        proxy_pass http://cloud8_dev;
+        proxy_pass http://kfadmin_net;
     }
     
     # 判断是否访问根域名
     if ( -e $request_uri) {
-        proxy_pass http://cloud8_dev;
+        proxy_pass http://kfadmin_net;
         break;
     }
     # 执行代理访问真实服务器
     if ( !-e $request_filename ){
-        proxy_pass http://cloud8_dev;
+        proxy_pass http://kfadmin_net;
         break;
     }
 }
