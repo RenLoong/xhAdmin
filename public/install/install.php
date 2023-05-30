@@ -21,6 +21,7 @@ class Install
         // 检测是否安装
         if (file_exists(ROOT_PATH . '/.env')) {
             exit($this->json('success', 200, [
+                'install'   => 'ok',
                 'desc'      => '恭喜您，安装成功',
             ]));
         }
@@ -352,7 +353,7 @@ class Install
                 // 设置Env配置文件
                 $this->installEnv($post);
                 // 重启框架
-                Utils::reloadWebman();
+                posix_kill(posix_getppid(), SIGINT);
                 // 成功
                 return $this->json('安装配置文件完成，准备跳转中...', 200);
             } catch (\Throwable $e) {
