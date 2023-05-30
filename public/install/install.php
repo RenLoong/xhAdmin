@@ -92,9 +92,18 @@ class Install
         $site      = isset($_POST['site']) ? $_POST['site'] : null;
         // 数据库验证
         try {
-            $this->connectDb($databased);
-        } catch (PDOException $e) {
-            return $this->json($e->getMessage());
+            $pdo = $this->connectDb($databased);
+            $mysqlPodSql = $pdo->query("select VERSION() as mysql_version");
+            $version = $mysqlPodSql->fetchColumn(0);
+            if (!$version) {
+                throw new Exception('数据库版本检测失败');
+            }
+            $min_version = '5.7';
+            if (version_compare($version, $min_version) <= 0) {
+                throw new Exception("数据库要求最低{$min_version}版本");
+            }
+        } catch (\Throwable $e) {
+            return $this->json($e->getMessage(),404);
         }
         // 其他验证
         try {
