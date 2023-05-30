@@ -65,15 +65,15 @@ Redis
 
 ### 安装教程
 
-### 1、下载框架
+1、下载框架
 
  <a href="https://gitee.com/yc_open/kfadmin-cloud/repository/archive/master.zip" target="_blank">
  点击下载KFAdmin框架
  </a>
 
-### 2、将代码上传至站点根目录
-### 3、设置站点根目录为public
-### 4、设置nginx配置
+2、将代码上传至站点根目录
+3、设置站点根目录为public
+4、设置nginx配置
 在server外部设置
 ```
 upstream cloud8_dev {
@@ -124,11 +124,34 @@ location / {
     }
 }
 ```
-### 5、执行框架启动
-执行php webman start 启动框架
+5、执行框架启动：执行php webman start 启动框架
 
-### 6、执行数据配置安装
+6、执行数据配置安装
 访问域名，http://你自己的域名 根据步骤进行安装
+
+
+### 部署教程
+```
+1、安装进程守护管理器
+宝塔->软件商店->进程守护管理器->安装
+
+2、设置守护进程管理器
+
+打开守护进程管理器->添加守护进程
+
+设置名称：你自己设置的站点名称
+
+启动用户为:root
+
+运行目录:站点根目录
+
+启动命令：php webman start
+
+进程数量：1
+
+自此KFAdmin框架全部安装与部署流程全部完成
+```
+
 
 ### 官方社区
 
