@@ -63,28 +63,28 @@ Redis
 
 > 温馨提示：虚拟空间不支持，推荐使用 bt 宝塔面板，服务器推荐阿里云 ecs 或腾讯云 cvm 云服务器。
 
-### 安装教程
+### KFadmin安装教程
 
-> 1、下载框架
+> 1、下载 <a href="https://gitee.com/yc_open/kfadmin-cloud/repository/archive/master.zip" target="_blank">
+ [ KFAdmin框架 ] 
+</a>框架
 
- <a href="https://gitee.com/yc_open/kfadmin-cloud/repository/archive/master.zip" target="_blank">
- 点击下载KFAdmin框架
- </a>
+> 2、将代码上传至站点根目录并解压，设置站点访问目录为public。
 
-> 2、将代码上传至站点根目录
+> 3、设置站点的配置文件，如下图所示。
 
-> 3、设置站点根目录为public
+![KFadmin站点配置文件](https://img.alicdn.com/imgextra/i3/2064565174/O1CN01mjPQ2I1o5k5Y5z0pk_!!2064565174.png)
 
-> 4、设置nginx配置
+> 在server外部设置（参考上图）。
 
-> 在server外部设置
 ```
 upstream kfadmin_net {
   # HPAdmin HTTP Server 的 IP 及 端口
   server 127.0.0.1:39600;
 }
 ```
-以下配置在nginx的server内部配置
+
+> 以下配置在nginx的server内部配置（参考上图）。
 ```
 location /install/ {
     try_files $uri $uri/ =404;
@@ -127,35 +127,18 @@ location / {
     }
 }
 ```
-> 5、执行框架启动：执行php webman start 启动框架
+> 4、添加宝塔守护进程，进程的运行目录选择你自己刚才创建的站点，见图二。
+> 
+![KFadmin站点配置文件](https://img.alicdn.com/imgextra/i3/2064565174/O1CN017REHUQ1o5k5fY4iKh_!!2064565174.png)
+![KFadmin站点配置文件](https://img.alicdn.com/imgextra/i2/2064565174/O1CN01jG86os1o5k5bZu24E_!!2064565174.png)
+> 5、执行数据配置安装
+> 
+> 访问域名，会出现如下步骤，然后根据提示进行安装即可
+> 
+![KFadmin站点配置文件](https://img.alicdn.com/imgextra/i4/2064565174/O1CN01BUh9LH1o5k5VLWiAb_!!2064565174.png)
 
-> 6、执行数据配置安装
-> 访问域名，http://你自己的域名 根据步骤进行安装
-
-
-### 部署教程
-```
-1、安装进程守护管理器
-宝塔->软件商店->进程守护管理器->安装
-
-2、设置守护进程管理器
-
-打开守护进程管理器->添加守护进程
-
-设置名称：你自己设置的站点名称
-
-启动用户为：root
-
-运行目录：站点根目录
-
-启动命令：php webman start
-
-进程数量：1
-
-自此KFAdmin框架全部安装与部署流程全部完成
-```
-
-
+> 如果出现提示相关扩展未安装，就直接安装相关的扩展，然后重启PHP，回来刷新继续安装。
+> 
 ### 官方社区
 
 产品 BUG、优化建议，欢迎社区反馈：https://support.qq.com/products/423209/
