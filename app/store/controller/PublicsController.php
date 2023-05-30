@@ -29,7 +29,7 @@ class PublicsController extends BaseController
     {
         $data = [
             'web_name'       => getHpConfig('web_name'),
-            'web_title'      => '租户登录',
+            'web_title'      => '登录',
             'web_logo'       => getHpConfig('web_logo'),
             // 登录页链接
             'login_link'     => [
