@@ -64,6 +64,15 @@ Redis
 
 > 温馨提示：虚拟空间不支持，推荐使用bt宝塔面板，服务器推荐阿里云ecs或腾讯云cvm 云服务器。
 
+### 安装教程
+
+#### 1、下载框架
+ <a href="https://gitee.com/yc_open/kfadmin-cloud/archive/refs/tags/1.1.4.zip" target="_blank">点击下载KFAdmin框架</a>
+#### 2、将代码上传至站点根目录
+#### 3、设置站点根目录为public
+#### 4、访问域名自己的域名，http://xxx.com 根据步骤进行安装
+#### 5、安装完成，执行php webman start 启动框架
+
 ### 官方社区
 
 

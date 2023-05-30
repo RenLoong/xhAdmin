@@ -1,11 +1,9 @@
 /.idea
 /.vscode
-/vendor
 *.log
 .env
 /tests/tmp
 /tests/.phpunit.result.cache
 .user.ini
 /public/.user.ini
-/plugin
 /app/Install.php
