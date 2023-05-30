@@ -1,7 +1,9 @@
 <?php
+
 use app\admin\service\kfcloud\CloudService;
 use app\admin\service\kfcloud\HttpService;
 use app\utils\Password;
+use app\utils\Utils;
 use Illuminate\Support\Facades\Redis;
 use Webman\Config;
 
@@ -18,16 +20,12 @@ class Install
     {
         // 检测是否安装
         if (file_exists(ROOT_PATH . '/.env')) {
-            exit(json_encode([
-                'msg'  => '小贼，别乱搞',
-                'code' => 200,
-                'data' => [
-                    'install' => 'ok'
-                ]
+            exit($this->json('success', 200, [
+                'desc'      => '恭喜您，安装成功',
             ]));
         }
         // 加载配置项
-        Config::load(ROOT_PATH.'/config');
+        Config::load(ROOT_PATH . '/config');
     }
 
     /**
@@ -290,7 +288,7 @@ class Install
                 // 替换SQL
                 $sql = $this->strReplace($sqlItem['path'], $database['prefix']);
                 $pdo->query($sql);
-                $installName = str_replace(['.sql','php_'], '', $sqlItem['filename']);
+                $installName = str_replace(['.sql', 'php_'], '', $sqlItem['filename']);
                 return $this->json("安装 【{$installName}】 数据表成功", 200, [
                     'next'  => 'structure',
                     'total' => $total + 1
@@ -337,10 +335,12 @@ class Install
             try {
                 // 设置Env配置文件
                 $this->installEnv($post);
+                // 重启框架
+                Utils::reloadWebman();
                 // 成功
                 return $this->json('安装配置文件完成，准备跳转中...', 200);
             } catch (\Throwable $e) {
-                return $this->json($e->getMessage(),404);
+                return $this->json($e->getMessage(), 404);
             }
         }
         return $this->json('安装失败');
@@ -379,20 +379,20 @@ class Install
 
         // 读取配置文件
         $envConfig = file_get_contents($envTplPath);
-        
+
         // 云服务
         $response = CloudService::installSite(
             $site['web_name'],
             $site['web_url']
         )->array();
         if (!$response) {
-            throw new Exception('安装云站点失败',404);
+            throw new Exception('安装云站点失败', 404);
         }
         if (!isset($response['code'])) {
             throw new Exception('安装云站点失败！', 404);
         }
         if ($response['code'] !== 200) {
-            throw new Exception($response['msg'],$response['code']);
+            throw new Exception($response['msg'], $response['code']);
         }
 
         // 替换配置文件参数
@@ -429,7 +429,7 @@ class Install
      *
      * @param string $filename
      * @param string $prefix
-     * @return array
+     * @return string
      */
     private function strReplace(string $sqlPath, string $prefix): string
     {
@@ -454,7 +454,7 @@ class Install
      */
     public function step5()
     {
-        return $this->json('',200);
+        return $this->json('', 200);
     }
 
     /**

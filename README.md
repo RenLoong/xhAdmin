@@ -18,7 +18,7 @@
     </a>
 </div>
 
-#### 
+####
 
 <div align="center">
 
@@ -34,11 +34,12 @@
 </div>
 
 ### 介绍
-KFadmin是一套基于最新技术的研发的多应用Saas框架，支持在线升级和安装模块及模板，拥有良好的开发框架、成熟稳定的技术解决方案、提供丰富的扩展功能。为开发者赋能，助力企业发展、国家富强，致力于打造最受欢迎的多应用Saas系统。
 
+KFadmin 是一套基于最新技术的研发的多应用 Saas 框架，支持在线升级和安装模块及模板，拥有良好的开发框架、成熟稳定的技术解决方案、提供丰富的扩展功能。为开发者赋能，助力企业发展、国家富强，致力于打造最受欢迎的多应用 Saas 系统。
 
 ### 系统亮点
-~~~
+
+```
 多 语 言：后台随时配置语言包，移动端支持多语言切换；
 高 性 能：基于webman开发，一样的写法，十倍的性能；
 前后端分离：内核采用TP6的ORM，前端采用Vite+TypeScript+Vue3+远程组件+热更新+动态渲染+多主题等等全新技术栈；
@@ -49,37 +50,91 @@ KFadmin是一套基于最新技术的研发的多应用Saas框架，支持在线
 快速上手：详细帮助文档、接口文档、数据库字典、代码注释、一键安装；
 系统安全：系统操作日志、系统生产日志、文件校验、数据备份；
 用户体验：等您来评！
-~~~
-
+```
 
 ### 运行环境
 
 ```
-Nignx/Apache/IIS
-PHP 8.0 ~ 8.1 
+Nignx
+PHP 8.0 ~ 8.1
 MySQL 5.7
-Redis 
+Redis
 ```
 
-
-> 温馨提示：虚拟空间不支持，推荐使用bt宝塔面板，服务器推荐阿里云ecs或腾讯云cvm 云服务器。
+> 温馨提示：虚拟空间不支持，推荐使用 bt 宝塔面板，服务器推荐阿里云 ecs 或腾讯云 cvm 云服务器。
 
 ### 安装教程
 
-#### 1、下载框架
- <a href="https://gitee.com/yc_open/kfadmin-cloud/repository/archive/master.zip" target="_blank">点击下载KFAdmin框架</a>
-#### 2、将代码上传至站点根目录
-#### 3、设置站点根目录为public
-#### 4、访问域名自己的域名，http://xxx.com 根据步骤进行安装
-#### 5、安装完成，执行php webman start 启动框架
+### 1、下载框架
+
+ <a href="https://gitee.com/yc_open/kfadmin-cloud/repository/archive/master.zip" target="_blank">
+ 点击下载KFAdmin框架
+ </a>
+
+### 2、将代码上传至站点根目录
+### 3、设置站点根目录为public
+### 4、设置nginx配置
+在server外部设置
+```
+upstream cloud8_dev {
+  # HPAdmin HTTP Server 的 IP 及 端口
+  server 127.0.0.1:39600;
+}
+```
+以下配置在nginx的server内部配置
+```
+location /install/ {
+    try_files $uri $uri/ =404;
+}
+# Http
+location / {
+    # 将客户端的 Host 和 IP 信息一并转发到对应节点
+    proxy_set_header Host $http_host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    
+    # 转发Cookie，设置 SameSite
+    proxy_cookie_path / "/; secure; HttpOnly; SameSite=strict";
+    # 关闭重试机制
+    proxy_next_upstream off;
+    
+    # 跨域请求
+    if ($request_method = OPTIONS) {
+        add_header Access-Control-Allow-Origin $http_origin; # 必须要有
+        add_header Access-Control-Allow-Headers *; # 必须要有
+        add_header Access-Control-Allow-Methods "GET,POST,PUT, DELETE,OPTION"; # 不加也行
+        #add_header Access-Control-Allow-Credentials true; # 不加也行
+        return 200; # 204也可以，只要返回成功码即可
+    }
+    
+    location ~ .*\.(css|js|jpg|jpeg|png|bmp|swf)$
+    {
+        proxy_pass http://cloud8_dev;
+    }
+    
+    # 判断是否访问根域名
+    if ( -e $request_uri) {
+        proxy_pass http://cloud8_dev;
+        break;
+    }
+    # 执行代理访问真实服务器
+    if ( !-e $request_filename ){
+        proxy_pass http://cloud8_dev;
+        break;
+    }
+}
+```
+### 5、执行框架启动
+执行php webman start 启动框架
+
+### 6、执行数据配置安装
+访问域名，http://你自己的域名 根据步骤进行安装
 
 ### 官方社区
 
+产品 BUG、优化建议，欢迎社区反馈：https://support.qq.com/products/423209/
 
-产品BUG、优化建议，欢迎社区反馈：https://support.qq.com/products/423209/
-
-
-###  系统演示
+### 系统演示
 
 ![KFadmin租户后台](https://img.alicdn.com/imgextra/i1/2064565174/O1CN01dfDrWp1o5k5Wbcbii_!!2064565174.png)
 
@@ -96,16 +151,16 @@ Redis
 
 ### 产品生态
 
-| 项目名称       | 关注量 | 项目介绍                |
-|------------|-----|---------------------|
-| 学法减分专业版    | ★★★★★   | 基于人工智能AI，题库一键搜索     |
-| 达人探店专业版    | ★★★★★    | 一站式本地生活服务撮合平台       |
-| 外链大师专业版    | ★★★★★    | 公域流量转私域流量的最佳神器      |
-| AI绘画专业版    |  ★★★★★   | 人像漫画,AI换脸，各种AI聚合玩法  |
-| 视频号分销助手    | ★★★★★    | 基于视频号生态的第三方分销平台     |
-| 素材抓取大师     | ★★★★★    | 万能的素材下载助手，批量采集，一键下载 |
-| ChatGPT分销版 |  ★★★★★   | GPT的元老级产品，功能强大到无法想象 |
-| 未来更多...... |  ★★★★★   | 关注KFadmin未来生态       |
+| 项目名称       | 关注量 | 项目介绍                               |
+| -------------- | ------ | -------------------------------------- |
+| 学法减分专业版 | ★★★★★  | 基于人工智能 AI，题库一键搜索          |
+| 达人探店专业版 | ★★★★★  | 一站式本地生活服务撮合平台             |
+| 外链大师专业版 | ★★★★★  | 公域流量转私域流量的最佳神器           |
+| AI 绘画专业版  | ★★★★★  | 人像漫画,AI 换脸，各种 AI 聚合玩法     |
+| 视频号分销助手 | ★★★★★  | 基于视频号生态的第三方分销平台         |
+| 素材抓取大师   | ★★★★★  | 万能的素材下载助手，批量采集，一键下载 |
+| ChatGPT 分销版 | ★★★★★  | GPT 的元老级产品，功能强大到无法想象   |
+| 未来更多...... | ★★★★★  | 关注 KFadmin 未来生态                  |
 
 ### 商业版购买
 
@@ -117,7 +172,7 @@ Redis
 
 ### 特别鸣谢
 
-排名不分先后，感谢这些软件的开发者：thinkphp、iview、vue、mysql、redis、uniapp、echarts、tree-table-vue、swiper、form-create等，如有遗漏请联系我！
+排名不分先后，感谢这些软件的开发者：thinkphp、iview、vue、mysql、redis、uniapp、echarts、tree-table-vue、swiper、form-create 等，如有遗漏请联系我！
 
 ### 核心开发团队
 
@@ -139,7 +194,7 @@ UI：Hmm、林深见灵鹿`
 
 本项目包含的第三方源码和二进制文件之版权信息另行标注。
 
-版权所有Copyright © 2019-2023 by KFadmin (https://kfadmin.net)
+版权所有 Copyright © 2019-2023 by KFadmin (https://kfadmin.net)
 
 All rights reserved。
 
