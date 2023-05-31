@@ -56,8 +56,8 @@ KFadmin 是一套基于最新技术的研发的多应用 Saas 框架，支持在
 
 ```
 Nignx
-PHP 8.0 ~ 8.1
-MySQL 5.7
+PHP 8.0（必须）
+MySQL 5.7（必须）
 Redis
 ```
 

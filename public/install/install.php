@@ -621,7 +621,7 @@ class Install
             [
                 'title'   => 'php版本',
                 'name'    => 'php',
-                'version' => '8.0.0',
+                'version' => '8.0',
                 'type'    => 'version',
                 'status'  => false,
                 'value'   => 'fail'
@@ -669,8 +669,8 @@ class Install
             }
             if ($value['type'] === 'version') {
                 if ($value['name'] === 'php') {
-                    $data[$key]['status'] = version_compare(PHP_VERSION, $value['version']) > 0 ? true : false;
-                    $data[$key]['value']  = $data[$key]['status'] ? 'OK' : "至少 >= {$value['version']}";
+                    $data[$key]['status'] = (bool)version_compare(PHP_VERSION, $value['version'],'=');
+                    $data[$key]['value']  = $data[$key]['status'] ? 'OK' : "必须是 {$value['version']} 版本";
                 }
             }
         }
