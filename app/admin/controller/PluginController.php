@@ -284,7 +284,17 @@ class PluginController extends BaseController
     {
         $name = $request->get('name');
         $version = $request->get('version');
-        return json(CloudService::detail($name, $version)->array());
+
+        $response = CloudService::detail($name, $version)->array();
+        if (!$response) {
+            return $this->fail('获取插件详情错误');
+        }
+        if (!isset($response['code'])) {
+            return $this->fail('插件数据出错');
+        }
+        $localVersion = PluginLogic::getPluginVersion($name);
+        $response['data']['localVersion'] = $localVersion;
+        return json($response);
     }
 
     /**
