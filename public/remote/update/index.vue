@@ -16,7 +16,7 @@
             </n-form-item>
             <div class="action-button">
                 <n-button type="success" @click="hanldUpdate">立即更新</n-button>
-                <n-button type="warning" @click="hanldCancel">忽略更新</n-button>
+                <n-button type="warning" @click="hanldCancel">忽略本次更新</n-button>
             </div>
         </n-form>
         <div class="empty-container" v-else>

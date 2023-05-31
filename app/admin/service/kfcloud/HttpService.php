@@ -16,8 +16,8 @@ use yzh52521\EasyHttp\Request;
 class HttpService
 {
     // 服务端接口地址
-    public static $url = 'https://www.kfadmin.net/api/';
-    // public static $url = 'http://server8.kaifa.cc/api/';
+    // public static $url = 'https://www.kfadmin.net/api/';
+    public static $url = 'http://server8.kaifa.cc/api/';
 
     /**
      * 实例请求
