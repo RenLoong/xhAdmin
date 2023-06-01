@@ -17,7 +17,8 @@ class HttpService
 {
     // 服务端接口地址
     // public static $url = 'https://www.kfadmin.net/api/';
-    public static $url = 'http://server8.kaifa.cc/api/';
+    // 临时使用
+    public static $url = 'http://122.228.85.130:39150/api/';
 
     /**
      * 实例请求
