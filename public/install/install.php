@@ -642,8 +642,8 @@ class Install
             ],
             [
                 'title'  => 'redis',
-                'name'   => 'redis',
-                'type'   => 'extra',
+                'name'   => 'Redis',
+                'type'   => 'class',
                 'status' => false,
                 'value'  => 'fail'
             ],
@@ -663,15 +663,27 @@ class Install
             ],
         ];
         foreach ($data as $key => $value) {
-            if ($value['type'] === 'extra') {
-                $data[$key]['status'] = extension_loaded($value['name']) ? true : false;
-                $data[$key]['value']  = extension_loaded($value['name']) ? 'OK' : 'Fail';
-            }
-            if ($value['name'] === 'php') {
-                $max = (bool)version_compare(PHP_VERSION, $value['version'], '>=');
-                $min = (bool)version_compare(PHP_VERSION, '8.1', '<');
-                $data[$key]['status'] = $max && $min;
-                $data[$key]['value']  = $data[$key]['status'] ? 'OK' : "必须是 {$value['version']} 版本";
+            switch ($value['type']) {
+                case 'extra':
+                    $data[$key]['status'] = extension_loaded($value['name']) ? true : false;
+                    $data[$key]['value']  = extension_loaded($value['name']) ? 'OK' : 'Fail';
+                    break;
+                case 'class':
+                    $data[$key]['status'] = class_exists($value['name']) ? true : false;
+                    $data[$key]['value']  = class_exists($value['name']) ? 'OK' : 'Fail';
+                    break;
+                case 'function':
+                    $data[$key]['status'] = function_exists($value['name']) ? true : false;
+                    $data[$key]['value']  = function_exists($value['name']) ? 'OK' : 'Fail';
+                    break;
+                case 'version':
+                    if ($value['name'] === 'php') {
+                        $max = (bool)version_compare(PHP_VERSION, $value['version'], '>=');
+                        $min = (bool)version_compare(PHP_VERSION, '8.1', '<');
+                        $data[$key]['status'] = $max && $min;
+                        $data[$key]['value']  = $data[$key]['status'] ? 'OK' : "必须是 {$value['version']} 版本";
+                    }
+                    break;
             }
         }
         return $data;
