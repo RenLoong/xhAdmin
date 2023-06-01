@@ -140,24 +140,29 @@ class IndexController extends BaseController
         }
         $system_version = $data['system_version'];
         $version_name   = $data['system_version_name'];
+        $versionData = [
+            'version_name' => '未知',
+            'version' => 0,
+            'client_version_name' => $version_name,
+            'client_version' => $system_version,
+        ];
         // 检测更新
         if ($request->method() === 'DELETE') {
             $data = Updated::verify($system_version, $version_name)->array();
             if (!$data) {
-                return $this->failFul('没有获取到更新信息',666);
+                return $this->json('没有获取到更新信息', 666, $versionData);
             }
             if (!isset($data['data'])) {
-                return $this->fail('获取版本包体错误');
+                return $this->json('获取版本包体错误', 666, $versionData);
             }
             return json($data);
-        }
-        else if ($request->method() === 'POST') {
+        } else if ($request->method() === 'POST') {
             $version = (int)$request->post('version');
             $response     = Updated::getSystemDownKey($version)->array();
             if (!$response) {
                 return $this->fail('获取更新KEY失败');
             }
-            if(!isset($response['code']) && !isset($response['data'])){
+            if (!isset($response['code']) && !isset($response['data'])) {
                 return $this->fail('请求更新失败');
             }
             if ($response['code'] !== 200) {
@@ -198,8 +203,7 @@ class IndexController extends BaseController
                     $zip->extractTo(base_path());
                     echo "框架代码更新成功...\n";
                     unset($zip);
-                }
-                else {
+                } else {
                     PluginLogic::unzipWithCmd($cmd);
                 }
                 // 更新类路径
@@ -214,7 +218,7 @@ class IndexController extends BaseController
                     unlink($zip_file);
                     // 执行update更新
                     if (method_exists($install_class, 'update')) {
-                        call_user_func([$install_class, 'update'], $version,$context);
+                        call_user_func([$install_class, 'update'], $version, $context);
                         echo "执行更新安装成功...\n";
                     }
                     // 删除更新类
@@ -231,12 +235,11 @@ class IndexController extends BaseController
 
             // 执行返回
             return $this->success('更新成功');
-        }
-        else {
+        } else {
             // 获取更新信息
             $data = Updated::systemUpdateInfo($system_version, $version_name)->array();
             if (!$data) {
-                return $this->failFul('没有获取到更新信息',666);
+                return $this->failFul('没有获取到更新信息', 666);
             }
             return json($data);
         }

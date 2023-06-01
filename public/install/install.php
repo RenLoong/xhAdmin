@@ -104,7 +104,7 @@ class Install
                 throw new Exception("数据库要求最低{$min_version}版本");
             }
         } catch (\Throwable $e) {
-            return $this->json($e->getMessage(),404);
+            return $this->json($e->getMessage(), 404);
         }
         // 其他验证
         try {
@@ -299,10 +299,10 @@ class Install
                 $sql = $this->strReplace($sqlItem['path'], $database['prefix']);
                 $SQLstatus = $pdo->query($sql);
                 $installName = str_replace(['.sql', 'php_'], '', $sqlItem['filename']);
-                if ($SQLstatus===false) {
+                if ($SQLstatus === false) {
                     throw new PDOException("安装 【{$installName}】 数据表结构失败");
                 }
-                if(is_object($SQLstatus)){
+                if (is_object($SQLstatus)) {
                     $SQLstatus->fetchAll(PDO::FETCH_ASSOC);
                     return $this->json("安装 【{$installName}】 数据表成功", 200, [
                         'next'  => 'structure',
@@ -667,11 +667,11 @@ class Install
                 $data[$key]['status'] = extension_loaded($value['name']) ? true : false;
                 $data[$key]['value']  = extension_loaded($value['name']) ? 'OK' : 'Fail';
             }
-            if ($value['type'] === 'version') {
-                if ($value['name'] === 'php') {
-                    $data[$key]['status'] = (bool)version_compare(PHP_VERSION, $value['version'],'=');
-                    $data[$key]['value']  = $data[$key]['status'] ? 'OK' : "必须是 {$value['version']} 版本";
-                }
+            if ($value['name'] === 'php') {
+                $max = (bool)version_compare(PHP_VERSION, $value['version'], '>=');
+                $min = (bool)version_compare(PHP_VERSION, '8.1', '<');
+                $data[$key]['status'] = $max && $min;
+                $data[$key]['value']  = $data[$key]['status'] ? 'OK' : "必须是 {$value['version']} 版本";
             }
         }
         return $data;
