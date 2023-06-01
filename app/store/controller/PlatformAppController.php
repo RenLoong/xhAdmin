@@ -72,6 +72,7 @@ class PlatformAppController extends BaseController
             $post['store_id'] = hp_admin_id('hp_store');
 
             hpValidate(StoreApp::class, $post, 'add');
+            
             Db::startTrans();
             try {
                 $model = $this->model;
@@ -85,9 +86,9 @@ class PlatformAppController extends BaseController
                 }
                 Db::commit();
                 return $this->success('操作成功');
-            } catch (\Throwable $th) {
+            } catch (\Throwable $e) {
                 Db::rollback();
-                return $this->fail('操作失败');
+                return $this->fail($e->getMessage());
             }
         }
         return $this->fail('请求类型错误');

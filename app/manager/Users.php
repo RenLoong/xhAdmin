@@ -22,7 +22,7 @@ class Users
     public static function add(array $data):int|bool
     {
         $model = new modelUsers;
-        if (!$model->save($data)) {
+        if ($model->save($data)) {
             return $model->id;
         }
         else {

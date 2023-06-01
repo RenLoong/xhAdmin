@@ -642,7 +642,7 @@ class Install
             ],
             [
                 'title'  => 'redis',
-                'name'   => 'Redis',
+                'name'   => '\Redis',
                 'type'   => 'class',
                 'status' => false,
                 'value'  => 'fail'
