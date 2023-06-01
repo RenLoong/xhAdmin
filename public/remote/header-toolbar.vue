@@ -97,6 +97,10 @@ export default {
             }
             _this.$http.useDelete('admin/Index/updateCheck').then((res) => {
                 const { data } = res
+                // 无版本升级
+                if (data?.version <= data?.client_version) {
+                    return;
+                }
                 // 存在忽略版本更新
                 const ignoreVersion = localStorage.getItem('system_updated')
                 if (ignoreVersion) {
