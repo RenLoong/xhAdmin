@@ -24,16 +24,17 @@ try {
     if (file_exists(ROOT_PATH . '/.env')) {
         $type = isset($_POST['type']) ? ucfirst($_POST['type']) : ucfirst('custom');
         if ($type !== 'Custom') {
-            $desc = <<<STR
+            $desc = <<<str
             <div>恭喜您，安装成功</div>
             <div>请选择以下方式进行访问</div>
-            STR;
+            str;
         } else {
-            $desc = <<<STR
+            $desc = <<<str
             <div>恭喜您，安装成功</div>
-            <div>请输入php webman start启动框架</div>
+            <div>【警告】请输入php webman start启动框架</div>
             <div>守护进程模式使用-d参数启动</div>
-            STR;
+            <div>然后再选择以下方式进行访问</div>
+            str;
         }
         exit(Json::json('success', 200, [
             'install'   => 'ok',
