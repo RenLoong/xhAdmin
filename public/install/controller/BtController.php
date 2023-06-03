@@ -89,15 +89,21 @@ class BtController
                 # 写入文件配置
             case 'config':
                 try {
-                    // 设置Env配置文件
+                    # 安装Env配置文件
                     Helpers::installEnv($post);
-                    // 服务名称
+                    # 等待配置文件安装成功
+                    sleep(2);
+                    # 服务名称
                     $server_name = str_replace('.','_', basename(ROOT_PATH));
                     # 写入nginx配置
                     Helpers::installNginx($server_name,$post);
+                    # 等待Nginx安装成功
+                    sleep(2);
                     # 新增宝塔守护进程
                     Helpers::installSupervisor($server_name, $post);
-                    // 成功
+                    # 等待守护进程安装成功
+                    sleep(2);
+                    # 安装成功
                     return Json::success('安装配置文件完成，准备跳转中...');
                 } catch (\Throwable $e) {
                     return Json::fail($e->getMessage(), 404);

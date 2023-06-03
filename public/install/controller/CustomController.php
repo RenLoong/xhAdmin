@@ -89,9 +89,9 @@ class CustomController
         // 设置配置文件
         if ($step === 'config') {
             try {
-                // 设置Env配置文件
+                # 设置Env配置文件
                 Helpers::installEnv($post);
-                // 成功
+                # 安装成功
                 return Json::success('安装配置文件完成，准备跳转中...');
             } catch (\Throwable $e) {
                 return Json::fail($e->getMessage(), 404);
