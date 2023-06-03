@@ -91,20 +91,46 @@ class BtController
                 try {
                     # 安装Env配置文件
                     Helpers::installEnv($post);
-                    # 等待配置文件安装成功
-                    sleep(2);
-                    # 服务名称
-                    $server_name = str_replace('.','_', basename(ROOT_PATH));
+                    # 安装Env配置成功
+                    return Json::json(
+                        '安装站点数据完成...',
+                        200,
+                        [
+                            'next' => 'nginx'
+                        ]
+                    );
+                    return Json::success('安装配置文件完成...');
+                } catch (\Throwable $e) {
+                    return Json::fail($e->getMessage(), 404);
+                }
+                # 安装Nginx配置
+            case 'nginx':
+                try {
+                    $server_name = str_replace('.', '_', basename(ROOT_PATH));
                     # 写入nginx配置
-                    Helpers::installNginx($server_name,$post);
-                    # 等待Nginx安装成功
-                    sleep(2);
+                    Helpers::installNginx($server_name, $post);
+                    # 安装完成
+                    return Json::json(
+                        '安装Nginx配置完成...',
+                        200,
+                        [
+                            'next' => 'supervisor'
+                        ]
+                    );
+                } catch (\Throwable $e) {
+                    return Json::fail($e->getMessage(), 404);
+                }
+                # 安装守护进程配置
+            case 'supervisor':
+                try {
+                    $server_name = str_replace('.', '_', basename(ROOT_PATH));
                     # 新增宝塔守护进程
                     Helpers::installSupervisor($server_name, $post);
-                    # 等待守护进程安装成功
-                    sleep(2);
-                    # 安装成功
-                    return Json::success('安装配置文件完成，准备跳转中...');
+                    # 安装完成
+                    return Json::json(
+                        '全部安装完成，即将跳转...',
+                        200
+                    );
                 } catch (\Throwable $e) {
                     return Json::fail($e->getMessage(), 404);
                 }
@@ -122,10 +148,6 @@ class BtController
     {
         # 获取数据
         $post = $_POST;
-        // 服务名称
-        $server_name = str_replace('.', '_', basename(ROOT_PATH));
-        # 新增宝塔守护进程
-        Helpers::installSupervisor($server_name, $post);
         # 数据验证
         if (!isset($post['btData'])) return Json::fail('缺少宝塔面板数据');
         if (!isset($post['serverData'])) return Json::fail('请设置框架启动端口');
