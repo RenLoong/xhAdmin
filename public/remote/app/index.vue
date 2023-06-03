@@ -23,6 +23,14 @@
                         </n-tooltip>
                         <n-tooltip trigger="hover" placement="right">
                             <template #trigger>
+                                <div class="action-button" @click="copyAppsUrl(item)">
+                                    <AppIcons icon="LinkOutlined" :size="20" color="#888" />
+                                </div>
+                            </template>
+                            复制应用连接
+                        </n-tooltip>
+                        <n-tooltip trigger="hover" placement="right">
+                            <template #trigger>
                                 <div class="action-button" @click="hanldEdit(item)">
                                     <AppIcons icon="EditOutlined" :size="20" color="#888" />
                                 </div>
@@ -192,6 +200,28 @@ export default {
                     });
                 }
             })
+        },
+        copyAppsUrl(e){
+            const copyText='//'+window.location.host+'/app/'+e.name+'/#/?appid='+e.id;
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(copyText).then(_ => {
+                    this.$useNotification?.success({
+                        title: '已复制',
+                        duration: 1500,
+                    });
+                })
+            } else {
+                let input = document.createElement('input');
+                input.value = copyText;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('Copy');
+                input.remove();
+                this.$useNotification?.success({
+                    title: '已复制',
+                    duration: 1500,
+                });
+            }
         },
         hanldEdit(e) {
             const _this = this;

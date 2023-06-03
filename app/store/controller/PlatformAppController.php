@@ -117,11 +117,23 @@ class PlatformAppController extends BaseController
             $post = $request->post();
 
             hpValidate(StoreApp::class, $post, 'edit');
-
-            if (!$model->save($post)) {
-                return $this->fail('操作失败');
+            
+            Db::startTrans();
+            try {
+                $model->save($post);
+                // 执行应用插件方法
+                $class = "\\plugin\\{$model->name}\\api\\Created";
+                if (method_exists($class, 'createAdmin')) {
+                    $post['id'] = $model->id;
+                    $logicCls = new $class;
+                    $logicCls->createAdmin($post);
+                }
+                Db::commit();
+                return $this->success('操作成功');
+            } catch (\Throwable $e) {
+                Db::rollback();
+                return $this->fail($e->getMessage());
             }
-            return $this->success('操作成功');
         }
         return $this->successRes($model->toArray());
     }

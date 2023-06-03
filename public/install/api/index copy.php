@@ -3,11 +3,10 @@
 use app\admin\service\kfcloud\CloudService;
 use app\admin\service\kfcloud\HttpService;
 use app\utils\Password;
-use app\utils\Utils;
-use Illuminate\Support\Facades\Redis;
 use Webman\Config;
 
-define('ROOT_PATH', dirname(dirname(__DIR__)));
+define('ROOT_PATH', dirname(dirname(dirname(__DIR__))));
+define('KF_INSTALL_PATH', dirname(__DIR__));
 class Install
 {
     /**
@@ -50,7 +49,7 @@ class Install
      */
     public function step1()
     {
-        $content = file_get_contents(__DIR__ . '/agreement.txt');
+        $content = file_get_contents(KF_INSTALL_PATH . '/agreement.txt');
         return $this->json('success', 200, [
             'text' => $content
         ]);
@@ -483,123 +482,11 @@ class Install
      */
     private function getVerifyFun()
     {
-        $data = [
-            [
-                'name'   => 'putenv',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'name'   => 'proc_open',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'name'   => 'pcntl_signal',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'name'   => 'stream_socket_server',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'name'   => 'stream_socket_client',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'name'   => 'pcntl_signal_dispatch',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'name'   => 'pcntl_signal',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'name'   => 'pcntl_alarm',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'name'   => 'pcntl_fork',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'name'   => 'posix_getuid',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'name'   => 'posix_setsid',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'name'   => 'posix_kill',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'name'   => 'posix_getpid',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'name'   => 'posix_getpwnam',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'name'   => 'posix_getgrnam',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'name'   => 'posix_getgid',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'name'   => 'posix_setgid',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'name'   => 'posix_initgroups',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'name'   => 'posix_setuid',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'name'   => 'posix_isatty',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'name'   => 'proc_get_status',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'name'   => 'proc_close',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'name'   => 'shell_exec',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-        ];
+        $funPath = KF_INSTALL_PATH . '/config/func.php';
+        if (!file_exists($funPath)) {
+            throw new Exception('禁用函数配置文件错误');
+        }
+        $data = require_once $funPath;
         foreach ($data as $key => $value) {
             $data[$key]['status'] = function_exists($value['name']) ? true : false;
             $data[$key]['value']  = function_exists($value['name']) ? 'OK' : 'Fail';
@@ -617,51 +504,11 @@ class Install
      */
     private function getVerifyExtra()
     {
-        $data = [
-            [
-                'title'   => 'php版本',
-                'name'    => 'php',
-                'version' => '8.0',
-                'type'    => 'version',
-                'status'  => false,
-                'value'   => 'fail'
-            ],
-            [
-                'title'  => 'fileinfo',
-                'name'   => 'fileinfo',
-                'type'   => 'extra',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'title'  => 'swoole',
-                'name'   => 'swoole',
-                'type'   => 'extra',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'title'  => 'redis',
-                'name'   => '\Redis',
-                'type'   => 'class',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'title'  => 'curl',
-                'name'   => 'curl',
-                'type'   => 'extra',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-            [
-                'title'  => 'gd',
-                'name'   => 'gd',
-                'type'   => 'extra',
-                'status' => false,
-                'value'  => 'fail'
-            ],
-        ];
+        $funPath = KF_INSTALL_PATH . '/config/extra.php';
+        if (!file_exists($funPath)) {
+            throw new Exception('扩展配置文件错误');
+        }
+        $data = require_once $funPath;
         foreach ($data as $key => $value) {
             switch ($value['type']) {
                 case 'extra':
@@ -678,10 +525,10 @@ class Install
                     break;
                 case 'version':
                     if ($value['name'] === 'php') {
-                        $max = (bool)version_compare(PHP_VERSION, $value['version'], '>=');
-                        $min = (bool)version_compare(PHP_VERSION, '8.1', '<');
+                        $max = (bool)version_compare(PHP_VERSION, $value['min'], '>=');
+                        $min = (bool)version_compare(PHP_VERSION, $value['max'], '<');
                         $data[$key]['status'] = $max && $min;
-                        $data[$key]['value']  = $data[$key]['status'] ? 'OK' : "必须是 {$value['version']} 版本";
+                        $data[$key]['value']  = $data[$key]['status'] ? 'OK' : "{{$value['name']}}必须是 >={$value['version']}以及<{$value['max']}";
                     }
                     break;
             }
@@ -711,7 +558,7 @@ class Install
 }
 header('content-type:application/json');
 require ROOT_PATH . "/vendor/autoload.php";
-require __DIR__ . "/Dir.php";
+require KF_INSTALL_PATH . "/utils/Dir.php";
 try {
     $class  = new Install;
     $action = isset($_GET['act']) ? $_GET['act'] : 'index';
