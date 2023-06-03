@@ -32,13 +32,13 @@ class Validated
         if (!isset($data['panel_key']) || empty($data['panel_key'])) {
             throw new Exception('请输入宝塔面板密钥');
         }
+        $bt = new BtPanel($data['panel_url'], $data['panel_key']);
         // 验证守护进程是否安装
-        $bt = new BtPanel($data['panel_url'],$data['panel_key']);
         $softList = [];
         for ($i=0; $i < 5; $i++) {
             $response = $bt->getSoftList(['p' =>$i]);
             if (!isset($response['list']['data'])) {
-                throw new Exception('获取宝塔软件列表失败');
+                throw new Exception('获取守护进程插件失败');
             }
             if (empty($response['list']['data'])) {
                 continue;

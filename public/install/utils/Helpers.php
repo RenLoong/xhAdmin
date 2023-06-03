@@ -17,8 +17,11 @@ class Helpers
         $configPath = "/www/server/panel/vhost/nginx/{$siteDirName}.conf";
         $btPanel = new BtPanel($data['btData']['panel_url'], $data['btData']['panel_key']);
         $response = $btPanel->getFileBody(['path' => $configPath]);
+        if (isset($response['status']) && !$response['status']) {
+            throw new Exception("{$response['msg']}请确认KFAdmin是否放在站点根目录");
+        }
         if (!isset($response['data'])) {
-            throw new Exception('获取Ningx站点配置错误');
+            throw new Exception('无法获取到Nginx配置文件');
         }
         $nginxConfig = $response['data'];
         # 设置nginx---upstream
@@ -26,7 +29,7 @@ class Helpers
         # 检测已安装nginx
         if (strpos($nginxConfig, $server_name) !== false) {
             $nginxConfig = preg_replace('/server 127.0.0.1:(.*);/', "server 127.0.0.1:{$data['serverData']['server_port']};", $nginxConfig);
-        }else {
+        } else {
             $str1 = ['{SERVER_NAME}', '{SERVER_PORT}'];
             $str2 = [$server_name, $data['serverData']['server_port']];
             $nginxUpstream = str_replace($str1, $str2, $nginxUpstream);
@@ -73,15 +76,16 @@ class Helpers
         }
         // 保存守护进程数据
         $queryData = [
-            'pjname' => $server_name,
-            'user' => 'root',
-            'path' => ROOT_PATH . '/',
-            'command' => 'php webman start',
-            'numprocs' => 1,
+            'pjname'    => $server_name,
+            'user'      => 'root',
+            'path'      => ROOT_PATH . '/',
+            'command'   => 'php webman start',
+            'numprocs'  => 1,
+            'ps'        => $server_name
         ];
         $response = $btPanel->saveSupervisor($queryData);
-        if (!isset($response['status']) || !$response['status']) {
-            throw new Exception('安装守护进程失败');
+        if (isset($response['status']) && !$response['status']) {
+            throw new Exception("{$response['msg']}，安装守护进程失败");
         }
     }
 

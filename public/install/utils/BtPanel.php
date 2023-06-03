@@ -25,6 +25,16 @@ class BtPanel
     }
 
     /**
+     * 获取网络状态
+     *
+     * @return array
+     */
+    public function GetNetWork(): array
+    {
+        return $this->send('/system?action=GetNetWork');
+    }
+
+    /**
      * 获取软件列表
      *
      * @param array $data
@@ -45,7 +55,7 @@ class BtPanel
     /**
      * 获取站点配置
      *
-     * @param  array $data
+     * @param array $data
      * @return array
      */
     public function getFileBody(array $data = []): array
@@ -59,7 +69,7 @@ class BtPanel
     /**
      * 保存站点配置
      *
-     * @param  array $data
+     * @param array $data
      * @return array
      */
     public function SaveFileBody(array $data = []): array
@@ -73,10 +83,10 @@ class BtPanel
     /**
      * 保存守护进程
      *
-     * @param  array $data
-     * @return void
+     * @param array $data
+     * @return array
      */
-    public function saveSupervisor(array $data = [])
+    public function saveSupervisor(array $data = []): array
     {
         $data = array_merge([
             'pjname' => '',
@@ -84,6 +94,7 @@ class BtPanel
             'path' => '',
             'command' => '',
             'numprocs' => 1,
+            'ps'=>''
         ], $data);
         return $this->send('/plugin?action=a&name=supervisor&s=AddProcess', $data);
     }
@@ -91,10 +102,10 @@ class BtPanel
     /**
      * 获取守护进程列表
      *
-     * @param  array $data
+     * @param array $data
      * @return array
      */
-    public function getSupervisorList(array $data = []):array
+    public function getSupervisorList(array $data = []): array
     {
         $data = array_merge([
             'action' => 'a',
@@ -111,21 +122,25 @@ class BtPanel
      * @param array $data
      * @return array
      */
-    private function send(string $url, array $data = []): array
+    private function send(string $url, array $data = []):array
     {
         # 拼接URL地址
-        $url = $this->BT_PANEL . $url;
+        $api = $this->BT_PANEL . $url;
 
         # 取签名
         $p_data = $this->GetKeyData();
         $p_data = array_merge($p_data, $data);
 
         # 请求面板接口
-        $result = $this->HttpPostCookie($url, $p_data);
+        $result = $this->HttpPostCookie($api, $p_data);
 
         # 解析JSON数据
-        $data = json_decode($result, true);
-        return $data;
+        $response = json_decode($result, true);
+        if (isset($response['status']) && !$response['status']) {
+            throw new Exception($response['msg']);
+        }
+        $res = $response ? $response : [];
+        return $res;
     }
 
     /**
