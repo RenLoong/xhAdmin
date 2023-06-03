@@ -61,6 +61,17 @@ class Helpers
     public static function installSupervisor(string $server_name, array $data)
     {
         $btPanel = new BtPanel($data['btData']['panel_url'], $data['btData']['panel_key']);
+        // 获取守护进程列表
+        $list = $btPanel->getSupervisorList();
+        $supervisorName = [];
+        foreach ($list as $value) {
+            $supervisorName[] = isset($value['program']) ? $value['program'] : '';
+        }
+        // 已安装守护进程，不再安装
+        if (in_array($server_name, $supervisorName)) {
+            return;
+        }
+        // 保存守护进程数据
         $queryData = [
             'pjname' => $server_name,
             'user' => 'root',

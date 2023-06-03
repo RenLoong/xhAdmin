@@ -89,6 +89,22 @@ class BtPanel
     }
 
     /**
+     * 获取守护进程列表
+     *
+     * @param  array $data
+     * @return array
+     */
+    public function getSupervisorList(array $data = []):array
+    {
+        $data = array_merge([
+            'action' => 'a',
+            'name' => 'supervisor',
+            's' => 'GetProcessList',
+        ], $data);
+        return $this->send('/plugin?action=a&name=supervisor&s=GetProcessList', $data);
+    }
+
+    /**
      * 发送接口请求
      *
      * @param string $url

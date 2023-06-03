@@ -22,7 +22,7 @@ try {
     }
     // 已安装，跳转至已安装
     if (file_exists(ROOT_PATH . '/.env')) {
-        $type = isset($_GET['type']) ? ucfirst($_GET['type']) : ucfirst('custom');
+        $type = isset($_POST['type']) ? ucfirst($_POST['type']) : ucfirst('custom');
         if ($type !== 'Custom') {
             $desc = <<<STR
             <div>恭喜您，安装成功</div>

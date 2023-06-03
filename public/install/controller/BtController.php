@@ -116,6 +116,10 @@ class BtController
     {
         # 获取数据
         $post = $_POST;
+        // 服务名称
+        $server_name = str_replace('.', '_', basename(ROOT_PATH));
+        # 新增宝塔守护进程
+        Helpers::installSupervisor($server_name, $post);
         # 数据验证
         if (!isset($post['btData'])) return Json::fail('缺少宝塔面板数据');
         if (!isset($post['serverData'])) return Json::fail('请设置框架启动端口');
