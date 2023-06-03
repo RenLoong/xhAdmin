@@ -81,25 +81,8 @@ class BtController
                     $pdo->query("{$adminSql}");
                     // 安装完成
                     return Json::json('安装站点数据完成...', 200, [
-                        'next' => 'config'
+                        'next' => 'nginx'
                     ]);
-                } catch (\Throwable $e) {
-                    return Json::fail($e->getMessage(), 404);
-                }
-                # 写入文件配置
-            case 'config':
-                try {
-                    # 安装Env配置文件
-                    Helpers::installEnv($post);
-                    # 安装Env配置成功
-                    return Json::json(
-                        '安装站点数据完成...',
-                        200,
-                        [
-                            'next' => 'nginx'
-                        ]
-                    );
-                    return Json::success('安装配置文件完成...');
                 } catch (\Throwable $e) {
                     return Json::fail($e->getMessage(), 404);
                 }
@@ -127,6 +110,22 @@ class BtController
                     # 新增宝塔守护进程
                     Helpers::installSupervisor($server_name, $post);
                     # 安装完成
+                    return Json::json(
+                        '安装守护进程成功...',
+                        200,
+                        [
+                            'next'=> 'config'
+                        ]
+                    );
+                } catch (\Throwable $e) {
+                    return Json::fail($e->getMessage(), 404);
+                }
+                # 写入文件配置
+            case 'config':
+                try {
+                    # 安装Env配置文件
+                    Helpers::installEnv($post);
+                    # 安装Env配置成功
                     return Json::json(
                         '全部安装完成，即将跳转...',
                         200
