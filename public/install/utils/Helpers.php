@@ -41,7 +41,7 @@ class Helpers
             'data'      => $newNginxConfig
         ];
         $response = $btPanel->SaveFileBody($data);
-        if (!isset($response['status']) || $response['status']) {
+        if (!isset($response['status']) || !$response['status']) {
             throw new Exception('保存Nginx站点配置失败');
         }
     }

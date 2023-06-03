@@ -56,7 +56,8 @@ class DefaultController
     {
         $data = [
             'fun'   => $this->getVerifyFun(),
-            'extra' => $this->getVerifyExtra()
+            'extra' => $this->getVerifyExtra(),
+            'dirData' => $this->getDirData()
         ];
         return Json::successRes($data);
     }
@@ -69,6 +70,37 @@ class DefaultController
     public function complete()
     {
         return Json::failFul('程序未安装', 301);
+    }
+
+    /**
+     * 验证目录权限
+     * @return array
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-05-17
+     */
+    private function getDirData()
+    {
+        $dirPath = KF_INSTALL_PATH . '/config/dirList.php';
+        if (!file_exists($dirPath)) {
+            throw new Exception('目录权限检测配置文件错误');
+        }
+        $data = require_once $dirPath;
+        foreach ($data as $key => $value) {
+            if (!is_writable($value['dir'])) {
+                $data[$key]['status'] = false;
+                $data[$key]['value']  = '无写入权限';
+                continue;
+            }
+            if (!is_readable($value['dir'])) {
+                $data[$key]['status'] = false;
+                $data[$key]['value']  = '无可读权限';
+                continue;
+            }
+            $data[$key]['status'] = true;
+            $data[$key]['value']  = 'Ok';
+        }
+        return $data;
     }
 
     /**
