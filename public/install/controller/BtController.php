@@ -92,7 +92,7 @@ class BtController
                     // 设置Env配置文件
                     Helpers::installEnv($post);
                     // 服务名称
-                    $server_name = basename(ROOT_PATH);
+                    $server_name = str_replace('.','_', basename(ROOT_PATH));
                     # 写入nginx配置
                     Helpers::installNginx($server_name,$post);
                     # 新增宝塔守护进程

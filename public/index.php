@@ -18,7 +18,7 @@ require KF_INSTALL_PATH . "/utils/Helpers.php";
 try {
     // 未安装，跳转至安装页面
     if (!file_exists(ROOT_PATH . '/.env') && strtoupper($_SERVER['REQUEST_METHOD']) === 'GET') {
-        header('location:/install/');
+        header('Location:/install/');
     }
     // 已安装，跳转至已安装
     if (file_exists(ROOT_PATH . '/.env')) {

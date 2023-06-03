@@ -11,38 +11,43 @@ class Helpers
      * @param  array  $data
      * @return void
      */
-    public static function installNginx(string $server_name,array $data)
+    public static function installNginx(string $server_name, array $data)
     {
         $siteDirName = basename(ROOT_PATH);
         $configPath = "/www/server/panel/vhost/nginx/{$siteDirName}.conf";
         $btPanel = new BtPanel($data['btData']['panel_url'], $data['btData']['panel_key']);
-        $response = $btPanel->getFileBody(['path'=> $configPath]);
+        $response = $btPanel->getFileBody(['path' => $configPath]);
         if (!isset($response['data'])) {
             throw new Exception('获取Ningx站点配置错误');
         }
         $nginxConfig = $response['data'];
         # 设置nginx---upstream
-        $nginxUpstream = file_get_contents(KF_INSTALL_PATH. '/data/nginx/nginx_upstream.tpl');
-        $str1 = ['{SERVER_NAME}', '{SERVER_PORT}'];
-        $str2 = [$server_name,$data['serverData']['server_port']];
-        $nginxUpstream = str_replace($str1,$str2, $nginxUpstream);
-        $newNginxConfig = "{$nginxUpstream}\n{$nginxConfig}";
-        # 设置nginx---server
-        $nginxUpstream = file_get_contents(KF_INSTALL_PATH . '/data/nginx/nginx_server.tpl');
-        $str1 = ['{SERVER_NAME}'];
-        $str2 = [$server_name];
-        $nginxUpstream = str_replace($str1,$str2, $nginxUpstream);
-        $sslEnd = "#SSL-END\n\n\n\n\n{$nginxUpstream}\n\n\n";
-        $newNginxConfig = str_replace("#SSL-END", $sslEnd, $newNginxConfig);
-        // 保存nginx配置
-        $data = [
-            'path'      => $configPath,
-            'encoding'  => 'utf-8',
-            'data'      => $newNginxConfig
-        ];
-        $response = $btPanel->SaveFileBody($data);
-        if (!isset($response['status']) || !$response['status']) {
-            throw new Exception('保存Nginx站点配置失败');
+        $nginxUpstream = file_get_contents(KF_INSTALL_PATH . '/data/nginx/nginx_upstream.tpl');
+        # 检测已安装nginx
+        if (strpos($nginxConfig, $server_name) !== false) {
+            $nginxConfig = preg_replace('/server 127.0.0.1:(.*);/', "server 127.0.0.1:{$data['serverData']['server_port']};", $nginxConfig);
+        }else {
+            $str1 = ['{SERVER_NAME}', '{SERVER_PORT}'];
+            $str2 = [$server_name, $data['serverData']['server_port']];
+            $nginxUpstream = str_replace($str1, $str2, $nginxUpstream);
+            $newNginxConfig = "{$nginxUpstream}\n{$nginxConfig}";
+            # 设置nginx---server
+            $nginxUpstream = file_get_contents(KF_INSTALL_PATH . '/data/nginx/nginx_server.tpl');
+            $str1 = ['{SERVER_NAME}'];
+            $str2 = [$server_name];
+            $nginxUpstream = str_replace($str1, $str2, $nginxUpstream);
+            $sslEnd = "#SSL-END\n\n\n{$nginxUpstream}\n\n\n";
+            $newNginxConfig = str_replace("#SSL-END", $sslEnd, $newNginxConfig);
+            // 保存nginx配置
+            $data = [
+                'path'      => $configPath,
+                'encoding'  => 'utf-8',
+                'data'      => $newNginxConfig
+            ];
+            $response = $btPanel->SaveFileBody($data);
+            if (!isset($response['status']) || !$response['status']) {
+                throw new Exception('保存Nginx站点配置失败');
+            }
         }
     }
 
@@ -53,7 +58,7 @@ class Helpers
      * @param  array  $data
      * @return void
      */
-    public static function installSupervisor(string $server_name,array $data)
+    public static function installSupervisor(string $server_name, array $data)
     {
         $btPanel = new BtPanel($data['btData']['panel_url'], $data['btData']['panel_key']);
         $queryData = [
@@ -114,7 +119,7 @@ class Helpers
             $site['web_name'],
             $site['web_url']
         )
-        ->array();
+            ->array();
         if (!$response) {
             throw new Exception('安装云站点失败', 404);
         }
