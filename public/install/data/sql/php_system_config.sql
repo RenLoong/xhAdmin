@@ -39,6 +39,6 @@ CREATE TABLE `php_system_config`  (
 -- ----------------------------
 -- Records of php_system_config
 -- ----------------------------=
-INSERT INTO `php_system_config` VALUES (3, '2023-03-12 14:06:09', '2023-05-03 16:44:15', 1, '后台图标', 'admin_logo', 'upload/user/e696862766470b7442d179168f9d732d.jpeg', 'uploadify', '', '请上传后台图标', 0);
+INSERT INTO `php_system_config` VALUES (3, '2023-03-12 14:06:09', '2023-05-03 16:44:15', 1, '后台图标', 'admin_logo', '', 'uploadify', '', '请上传后台图标', 0);
 
 SET FOREIGN_KEY_CHECKS = 1;
