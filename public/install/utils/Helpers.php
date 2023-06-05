@@ -18,7 +18,7 @@ class Helpers
         $btPanel = new BtPanel($data['btData']['panel_url'], $data['btData']['panel_key']);
         $response = $btPanel->getFileBody(['path' => $configPath]);
         if (isset($response['status']) && !$response['status']) {
-            throw new Exception("{$response['msg']}请确认KFAdmin是否放在站点根目录");
+            throw new Exception("{$response['msg']}请确认程序是否放在站点根目录");
         }
         if (!isset($response['data'])) {
             throw new Exception('无法获取到Nginx配置文件');
@@ -28,8 +28,10 @@ class Helpers
         $nginxUpstream = file_get_contents(KF_INSTALL_PATH . '/data/nginx/nginx_upstream.tpl');
         # 检测已安装nginx
         if (strpos($nginxConfig, $server_name) !== false) {
-            $nginxConfig = preg_replace('/server 127.0.0.1:(.*);/', "server 127.0.0.1:{$data['serverData']['server_port']};", $nginxConfig);
+            # 设置nginx---upstream
+            $newNginxConfig = preg_replace('/server 127.0.0.1:(.*);/', "server 127.0.0.1:{$data['serverData']['server_port']};", $nginxConfig);
         } else {
+            # 设置nginx---upstream
             $str1 = ['{SERVER_NAME}', '{SERVER_PORT}'];
             $str2 = [$server_name, $data['serverData']['server_port']];
             $nginxUpstream = str_replace($str1, $str2, $nginxUpstream);
@@ -41,16 +43,16 @@ class Helpers
             $nginxUpstream = str_replace($str1, $str2, $nginxUpstream);
             $sslEnd = "#SSL-END\n\n\n{$nginxUpstream}\n\n\n";
             $newNginxConfig = str_replace("#SSL-END", $sslEnd, $newNginxConfig);
-            // 保存nginx配置
-            $data = [
-                'path'      => $configPath,
-                'encoding'  => 'utf-8',
-                'data'      => $newNginxConfig
-            ];
-            $response = $btPanel->SaveFileBody($data);
-            if (!isset($response['status']) || !$response['status']) {
-                throw new Exception('保存Nginx站点配置失败');
-            }
+        }
+        // 保存nginx配置
+        $data = [
+            'path'      => $configPath,
+            'encoding'  => 'utf-8',
+            'data'      => $newNginxConfig
+        ];
+        $response = $btPanel->SaveFileBody($data);
+        if (!isset($response['status']) || !$response['status']) {
+            throw new Exception('保存Nginx站点配置失败');
         }
     }
 
