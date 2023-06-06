@@ -84,7 +84,7 @@ class ComposerMgr
             if (!$package_name) {
                 continue;
             }
-            $command = "cd {$basePath} && composer require --no-interaction {$package_name}:dev-main;";
+            $command = "cd {$basePath} && composer require --no-interaction {$package_name};";
             shell_exec($command);
         }
         shell_exec("cd {$basePath} && composer --no-interaction dump-autoload");
@@ -99,7 +99,7 @@ class ComposerMgr
             if (!$package_name) {
                 continue;
             }
-            $command = "cd {$basePath} && composer update --no-interaction {$package_name}:dev-main;";
+            $command = "cd {$basePath} && composer update --no-interaction {$package_name};";
             shell_exec($command);
         }
         shell_exec("cd {$basePath} && composer --no-interaction dump-autoload");
