@@ -121,30 +121,37 @@ export default {
         if (_this.installLock.progress < 100) {
           const progress = Math.random();
           const progress_num = _this.installLock.progress + progress;
-          _this.installLock.progress = parseFloat(progress_num.toFixed(2))
+          _this.installLock.progress = parseFloat(progress_num.toFixed(2));
         }
       }, 300);
-      _this.$http.usePost("admin/Plugin/install", queryParams).then((res) => {
-        if (res.code === 200) {
-          _this.installLock.progress = 100;
-          clearInterval(setIntervalObj);
-          setTimeout(() => {
-            _this.$emit("update:closeWin");
-          }, 2000);
-          _this.$useNotification?.success({
-            title: res?.msg ?? "操作成功",
-            duration: 1500,
-          });
-        } else {
+      _this.$http
+        .usePost("admin/Plugin/install", queryParams)
+        .then((res) => {
+          if (res.code === 200) {
+            _this.installLock.progress = 100;
+            clearInterval(setIntervalObj);
+            setTimeout(() => {
+              _this.$emit("update:closeWin");
+            }, 2000);
+            _this.$useNotification?.success({
+              title: res?.msg ?? "操作成功",
+              duration: 1500,
+            });
+          } else {
+            clearInterval(setIntervalObj);
+            _this.installLock.status = false;
+            _this.installLock.progress = 0;
+            _this.$useNotification?.error({
+              title: res?.msg ?? "获取失败",
+              duration: 1500,
+            });
+          }
+        })
+        .catch(() => {
           clearInterval(setIntervalObj);
           _this.installLock.status = false;
           _this.installLock.progress = 0;
-          _this.$useNotification?.error({
-            title: res?.msg ?? "获取失败",
-            duration: 1500,
-          });
-        }
-      });
+        });
     },
     sendBuy() {
       const _this = this;

@@ -309,6 +309,8 @@ class PluginController extends BaseController
     {
         $name              = $request->post('name');
         $version           = $request->post('version');
+
+        # 检测应用是否已安装
         $installed_version = PluginLogic::getPluginVersion($name);
         if ($installed_version) {
             return $this->fail('该应用已安装');
@@ -355,7 +357,7 @@ class PluginController extends BaseController
             Monitor::pause();
         }
         try {
-            // 解压zip到plugin目录
+            # 解压zip到plugin目录
             if ($has_zip_archive) {
                 $zip = new ZipArchive;
                 $zip->open($zip_file, ZIPARCHIVE::CHECKCONS);
@@ -367,14 +369,15 @@ class PluginController extends BaseController
             } else {
                 PluginLogic::unzipWithCmd($cmd);
             }
-            // 执行检测并安装composer包
+            # 执行检测并安装composer包
             ComposerMgr::check_plugin_dependencies($name);
-            // 删除压缩包
+            # 删除压缩包
             unlink($zip_file);
-            // 执行install安装
+            # 执行install安装
             if (class_exists($install_class) && method_exists($install_class, 'install')) {
                 call_user_func([$install_class, 'install'], $version);
             }
+            # 输出安装完成
             echo "{$name} --- 安装完成" . PHP_EOL;
         } finally {
             if ($monitor_support_pause) {
@@ -446,7 +449,7 @@ class PluginController extends BaseController
             Monitor::pause();
         }
         try {
-            // 解压zip到plugin目录
+            # 解压zip到plugin目录
             if ($has_zip_archive) {
                 $zip = new ZipArchive;
                 $zip->open($zip_file, ZIPARCHIVE::CHECKCONS);
@@ -454,7 +457,7 @@ class PluginController extends BaseController
 
             $context       = null;
             $install_class = "\\plugin\\{$name}\\api\\Install";
-            // 执行beforeUpdate
+            # 执行beforeUpdate
             if (class_exists($install_class) && method_exists($install_class, 'beforeUpdate')) {
                 $context = call_user_func([$install_class, 'beforeUpdate'], $installed_version, $version);
             }
@@ -465,14 +468,15 @@ class PluginController extends BaseController
             } else {
                 PluginLogic::unzipWithCmd($cmd);
             }
-            // 执行检测并更新composer包
+            # 执行检测并更新composer包
             ComposerMgr::check_plugin_dependencies($name, true);
-            // 删除压缩包
+            # 删除压缩包
             unlink($zip_file);
-            // 执行update更新
+            # 执行update更新
             if (class_exists($install_class) && method_exists($install_class, 'update')) {
                 call_user_func([$install_class, 'update'], $installed_version, $version, $context);
             }
+            # 输出更新完成
             echo "{$name} --- 更新完成" . PHP_EOL;
         } finally {
             if ($monitor_support_pause) {
@@ -496,27 +500,25 @@ class PluginController extends BaseController
      */
     public function uninstall(Request $request)
     {
-
         $name    = $request->post('name');
         $version = $request->post('version');
         if (!$name || !preg_match('/^[a-zA-Z0-9_]+$/', $name)) {
             return $this->fail('参数错误');
         }
 
-        // 获得插件路径
+        # 获得插件路径
         clearstatcache();
         $path = get_realpath(base_path("/plugin/{$name}"));
         if (!$path || !is_dir($path)) {
             return $this->success('卸载成功');
         }
 
-        // 执行uninstall卸载
+        # 执行uninstall卸载
         $install_class = "\\plugin\\{$name}\\api\\Install";
         if (class_exists($install_class) && method_exists($install_class, 'uninstall')) {
             call_user_func([$install_class, 'uninstall'], $version);
         }
-
-        // 删除目录
+        # 删除目录
         clearstatcache();
         if (is_dir($path)) {
             $monitor_support_pause = method_exists(Monitor::class, 'pause');
@@ -533,7 +535,9 @@ class PluginController extends BaseController
         }
         clearstatcache();
 
+        # 重启主进程
         Utils::reloadWebman();
+        # 返回操作结果
         return $this->success('卸载成功');
     }
 }
