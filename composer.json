@@ -1,6 +1,7 @@
 {
   "name": "ycopen/kfadmin",
-  "version": "v1.3.3",
+  "version_name": "v1.3.3",
+  "version": "1330",
   "type": "project",
   "keywords": [
     "high performance",
