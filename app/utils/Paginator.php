@@ -43,7 +43,7 @@ class Paginator extends \think\Paginator
     public function listRows(): int
     {
         $get            = request()->get();
-        $this->listRows = isset($get['limit']) ? $get['limit'] : $this->listRows;
+        $this->listRows = (int)isset($get['limit']) ? $get['limit'] : $this->listRows;
         return $this->listRows;
     }
 
