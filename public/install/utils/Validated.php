@@ -1,5 +1,4 @@
 <?php
-
 use app\admin\service\kfcloud\CloudService;
 
 class Validated
@@ -22,36 +21,22 @@ class Validated
         if (!isset($data['panel_url']) || empty($data['panel_url'])) {
             throw new Exception('请输入宝塔面板地址');
         }
-        // $preg = "/http[s]?:\/\/[\w.]+[\w\/]*[\w.]*\??[\w=&\+\%]*/is";
-        // if (!preg_match($preg, $data['panel_url'])) {
-        //     throw new Exception('请输入正确的面板地址');
-        // }
         if (filter_var($data['panel_url'], FILTER_VALIDATE_URL) === false) {
             throw new Exception('请输入正确的面板地址');
         }
         if (!isset($data['panel_key']) || empty($data['panel_key'])) {
             throw new Exception('请输入宝塔面板密钥');
         }
-        $bt = new BtPanel($data['panel_url'], $data['panel_key']);
-        // 验证守护进程是否安装
-        $softList = [];
-        for ($i=0; $i < 5; $i++) {
-            $response = $bt->getSoftList(['p' =>$i]);
-            if (!isset($response['list']['data'])) {
-                throw new Exception('获取守护进程插件失败');
-            }
-            if (empty($response['list']['data'])) {
-                continue;
-            }
-            $softList = array_merge($softList, $response['list']['data']);
-        }
-        $names = [];
-        foreach ($softList as $value) {
-            $names[] = $value['name'];
-        }
-        if (!in_array('supervisor', $names)) {
-            throw new Exception('请安装宝塔插件【进程守护管理器】');
-        }
+        $bt = new BtPanelLogic($data['panel_url'], $data['panel_key']);
+        # 验证nginx是否安装
+        $bt->validateSoft('nginx');
+        # 验证Mysql是否安装
+        $bt->validateSoft('mysql');
+        # 验证守护进程软件是否安装
+        $bt->validateSoft('supervisor');
+        # 守护进程服务是否已安装
+        $server_name = str_replace('.', '_', basename(ROOT_PATH));
+        $bt->valiSupervisorNames($server_name);
     }
 
     # 验证云服务

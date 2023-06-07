@@ -1,5 +1,4 @@
 <?php
-
 use Webman\Config;
 
 define('ROOT_PATH', dirname(__DIR__));
@@ -15,6 +14,7 @@ require KF_INSTALL_PATH . "/utils/Json.php";
 require KF_INSTALL_PATH . "/utils/BtPanel.php";
 require KF_INSTALL_PATH . "/utils/Validated.php";
 require KF_INSTALL_PATH . "/utils/Helpers.php";
+require KF_INSTALL_PATH . "/utils/BtPanelLogic.php";
 try {
     // 未安装，跳转至安装页面
     if (!file_exists(ROOT_PATH . '/.env') && strtoupper($_SERVER['REQUEST_METHOD']) === 'GET') {

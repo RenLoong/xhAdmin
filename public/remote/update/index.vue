@@ -138,7 +138,7 @@ export default {
         maskClosable: false,
         onPositiveClick() {
           localStorage.setItem("system_updated", _this.updated.version);
-          location.reload();
+          window.location.reload();
         },
       });
     },

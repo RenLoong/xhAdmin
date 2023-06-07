@@ -15,6 +15,12 @@ class BtController
         $step  = isset($_GET['step']) ? $_GET['step'] : '';
         $total = isset($_GET['total']) ? intval($_GET['total']) : 0;
         $post  = $_POST;
+        # 宝塔相关数据
+        if (!isset($post['btData'])) return Json::fail('缺少宝塔面板数据');
+        $btData = isset($post['btData']) ? $post['btData'] : null;
+        $btPanelLogic = new BtPanelLogic($btData['panel_url'],$btData['panel_key']);
+        $server_name = str_replace('.', '_', basename(ROOT_PATH));
+        # 执行安装步骤
         switch ($step) {
                 # 安装数据库结构
             case 'structure':
@@ -89,9 +95,8 @@ class BtController
                 # 安装Nginx配置
             case 'nginx':
                 try {
-                    $server_name = str_replace('.', '_', basename(ROOT_PATH));
                     # 写入nginx配置
-                    Helpers::installNginx($server_name, $post);
+                    $btPanelLogic->addNginx($server_name,$post);
                     # 安装完成
                     return Json::json(
                         '安装Nginx配置完成...',
@@ -106,9 +111,8 @@ class BtController
                 # 安装守护进程配置
             case 'supervisor':
                 try {
-                    $server_name = str_replace('.', '_', basename(ROOT_PATH));
                     # 新增宝塔守护进程
-                    Helpers::installSupervisor($server_name, $post);
+                    $btPanelLogic->addSupervisor($server_name);
                     # 安装完成
                     return Json::json(
                         '安装守护进程成功...',
@@ -126,6 +130,7 @@ class BtController
                     # 安装Env配置文件
                     Helpers::installEnv($post);
                     # 重启一下守护进程
+                    $btPanelLogic->reloadSupervisor($server_name);
                     # 安装Env配置成功
                     return Json::json(
                         '全部安装完成，即将跳转...',
@@ -183,7 +188,6 @@ class BtController
             Validated::validateCloud($cloud);
             # 验证站点数据
             Validated::validateSite($site);
-
             # 返回数据
             return Json::successRes($post);
         } catch (\Throwable $e) {

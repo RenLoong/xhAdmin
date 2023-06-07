@@ -94,9 +94,39 @@ class BtPanel
             'path' => '',
             'command' => '',
             'numprocs' => 1,
-            'ps'=>''
+            'ps' => ''
         ], $data);
         return $this->send('/plugin?action=a&name=supervisor&s=AddProcess', $data);
+    }
+
+    /**
+     * 启动守护进程
+     *
+     * @param array $data
+     * @return array
+     */
+    public function startSupervisor(array $data): array
+    {
+        $data = array_merge([
+            'program' => '',
+            'numprocs' => 1
+        ], $data);
+        return $this->send('/plugin?action=a&name=supervisor&s=StartProcess', $data);
+    }
+
+    /**
+     * 停止守护进程
+     *
+     * @param array $data
+     * @return array
+     */
+    public function stopSupervisor(array $data):array
+    {
+        $data = array_merge([
+            'program' => '',
+            'numprocs' => 1
+        ], $data);
+        return $this->send('/plugin?action=a&name=supervisor&s=StopProcess',$data);
     }
 
     /**
@@ -122,7 +152,7 @@ class BtPanel
      * @param array $data
      * @return array
      */
-    private function send(string $url, array $data = []):array
+    private function send(string $url, array $data = []): array
     {
         # 拼接URL地址
         $api = $this->BT_PANEL . $url;
