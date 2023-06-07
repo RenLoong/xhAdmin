@@ -2,6 +2,7 @@
 
 namespace app\admin\service\kfcloud;
 
+use app\admin\logic\PluginLogic;
 use yzh52521\EasyHttp\Response;
 
 /**
@@ -107,9 +108,11 @@ class CloudService
      */
     public static function list(array $query): Response
     {
+        $systemInfo= SystemInfo::info();
         $query = array_merge([
-            'page'  => 1,
-            'limit' => 20,
+            'page'              => 1,
+            'limit'             => 20,
+            'sass_version'      => $systemInfo['system_version']
         ], $query);
         return HttpService::send()->get('Plugin/list', $query);
     }
@@ -125,9 +128,13 @@ class CloudService
      */
     public static function detail(string|null $name, string|null $version): Response
     {
+        $systemInfo = SystemInfo::info();
+        $installed_version = PluginLogic::getPluginVersion($name);
         $query = [
-            'name'    => $name,
-            'version' => $version
+            'name'              => $name,
+            'version'           => $version,
+            'local_version'     => $installed_version,
+            'sass_version'      => $systemInfo['system_version']
         ];
         return HttpService::send()->get('Plugin/detail', $query);
     }
@@ -142,8 +149,11 @@ class CloudService
      */
     public static function buyApp(string|null $name, string|null $version): Response
     {
+        $systemInfo = SystemInfo::info();
         $query = [
-            'name' => $name
+            'name'              => $name,
+            'version'           => $version,
+            'sass_version'      => $systemInfo['system_version']
         ];
         return HttpService::send()->get('Plugin/buy', $query);
     }
@@ -159,7 +169,9 @@ class CloudService
      */
     public static function unifiedOrder(string $order_no): Response
     {
-        $query = [];
+        $query = [
+            'order_no'      => $order_no
+        ];
         return HttpService::send()->get('Order/unifiedOrder', $query);
     }
 
@@ -174,9 +186,11 @@ class CloudService
      */
     public static function getDownKey(string|null $name, string|null $version): Response
     {
+        $systemInfo = SystemInfo::info();
         $query = [
-            'name'    => $name,
-            'version' => $version
+            'name'              => $name,
+            'version'           => $version,
+            'sass_version'      => $systemInfo['system_version']
         ];
         return HttpService::send()->get('Plugin/getKey', $query);
     }

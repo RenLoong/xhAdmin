@@ -36,6 +36,7 @@ class PublicsController extends BaseController
             'web_name'          => getHpConfig('web_name'),
             'web_title'         => '登录',
             'web_logo'          => getHpConfig('web_logo'),
+            'web_logo'          => '',
             'version_name'      => $systemInfo['system_version_name'],
             'version'           => $systemInfo['system_version'],
             // 版权token
