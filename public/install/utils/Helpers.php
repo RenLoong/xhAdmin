@@ -92,6 +92,41 @@ class Helpers
     }
 
     /**
+     * 重启守护进程
+     *
+     * @param  string $server_name
+     * @param  array  $data
+     * @return void
+     */
+    public static function reloadSupervisor(string $server_name, array $data)
+    {
+        $btPanel = new BtPanel($data['btData']['panel_url'], $data['btData']['panel_key']);
+        // 获取守护进程列表
+        $list = $btPanel->getSupervisorList();
+        $supervisorName = [];
+        foreach ($list as $value) {
+            $supervisorName[] = isset($value['program']) ? $value['program'] : '';
+        }
+        // 已安装守护进程，不再安装
+        if (!in_array($server_name, $supervisorName)) {
+            throw new Exception('宝塔->守护进程未安装');
+        }
+        // 保存守护进程数据
+        $queryData = [
+            'pjname'    => $server_name,
+            'user'      => 'root',
+            'path'      => ROOT_PATH . '/',
+            'command'   => 'php webman start',
+            'numprocs'  => 1,
+            'ps'        => $server_name
+        ];
+        $response = $btPanel->saveSupervisor($queryData);
+        if (isset($response['status']) && !$response['status']) {
+            throw new Exception("{$response['msg']}，安装守护进程失败");
+        }
+    }
+
+    /**
      * 安装配置文件
      * @param array $post
      * @throws Exception

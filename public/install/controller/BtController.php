@@ -125,6 +125,7 @@ class BtController
                 try {
                     # 安装Env配置文件
                     Helpers::installEnv($post);
+                    # 重启一下守护进程
                     # 安装Env配置成功
                     return Json::json(
                         '全部安装完成，即将跳转...',
