@@ -112,7 +112,7 @@ class CloudService
         $query = array_merge([
             'page'              => 1,
             'limit'             => 20,
-            'sass_version'      => $systemInfo['system_version']
+            'saas_version'      => $systemInfo['system_version']
         ], $query);
         return HttpService::send()->get('Plugin/list', $query);
     }
@@ -134,7 +134,7 @@ class CloudService
             'name'              => $name,
             'version'           => $version,
             'local_version'     => $installed_version,
-            'sass_version'      => $systemInfo['system_version']
+            'saas_version'      => $systemInfo['system_version']
         ];
         return HttpService::send()->get('Plugin/detail', $query);
     }
@@ -153,7 +153,7 @@ class CloudService
         $query = [
             'name'              => $name,
             'version'           => $version,
-            'sass_version'      => $systemInfo['system_version']
+            'saas_version'      => $systemInfo['system_version']
         ];
         return HttpService::send()->get('Plugin/buy', $query);
     }
@@ -190,7 +190,7 @@ class CloudService
         $query = [
             'name'              => $name,
             'version'           => $version,
-            'sass_version'      => $systemInfo['system_version']
+            'saas_version'      => $systemInfo['system_version']
         ];
         return HttpService::send()->get('Plugin/getKey', $query);
     }
