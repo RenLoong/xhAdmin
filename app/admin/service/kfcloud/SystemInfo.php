@@ -2,6 +2,8 @@
 
 namespace app\admin\service\kfcloud;
 
+use Exception;
+
 /**
  * 系统信息配置
  * @copyright 贵州猿创科技有限公司
@@ -43,15 +45,21 @@ class SystemInfo
      */
     public static function info()
     {
-        $packPath            = base_path('/composer.json');
+        $packPath            = base_path('/version.json');
+        if (!file_exists($packPath)) {
+            throw new Exception('框架版本出错');
+        }
         $content             = file_get_contents($packPath);
         $packInfo            = json_decode($content, true);
-        $system_name         = self::$system_name;
-        $system_version_name = isset($packInfo['version']) ? $packInfo['version'] : '';
-        $system_version      = 0;
-        if ($system_version_name) {
-            $system_version = str_replace(['v', '.', ' '], '', trim($system_version_name));
+        if (!isset($packInfo['version_name'])) {
+            throw new Exception('获取版本名称错误');
         }
+        if (!isset($packInfo['version'])) {
+            throw new Exception('获取版本号错误');
+        }
+        $system_name         = self::$system_name;
+        $system_version_name = isset($packInfo['version_name']) ? $packInfo['version_name'] : '';
+        $system_version = isset($packInfo['version']) ? $packInfo['version'] : '';
         $freamVersion        = [
             'name' => "{$system_name} {$system_version_name}",
             'url'  => self::$system_doc,

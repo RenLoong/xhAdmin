@@ -130,11 +130,12 @@ class PluginLogic
      */
     public static function getPluginVersion($name)
     {
-        if (!is_file($file = base_path() . "/plugin/{$name}/config/app.php")) {
+        $json = base_path() . "/plugin/{$name}/config/version.json";
+        if (!is_file($json)) {
             return null;
         }
-        $config = include $file;
-        return $config['version'] ?? null;
+        $config = json_decode(file_get_contents($json),true);
+        return isset($config['version']) ? $config['version'] : null;
     }
 
     /**
