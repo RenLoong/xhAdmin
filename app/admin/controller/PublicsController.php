@@ -6,6 +6,7 @@ use app\utils\Password;
 use Exception;
 use support\Request;
 use app\admin\model\SystemAdmin;
+use app\admin\service\kfcloud\SystemInfo;
 use app\admin\utils\VueRoutesMgr;
 use app\admin\validate\SystemAdmin as ValidateSystemAdmin;
 use app\BaseController;
@@ -27,22 +28,25 @@ class PublicsController extends BaseController
      */
     public function site()
     {
+        $systemInfo = SystemInfo::info();
         $empower_token = empowerFile('token');
         $private_key = empowerFile('private_key');
         $moduleName = getModule('admin');
         $data       = [
-            'web_name'       => getHpConfig('web_name'),
-            'web_title'      => '登录',
-            'web_logo'       => getHpConfig('web_logo'),
+            'web_name'          => getHpConfig('web_name'),
+            'web_title'         => '登录',
+            'web_logo'          => getHpConfig('web_logo'),
+            'version_name'      => $systemInfo['system_version_name'],
+            'version'           => $systemInfo['system_version'],
             // 版权token
-            'empower_token' => $empower_token,
+            'empower_token'         => $empower_token,
             // 版权私钥
-            'empower_private_key' => $private_key,
+            'empower_private_key'   => $private_key,
             // 登录页链接
-            'login_link'     => [
-                'register'    => '',
-                'forget'      => '',
-                'other_login' => [],
+            'login_link'            => [
+                'register'          => '',
+                'forget'            => '',
+                'other_login'       => [],
             ],
             // 公用接口
             'public_api'     => [
@@ -71,8 +75,7 @@ class PublicsController extends BaseController
                     'title'  => '用户注册',
                     'path'   => '/register',
                     'remote' => 'remote/register'
-                ], */
-            ],
+                ],*/],
             // 附件库API
             'uploadify_api'  => [
                 'index'  => "{$moduleName}/SystemUpload/index",

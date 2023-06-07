@@ -59,7 +59,7 @@ class SystemInfo
         }
         $system_name         = self::$system_name;
         $system_version_name = isset($packInfo['version_name']) ? $packInfo['version_name'] : '';
-        $system_version = isset($packInfo['version']) ? $packInfo['version'] : '';
+        $system_version = isset($packInfo['version']) ? (int)$packInfo['version'] : 0;
         $freamVersion        = [
             'name' => "{$system_name} {$system_version_name}",
             'url'  => self::$system_doc,
@@ -69,7 +69,7 @@ class SystemInfo
             'fream_version'       => [$freamVersion],
             'system_name'         => $system_name,
             'system_version_name' => $system_version_name,
-            'system_version'      => (int)$system_version,
+            'system_version'      => $system_version,
             'ecology'             => self::$ecology,
             'service_wx'          => self::$service_wx,
         ];
