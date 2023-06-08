@@ -512,7 +512,8 @@ class PluginController extends BaseController
         if (!$path || !is_dir($path)) {
             return $this->success('卸载成功');
         }
-
+        # 卸载composer
+        ComposerMgr::uninstall($name);
         # 执行uninstall卸载
         $install_class = "\\plugin\\{$name}\\api\\Install";
         if (class_exists($install_class) && method_exists($install_class, 'uninstall')) {

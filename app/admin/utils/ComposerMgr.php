@@ -2,13 +2,14 @@
 
 namespace app\admin\utils;
 
-use Exception;
-
 /**
  * Composer操作类
  */
 class ComposerMgr
 {
+    # composer通用命令
+    private static $composerCommand = 'export COMPOSER_HOME=/www/server/php/80/bin;COMPOSER_ALLOW_SUPERUSER=1;';
+
     // 检测并安装composer扩展
     public static function check_plugin_dependencies(string $plugin_name, $isUpdate = false)
     {
@@ -39,16 +40,23 @@ class ComposerMgr
         if (!$packages) {
             return;
         }
+        # 通用命令代码
+        $composerCommand = self::$composerCommand;
+        # 切换工作目录
         $basePath = base_path();
+        chdir($basePath);
         foreach ($packages as $package_name) {
             if (!$package_name) {
                 continue;
             }
-            $command = "cd {$basePath} && composer remove --no-interaction {$package_name}";
-            shell_exec($command);
+            $command = "{$composerCommand}composer remove {$package_name} --no-interaction 2>&1";
+            $output = shell_exec($command);
+            if ($output === null) {
+                echo "{$package_name}，依赖包卸载失败";
+                echo PHP_EOL;
+            }
         }
-        shell_exec("cd {$basePath} && composer --no-interaction dump-autoload");
-        echo "composer --- 卸载完成" . PHP_EOL;
+        shell_exec("composer --no-interaction dump-autoload");
     }
 
     /**
@@ -79,30 +87,44 @@ class ComposerMgr
     // 安装composer
     private static function installPluginPackages(array $packages)
     {
+        # 通用命令代码
+        $composerCommand = self::$composerCommand;
+        # 切换工作目录
         $basePath = base_path();
+        chdir($basePath);
         foreach ($packages as $package_name) {
             if (!$package_name) {
                 continue;
             }
-            $command = "cd {$basePath} && composer require --no-interaction {$package_name};";
-            shell_exec($command);
+            $command = "{$composerCommand}composer require {$package_name} --no-interaction 2>&1";
+            $output = shell_exec($command);
+            if ($output === null) {
+                echo "{$package_name}，依赖包安装失败";
+                echo PHP_EOL;
+            }
         }
-        shell_exec("cd {$basePath} && composer --no-interaction dump-autoload");
-        echo "composer --- 安装完成" . PHP_EOL;
+        shell_exec("composer --no-interaction dump-autoload");
     }
 
     // 更新composer包
     private static function updatePluginPackages(array $packages)
     {
+        # 通用命令代码
+        $composerCommand = self::$composerCommand;
+        # 切换工作目录
         $basePath = base_path();
+        chdir($basePath);
         foreach ($packages as $package_name) {
             if (!$package_name) {
                 continue;
             }
-            $command = "cd {$basePath} && composer update --no-interaction {$package_name};";
-            shell_exec($command);
+            $command = "{$composerCommand}composer update {$package_name} --no-interaction 2>&1";
+            $output = shell_exec($command);
+            if ($output === null) {
+                echo "{$package_name}，依赖包更新失败";
+                echo PHP_EOL;
+            }
         }
-        shell_exec("cd {$basePath} && composer --no-interaction dump-autoload");
-        echo "composer --- 更新完成" . PHP_EOL;
+        shell_exec("composer --no-interaction dump-autoload");
     }
 }
