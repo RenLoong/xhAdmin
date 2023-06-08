@@ -312,7 +312,7 @@ class PluginController extends BaseController
 
         # 检测应用是否已安装
         $installed_version = PluginLogic::getPluginVersion($name);
-        if ($installed_version) {
+        if ($installed_version > 1) {
             return $this->fail('该应用已安装');
         }
 

@@ -92,53 +92,30 @@ class BtController
                 } catch (\Throwable $e) {
                     return Json::fail($e->getMessage(), 404);
                 }
-                # 安装Nginx配置
-            case 'nginx':
-                try {
-                    # 写入nginx配置
-                    $btPanelLogic->addNginx($server_name,$post);
-                    # 安装完成
-                    return Json::json(
-                        '安装Nginx配置完成...',
-                        200,
-                        [
-                            'next' => 'supervisor'
-                        ]
-                    );
-                } catch (\Throwable $e) {
-                    return Json::fail($e->getMessage(), 404);
-                }
                 # 安装守护进程配置
             case 'supervisor':
-                try {
-                    # 新增宝塔守护进程
-                    $btPanelLogic->addSupervisor($server_name);
-                    # 安装完成
-                    return Json::json(
-                        '安装守护进程成功...',
-                        200,
-                        [
-                            'next'=> 'config'
-                        ]
-                    );
-                } catch (\Throwable $e) {
-                    return Json::fail($e->getMessage(), 404);
-                }
+                $btPanelLogic->addSupervisor($server_name);
+                # 安装完成
+                return Json::json(
+                    '安装进程成功，开始进行最后设置...',
+                    200,
+                    [
+                        'next' => 'config'
+                    ]
+                );
                 # 写入文件配置
             case 'config':
-                try {
-                    # 安装Env配置文件
-                    Helpers::installEnv($post);
-                    # 重启一下守护进程
-                    $btPanelLogic->reloadSupervisor($server_name);
-                    # 安装Env配置成功
-                    return Json::json(
-                        '全部安装完成，即将跳转...',
-                        200
-                    );
-                } catch (\Throwable $e) {
-                    return Json::fail($e->getMessage(), 404);
-                }
+                # 安装Env配置文件
+                Helpers::installEnv($post);
+                # 安装Nginx配置
+                $btPanelLogic->addNginx($server_name, $post);
+                # 重启一下守护进程
+                $btPanelLogic->reloadSupervisor($server_name);
+                # 安装Env配置成功
+                return Json::json(
+                    '全部安装完成，即将跳转...',
+                    200
+                );
             default:
                 return Json::fail('安装失败...');
         }
