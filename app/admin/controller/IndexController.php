@@ -196,9 +196,8 @@ class IndexController extends BaseController
                 // 解压zip到根目录
                 if ($has_zip_archive) {
                     $zip = new ZipArchive;
-                    $zip->open($zip_file, ZIPARCHIVE::CHECKCONS);
+                    $zip->open($zip_file);
                 }
-
                 if (!empty($zip)) {
                     $zip->extractTo(base_path());
                     echo "框架代码更新成功...\n";
@@ -207,7 +206,7 @@ class IndexController extends BaseController
                     PluginLogic::unzipWithCmd($cmd);
                 }
                 // 更新类路径
-                $install_class = "\\app\\Install";
+                $install_class = "app\\Install";
                 if (class_exists($install_class)) {
                     // 执行更新前置
                     $context       = null;

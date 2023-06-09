@@ -1,5 +1,5 @@
 <?php
-namespace app\Install;
+namespace app;
 /**
  * @title SAAS框架
  * @desc 类描述
