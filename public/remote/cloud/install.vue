@@ -123,7 +123,7 @@ export default {
           const progress_num = _this.installLock.progress + progress;
           _this.installLock.progress = parseFloat(progress_num.toFixed(2));
         }
-      }, 300);
+      }, 500);
       _this.$http
         .usePost("admin/Plugin/install", queryParams)
         .then((res) => {

@@ -1,0 +1,1 @@
+import{o as e,G as c}from"./.pnpm.9e80f7b6.js";import{c as o}from"./index.39d4c93a.js";const r={};function n(t,a){return e(),c("div",null," 组件加载失败，请检查路由 ")}const f=o(r,[["render",n]]);export{f as default};

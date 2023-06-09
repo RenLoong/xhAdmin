@@ -4,16 +4,16 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitd1e9be73355cbe7265c70c9414e8b3a3
+class ComposerStaticInit6847d420f89d9997f346e96fbe752866
 {
     public static $files = array (
-        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
-        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
-        '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
-        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
+        'd767e4fc2dc52fe66584ab8c6684783e' => __DIR__ . '/..' . '/adbario/php-dot-notation/src/helpers.php',
+        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
+        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
+        '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '60799491728b879e74601d83e38b2cad' => __DIR__ . '/..' . '/illuminate/collections/helpers.php',
         '8825ede83f2f289127722d4e842cf7e8' => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme/bootstrap.php',
         'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
@@ -33,6 +33,16 @@ class ComposerStaticInitd1e9be73355cbe7265c70c9414e8b3a3
         array (
             'yzh52521\\validate\\' => 18,
             'yzh52521\\EasyHttp\\' => 18,
+            'ycSuperseo\\WePay\\' => 17,
+            'ycSuperseo\\WePayV3\\' => 19,
+            'ycSuperseo\\WeMini\\' => 18,
+            'ycSuperseo\\WeChat\\' => 18,
+            'ycSuperseo\\SDK\\Dysmsapi\\V20170525\\' => 34,
+            'ycSuperseo\\RedisQueue\\' => 22,
+            'ycSuperseo\\PhpWord\\' => 19,
+            'ycSuperseo\\OpenAi\\' => 18,
+            'ycSuperseo\\Crontab\\' => 19,
+            'ycSuperseo\\AliPay\\' => 18,
         ),
         'v' => 
         array (
@@ -53,6 +63,8 @@ class ComposerStaticInitd1e9be73355cbe7265c70c9414e8b3a3
         ),
         'W' => 
         array (
+            'Workerman\\Redis\\' => 16,
+            'Workerman\\RedisQueue\\' => 21,
             'Workerman\\' => 10,
             'Webman\\ThinkOrm\\' => 16,
             'Webman\\Console\\' => 15,
@@ -102,6 +114,7 @@ class ComposerStaticInitd1e9be73355cbe7265c70c9414e8b3a3
             'Overtrue\\Flysystem\\Qiniu\\' => 25,
             'Overtrue\\Flysystem\\Cos\\' => 23,
             'Overtrue\\CosClient\\' => 19,
+            'OneSm\\' => 6,
             'OSS\\' => 4,
         ),
         'M' => 
@@ -140,6 +153,8 @@ class ComposerStaticInitd1e9be73355cbe7265c70c9414e8b3a3
             'Doctrine\\Deprecations\\' => 22,
             'Doctrine\\Common\\Lexer\\' => 22,
             'Doctrine\\Common\\Annotations\\' => 28,
+            'Darabonba\\OpenApi\\' => 18,
+            'Darabonba\\GatewaySpi\\' => 21,
         ),
         'C' => 
         array (
@@ -149,6 +164,13 @@ class ComposerStaticInitd1e9be73355cbe7265c70c9414e8b3a3
         'A' => 
         array (
             'App\\' => 4,
+            'AlibabaCloud\\Tea\\XML\\' => 21,
+            'AlibabaCloud\\Tea\\Utils\\' => 23,
+            'AlibabaCloud\\Tea\\' => 17,
+            'AlibabaCloud\\OpenApiUtil\\' => 25,
+            'AlibabaCloud\\Endpoint\\' => 22,
+            'AlibabaCloud\\Credentials\\' => 25,
+            'Adbar\\' => 6,
         ),
     );
 
@@ -160,6 +182,46 @@ class ComposerStaticInitd1e9be73355cbe7265c70c9414e8b3a3
         'yzh52521\\EasyHttp\\' => 
         array (
             0 => __DIR__ . '/..' . '/yzh52521/easyhttp/src',
+        ),
+        'ycSuperseo\\WePay\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/yc-superseo/wechat-developer/WePay',
+        ),
+        'ycSuperseo\\WePayV3\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/yc-superseo/wechat-developer/WePayV3',
+        ),
+        'ycSuperseo\\WeMini\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/yc-superseo/wechat-developer/WeMini',
+        ),
+        'ycSuperseo\\WeChat\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/yc-superseo/wechat-developer/WeChat',
+        ),
+        'ycSuperseo\\SDK\\Dysmsapi\\V20170525\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/yc-superseo/dysmsapi-20170525/src',
+        ),
+        'ycSuperseo\\RedisQueue\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/yc-superseo/redis-queue/src',
+        ),
+        'ycSuperseo\\PhpWord\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/yc-superseo/phpword/src/PhpWord',
+        ),
+        'ycSuperseo\\OpenAi\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/yc-superseo/open-ai/src',
+        ),
+        'ycSuperseo\\Crontab\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/yc-superseo/crontab/src',
+        ),
+        'ycSuperseo\\AliPay\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/yc-superseo/wechat-developer/AliPay',
         ),
         'voku\\' => 
         array (
@@ -181,6 +243,14 @@ class ComposerStaticInitd1e9be73355cbe7265c70c9414e8b3a3
         'app\\' => 
         array (
             0 => __DIR__ . '/../..' . '/app',
+        ),
+        'Workerman\\Redis\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/workerman/redis/src',
+        ),
+        'Workerman\\RedisQueue\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/workerman/redis-queue/src',
         ),
         'Workerman\\' => 
         array (
@@ -296,8 +366,8 @@ class ComposerStaticInitd1e9be73355cbe7265c70c9414e8b3a3
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-factory/src',
-            1 => __DIR__ . '/..' . '/psr/http-message/src',
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
+            1 => __DIR__ . '/..' . '/psr/http-factory/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -331,6 +401,10 @@ class ComposerStaticInitd1e9be73355cbe7265c70c9414e8b3a3
         array (
             0 => __DIR__ . '/..' . '/overtrue/qcloud-cos-client/src',
         ),
+        'OneSm\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/lizhichao/one-sm/src',
+        ),
         'OSS\\' => 
         array (
             0 => __DIR__ . '/..' . '/aliyuncs/oss-sdk-php/src/OSS',
@@ -357,9 +431,9 @@ class ComposerStaticInitd1e9be73355cbe7265c70c9414e8b3a3
         ),
         'Illuminate\\Support\\' => 
         array (
-            0 => __DIR__ . '/..' . '/illuminate/collections',
+            0 => __DIR__ . '/..' . '/illuminate/macroable',
             1 => __DIR__ . '/..' . '/illuminate/conditionable',
-            2 => __DIR__ . '/..' . '/illuminate/macroable',
+            2 => __DIR__ . '/..' . '/illuminate/collections',
             3 => __DIR__ . '/..' . '/illuminate/support',
         ),
         'Illuminate\\Redis\\' => 
@@ -414,6 +488,14 @@ class ComposerStaticInitd1e9be73355cbe7265c70c9414e8b3a3
         array (
             0 => __DIR__ . '/..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations',
         ),
+        'Darabonba\\OpenApi\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/alibabacloud/darabonba-openapi/src',
+        ),
+        'Darabonba\\GatewaySpi\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/alibabacloud/gateway-spi/src',
+        ),
         'Chance\\Log\\' => 
         array (
             0 => __DIR__ . '/..' . '/chance-fyi/operation-log/src',
@@ -426,6 +508,34 @@ class ComposerStaticInitd1e9be73355cbe7265c70c9414e8b3a3
         array (
             0 => __DIR__ . '/../..' . '/app',
         ),
+        'AlibabaCloud\\Tea\\XML\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/alibabacloud/tea-xml/src',
+        ),
+        'AlibabaCloud\\Tea\\Utils\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/alibabacloud/tea-utils/src',
+        ),
+        'AlibabaCloud\\Tea\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/alibabacloud/tea/src',
+        ),
+        'AlibabaCloud\\OpenApiUtil\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/alibabacloud/openapi-util/src',
+        ),
+        'AlibabaCloud\\Endpoint\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/alibabacloud/endpoint-util/src',
+        ),
+        'AlibabaCloud\\Credentials\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/alibabacloud/credentials/src',
+        ),
+        'Adbar\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/adbario/php-dot-notation/src',
+        ),
     );
 
     public static $fallbackDirsPsr4 = array (
@@ -437,18 +547,19 @@ class ComposerStaticInitd1e9be73355cbe7265c70c9414e8b3a3
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
         'PhpToken' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
-        'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
+        'Stringable' => __DIR__ . '/..' . '/myclabs/php-enum/stubs/Stringable.php',
         'UnhandledMatchError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
         'ValueError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',
+        'We' => __DIR__ . '/..' . '/yc-superseo/wechat-developer/We.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitd1e9be73355cbe7265c70c9414e8b3a3::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitd1e9be73355cbe7265c70c9414e8b3a3::$prefixDirsPsr4;
-            $loader->fallbackDirsPsr4 = ComposerStaticInitd1e9be73355cbe7265c70c9414e8b3a3::$fallbackDirsPsr4;
-            $loader->classMap = ComposerStaticInitd1e9be73355cbe7265c70c9414e8b3a3::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit6847d420f89d9997f346e96fbe752866::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit6847d420f89d9997f346e96fbe752866::$prefixDirsPsr4;
+            $loader->fallbackDirsPsr4 = ComposerStaticInit6847d420f89d9997f346e96fbe752866::$fallbackDirsPsr4;
+            $loader->classMap = ComposerStaticInit6847d420f89d9997f346e96fbe752866::$classMap;
 
         }, null, ClassLoader::class);
     }

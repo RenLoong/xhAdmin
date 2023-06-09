@@ -337,6 +337,7 @@ class PluginController extends BaseController
         $zip_file   = "{$base_path}.zip";
         $extract_to = base_path('/plugin/');
         PluginLogic::downloadZipFile($data['data']['key'], $zip_file);
+        console_log("{$name}应用插件文件下载完成");
         // 效验系统函数
         $has_zip_archive = class_exists(ZipArchive::class, false);
         if (!$has_zip_archive) {
@@ -378,7 +379,7 @@ class PluginController extends BaseController
                 call_user_func([$install_class, 'install'], $version);
             }
             # 输出安装完成
-            echo "{$name} --- 安装完成" . PHP_EOL;
+            console_log("{$name} --- 安装完成");
         } finally {
             if ($monitor_support_pause) {
                 Monitor::resume();
@@ -429,6 +430,7 @@ class PluginController extends BaseController
         $zip_file   = "{$base_path}.zip";
         $extract_to = base_path('/plugin/');
         PluginLogic::downloadZipFile($data['data']['key'], $zip_file);
+        console_log("{$name}应用插件文件下载完成");
         // 效验系统函数
         $has_zip_archive = class_exists(ZipArchive::class, false);
         if (!$has_zip_archive) {
@@ -469,7 +471,7 @@ class PluginController extends BaseController
                 PluginLogic::unzipWithCmd($cmd);
             }
             # 执行检测并更新composer包
-            ComposerMgr::check_plugin_dependencies($name, true);
+            ComposerMgr::check_plugin_dependencies($name,true);
             # 删除压缩包
             unlink($zip_file);
             # 执行update更新
@@ -477,7 +479,7 @@ class PluginController extends BaseController
                 call_user_func([$install_class, 'update'], $installed_version, $version, $context);
             }
             # 输出更新完成
-            echo "{$name} --- 更新完成" . PHP_EOL;
+            console_log("{$name} --- 更新完成");
         } finally {
             if ($monitor_support_pause) {
                 Monitor::resume();

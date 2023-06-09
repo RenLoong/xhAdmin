@@ -386,6 +386,18 @@ function p($str, $remarks = '日志：')
 }
 
 /**
+ * 输出日志到控制台
+ *
+ * @param  string $message
+ * @return void
+ */
+function console_log(string $message)
+{
+    echo $message;
+    echo PHP_EOL;
+}
+
+/**
  * 获取授权内容
  *
  * @param string $fileName

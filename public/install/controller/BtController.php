@@ -87,7 +87,7 @@ class BtController
                     $pdo->query("{$adminSql}");
                     // 安装完成
                     return Json::json('安装站点数据完成...', 200, [
-                        'next' => 'nginx'
+                        'next' => 'supervisor'
                     ]);
                 } catch (\Throwable $e) {
                     return Json::fail($e->getMessage(), 404);

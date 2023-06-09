@@ -7,4 +7,3 @@
 /tests/.phpunit.result.cache
 .user.ini
 /public/.user.ini
-/app/Install.php
