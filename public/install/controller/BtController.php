@@ -18,7 +18,7 @@ class BtController
         # 宝塔相关数据
         if (!isset($post['btData'])) return Json::fail('缺少宝塔面板数据');
         $btData = isset($post['btData']) ? $post['btData'] : null;
-        $btPanelLogic = new BtPanelLogic($btData['panel_url'],$btData['panel_key']);
+        $btPanelLogic = new BtPanelLogic($btData['panel_port'],$btData['panel_key']);
         $server_name = str_replace('.', '_', basename(ROOT_PATH));
         # 执行安装步骤
         switch ($step) {
@@ -168,7 +168,7 @@ class BtController
             # 返回数据
             return Json::successRes($post);
         } catch (\Throwable $e) {
-            return Json::fail($e->getMessage(), 404);
+            return Json::failFul($e->getMessage(), 404);
         }
     }
 }

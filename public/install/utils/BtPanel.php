@@ -155,7 +155,7 @@ class BtPanel
     private function send(string $url, array $data = []): array
     {
         # 拼接URL地址
-        $api = $this->BT_PANEL . $url;
+        $api = "http://127.0.0.1:{$this->BT_PANEL}{$url}";
 
         # 取签名
         $p_data = $this->GetKeyData();

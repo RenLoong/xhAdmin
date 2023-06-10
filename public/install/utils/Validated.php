@@ -18,16 +18,16 @@ class Validated
     # 验证宝塔验证
     public static function validateBt(array $data)
     {
-        if (!isset($data['panel_url']) || empty($data['panel_url'])) {
-            throw new Exception('请输入宝塔面板地址');
+        if (!isset($data['panel_port']) || empty($data['panel_port'])) {
+            throw new Exception('请输入宝塔面板端口号');
         }
-        if (filter_var($data['panel_url'], FILTER_VALIDATE_URL) === false) {
-            throw new Exception('请输入正确的面板地址');
+        if (!is_numeric($data['panel_port'])) {
+            throw new Exception('请输入正确的面板端口号');
         }
         if (!isset($data['panel_key']) || empty($data['panel_key'])) {
             throw new Exception('请输入宝塔面板密钥');
         }
-        $bt = new BtPanelLogic($data['panel_url'], $data['panel_key']);
+        $bt = new BtPanelLogic($data['panel_port'], $data['panel_key']);
         # 验证nginx是否安装
         $bt->validateSoft('nginx');
         # 验证Mysql是否安装
@@ -46,7 +46,7 @@ class Validated
             throw new Exception('请输入云服务账号');
         }
         if (!isset($data['password']) || empty($data['password'])) {
-            throw new Exception('请输入云服务账号');
+            throw new Exception('请输入云服务密码');
         }
         $response = Request::login($data['username'], $data['password']);
         if (!$response) {
