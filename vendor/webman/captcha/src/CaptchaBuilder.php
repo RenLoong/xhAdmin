@@ -2,7 +2,6 @@
 
 namespace Webman\Captcha;
 
-use AllowDynamicProperties;
 use \Exception;
 
 /**
@@ -12,7 +11,6 @@ use \Exception;
  * @author Gregwar <g.passault@gmail.com>
  * @author Jeremy Livingston <jeremy.j.livingston@gmail.com>
  */
-#[AllowDynamicProperties]
 class CaptchaBuilder implements CaptchaBuilderInterface
 {
     /**
@@ -147,7 +145,7 @@ class CaptchaBuilder implements CaptchaBuilderInterface
         } else {
             $this->builder = $builder;
         }
-
+        
         $this->phrase = is_string($phrase) ? $phrase : $this->builder->build($phrase);
     }
 

@@ -370,8 +370,8 @@ class PluginController extends BaseController
             } else {
                 PluginLogic::unzipWithCmd($cmd);
             }
-            # 执行检测并安装composer包
-            ComposerMgr::check_plugin_dependencies($name);
+            # 检测composer
+            ComposerMgr::composerMergePlugin($name);
             # 删除压缩包
             unlink($zip_file);
             # 执行install安装
@@ -470,8 +470,8 @@ class PluginController extends BaseController
             } else {
                 PluginLogic::unzipWithCmd($cmd);
             }
-            # 执行检测并更新composer包
-            ComposerMgr::check_plugin_dependencies($name,true);
+            # 检测composer
+            ComposerMgr::composerMergePlugin($name);
             # 删除压缩包
             unlink($zip_file);
             # 执行update更新
@@ -514,8 +514,6 @@ class PluginController extends BaseController
         if (!$path || !is_dir($path)) {
             return $this->success('卸载成功');
         }
-        # 卸载composer
-        ComposerMgr::uninstall($name);
         # 执行uninstall卸载
         $install_class = "\\plugin\\{$name}\\api\\Install";
         if (class_exists($install_class) && method_exists($install_class, 'uninstall')) {
@@ -536,6 +534,8 @@ class PluginController extends BaseController
                 }
             }
         }
+        # 检测composer
+        ComposerMgr::composerMergePlugin($name);
         clearstatcache();
 
         # 重启主进程

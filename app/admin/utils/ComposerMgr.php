@@ -30,6 +30,51 @@ class ComposerMgr
     }
 
     /**
+     * 配合composerMergePlugin插件更新
+     *
+     * @param  string $name
+     * @return void
+     */
+    public static function composerMergePlugin(string $name)
+    {
+        $composerPath = base_path("/plugin/{$name}/packages/*/composer.json");
+        $data = self::scanPluginComposerJson($composerPath);
+        # 通用命令代码
+        $composerCommand = self::$composerCommand;
+        # 切换工作目录
+        $basePath = base_path();
+        chdir($basePath);
+        foreach ($data as $package_name) {
+            $command = "{$composerCommand}composer update {$package_name} --no-interaction 2>&1";
+            $output = shell_exec($command);
+            p($output,"composer---执行结果");
+        }
+        console_log("应用composer更新完成...");
+    }
+
+    /**
+     * 扫描指定目录下的composer文件
+     *
+     * @param  string $dir
+     * @return array
+     */
+    private static function scanPluginComposerJson(string $composerPath) {
+        // 获取所有的plugin/*/packages/composer.json文件路径
+        $files = glob($composerPath);
+        $names = [];
+        // 读取每个json文件并解析出name字段
+        foreach ($files as $file) {
+            $content = file_get_contents($file);
+            $json = json_decode($content, true);
+            if (isset($json['name'])) {
+                $names[] = $json['name'];
+            }
+        }
+        // 返回name字段列表
+        return $names;
+    }
+
+    /**
      * 执行前收集数据
      *
      * @param  string     $plugin_name

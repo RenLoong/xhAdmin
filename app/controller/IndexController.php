@@ -3,7 +3,6 @@
 namespace app\controller;
 
 use app\BaseController;
-use app\utils\Utils;
 use support\Request;
 
 /**
@@ -32,10 +31,6 @@ class IndexController extends BaseController
 
     public function test()
     {
-        self::installApp();
         return $this->fail('开发测试');
-    }
-    private function installApp()
-    {
     }
 }
