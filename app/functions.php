@@ -414,5 +414,5 @@ function empowerFile(string $fileName,$default = '')
     if (!$content) {
         return $default;
     }
-    return $default;
+    return $content;
 }
