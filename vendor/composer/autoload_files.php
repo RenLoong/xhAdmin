@@ -25,5 +25,4 @@ return array(
     '35fab96057f1bf5e7aba31a8a6d5fdde' => $vendorDir . '/topthink/think-orm/stubs/load_stubs.php',
     'bb86edb2c8e579242b2c4c0575786fa9' => $vendorDir . '/yzh52521/webman-validate/src/helper.php',
     'e04d298651ac0bb903ff2ec8325ccc3b' => $baseDir . '/support/helpers.php',
-    'a81b0dd0d1535d0c8eee7c71bfa11de3' => $baseDir . '/plugin/ycMidjourney/packages/midjourney/src/helpers.php',
 );

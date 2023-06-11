@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit49d101c92baed17a722fb24dd18262df
+class ComposerStaticInit537b5c08388e2074bd47f29c2741993c
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
@@ -26,7 +26,6 @@ class ComposerStaticInit49d101c92baed17a722fb24dd18262df
         '35fab96057f1bf5e7aba31a8a6d5fdde' => __DIR__ . '/..' . '/topthink/think-orm/stubs/load_stubs.php',
         'bb86edb2c8e579242b2c4c0575786fa9' => __DIR__ . '/..' . '/yzh52521/webman-validate/src/helper.php',
         'e04d298651ac0bb903ff2ec8325ccc3b' => __DIR__ . '/../..' . '/support/helpers.php',
-        'a81b0dd0d1535d0c8eee7c71bfa11de3' => __DIR__ . '/../..' . '/plugin/ycMidjourney/packages/midjourney/src/helpers.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -34,13 +33,6 @@ class ComposerStaticInit49d101c92baed17a722fb24dd18262df
         array (
             'yzh52521\\validate\\' => 18,
             'yzh52521\\EasyHttp\\' => 18,
-            'ycMidjourney\\WePay\\' => 19,
-            'ycMidjourney\\WePayV3\\' => 21,
-            'ycMidjourney\\WeMini\\' => 20,
-            'ycMidjourney\\WeChat\\' => 20,
-            'ycMidjourney\\Midjourney\\' => 24,
-            'ycMidjourney\\Dysms\\' => 19,
-            'ycMidjourney\\AliPay\\' => 20,
         ),
         'v' => 
         array (
@@ -167,34 +159,6 @@ class ComposerStaticInit49d101c92baed17a722fb24dd18262df
         'yzh52521\\EasyHttp\\' => 
         array (
             0 => __DIR__ . '/..' . '/yzh52521/easyhttp/src',
-        ),
-        'ycMidjourney\\WePay\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/plugin/ycMidjourney/packages/WeChatDeveloper/WePay',
-        ),
-        'ycMidjourney\\WePayV3\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/plugin/ycMidjourney/packages/WeChatDeveloper/WePayV3',
-        ),
-        'ycMidjourney\\WeMini\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/plugin/ycMidjourney/packages/WeChatDeveloper/WeMini',
-        ),
-        'ycMidjourney\\WeChat\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/plugin/ycMidjourney/packages/WeChatDeveloper/WeChat',
-        ),
-        'ycMidjourney\\Midjourney\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/plugin/ycMidjourney/packages/midjourney/src',
-        ),
-        'ycMidjourney\\Dysms\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/plugin/ycMidjourney/packages/dysms/src',
-        ),
-        'ycMidjourney\\AliPay\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/plugin/ycMidjourney/packages/WeChatDeveloper/AliPay',
         ),
         'voku\\' => 
         array (
@@ -335,8 +299,8 @@ class ComposerStaticInit49d101c92baed17a722fb24dd18262df
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-factory/src',
-            1 => __DIR__ . '/..' . '/psr/http-message/src',
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
+            1 => __DIR__ . '/..' . '/psr/http-factory/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -388,9 +352,9 @@ class ComposerStaticInit49d101c92baed17a722fb24dd18262df
         ),
         'Illuminate\\Support\\' => 
         array (
-            0 => __DIR__ . '/..' . '/illuminate/collections',
+            0 => __DIR__ . '/..' . '/illuminate/macroable',
             1 => __DIR__ . '/..' . '/illuminate/conditionable',
-            2 => __DIR__ . '/..' . '/illuminate/macroable',
+            2 => __DIR__ . '/..' . '/illuminate/collections',
             3 => __DIR__ . '/..' . '/illuminate/support',
         ),
         'Illuminate\\Redis\\' => 
@@ -471,16 +435,15 @@ class ComposerStaticInit49d101c92baed17a722fb24dd18262df
         'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
         'UnhandledMatchError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
         'ValueError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',
-        'We' => __DIR__ . '/../..' . '/plugin/ycMidjourney/packages/WeChatDeveloper/We.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit49d101c92baed17a722fb24dd18262df::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit49d101c92baed17a722fb24dd18262df::$prefixDirsPsr4;
-            $loader->fallbackDirsPsr4 = ComposerStaticInit49d101c92baed17a722fb24dd18262df::$fallbackDirsPsr4;
-            $loader->classMap = ComposerStaticInit49d101c92baed17a722fb24dd18262df::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit537b5c08388e2074bd47f29c2741993c::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit537b5c08388e2074bd47f29c2741993c::$prefixDirsPsr4;
+            $loader->fallbackDirsPsr4 = ComposerStaticInit537b5c08388e2074bd47f29c2741993c::$fallbackDirsPsr4;
+            $loader->classMap = ComposerStaticInit537b5c08388e2074bd47f29c2741993c::$classMap;
 
         }, null, ClassLoader::class);
     }

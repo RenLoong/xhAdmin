@@ -4740,15 +4740,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.0",
-        "ext-xml": "*",
-        "ext-json": "*",
-        "ext-curl": "*",
-        "ext-bcmath": "*",
-        "ext-libxml": "*",
-        "ext-openssl": "*",
-        "ext-mbstring": "*",
-        "ext-simplexml": "*"
+        "php": "^8.0"
     },
     "platform-dev": [],
     "plugin-api-version": "2.3.0"
