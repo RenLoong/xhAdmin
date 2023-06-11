@@ -83,12 +83,12 @@
         <!-- 请求数据 -->
         <div class="http-container">
             <n-grid :cols="16" :x-gap="12" :y-gap="12" item-responsive>
-                <n-grid-item span="24" class="item">
+                <n-grid-item span="11" class="item">
                     <div style="width:100%;height:500px;" ref="httpRef"></div>
                 </n-grid-item>
-                <!-- <n-grid-item span="5" class="item">
+                <n-grid-item span="5" class="item">
                     <div class="data-item">
-                        <div class="title">开发团队</div>
+                        <div class="title">运营团队</div>
                         <n-table>
                             <tbody>
                                 <tr v-for="(item, index) in teamTable" :key="index">
@@ -99,10 +99,10 @@
                         </n-table>
                     </div>
                     <div class="data-item">
-                        <div class="title">产品动态</div>
+                        <div class="title">系统公告</div>
                         <n-data-table :columns="productTable.columns" :data="productTable.data" />
                     </div>
-                </n-grid-item> -->
+                </n-grid-item>
             </n-grid>
         </div>
     </div>

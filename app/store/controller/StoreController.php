@@ -94,6 +94,8 @@ class StoreController extends BaseController
                 'span' => 12
             ],
         ])
+        ->addRow('copyright_service', 'input', '专属客服')
+        ->addRow('copyright_tutorial', 'textarea', '系统教程')
         ->addComponent('logo', 'uploadify', '租户图标', '', [
             'col'   => [
                 'span' => 6

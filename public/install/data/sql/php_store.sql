@@ -34,6 +34,8 @@ CREATE TABLE `php_store` (
   `status` enum('0','1') DEFAULT '1' COMMENT '使用状态：0冻结，1正常',
   `logo` varchar(255) DEFAULT NULL COMMENT '商户图标',
   `remarks` text COMMENT '平台备注',
+  `copyright_service` varchar(255) DEFAULT NULL COMMENT '专属客服',
+  `copyright_tutorial` text COMMENT '系统教程',
   `last_login_ip` varchar(50) DEFAULT NULL COMMENT '登录IP',
   `last_login_time` datetime DEFAULT NULL COMMENT '登录时间',
   `plugins_name` text COMMENT '已授权应用标识',

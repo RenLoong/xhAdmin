@@ -2,13 +2,10 @@
 
 namespace app\store\controller;
 
-use app\admin\service\kfcloud\SystemInfo;
 use app\BaseController;
 use app\enum\PlatformTypes;
 use app\manager\StorePlatforms;
 use app\store\model\Store;
-use app\store\model\StoreApp;
-use Exception;
 use support\Request;
 
 /**
@@ -19,7 +16,7 @@ use support\Request;
  */
 class IndexController extends BaseController
 {
-    
+
     /**
      * 首页数据统计
      * @param Request $request
@@ -30,23 +27,40 @@ class IndexController extends BaseController
      */
     public function consoleCount(Request $request)
     {
-        // 获取系统信息
-        $teamInfo   = SystemInfo::info();
-        $inKeys     = array_keys($teamInfo);
+        # 获取系统信息
+        $store_id = hp_admin_id('hp_store');
+        $store    = Store::where(['id'=> $store_id])->find()->toArray();
+        # 设置系统默认版权
+        $copyright_name    = getHpConfig('store_copyright_name');
+        $copyright_service = getHpConfig('store_copyright_service');
+        $tutorial          = $this->getTutorial((string) getHpConfig('store_copyright_tutorial'));
+
+        # 租户已设置版权名称
+        if ($store['title']) {
+            $copyright_name = $store['title'];
+        }
+        if ($store['copyright_service']) {
+            $copyright_service = $store['copyright_service'];
+        }
+        if ($store['copyright_tutorial']) {
+            $tutorial = $this->getTutorial((string) $store['copyright_tutorial']);
+        }
+        $teamInfo   = [
+            'about_name' => $copyright_name,
+            'ecology' => $tutorial,
+            'service_wx' => $copyright_service,
+        ];
         $teamFields = [
-            'about_name'    => '研发企业',
-            'ecology'       => '系统生态',
-            'fream_version' => '框架版本',
-            'service_wx'    => '微信咨询',
+            'about_name' => '版权信息',
+            'ecology' => '系统教程',
+            'service_wx' => '专属客服',
         ];
         $team       = [];
         foreach ($teamFields as $field => $label) {
-            if (in_array($field, $inKeys)) {
-                $team[] = [
-                    'title'  => $label,
-                    'values' => $teamInfo[$field],
-                ];
-            }
+            $team[] = [
+                'title' => $label,
+                'values' => $teamInfo[$field],
+            ];
         }
 
         // 获取产品动态
@@ -109,12 +123,39 @@ class IndexController extends BaseController
         }
 
         $data = [
-            'team'             => $team,
-            'product'          => $product,
-            'platformApp'      => $platformApp,
+            'team' => $team,
+            'product' => $product,
+            'platformApp' => $platformApp,
             'platform_echarts' => $platform_echarts
         ];
         return $this->successRes($data);
+    }
+
+    /**
+     * 获取系统教程
+     * @param mixed $tutorial
+     * @return string
+     * @author John
+     */
+    private function getTutorial(string $tutorialConfig): string
+    {
+        $tutorialArray = explode("\n", $tutorialConfig);
+        $tutorial      = '';
+        if ($tutorialConfig) {
+            $tutorialArr = [];
+            foreach ($tutorialArray as $value) {
+                list($linkLabel, $linkValue) = explode('|', $value);
+                if (!$linkLabel) {
+                    continue;
+                }
+                if (!$linkValue) {
+                    continue;
+                }
+                $tutorialArr[] = "<a href='{$linkValue}' target='_blank'>{$linkLabel}</a>";
+            }
+            $tutorial = implode('，', $tutorialArr);
+        }
+        return $tutorial;
     }
 
     /**
