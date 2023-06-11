@@ -51,7 +51,7 @@
     <div class="loading-container" v-else>
       <div class="loading-box">
         <n-progress type="circle" :percentage="install.progress" />
-        <div>正在安装中...</div>
+        <div>{{ install.text }}</div>
       </div>
     </div>
   </div>
@@ -64,6 +64,7 @@ export default {
       install: {
         status: false,
         progress: 0,
+        text:''
       },
       updated: {
         title: "",
@@ -94,6 +95,7 @@ export default {
             version: _this.updated.version,
           };
           _this.install.status = true;
+          _this.install.text = '正在安装中...';
           const setIntervalObj = setInterval(() => {
             if (_this.install.progress < 100) {
               const progress = Math.random();
@@ -104,11 +106,12 @@ export default {
           _this.$http
             .usePost("admin/Index/updateCheck", data)
             .then((res) => {
+              _this.install.text = '等待服务重启...';
               _this.install.progress = 100;
               clearInterval(setIntervalObj);
               setTimeout(() => {
                 window.location.reload();
-              }, 2000);
+              }, 5000);
               _this.$useNotification?.success({
                 title: res?.msg ?? "操作成功",
                 duration: 1500,
