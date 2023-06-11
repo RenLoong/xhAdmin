@@ -3,6 +3,7 @@
 namespace app\controller;
 
 use app\BaseController;
+use app\Install;
 use support\Request;
 
 /**
@@ -31,6 +32,7 @@ class IndexController extends BaseController
 
     public function test()
     {
+        Install::update(1000,null);
         return $this->fail('开发测试');
     }
 }

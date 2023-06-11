@@ -380,7 +380,7 @@ function p($str, $remarks = '日志：')
         $currentDate = date('Y-m-d');
         echo "{$currentDate}-----{$remarks}";
         echo PHP_EOL;
-        print_r($str);
+        var_dump($str);
         echo PHP_EOL;
     }
 }
