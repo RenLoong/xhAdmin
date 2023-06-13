@@ -30,7 +30,7 @@ class Upload
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public static function remoteFile(string $url, int $cid = 0, int $appid = 0, array $config = []):array
+    public static function remoteFile(string $url, int $cid = 0, int $appid = 0, array $config = []): array
     {
         $fileInfo = pathinfo($url);
         if (!isset($fileInfo['extension'])) {
@@ -49,8 +49,8 @@ class Upload
             throw new Exception('远程资源文件下载失败');
         }
         $fileMimeType = self::getFileMimeType($tempFile);
-        $uploadFile = new UploadFile($tempFile, $fileInfo['basename'], $fileMimeType, 0);
-        if (!$data = self::upload($uploadFile,$cid,$appid)) {
+        $uploadFile   = new UploadFile($tempFile, $fileInfo['basename'], $fileMimeType, 0);
+        if (!$data = self::upload($uploadFile, $cid, $appid)) {
             throw new Exception('上传文件失败');
         }
         return $data;
@@ -204,9 +204,12 @@ class Upload
      */
     private static function addUpload($result, array $category, int $appid = 0)
     {
-        $fiel_name         = basename($result->file_name);
-        $where['filename'] = $fiel_name;
-        $fileModel         = SystemUpload::where($where)->find();
+        $fiel_name = basename($result->file_name);
+        $where     = [
+            ['filename', '=', $fiel_name],
+            ['adapter', '=', $result->adapter],
+        ];
+        $fileModel = SystemUpload::where($where)->find();
         if ($fileModel) {
             $fileModel->update_at = date('Y-m-d H:i:s');
             $fileModel->save();
@@ -219,9 +222,7 @@ class Upload
         $data['format']   = $result->extension;
         $data['size']     = $result->size;
         $data['adapter']  = $result->adapter;
-        if ($appid) {
-            $data['appid'] = $appid;
-        }
+        $data['appid'] = $appid;
         if (!(new SystemUpload)->save($data)) {
             throw new Exception('附件上传失败');
         }
