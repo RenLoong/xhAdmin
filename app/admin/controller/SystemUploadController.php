@@ -105,10 +105,10 @@ class SystemUploadController extends BaseController
         ]);
         $children->addRow('max_size', 'input', '单个文件上传大小(MB)', $max_size);
         $children->addRow('ext_yes', 'input', '允许上传类型', $ext_yes, [
-            'placeholder' => '允许上传文件类型 为空则为允许所有，多个使用小写逗号隔开'
+            'placeholder' => '示例：image/jpg,image/jpeg,image/png,image/gif，不允许上传文件类型 为空则不限制，多个使用小写逗号隔开'
         ]);
         $children->addRow('ext_no', 'input', '不允许上传类型', $ext_no, [
-            'placeholder' => '不允许上传文件类型 为空则不限制，多个使用小写逗号隔开'
+            'placeholder' => '示例：image/jpg,image/jpeg,image/png,image/gif，不允许上传文件类型 为空则不限制，多个使用小写逗号隔开'
         ]);
         $builder = $builder->addTab(
             'config',
