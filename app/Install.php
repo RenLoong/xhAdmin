@@ -112,7 +112,7 @@ class Install
                     'placeholder'   => '客服展示信息',
                 ],
             ];
-            SystemConfig::saveAll($configs);
+            (new SystemConfig)->saveAll($configs);
         }
     }
 
