@@ -40,13 +40,13 @@ class IndexController extends BaseController
         }
 
         # 租户已设置版权名称
-        if ($store['title']) {
+        if (!empty($store['title'])) {
             $copyright_name = $store['title'];
         }
-        if ($store['copyright_service']) {
+        if (!empty($store['copyright_service'])) {
             $copyright_service = $store['copyright_service'];
         }
-        if ($store['copyright_tutorial']) {
+        if (!empty($store['copyright_tutorial'])) {
             $tutorial = $this->getTutorial((string) $store['copyright_tutorial']);
         }
         $teamInfo   = [
