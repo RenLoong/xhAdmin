@@ -12,6 +12,11 @@
         proxy_cookie_path / "/; secure; HttpOnly; SameSite=strict";
         # 关闭重试机制
         proxy_next_upstream off;
+
+        # 设置超时时间
+        proxy_connect_timeout 600;
+        proxy_send_timeout 600;
+        proxy_read_timeout 600;
         
         # 跨域请求
         if ($request_method = OPTIONS) {
