@@ -150,9 +150,11 @@ class CloudService
     public static function buyApp(string|null $name, string|null $version): Response
     {
         $systemInfo = SystemInfo::info();
+        $installed_version = PluginLogic::getPluginVersion($name);
         $query = [
             'name'              => $name,
             'version'           => $version,
+            'local_version'     => $installed_version,
             'saas_version'      => $systemInfo['system_version']
         ];
         return HttpService::send()->get('Plugin/buy', $query);
@@ -187,9 +189,11 @@ class CloudService
     public static function getDownKey(string|null $name, string|null $version): Response
     {
         $systemInfo = SystemInfo::info();
+        $installed_version = PluginLogic::getPluginVersion($name);
         $query = [
             'name'              => $name,
             'version'           => $version,
+            'local_version'     => $installed_version,
             'saas_version'      => $systemInfo['system_version']
         ];
         return HttpService::send()->get('Plugin/getKey', $query);
