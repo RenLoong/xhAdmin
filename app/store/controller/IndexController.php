@@ -33,7 +33,11 @@ class IndexController extends BaseController
         # 设置系统默认版权
         $copyright_name    = getHpConfig('store_copyright_name');
         $copyright_service = getHpConfig('store_copyright_service');
-        $tutorial          = $this->getTutorial((string) getHpConfig('store_copyright_tutorial'));
+        $copyright_tutorial = getHpConfig('store_copyright_service');
+        $tutorial           = '';
+        if ($copyright_tutorial) {
+            $tutorial          = $copyright_tutorial;
+        }
 
         # 租户已设置版权名称
         if ($store['title']) {

@@ -1,6 +1,9 @@
 <?php
 
 namespace app;
+use app\model\SystemAuthRule;
+use app\model\SystemConfig;
+use Exception;
 
 /**
  * @title SAAS框架
@@ -28,7 +31,89 @@ class Install
      */
     public static function update($version, $context)
     {
+        # 更新composer
         self::updateComposer();
+        # 更新配置项
+        self::insertConfig();
+        # 更新附件库
+        self::saveMenus();
+    }
+
+    /**
+     * 更新菜单项
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    private static function saveMenus()
+    {
+        $where = [
+            ['path','=','SystemUpload/config']
+        ];
+        $menu = SystemAuthRule::where($where)->find();
+        if (!$menu) {
+            $model = new SystemAuthRule;
+            $model->module = 'admin';
+            $model->path = 'SystemUpload/config';
+            $model->namespace = '\\app\\admin\\controller\\';
+            $model->pid = 41;
+            $model->title = '附件库设置';
+            $model->method = ['GET','PUT'];
+            $model->is_api = '1';
+            $model->component = 'form/index';
+            $model->show = '1';
+            if (!$model->save()) {
+                throw new Exception('更新菜单失败');
+            }
+            # 设置是否显示
+            SystemAuthRule::where(['path'=> 'Uploadify/tabs'])->save(['show'=> '1']);
+            SystemAuthRule::where(['path'=> 'SystemUpload/index'])->save(['show'=> '0']);
+            SystemAuthRule::where(['path'=> 'SystemUploadCate/index'])->save(['show'=> '0']);
+        }
+    }
+
+    /**
+     * 写入配置项
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    private static function insertConfig()
+    {
+        $copyright_name = getHpConfig('store_copyright_name');
+        if (!$copyright_name) {
+            $configs = [
+                [
+                    'cid'           => 1,
+                    'title'         => '租户版权',
+                    'name'          => 'store_copyright_name',
+                    'value'         => '贵州猿创科技有限公司',
+                    'component'     => 'input',
+                    'placeholder'   => '展示在租户统计页面的版权名称',
+                ],
+                [
+                    'cid'           => 1,
+                    'title'         => '系统教程',
+                    'name'          => 'store_copyright_tutorial',
+                    'value'         => '使用文档|http://www.kfadmin.net/#/document
+                    在线社区|http://www.kfadmin.net/#/document
+                    微信群|http://www.kfadmin.net/#/document',
+                    'component'     => 'textarea',
+                    'placeholder'   => '一行一个信息，示例：名称|网址',
+                ],
+                [
+                    'cid'           => 1,
+                    'title'         => '专属客服',
+                    'name'          => 'store_copyright_service',
+                    'value'         => '18786709420（微信同号）',
+                    'component'     => 'input',
+                    'placeholder'   => '客服展示信息',
+                ],
+            ];
+            SystemConfig::saveAll($configs);
+        }
     }
 
     /**
@@ -47,6 +132,15 @@ class Install
         $oldComposer = self::composerJSON($oldComposerPath);
         if ($oldComposer) {
             $newComposer['require'] = $oldComposer['require'];
+        }
+        if (!isset($oldComposer['prefer-stable'])) {
+            unset($oldComposer['prefer-stable']);
+        }
+        if (!isset($oldComposer['minimum-stability'])) {
+            unset($oldComposer['minimum-stability']);
+        }
+        if (!isset($oldComposer['repositories'])) {
+            unset($oldComposer['repositories']);
         }
         $data = json_encode($newComposer, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         $data = str_replace("\\/", '/', $data);
