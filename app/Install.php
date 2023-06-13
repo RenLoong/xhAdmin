@@ -67,7 +67,7 @@ class Install
                 throw new Exception('更新菜单失败');
             }
             # 设置是否显示
-            SystemAuthRule::where(['path'=> 'Uploadify/tabs'])->save(['show'=> '1']);
+            SystemAuthRule::where(['path'=> 'Uploadify/tabs'])->save(['show'=> '1','pid'=> 7]);
             SystemAuthRule::where(['path'=> 'SystemUpload/index'])->save(['show'=> '0']);
             SystemAuthRule::where(['path'=> 'SystemUploadCate/index'])->save(['show'=> '0']);
         }
