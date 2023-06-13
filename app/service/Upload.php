@@ -7,6 +7,7 @@ use app\admin\model\SystemUploadCate;
 use Exception;
 use Shopwwi\WebmanFilesystem\Storage;
 use support\Log;
+use Webman\Http\UploadFile;
 
 /**
  * 附件服务类
@@ -18,6 +19,60 @@ use support\Log;
 class Upload
 {
     /**
+     * 下载远程文件并上传
+     * @param mixed $url
+     * @param mixed $cid
+     * @param mixed $appid
+     * @param mixed $config
+     * @throws \Exception
+     * @return array|bool|mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function remoteFile(string $url, int $cid = 0, int $appid = 0, array $config = []):array
+    {
+        $fileInfo = pathinfo($url);
+        if (!isset($fileInfo['extension'])) {
+            throw new Exception('获取远程文件扩展失败');
+        }
+        if (!isset($fileInfo['filename'])) {
+            throw new Exception('获取远程文件名称失败');
+        }
+        $fileMd5  = md5($fileInfo['filename']);
+        $tempFile = runtime_path("/remoteFile/{$fileMd5}.{$fileInfo['extension']}");
+        if (!is_dir(dirname($tempFile))) {
+            mkdir(dirname($tempFile), 0775, true);
+        }
+        $file = file_get_contents($url);
+        if (!file_put_contents($tempFile, $file)) {
+            throw new Exception('远程资源文件下载失败');
+        }
+        $fileMimeType = self::getFileMimeType($tempFile);
+        $uploadFile = new UploadFile($tempFile, $fileInfo['basename'], $fileMimeType, 0);
+        if (!$data = self::upload($uploadFile,$cid,$appid)) {
+            throw new Exception('上传文件失败');
+        }
+        return $data;
+    }
+
+    /**
+     * 获取文件fileMime
+     * @param mixed $file_path
+     * @return bool|string
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    private static function getFileMimeType($file_path)
+    {
+        $finfo     = finfo_open(FILEINFO_MIME_TYPE);
+        $mime_type = finfo_file($finfo, $file_path);
+        finfo_close($finfo);
+        return $mime_type;
+    }
+
+    /**
      * 上传文件
      * @param mixed $file
      * @param int $cid
@@ -27,13 +82,13 @@ class Upload
      * @Email 416716328@qq.com
      * @DateTime 2023-05-11
      */
-    public static function upload($file, int $cid, array $config = [])
+    public static function upload($file, int $cid = 0, int $appid = 0, array $config = [])
     {
         try {
             $category = self::getCategory($cid);
             $path     = "upload/{$category['dir_name']}";
             $result   = (new Storage)->path($path)->upload($file, false);
-            $data = self::addUpload($result, $category);
+            $data     = self::addUpload($result, $category, $appid);
             return $data;
         } catch (\Throwable $e) {
             Log::error($e->getMessage());
@@ -136,20 +191,19 @@ class Upload
         }
     }
 
-
     /**
      * 附件储存
      * @param mixed $result
-     * @param array $category
-     * @throws Exception
-     * @return array|mixed
+     * @param mixed $category
+     * @param mixed $appid
+     * @throws \Exception
+     * @return mixed
+     * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-05-11
+     * @email 416716328@qq.com
      */
-    private static function addUpload($result, array $category)
+    private static function addUpload($result, array $category, int $appid = 0)
     {
-        $appid             = request()->header('appid', '');
         $fiel_name         = basename($result->file_name);
         $where['filename'] = $fiel_name;
         $fileModel         = SystemUpload::where($where)->find();

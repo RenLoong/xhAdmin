@@ -205,11 +205,12 @@ class StoreController extends BaseController
      */
     public function add(Request $request)
     {
+        $validate = ValidateStore::class;
         if ($request->method() == 'POST') {
             $post = $request->post();
 
             // 数据验证
-            hpValidate(ValidateStore::class, $post, 'add');
+            hpValidate($validate, $post, 'add');
 
             $post['logo'] = Upload::path($post['logo']);
             $model = $this->model;
@@ -297,6 +298,7 @@ class StoreController extends BaseController
                     'span' => 12
                 ],
             ])
+            ->formValidate($validate)
             ->create();
         return parent::successRes($data);
     }

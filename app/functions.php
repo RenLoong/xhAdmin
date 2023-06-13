@@ -368,19 +368,24 @@ function uriPush(string $uri, array $data): string
 /**
  * 输出日志到终端（仅调试模式下有效）
  * @param mixed $str
- * @param mixed $remarks
+ * @param string $remarks
+ * @param bool $type
  * @return void
  * @copyright 贵州猿创科技有限公司
  * @Email 416716328@qq.com
  * @DateTime 2023-04-29
  */
-function p($str, $remarks = '日志：')
+function p($str, string $remarks = '日志：',bool $type = false)
 {
     if (config('app.debug')) {
         $currentDate = date('Y-m-d');
         echo "{$currentDate}-----{$remarks}";
         echo PHP_EOL;
-        var_dump($str);
+        if ($type) {
+            var_dump($str);
+        }else{
+            print_r($str);
+        }
         echo PHP_EOL;
     }
 }

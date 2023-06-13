@@ -4,6 +4,7 @@ namespace app\controller;
 
 use app\BaseController;
 use app\Install;
+use app\service\Upload;
 use support\Request;
 
 /**
@@ -30,9 +31,17 @@ class IndexController extends BaseController
         return redirect('/store/');
     }
 
+    /**
+     * 测试专用
+     * @return \support\Response
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
     public function test()
     {
-        Install::update(1000,null);
-        return $this->fail('开发测试');
+        // $url = 'http://mj.xg.kfadmin.net/storage/image/2023-06-13/709a00b11d7b8a13d5c6e49d001e2a9d.png';
+        // $data = Upload::remoteFile($url);
+        // return $this->successRes($data);
     }
 }

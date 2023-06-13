@@ -6,6 +6,7 @@ use app\Model;
 use FormBuilder\Driver\CustomComponent;
 use FormBuilder\Factory\Elm;
 use FormBuilder\Form;
+use yzh52521\validate\Validate;
 
 /**
  * @title 表单构造器
@@ -160,6 +161,25 @@ class FormBuilder extends Form
             $component->$componentType($componentValue);
         }
         $this->builder->append($component);
+        return $this;
+    }
+
+    
+    /**
+     * 表单验证
+     * @param mixed $validate
+     * @return FormBuilder
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
+     */
+    public function formValidate($validate):FormBuilder
+    {
+        /**
+         * 实例验证类
+         * @var Validate
+         */
+        $class = new $validate;
         return $this;
     }
 

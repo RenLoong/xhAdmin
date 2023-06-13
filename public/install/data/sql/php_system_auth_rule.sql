@@ -41,7 +41,7 @@ CREATE TABLE `php_system_auth_rule`  (
   `is_default` enum('0','1') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '0' COMMENT '默认权限：0否，1是',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `path`(`path`) USING BTREE COMMENT '唯一索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 182 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-权限规则' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 183 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-权限规则' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of php_system_auth_rule
@@ -77,12 +77,12 @@ INSERT INTO `php_system_auth_rule` VALUES (36, '2022-11-15 02:49:00', '2023-04-2
 INSERT INTO `php_system_auth_rule` VALUES (37, '2022-11-15 02:49:46', '2023-04-21 12:00:09', 'admin', 'SystemAdmin/del', '\\app\\admin\\controller\\', 14, '删除账户', 0, '[\"GET\",\"DELETE\"]', '1', '', '', '', '0', '1', '0');
 INSERT INTO `php_system_auth_rule` VALUES (38, '2022-11-15 09:23:53', '2023-04-21 11:59:32', 'admin', 'SystemAdminRole/auth', '\\app\\admin\\controller\\', 13, '设置权限', 0, '[\"GET\",\"PUT\"]', '1', 'form/index', '', '', '0', '1', '0');
 INSERT INTO `php_system_auth_rule` VALUES (40, '2022-11-16 15:36:42', '2023-04-16 17:16:04', 'admin', 'SystemConfigGroup/indexGetTable', '\\app\\admin\\controller\\', 11, '配置分组列表', 0, '[\"GET\"]', '1', '', '', '', '0', '1', '0');
-INSERT INTO `php_system_auth_rule` VALUES (41, '2022-11-16 19:33:49', '2023-04-16 17:16:04', 'admin', 'Uploadify/tabs', '\\app\\admin\\controller\\', 1, '附件模块', 0, '[\"GET\"]', '0', '', '', '', '0', '1', '1');
-INSERT INTO `php_system_auth_rule` VALUES (42, '2022-11-16 19:34:37', '2023-04-16 17:16:04', 'admin', 'SystemUpload/index', '\\app\\admin\\controller\\', 41, '附件管理', 0, '[\"GET\"]', '1', 'table/index', '', '', '1', '1', '1');
+INSERT INTO `php_system_auth_rule` VALUES (41, '2022-11-16 19:33:49', '2023-04-16 17:16:04', 'admin', 'Uploadify/tabs', '\\app\\admin\\controller\\', 1, '附件模块', 0, '[\"GET\"]', '0', '', '', '', '1', '1', '1');
+INSERT INTO `php_system_auth_rule` VALUES (42, '2022-11-16 19:34:37', '2023-04-16 17:16:04', 'admin', 'SystemUpload/index', '\\app\\admin\\controller\\', 41, '附件管理', 0, '[\"GET\"]', '1', 'table/index', '', '', '0', '1', '1');
 INSERT INTO `php_system_auth_rule` VALUES (43, '2022-11-16 19:35:31', '2023-04-21 11:51:04', 'admin', 'SystemUpload/upload', '\\app\\admin\\controller\\', 42, '上传附件', 0, '[\"GET\",\"POST\"]', '1', '', '', '', '0', '1', '1');
 INSERT INTO `php_system_auth_rule` VALUES (44, '2022-11-16 19:36:17', '2023-04-21 11:51:13', 'admin', 'SystemUpload/del', '\\app\\admin\\controller\\', 42, '删除附件', 0, '[\"GET\",\"DELETE\"]', '1', '', '', '', '0', '1', '1');
 INSERT INTO `php_system_auth_rule` VALUES (45, '2022-11-16 19:38:19', '2023-04-21 11:51:23', 'admin', 'SystemUpload/table', '\\app\\admin\\controller\\', 42, '附件列表', 0, '[\"GET\"]', '0', '', '', '', '0', '1', '1');
-INSERT INTO `php_system_auth_rule` VALUES (46, '2022-11-16 19:41:08', '2023-04-16 17:16:04', 'admin', 'SystemUploadCate/index', '\\app\\admin\\controller\\', 41, '附件分类', 0, '[\"GET\"]', '1', 'table/index', '', '', '1', '1', '1');
+INSERT INTO `php_system_auth_rule` VALUES (46, '2022-11-16 19:41:08', '2023-04-16 17:16:04', 'admin', 'SystemUploadCate/index', '\\app\\admin\\controller\\', 41, '附件分类', 0, '[\"GET\"]', '1', 'table/index', '', '', '0', '1', '1');
 INSERT INTO `php_system_auth_rule` VALUES (47, '2022-11-16 19:41:58', '2023-04-23 19:25:14', 'admin', 'SystemUploadCate/add', '\\app\\admin\\controller\\', 46, '添加附件分类', 0, '[\"GET\",\"POST\"]', '1', 'form/index', '', '', '0', '1', '1');
 INSERT INTO `php_system_auth_rule` VALUES (48, '2022-11-16 19:42:37', '2023-04-21 11:51:40', 'admin', 'SystemUploadCate/edit', '\\app\\admin\\controller\\', 46, '修改附件分类', 0, '[\"GET\",\"PUT\"]', '1', 'form/index', '', '', '0', '1', '1');
 INSERT INTO `php_system_auth_rule` VALUES (49, '2022-11-16 19:43:35', '2023-04-21 11:51:48', 'admin', 'SystemUploadCate/del', '\\app\\admin\\controller\\', 46, '删除附件分类', 0, '[\"GET\",\"DELETE\"]', '1', '', '', '', '0', '1', '1');
@@ -140,5 +140,6 @@ INSERT INTO `php_system_auth_rule` VALUES (178, '2023-05-06 18:20:14', '2023-05-
 INSERT INTO `php_system_auth_rule` VALUES (179, '2023-05-06 20:21:59', '2023-05-06 20:21:59', 'admin', 'Plugin/getDoc', '\\app\\admin\\controller\\', 139, '获取文档地址', 0, '[\"GET\"]', '1', '', '', '', '0', '0', '0');
 INSERT INTO `php_system_auth_rule` VALUES (180, '2023-05-09 16:14:10', '2023-05-09 16:14:10', 'admin', 'StoreApp/index', '\\app\\admin\\controller\\', 147, '授权应用', 0, '[\"GET\",\"PUT\"]', '1', 'form/index', '', '', '0', '0', '0');
 INSERT INTO `php_system_auth_rule` VALUES (181, '2023-05-15 13:04:59', '2023-05-15 16:03:01', 'admin', 'Index/updateCheck', '\\app\\admin\\controller\\', 2, '版本更新', 0, '[\"GET\",\"POST\"]', '1', 'remote/index', 'remote/update/index', '', '0', '0', '0');
+INSERT INTO `php_system_auth_rule` VALUES (182, '2023-06-12 16:07:52', '2023-06-12 16:07:52', 'admin', 'SystemUpload/config', '\\app\\admin\\controller\\', 41, '附件库设置', 0, '[\"GET\",\"PUT\"]', '1', 'form/index', '', '', '1', '0', '0');
 
 SET FOREIGN_KEY_CHECKS = 1;
