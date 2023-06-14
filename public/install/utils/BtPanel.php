@@ -154,8 +154,10 @@ class BtPanel
      */
     private function send(string $url, array $data = []): array
     {
+        # 获取安装协议
+        $protocol = isset($_SERVER['REQUEST_SCHEME']) ? $_SERVER['REQUEST_SCHEME'] : 'http';
         # 拼接URL地址
-        $api = "http://127.0.0.1:{$this->BT_PANEL}{$url}";
+        $api = "{$protocol}://127.0.0.1:{$this->BT_PANEL}{$url}";
 
         # 取签名
         $p_data = $this->GetKeyData();
