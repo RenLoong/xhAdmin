@@ -95,37 +95,43 @@ class Install
      */
     private static function insertConfig()
     {
-        $copyright_name = getHpConfig('store_copyright_name');
-        if (!$copyright_name) {
-            $configs = [
-                [
-                    'cid' => 1,
-                    'title' => '租户版权',
-                    'name' => 'store_copyright_name',
-                    'value' => '贵州猿创科技有限公司',
-                    'component' => 'input',
-                    'placeholder' => '展示在租户统计页面的版权名称',
-                ],
-                [
-                    'cid' => 1,
-                    'title' => '系统教程',
-                    'name' => 'store_copyright_tutorial',
-                    'value' => '使用文档|http://www.kfadmin.net/#/document
-                    在线社区|http://www.kfadmin.net/#/document
-                    微信群|http://www.kfadmin.net/#/document',
-                    'component' => 'textarea',
-                    'placeholder' => '一行一个信息，示例：名称|网址',
-                ],
-                [
-                    'cid' => 1,
-                    'title' => '专属客服',
-                    'name' => 'store_copyright_service',
-                    'value' => '18786709420（微信同号）',
-                    'component' => 'input',
-                    'placeholder' => '客服展示信息',
-                ],
+        $model          = SystemConfig::where(['name'=> 'store_copyright_name'])->find();
+        if (!$model) {
+            $data = [
+                'cid' => 1,
+                'title' => '租户版权',
+                'name' => 'store_copyright_name',
+                'value' => '贵州猿创科技有限公司',
+                'component' => 'input',
+                'placeholder' => '展示在租户统计页面的版权名称',
             ];
-            (new SystemConfig)->saveAll($configs);
+            (new SystemConfig)->save($data);
+        }
+        $model          = SystemConfig::where(['name'=> 'store_copyright_tutorial'])->find();
+        if (!$model) {
+            $data = [
+                'cid' => 1,
+                'title' => '系统教程',
+                'name' => 'store_copyright_tutorial',
+                'value' => '使用文档|http://www.kfadmin.net/#/document
+                在线社区|http://www.kfadmin.net/#/document
+                微信群|http://www.kfadmin.net/#/document',
+                'component' => 'textarea',
+                'placeholder' => '一行一个信息，示例：名称|网址',
+            ];
+            (new SystemConfig)->save($data);
+        }
+        $model          = SystemConfig::where(['name'=> 'store_copyright_service'])->find();
+        if (!$model) {
+            $data = [
+                'cid' => 1,
+                'title' => '专属客服',
+                'name' => 'store_copyright_service',
+                'value' => '18786709420（微信同号）',
+                'component' => 'input',
+                'placeholder' => '客服展示信息',
+            ];
+            (new SystemConfig)->save($data);
         }
     }
 
