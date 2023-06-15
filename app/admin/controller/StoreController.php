@@ -237,6 +237,18 @@ class StoreController extends BaseController
                     'span' => 12
                 ],
             ])
+            ->addRow('copyright_service', 'input', '专属客服', '', [
+                'placeholder'=> '租户首页展示的专属客服，如不填写，则按照系统配置中的显示',
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('copyright_tutorial', 'textarea', '系统教程', '', [
+                'placeholder'=> '租户首页展示的系统教程，如不填写，则按照系统配置中的显示',
+                'col' => [
+                    'span' => 12
+                ],
+            ])
             ->addRow('expire_time', 'input', '过期时间', '', [
                 'col' => [
                     'span' => 12
@@ -335,6 +347,8 @@ class StoreController extends BaseController
             }
             return parent::success('保存成功');
         }
+        $formData = $model->toArray();
+        $formData['expire_time'] = date('Y-m-d', strtotime($formData['expire_time']));
         $builder = new FormBuilder;
         $data    = $builder
             ->setMethod('PUT')
@@ -349,6 +363,18 @@ class StoreController extends BaseController
                 ],
             ])
             ->addRow('title', 'input', '租户名称', '', [
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('copyright_service', 'input', '专属客服', '', [
+                'placeholder'=> '租户首页展示的专属客服，如不填写，则按照系统配置中的显示',
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('copyright_tutorial', 'textarea', '系统教程', '', [
+                'placeholder'=> '租户首页展示的系统教程，如不填写，则按照系统配置中的显示',
                 'col' => [
                     'span' => 12
                 ],
@@ -414,7 +440,7 @@ class StoreController extends BaseController
                     'span' => 12
                 ],
             ])
-            ->setData($model)
+            ->setFormData($formData)
             ->create();
         return parent::successRes($data);
     }

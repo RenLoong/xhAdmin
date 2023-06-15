@@ -31,19 +31,17 @@ class IndexController extends BaseController
         $store_id = hp_admin_id('hp_store');
         $store    = Store::where(['id'=> $store_id])->find()->toArray();
         # 设置系统默认版权
-        $copyright_name    = getHpConfig('store_copyright_name');
-        $copyright_service = getHpConfig('store_copyright_service');
-        $copyright_tutorial = getHpConfig('store_copyright_service');
+        $copyright_name    = (string)getHpConfig('store_copyright_name');
+        $copyright_service = (string)getHpConfig('store_copyright_service');
+        $copyright_tutorial = (string)getHpConfig('store_copyright_tutorial');
         $tutorial           = '';
         if ($copyright_tutorial) {
-            $tutorial          = $copyright_tutorial;
+            $tutorial   = $this->getTutorial((string) $copyright_tutorial);
         }
 
-        # 租户已设置版权名称
-        if (!empty($store['title'])) {
+        if (!empty($store['title']) && !empty($store['copyright_service']) && !empty($store['copyright_tutorial']))
+        {
             $copyright_name = $store['title'];
-        }
-        if (!empty($store['copyright_service']) && !empty($store['copyright_tutorial'])) {
             $copyright_service = $store['copyright_service'];
             $tutorial = $this->getTutorial((string) $store['copyright_tutorial']);
         }
