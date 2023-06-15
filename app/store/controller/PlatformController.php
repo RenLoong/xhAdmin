@@ -127,21 +127,6 @@ class PlatformController extends BaseController
                     'style'   => PlatformTypesStyle::parseAlias('type'),
                 ],
             ])
-            ->addColumnEle('status', '平台状态', [
-                'width'  => 100,
-                'params' => [
-                    'type'    => 'tags',
-                    'options' => ['停用', '正常'],
-                    'style'   => [
-                        [
-                            'type' => 'error'
-                        ],
-                        [
-                            'type' => 'success'
-                        ],
-                    ],
-                ],
-            ])
             ->addColumnEle('status', '状态', [
                 'width'  => 100,
                 'params' => [

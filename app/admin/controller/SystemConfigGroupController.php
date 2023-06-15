@@ -131,7 +131,7 @@ class SystemConfigGroupController extends BaseController
                     'span'  => 12
                 ],
             ])
-            ->addRow('icon', 'input', '图标', '', [
+            ->addComponent('icon', 'icons', '图标', '', [
                 'col'       => [
                     'span'  => 12
                 ],
@@ -185,7 +185,7 @@ class SystemConfigGroupController extends BaseController
                 ],
                 'disabled'  => true,
             ])
-            ->addRow('icon', 'input', '图标', '', [
+            ->addComponent('icon', 'icons', '图标', '', [
                 'col'       => [
                     'span'  => 12
                 ],

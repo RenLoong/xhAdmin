@@ -43,10 +43,8 @@ class IndexController extends BaseController
         if (!empty($store['title'])) {
             $copyright_name = $store['title'];
         }
-        if (!empty($store['copyright_service'])) {
+        if (!empty($store['copyright_service']) && !empty($store['copyright_tutorial'])) {
             $copyright_service = $store['copyright_service'];
-        }
-        if (!empty($store['copyright_tutorial'])) {
             $tutorial = $this->getTutorial((string) $store['copyright_tutorial']);
         }
         $teamInfo   = [

@@ -40,10 +40,10 @@ CREATE TABLE `php_system_config`  (
 -- Records of php_system_config
 -- ----------------------------
 INSERT INTO `php_system_config` VALUES (3, '2023-03-12 14:06:09', '2023-05-03 16:44:15', 1, '后台图标', 'admin_logo', '', 'uploadify', '', '请上传后台图标', 0);
-INSERT INTO `php_system_config` VALUES (4, '2023-03-12 14:06:09', '2023-05-03 16:44:15', 1, '租户版权', 'store_copyright_name', '', 'input', '贵州猿创科技有限公司', '展示在租户统计页面的版权名称', 0);
-INSERT INTO `php_system_config` VALUES (5, '2023-03-12 14:06:09', '2023-05-03 16:44:15', 1, '系统教程', 'store_copyright_tutorial', '', 'textarea', '使用文档|http://www.kfadmin.net/#/document
+INSERT INTO `php_system_config` VALUES (4, '2023-03-12 14:06:09', '2023-05-03 16:44:15', 2, '租户版权', 'store_copyright_name', '', 'input', '贵州猿创科技有限公司', '展示在租户统计页面的版权名称', 0);
+INSERT INTO `php_system_config` VALUES (5, '2023-03-12 14:06:09', '2023-05-03 16:44:15', 2, '系统教程', 'store_copyright_tutorial', '', 'textarea', '使用文档|http://www.kfadmin.net/#/document
 在线社区|http://www.kfadmin.net/#/document
 微信群|http://www.kfadmin.net/#/document', '一行一个信息，示例：名称|网址', 0);
-INSERT INTO `php_system_config` VALUES (6, '2023-03-12 14:06:09', '2023-05-03 16:44:15', 1, '专属客服', 'store_copyright_service', '18786709420（微信同号）', 'input', '', '客服展示信息', 0);
+INSERT INTO `php_system_config` VALUES (6, '2023-03-12 14:06:09', '2023-05-03 16:44:15', 2, '专属客服', 'store_copyright_service', '18786709420（微信同号）', 'input', '', '客服展示信息', 0);
 
 SET FOREIGN_KEY_CHECKS = 1;

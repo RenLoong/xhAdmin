@@ -171,6 +171,10 @@ class Install
         $composerCommand = 'export COMPOSER_HOME=/www/server/php/80/bin;COMPOSER_ALLOW_SUPERUSER=1;';
         $command         = "{$composerCommand}composer update --no-interaction 2>&1";
         $output          = shell_exec($command);
+        # 删除新的composer模板文件
+        if (file_exists($newComposer)) {
+            unlink($newComposer);
+        }
         p($output, '框架更新结果');
         var_dump($output);
         if ($output === null) {

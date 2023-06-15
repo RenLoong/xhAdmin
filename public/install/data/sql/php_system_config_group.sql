@@ -38,5 +38,6 @@ CREATE TABLE `php_system_config_group`  (
 -- Records of php_system_config_group
 -- ----------------------------
 INSERT INTO `php_system_config_group` VALUES (1, '2023-03-12 13:59:18', '2023-04-21 16:54:45', '系统设置', 'system', 'dasdsa', 0, '10', '0');
+INSERT INTO `php_system_config_group` VALUES (2, '2023-03-12 13:59:18', '2023-04-21 16:54:45', '租户版权', 'store_copyright', 'dasdsa', 0, '10', '0');
 
 SET FOREIGN_KEY_CHECKS = 1;
