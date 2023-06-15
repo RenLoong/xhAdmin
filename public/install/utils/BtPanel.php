@@ -12,16 +12,23 @@ class BtPanel
     # 面板地址
     private $BT_PANEL = "";
 
+    # 面板是否SSL
+    private $BT_SSL = false;
+
     /**
      * 构造函数
-     *
-     * @param string $BT_PANEL
-     * @param string $BT_KEY
+     * @param mixed $BT_PANEL
+     * @param mixed $BT_KEY
+     * @param mixed $ssl
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
-    public function __construct(string $BT_PANEL, string $BT_KEY)
+    public function __construct(string $BT_PANEL, string $BT_KEY,bool $ssl = false)
     {
         $this->BT_PANEL = $BT_PANEL;
         $this->BT_KEY = $BT_KEY;
+        $this->BT_SSL   = $ssl;
     }
 
     /**
@@ -154,8 +161,10 @@ class BtPanel
      */
     private function send(string $url, array $data = []): array
     {
+        # 宝塔是否SSL
+        $protocol = $this->BT_SSL ? 'https' : 'http';
         # 拼接URL地址
-        $api = "http://127.0.0.1:{$this->BT_PANEL}{$url}";
+        $api = "{$protocol}://127.0.0.1:{$this->BT_PANEL}{$url}";
 
         # 取签名
         $p_data = $this->GetKeyData();
@@ -187,14 +196,18 @@ class BtPanel
         );
         return $p_data;
     }
-
+    
     /**
      * 发起POST请求
-     * @param String $url 目标网填，带http://
-     * @param Array|String $data 欲提交的数据
-     * @return string
+     * @param mixed $url 目标网填，带http://
+     * @param mixed $data 欲提交的数据
+     * @param mixed $timeout
+     * @return bool|string
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
-    private function HttpPostCookie($url, $data, $timeout = 60)
+    private function HttpPostCookie(string $url, $data, int $timeout = 60)
     {
         //定义cookie保存位置
         $cookieFile = ROOT_PATH . '/runtime/bt/' . md5($this->BT_PANEL) . '.cookie';

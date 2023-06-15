@@ -12,13 +12,32 @@ class BtPanelLogic
 
     /**
      * 构造函数
-     *
-     * @param  string $BT_PANEL
-     * @param  string $BT_KEY
+     * @param mixed $BT_PANEL
+     * @param mixed $BT_KEY
+     * @param mixed $BT_SSL
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
-    public function __construct(string $BT_PANEL, string $BT_KEY)
+    public function __construct(string $BT_PANEL, string $BT_KEY,bool $BT_SSL)
     {
-        $this->btPanel = new BtPanel($BT_PANEL,$BT_KEY);
+        $this->btPanel = new BtPanel($BT_PANEL,$BT_KEY,$BT_SSL);
+    }
+
+    /**
+     * 获取网络状态
+     * @throws \Exception
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function validateBtConnect()
+    {
+        $data = $this->btPanel->GetNetWork();
+        if (empty($data)) {
+            throw new Exception('请检查宝塔端口或密钥是否正确');
+        }
     }
 
     /**

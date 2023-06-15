@@ -15,7 +15,15 @@ class Validated
         return true;
     }
 
-    # 验证宝塔验证
+    /**
+     * 验证宝塔验证
+     * @param mixed $data
+     * @throws \Exception
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
     public static function validateBt(array $data)
     {
         if (!isset($data['panel_port']) || empty($data['panel_port'])) {
@@ -27,7 +35,10 @@ class Validated
         if (!isset($data['panel_key']) || empty($data['panel_key'])) {
             throw new Exception('请输入宝塔面板密钥');
         }
-        $bt = new BtPanelLogic($data['panel_port'], $data['panel_key']);
+        $panel_ssl = isset($data['panel_ssl']) ? (bool)$data['panel_ssl'] : false;
+        $bt = new BtPanelLogic($data['panel_port'], $data['panel_key'],$panel_ssl);
+        # 验证宝塔是否通信成功
+        $bt->validateBtConnect();
         # 验证nginx是否安装
         $bt->validateSoft('nginx');
         # 验证Mysql是否安装
@@ -39,7 +50,15 @@ class Validated
         $bt->valiSupervisorNames($server_name);
     }
 
-    # 验证云服务
+    /**
+     * 验证云服务
+     * @param mixed $data
+     * @throws \Exception
+     * @return array
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
     public static function validateCloud(array $data)
     {
         if (!isset($data['username']) || empty($data['username'])) {
@@ -67,7 +86,15 @@ class Validated
         return $data;
     }
 
-    # 验证站点
+    /**
+     * 验证站点
+     * @param mixed $data
+     * @throws \Exception
+     * @return array
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
     public static function validateSite(array $data)
     {
         if (!isset($data['web_name']) || empty($data['web_name'])) {

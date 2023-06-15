@@ -6,8 +6,11 @@ class BtController
 {
     /**
      * 安装前检测
-     *
-     * @return void
+     * @throws \Exception
+     * @return string
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
     public function install()
     {
@@ -18,7 +21,8 @@ class BtController
         # 宝塔相关数据
         if (!isset($post['btData'])) return Json::fail('缺少宝塔面板数据');
         $btData = isset($post['btData']) ? $post['btData'] : null;
-        $btPanelLogic = new BtPanelLogic($btData['panel_port'],$btData['panel_key']);
+        $panel_ssl   = isset($btData['panel_ssl']) ? (bool)$btData['panel_ssl'] : false;
+        $panelLogic = new BtPanelLogic($btData['panel_port'],$btData['panel_key'],$panel_ssl);
         $server_name = str_replace('.', '_', basename(ROOT_PATH));
         # 执行安装步骤
         switch ($step) {
@@ -58,7 +62,7 @@ class BtController
                     }
                     throw new Exception("安装 【{$installName}】 数据表结构失败");
                 } catch (\Throwable $e) {
-                    return Json::fail($e->getMessage(), 404);
+                    return Json::failFul($e->getMessage(), 404);
                 }
                 # 写入数据库数据
             case 'database':
@@ -90,11 +94,11 @@ class BtController
                         'next' => 'supervisor'
                     ]);
                 } catch (\Throwable $e) {
-                    return Json::fail($e->getMessage(), 404);
+                    return Json::failFul($e->getMessage(), 404);
                 }
                 # 安装守护进程配置
             case 'supervisor':
-                $btPanelLogic->addSupervisor($server_name);
+                $panelLogic->addSupervisor($server_name);
                 # 安装完成
                 return Json::json(
                     '安装进程成功，开始进行最后设置...',
@@ -108,9 +112,9 @@ class BtController
                 # 安装Env配置文件
                 Helpers::installEnv($post);
                 # 安装Nginx配置
-                $btPanelLogic->addNginx($server_name, $post);
+                $panelLogic->addNginx($server_name, $post);
                 # 重启一下守护进程
-                $btPanelLogic->reloadSupervisor($server_name);
+                $panelLogic->reloadSupervisor($server_name);
                 # 安装Env配置成功
                 return Json::json(
                     '全部安装完成，即将跳转...',
@@ -120,11 +124,14 @@ class BtController
                 return Json::fail('安装失败...');
         }
     }
-
+    
     /**
      * 安装前检测
-     *
-     * @return void
+     * @throws \Exception
+     * @return string
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
     public function database()
     {

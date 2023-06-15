@@ -11,9 +11,12 @@ class Request
 {
     /**
      * 发送请求
-     *
-     * @param array $data
-     * @return \PDO
+     * @param mixed $username
+     * @param mixed $password
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
     public static function login(string $username, string $password)
     {
