@@ -174,7 +174,7 @@ class Install
         $output          = shell_exec($command);
         # 删除新的composer模板文件
         if (file_exists($newComposerPath)) {
-            unlink($newComposer);
+            unlink($newComposerPath);
         }
         p($output, '框架更新结果');
         var_dump($output);
