@@ -142,7 +142,8 @@ class Install
      */
     private static function updateComposer()
     {
-        $newComposer = self::composerJSON(app_path('/composer.txt'));
+        $newComposerPath = app_path('/composer.txt');
+        $newComposer = self::composerJSON($newComposerPath);
         if (!$newComposer) {
             console_log('无需更新composer');
             return;
@@ -172,7 +173,7 @@ class Install
         $command         = "{$composerCommand}composer update --no-interaction 2>&1";
         $output          = shell_exec($command);
         # 删除新的composer模板文件
-        if (file_exists($newComposer)) {
+        if (file_exists($newComposerPath)) {
             unlink($newComposer);
         }
         p($output, '框架更新结果');
