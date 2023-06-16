@@ -5,6 +5,7 @@ namespace app;
 use app\model\SystemAuthRule;
 use app\model\SystemConfig;
 use Exception;
+use support\Log;
 use think\facade\Db;
 
 /**
@@ -58,33 +59,37 @@ class Install
      */
     private static function uploadifyData()
     {
-        # 获取前缀
-        $default = config('thinkorm.default');
-        $connections = config('thinkorm.connections');
-        isset($connections[$default]['prefix']) && $prefix = $connections[$default]['prefix'];
-        # 租户新增菜单
-        $sql = "INSERT INTO `{$prefix}store_menus` VALUES (32, '2023-06-16 11:44:08', '2023-06-16 11:44:08', 'store', 'Platform/del', '\\app\\store\\controller\\', 21, '删除平台', 0, '[\"GET\",\"DELETE\"]', '1', '', '', '', '0', '0', '0')";
-        Db::execute($sql);
-        # 平台配置增加删除时间
-        $sql = "ALTER TABLE `{$prefix}store_platform_config` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
-        Db::execute($sql);
-        # 租户平台增加删除时间
-        $sql = "ALTER TABLE `{$prefix}store_platform` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
-        Db::execute($sql);
-        # 附件库分类增加字段
-        $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
-        $sql .= "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `store_id` datetime NULL AFTER `delete_time`;";
-        $sql .= "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `platform_id` datetime NULL AFTER `store_id`;";
-        $sql .= "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `appid` datetime NULL AFTER `platform_id`;";
-        $sql .= "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `uid` datetime NULL AFTER `appid`;";
-        Db::execute($sql);
-        # 附件库增加字段
-        $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
-        $sql .= "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `store_id` datetime NULL AFTER `delete_time`;";
-        $sql .= "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `platform_id` datetime NULL AFTER `store_id`;";
-        $sql .= "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `appid` datetime NULL AFTER `platform_id`;";
-        $sql .= "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `uid` datetime NULL AFTER `appid`;";
-        Db::execute($sql);
+        try {
+            # 获取前缀
+            $default = config('thinkorm.default');
+            $connections = config('thinkorm.connections');
+            isset($connections[$default]['prefix']) && $prefix = $connections[$default]['prefix'];
+            # 租户新增菜单
+            $sql = "INSERT INTO `{$prefix}store_menus` VALUES (32,'".date('Y-m-d H:i:s')."', '".date('Y-m-d H:i:s')."', 'store', 'Platform/del', '\\\\app\\\\store\\\\controller\\\\', 21, '删除平台', 0, '[\"GET\",\"DELETE\"]', '1', '', '', '', '0', '0', '0')";
+            Db::execute($sql);
+            # 平台配置增加删除时间
+            $sql = "ALTER TABLE `{$prefix}store_platform_config` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
+            Db::execute($sql);
+            # 租户平台增加删除时间
+            $sql = "ALTER TABLE `{$prefix}store_platform` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
+            Db::execute($sql);
+            # 附件库分类增加字段
+            $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
+            $sql .= "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `store_id` datetime NULL AFTER `delete_time`;";
+            $sql .= "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `platform_id` datetime NULL AFTER `store_id`;";
+            $sql .= "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `appid` datetime NULL AFTER `platform_id`;";
+            $sql .= "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `uid` datetime NULL AFTER `appid`;";
+            Db::execute($sql);
+            # 附件库增加字段
+            $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
+            $sql .= "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `store_id` datetime NULL AFTER `delete_time`;";
+            $sql .= "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `platform_id` datetime NULL AFTER `store_id`;";
+            $sql .= "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `appid` datetime NULL AFTER `platform_id`;";
+            $sql .= "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `uid` datetime NULL AFTER `appid`;";
+            Db::execute($sql);
+        } catch (\Throwable $e) {
+            Log::error($e->getMessage());
+        }
     }
 
     /**
