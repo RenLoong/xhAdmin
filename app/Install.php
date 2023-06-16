@@ -251,18 +251,21 @@ class Install
             'name' => 'store_copyright'
         ];
         $count = SystemConfigGroup::where($where)->count();
+        $cid   = 0;
         if (!$count) {
             $data = [
                 'title' => '租户版权',
                 'name' => 'store_copyright',
                 'icon' => 'AntDesignOutlined',
             ];
-            (new SystemConfigGroup)->save($data);
+            $model = new SystemConfigGroup;
+            $model->save($data);
+            $cid   = $model->id;
         }
         $model = SystemConfig::where(['name' => 'store_copyright_name'])->find();
         if (!$model) {
             $data = [
-                'cid' => 1,
+                'cid' => $cid ? $cid : 1,
                 'title' => '租户版权',
                 'name' => 'store_copyright_name',
                 'value' => '贵州猿创科技有限公司',
@@ -272,13 +275,13 @@ class Install
             (new SystemConfig)->save($data);
         }
         if ($model && $model->cid === 1) {
-            $model->cid = 2;
+            $model->cid = $cid ? $cid : 2;
             $model->save();
         }
         $model = SystemConfig::where(['name' => 'store_copyright_tutorial'])->find();
         if (!$model) {
             $data = [
-                'cid' => 1,
+                'cid' => $cid ? $cid : 1,
                 'title' => '系统教程',
                 'name' => 'store_copyright_tutorial',
                 'value' => '使用文档|http://www.kfadmin.net/#/document
@@ -290,13 +293,13 @@ class Install
             (new SystemConfig)->save($data);
         }
         if ($model && $model->cid === 1) {
-            $model->cid = 2;
+            $model->cid = $cid ? $cid : 2;
             $model->save();
         }
         $model = SystemConfig::where(['name' => 'store_copyright_service'])->find();
         if (!$model) {
             $data = [
-                'cid' => 1,
+                'cid' => $cid ? $cid : 1,
                 'title' => '专属客服',
                 'name' => 'store_copyright_service',
                 'value' => '18786709420（微信同号）',
@@ -306,7 +309,7 @@ class Install
             (new SystemConfig)->save($data);
         }
         if ($model && $model->cid === 1) {
-            $model->cid = 2;
+            $model->cid = $cid ? $cid : 2;
             $model->save();
         }
     }
