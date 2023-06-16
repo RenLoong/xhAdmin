@@ -207,15 +207,18 @@ class Upload
     private static function addUpload($result, array $category, array $dataId = [])
     {
         $fiel_name = basename($result->file_name);
-        $where     = [
-            ['filename', '=', $fiel_name],
-            ['adapter', '=', $result->adapter],
-        ];
         # 查询条件
-        isset($dataId['store_id']) && $where[] = ['store_id','=',$dataId['store_id']];
-        isset($dataId['platform_id']) && $where[] = ['platform_id','=',$dataId['platform_id']];
-        isset($dataId['appid']) && $where[] = ['appid','=',$dataId['appid']];
-        isset($dataId['uid']) && $where[] = ['uid','=',$dataId['uid']];
+        $where =[];
+        $where['filename'] = $fiel_name;
+        $where['adapter'] = $result->adapter;
+        $where['store_id'] = null;
+        $where['platform_id'] = null;
+        $where['appid'] = null;
+        $where['uid'] = null;
+        isset($dataId['store_id']) && $where['store_id'] = $dataId['store_id'];
+        isset($dataId['platform_id']) && $where['platform_id'] = $dataId['platform_id'];
+        isset($dataId['appid']) && $where['appid'] = $dataId['appid'];
+        isset($dataId['uid']) && $where['uid'] = $dataId['uid'];
 
         # 查询数据
         $fileModel = SystemUpload::where($where)->find();
