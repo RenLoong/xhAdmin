@@ -2,6 +2,7 @@
 
 namespace app;
 
+use app\model\StoreMenus;
 use app\model\SystemAuthRule;
 use app\model\SystemConfig;
 use Exception;
@@ -65,30 +66,98 @@ class Install
             $connections = config('thinkorm.connections');
             isset($connections[$default]['prefix']) && $prefix = $connections[$default]['prefix'];
             # 租户新增菜单
-            $sql = "INSERT INTO `{$prefix}store_menus` VALUES (32,'".date('Y-m-d H:i:s')."', '".date('Y-m-d H:i:s')."', 'store', 'Platform/del', '\\\\app\\\\store\\\\controller\\\\', 21, '删除平台', 0, '[\"GET\",\"DELETE\"]', '1', '', '', '', '0', '0', '0')";
-            Db::execute($sql);
+            $where = [
+                'path'      => 'Platform/del'
+            ];
+            $count = StoreMenus::where($where)->count();
+            if (!$count) {
+                $data = [
+                    'module'        => 'store',
+                    'path'          => 'Platform/del',
+                    'namespace'     => '\\app\\store\\controller\\',
+                    'pid'           => 21,
+                    'title'         => '删除平台',
+                    'method'        => ['GET','DELETE'],
+                    'is_api'        => '1',
+                ];
+                (new StoreMenus)->save($data);
+            }
+
             # 平台配置增加删除时间
-            $sql = "ALTER TABLE `{$prefix}store_platform_config` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
-            Db::execute($sql);
+            if (!self::checkColumn("{$prefix}store_platform_config",'delete_time')) {
+                $sql = "ALTER TABLE `{$prefix}store_platform_config` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
+                Db::execute($sql);
+            }
             # 租户平台增加删除时间
-            $sql = "ALTER TABLE `{$prefix}store_platform` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
-            Db::execute($sql);
+            if (!self::checkColumn("{$prefix}store_platform",'delete_time')) {
+                $sql = "ALTER TABLE `{$prefix}store_platform` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
+                Db::execute($sql);
+            }
+
             # 附件库分类增加字段
-            $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
-            $sql .= "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `store_id` datetime NULL AFTER `delete_time`;";
-            $sql .= "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `platform_id` datetime NULL AFTER `store_id`;";
-            $sql .= "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `appid` datetime NULL AFTER `platform_id`;";
-            $sql .= "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `uid` datetime NULL AFTER `appid`;";
-            Db::execute($sql);
+            if (!self::checkColumn("{$prefix}system_upload_cate",'delete_time')) {
+                $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
+                Db::execute($sql);
+            }
+            if (!self::checkColumn("{$prefix}system_upload_cate",'delete_time')) {
+                $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `store_id` datetime NULL AFTER `delete_time`;";
+                Db::execute($sql);
+            }
+            if (!self::checkColumn("{$prefix}system_upload_cate",'delete_time')) {
+                $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `platform_id` datetime NULL AFTER `store_id`;";
+                Db::execute($sql);
+            }
+            if (!self::checkColumn("{$prefix}system_upload_cate",'delete_time')) {
+                $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `appid` datetime NULL AFTER `platform_id`;";
+                Db::execute($sql);
+            }
+            if (!self::checkColumn("{$prefix}system_upload_cate",'delete_time')) {
+                $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `uid` datetime NULL AFTER `appid`;";
+                Db::execute($sql);
+            }
+
             # 附件库增加字段
-            $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
-            $sql .= "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `store_id` datetime NULL AFTER `delete_time`;";
-            $sql .= "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `platform_id` datetime NULL AFTER `store_id`;";
-            $sql .= "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `appid` datetime NULL AFTER `platform_id`;";
-            $sql .= "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `uid` datetime NULL AFTER `appid`;";
-            Db::execute($sql);
+            if (!self::checkColumn("{$prefix}system_upload",'delete_time')) {
+                $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
+                Db::execute($sql);
+            }
+            if (!self::checkColumn("{$prefix}system_upload",'store_id')) {
+                $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `store_id` datetime NULL AFTER `delete_time`;";
+                Db::execute($sql);
+            }
+            if (!self::checkColumn("{$prefix}system_upload",'platform_id')) {
+                $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `platform_id` datetime NULL AFTER `store_id`;";
+                Db::execute($sql);
+            }
+            if (!self::checkColumn("{$prefix}system_upload",'appid')) {
+                $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `appid` datetime NULL AFTER `platform_id`;";
+                Db::execute($sql);
+            }
+            if (!self::checkColumn("{$prefix}system_upload",'uid')) {
+                $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `uid` datetime NULL AFTER `appid`;";
+                Db::execute($sql);
+            }
         } catch (\Throwable $e) {
             Log::error($e->getMessage());
+        }
+    }
+
+    /**
+     * 检测是否存在表字段
+     * @param string $table
+     * @param string $column
+     * @return bool
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    private static function checkColumn(string $table,string $column)
+    {
+        $res = Db::query("select count(*) from information_schema.columns where table_name = '{$table}' and column_name = '{$column}';");
+        if (isset($res[0]['count(*)']) && $res[0]['count(*)'] != 0) {
+            return true;
+        }else{
+            return false;
         }
     }
 
