@@ -5,6 +5,7 @@ namespace app;
 use app\model\StoreMenus;
 use app\model\SystemAuthRule;
 use app\model\SystemConfig;
+use app\model\SystemConfigGroup;
 use Exception;
 use support\Log;
 use think\facade\Db;
@@ -62,78 +63,78 @@ class Install
     {
         try {
             # 获取前缀
-            $default = config('thinkorm.default');
+            $default     = config('thinkorm.default');
             $connections = config('thinkorm.connections');
             isset($connections[$default]['prefix']) && $prefix = $connections[$default]['prefix'];
             # 租户新增菜单
             $where = [
-                'path'      => 'Platform/del'
+                'path' => 'Platform/del'
             ];
             $count = StoreMenus::where($where)->count();
             if (!$count) {
                 $data = [
-                    'module'        => 'store',
-                    'path'          => 'Platform/del',
-                    'namespace'     => '\\app\\store\\controller\\',
-                    'pid'           => 21,
-                    'title'         => '删除平台',
-                    'method'        => ['GET','DELETE'],
-                    'is_api'        => '1',
+                    'module' => 'store',
+                    'path' => 'Platform/del',
+                    'namespace' => '\\app\\store\\controller\\',
+                    'pid' => 21,
+                    'title' => '删除平台',
+                    'method' => ['GET', 'DELETE'],
+                    'is_api' => '1',
                 ];
                 (new StoreMenus)->save($data);
             }
 
             # 平台配置增加删除时间
-            if (!self::checkColumn("{$prefix}store_platform_config",'delete_time')) {
+            if (!self::checkColumn("{$prefix}store_platform_config", 'delete_time')) {
                 $sql = "ALTER TABLE `{$prefix}store_platform_config` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
                 Db::execute($sql);
             }
             # 租户平台增加删除时间
-            if (!self::checkColumn("{$prefix}store_platform",'delete_time')) {
+            if (!self::checkColumn("{$prefix}store_platform", 'delete_time')) {
                 $sql = "ALTER TABLE `{$prefix}store_platform` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
                 Db::execute($sql);
             }
 
             # 附件库分类增加字段
-            if (!self::checkColumn("{$prefix}system_upload_cate",'delete_time')) {
+            if (!self::checkColumn("{$prefix}system_upload_cate", 'delete_time')) {
                 $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
                 Db::execute($sql);
             }
-            if (!self::checkColumn("{$prefix}system_upload_cate",'delete_time')) {
+            if (!self::checkColumn("{$prefix}system_upload_cate", 'delete_time')) {
                 $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `store_id` datetime NULL AFTER `delete_time`;";
                 Db::execute($sql);
             }
-            if (!self::checkColumn("{$prefix}system_upload_cate",'delete_time')) {
+            if (!self::checkColumn("{$prefix}system_upload_cate", 'delete_time')) {
                 $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `platform_id` datetime NULL AFTER `store_id`;";
                 Db::execute($sql);
             }
-            if (!self::checkColumn("{$prefix}system_upload_cate",'delete_time')) {
+            if (!self::checkColumn("{$prefix}system_upload_cate", 'delete_time')) {
                 $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `appid` datetime NULL AFTER `platform_id`;";
                 Db::execute($sql);
             }
-            if (!self::checkColumn("{$prefix}system_upload_cate",'delete_time')) {
+            if (!self::checkColumn("{$prefix}system_upload_cate", 'delete_time')) {
                 $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `uid` datetime NULL AFTER `appid`;";
                 Db::execute($sql);
             }
 
             # 附件库增加字段
-            if (!self::checkColumn("{$prefix}system_upload",'delete_time')) {
+            if (!self::checkColumn("{$prefix}system_upload", 'delete_time')) {
                 $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
                 Db::execute($sql);
             }
-            if (!self::checkColumn("{$prefix}system_upload",'store_id')) {
+            if (!self::checkColumn("{$prefix}system_upload", 'store_id')) {
                 $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `store_id` datetime NULL AFTER `delete_time`;";
                 Db::execute($sql);
             }
-            if (!self::checkColumn("{$prefix}system_upload",'platform_id')) {
+            if (!self::checkColumn("{$prefix}system_upload", 'platform_id')) {
                 $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `platform_id` datetime NULL AFTER `store_id`;";
                 Db::execute($sql);
             }
-            if (!self::checkColumn("{$prefix}system_upload",'appid')) {
+            if (!self::checkColumn("{$prefix}system_upload", 'appid')) {
                 $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `appid` datetime NULL AFTER `platform_id`;";
                 Db::execute($sql);
             }
-            if (!self::checkColumn("{$prefix}system_upload",'uid')) {
+            if (!self::checkColumn("{$prefix}system_upload", 'uid')) {
                 $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `uid` datetime NULL AFTER `appid`;";
                 Db::execute($sql);
             }
@@ -151,12 +152,12 @@ class Install
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    private static function checkColumn(string $table,string $column)
+    private static function checkColumn(string $table, string $column)
     {
         $res = Db::query("select count(*) from information_schema.columns where table_name = '{$table}' and column_name = '{$column}';");
         if (isset($res[0]['count(*)']) && $res[0]['count(*)'] != 0) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -172,19 +173,19 @@ class Install
     {
         # 版权名称
         $where = ['name' => 'store_copyright_name'];
-        $count  = SystemConfig::where($where)->count();
+        $count = SystemConfig::where($where)->count();
         if ($count >= 2) {
             SystemConfig::where($where)->delete();
         }
         # 系统教程
         $where = ['name' => 'store_copyright_tutorial'];
-        $count  = SystemConfig::where($where)->count();
+        $count = SystemConfig::where($where)->count();
         if ($count >= 2) {
             SystemConfig::where($where)->delete();
         }
         # 专属客服
         $where = ['name' => 'store_copyright_service'];
-        $count  = SystemConfig::where($where)->count();
+        $count = SystemConfig::where($where)->count();
         if ($count >= 2) {
             SystemConfig::where($where)->delete();
         }
@@ -223,10 +224,10 @@ class Install
             SystemAuthRule::where(['path' => 'SystemUploadCate/index'])->save(['show' => '0']);
         }
         # 更新菜单位置
-        $where = [
+        $where     = [
             ['path', '=', 'Uploadify/tabs']
         ];
-        $menuModel  = SystemAuthRule::where($where)->find();
+        $menuModel = SystemAuthRule::where($where)->find();
         if ($menuModel) {
             if ($menuModel->pid !== 2) {
                 SystemAuthRule::where(['path' => 'Uploadify/tabs'])->save(['show' => '1', 'pid' => 7]);
@@ -245,7 +246,20 @@ class Install
      */
     private static function insertConfig()
     {
-        $model          = SystemConfig::where(['name'=> 'store_copyright_name'])->find();
+        # 检测分类是否存在
+        $where = [
+            'name' => 'store_copyright'
+        ];
+        $count = SystemConfigGroup::where($where)->count();
+        if (!$count) {
+            $data = [
+                'title' => '租户版权',
+                'name' => 'store_copyright',
+                'icon' => 'AntDesignOutlined',
+            ];
+            (new SystemConfigGroup)->save($data);
+        }
+        $model = SystemConfig::where(['name' => 'store_copyright_name'])->find();
         if (!$model) {
             $data = [
                 'cid' => 1,
@@ -257,7 +271,11 @@ class Install
             ];
             (new SystemConfig)->save($data);
         }
-        $model          = SystemConfig::where(['name'=> 'store_copyright_tutorial'])->find();
+        if ($model && $model->cid === 1) {
+            $model->cid = 2;
+            $model->save();
+        }
+        $model = SystemConfig::where(['name' => 'store_copyright_tutorial'])->find();
         if (!$model) {
             $data = [
                 'cid' => 1,
@@ -271,7 +289,11 @@ class Install
             ];
             (new SystemConfig)->save($data);
         }
-        $model          = SystemConfig::where(['name'=> 'store_copyright_service'])->find();
+        if ($model && $model->cid === 1) {
+            $model->cid = 2;
+            $model->save();
+        }
+        $model = SystemConfig::where(['name' => 'store_copyright_service'])->find();
         if (!$model) {
             $data = [
                 'cid' => 1,
@@ -283,6 +305,10 @@ class Install
             ];
             (new SystemConfig)->save($data);
         }
+        if ($model && $model->cid === 1) {
+            $model->cid = 2;
+            $model->save();
+        }
     }
 
     /**
@@ -293,7 +319,7 @@ class Install
     private static function updateComposer()
     {
         $newComposerPath = app_path('/composer.txt');
-        $newComposer = self::composerJSON($newComposerPath);
+        $newComposer     = self::composerJSON($newComposerPath);
         if (!$newComposer) {
             console_log('无需更新composer');
             return;
