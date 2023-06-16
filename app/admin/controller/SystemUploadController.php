@@ -147,8 +147,14 @@ class SystemUploadController extends BaseController
     public function index(Request $request)
     {
         list($where, $orderBy, $limit) = $this->getParams($request);
-        $orderBy                       = empty($orderBy) ? ['update_at' => 'desc'] : $orderBy;
-        $data                          = SystemUpload::with(['category'])
+        empty($orderBy) && $orderBy = ['update_at' => 'desc'];
+        $where = array_merge($where, [
+            ['store_id','=',null],
+            ['platform_id','=',null],
+            ['appid','=',null],
+            ['uid','=',null],
+        ]);
+        $data   = SystemUpload::with(['category'])
             ->where($where)
             ->order($orderBy)
             ->paginate($limit)

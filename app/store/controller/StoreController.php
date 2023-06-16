@@ -95,9 +95,6 @@ class StoreController extends BaseController
             ],
         ])
         ->addComponent('logo', 'uploadify', '租户图标', '', [
-            'col'   => [
-                'span' => 6
-            ],
             'props' => [
                 'type'   => 'image',
                 'format' => ['jpg', 'png', 'gif']

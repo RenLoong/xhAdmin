@@ -4,6 +4,7 @@ namespace app\model;
 
 use app\Model;
 use app\service\Upload;
+use think\model\concern\SoftDelete;
 
 /**
  * 商户平台配置
@@ -14,6 +15,10 @@ use app\service\Upload;
  */
 class StorePlatformConfig extends Model
 {
+    # 软删除
+    use SoftDelete;
+    protected $deleteTime = 'delete_time';
+
     /**
      * 获取数据外链地址
      * @param mixed $value

@@ -85,7 +85,7 @@ class PlatformController extends BaseController
             ])
             ->addRightButton(
                 'app',
-                '应用管理',
+                '应用',
                 [
                     'type' => 'table',
                     'api'  => 'store/PlatformApp/index',
@@ -100,7 +100,7 @@ class PlatformController extends BaseController
             )
             ->addRightButton(
                 'config',
-                '配置平台',
+                '配置',
                 [
                     'type' => 'modal',
                     'api'  => 'store/Platform/config',
@@ -113,6 +113,17 @@ class PlatformController extends BaseController
                     'type' => 'warning',
                 ]
             )
+            ->addRightButton('del', '删除', [
+                'type' => 'confirm',
+                'api' => 'store/Platform/del',
+                'method' => 'delete',
+            ], [
+                'title' => '温馨提示',
+                'content' => '是否确认删除该数据',
+            ], [
+                'type' => 'error',
+                'link' => true
+            ])
             ->addColumn('configs.web_name', '平台名称')
             ->addColumnEle('configs.logo', '平台图标', [
                 'params' => [
@@ -156,19 +167,17 @@ class PlatformController extends BaseController
     public function index(Request $request)
     {
         $status = $request->get('status', '1');
-        $where[] = [
-            ['status', '=', $status]
-        ];
         $orderBy = [
             'id' => 'desc'
         ];
         $model   = $this->model;
-        $data    = $model->where($where)
-            ->fetchSql(true)
-            ->order($orderBy)
+        if ($status === '0') {
+            $model = $model->withTrashed();
+        }
+        $data    = $model->order($orderBy)
             ->paginate()
             ->toArray();
-        return parent::successRes($data);
+        return $this->successRes($data);
     }
 
     /**
@@ -278,6 +287,28 @@ class PlatformController extends BaseController
         ]);
         $data = $builder->create();
         return parent::successRes($data);
+    }
+
+    /**
+     * 删除平台
+     * @param \support\Request $request
+     * @return \support\Response
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function del(Request $request)
+    {
+        try {
+            # 获取ID
+            $id = (int) $request->post('id', 0);
+            # 执行删除
+            StorePlatforms::deletePlatform($id);
+            # 删除成功
+            return $this->success('删除成功');
+        } catch (\Throwable $e) {
+            return $this->fail($e->getMessage());
+        }
     }
 
     /**

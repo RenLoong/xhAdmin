@@ -58,27 +58,41 @@ class StorePlatformController extends BaseController
                 'width' => 210
             ])
             ->pageConfig()
+            ->tabsConfig([
+                'active' => '1',
+                'field'  => 'status',
+                'list'   => [
+                    [
+                        'label' => '平台列表',
+                        'value' => '1'
+                    ],
+                    [
+                        'label' => '回 收 站',
+                        'value' => '0'
+                    ],
+                ]
+            ])
             ->addRightButton('edit', '修改', [
                 'type' => 'modal',
-                'api'  => 'admin/StorePlatform/edit',
+                'api' => 'admin/StorePlatform/edit',
                 'path' => '/StorePlatform/edit',
             ], [
-                    'title' => '修改平台',
-                ], [
-                    'type' => 'primary',
-                    'link' => true
-                ])
+                'title' => '修改平台',
+            ], [
+                'type' => 'primary',
+                'link' => true
+            ])
             ->addRightButton('del', '删除', [
-                'type'   => 'confirm',
-                'api'    => 'admin/StorePlatform/del',
+                'type' => 'confirm',
+                'api' => 'admin/StorePlatform/del',
                 'method' => 'delete',
             ], [
-                    'title'   => '温馨提示',
-                    'content' => '是否确认删除该数据',
-                ], [
-                    'type' => 'danger',
-                    'link' => true
-                ])
+                'title' => '温馨提示',
+                'content' => '是否确认删除该数据',
+            ], [
+                'type' => 'error',
+                'link' => true
+            ])
             ->addColumn('configs.web_name', '平台名称')
             ->addColumn('store.title', '所属租户')
             ->addColumnEle('configs.logo', '平台图标', [
@@ -87,11 +101,11 @@ class StorePlatformController extends BaseController
                 ],
             ])
             ->addColumnEle('status', '平台状态', [
-                'width'  => 100,
+                'width' => 100,
                 'params' => [
-                    'type'    => 'tags',
+                    'type' => 'tags',
                     'options' => ['冻结', '正常'],
-                    'style'   => [
+                    'style' => [
                         [
                             'type' => 'error'
                         ],
@@ -116,14 +130,18 @@ class StorePlatformController extends BaseController
     public function index(Request $request)
     {
         $store_id = $request->get('id', '');
+        $status = $request->get('status', '1');
+        $model   = $this->model;
         $where    = [];
         if ($store_id) {
             $where['store_id'] = $store_id;
         }
+        if ($status === '0') {
+            $model = $model->withTrashed();
+        }
         $orderBy = [
             'id' => 'desc'
         ];
-        $model   = $this->model;
         $data    = $model->with(['store'])
             ->where($where)
             ->order($orderBy)
@@ -170,7 +188,7 @@ class StorePlatformController extends BaseController
             try {
                 $model        = $this->model;
                 $platformData = [
-                    'store_id'      => $store_id,
+                    'store_id' => $store_id,
                     'platform_type' => $post['platform_type']
                 ];
                 if (!$model->save($platformData)) {
@@ -178,13 +196,13 @@ class StorePlatformController extends BaseController
                 }
                 // 保存配置项
                 $configData = [
-                    'store_id'    => $store_id,
+                    'store_id' => $store_id,
                     'platform_id' => $model->id,
                 ];
                 $fields     = [
-                    'web_name'    => $post['title'],
-                    'domain'      => $post['domain'],
-                    'logo'        => Upload::path($post['logo']),
+                    'web_name' => $post['title'],
+                    'domain' => $post['domain'],
+                    'logo' => Upload::path($post['logo']),
                     'description' => '',
                 ];
                 if ($post['platform_type'] === 'wechat') {
@@ -211,14 +229,14 @@ class StorePlatformController extends BaseController
         $builder->setMethod('POST');
         if (!$store_id) {
             $builder->addRow('store_id', 'select', '所属商户', '', [
-                'col'     => [
+                'col' => [
                     'span' => 12
                 ],
                 'options' => Store::getSelectOptions()
             ]);
         }
         $builder->addRow('platform_type', 'select', '平台类型', 'other', [
-            'col'     => [
+            'col' => [
                 'span' => 12
             ],
             'options' => PlatformTypes::getOptions()
@@ -229,7 +247,7 @@ class StorePlatformController extends BaseController
             ],
         ]);
         $builder->addComponent('logo', 'uploadify', '平台图标', '', [
-            'col'   => [
+            'col' => [
                 'span' => 12
             ],
             'props' => [
@@ -237,7 +255,7 @@ class StorePlatformController extends BaseController
             ],
         ]);
         $builder->addRow('status', 'radio', '平台状态', '1', [
-            'col'     => [
+            'col' => [
                 'span' => 12
             ],
             'options' => StorePlatformStatus::getOptions()
@@ -298,7 +316,7 @@ class StorePlatformController extends BaseController
                 }
                 // 保存平台数据
                 $platformData = [
-                    'status'  => $post['status'],
+                    'status' => $post['status'],
                     'remarks' => $post['remarks'],
                 ];
                 if (!$model->save($platformData)) {
@@ -323,7 +341,7 @@ class StorePlatformController extends BaseController
             ],
         ]);
         $builder->addComponent('logo', 'uploadify', '平台图标', '', [
-            'col'   => [
+            'col' => [
                 'span' => 12
             ],
             'props' => [
@@ -331,7 +349,7 @@ class StorePlatformController extends BaseController
             ],
         ]);
         $builder->addRow('status', 'radio', '平台状态', '1', [
-            'col'     => [
+            'col' => [
                 'span' => 12
             ],
             'options' => StorePlatformStatus::getOptions()
@@ -356,26 +374,14 @@ class StorePlatformController extends BaseController
      */
     public function del(Request $request)
     {
-        Db::startTrans();
         try {
-            $id    = $request->post('id');
-            $where = [
-                'id' => $id
-            ];
-            $model = $this->model;
-            if (!$model::where($where)->delete()) {
-                throw new Exception('删除平台失败');
-            }
-            $where = [
-                'platform_id' => $id
-            ];
-            if (StorePlatformConfig::where($where)->delete()) {
-                throw new Exception('删除平台配置失败');
-            }
-            Db::commit();
-            return parent::success('删除成功');
+            # 获取ID
+            $id = (int) $request->post('id', 0);
+            # 执行删除
+            StorePlatforms::deletePlatform($id);
+            # 删除成功
+            return $this->success('删除成功');
         } catch (\Throwable $e) {
-            Db::rollback();
             return $this->fail($e->getMessage());
         }
     }

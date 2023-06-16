@@ -71,27 +71,33 @@ class IndexController extends BaseController
             $today     = StoreApp::where($where)
                 ->alias('app')
                 ->join('store_platform platform', 'platform.id=app.platform_id')
-                ->whereDay('app.create_at')->count();
+                ->whereDay('app.create_at')
+                ->count();
             $week      = StoreApp::where($where)
                 ->alias('app')
                 ->join('store_platform platform', 'platform.id=app.platform_id')
-                ->whereWeek('app.create_at')->count();
+                ->whereWeek('app.create_at')
+                ->count();
             $moon      = StoreApp::where($where)
                 ->alias('app')
                 ->join('store_platform platform', 'platform.id=app.platform_id')
-                ->whereMonth('app.create_at')->count();
+                ->whereMonth('app.create_at')
+                ->count();
             $quarter   = StoreApp::where($where)
                 ->alias('app')
                 ->join('store_platform platform', 'platform.id=app.platform_id')
-                ->whereTime('app.create_at', '-3 month')->count();
+                ->whereTime('app.create_at', '-3 month')
+                ->count();
             $half_year = StoreApp::where($where)
                 ->alias('app')
                 ->join('store_platform platform', 'platform.id=app.platform_id')
-                ->whereTime('app.create_at', '-6 month')->count();
+                ->whereTime('app.create_at', '-6 month')
+                ->count();
             $year      = StoreApp::where($where)
                 ->alias('app')
                 ->join('store_platform platform', 'platform.id=app.platform_id')
-                ->whereYear('app.create_at')->count();
+                ->whereYear('app.create_at')
+                ->count();
             // 组装图表数据
             $platform_echarts[] = [
                 'name'   => $value['text'],

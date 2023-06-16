@@ -139,7 +139,7 @@ export default {
             // 请求访问
             httpOptions: {
                 title: {
-                    text: '应用粉丝增涨量'
+                    text: '用户增涨量'
                 },
                 tooltip: {
                     trigger: 'axis'

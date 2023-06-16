@@ -5,7 +5,10 @@ namespace app\manager;
 use app\enum\PlatformTypes;
 use app\model\Store;
 use app\model\StorePlatform;
+use app\model\StorePlatformConfig;
+use app\model\SystemUpload;
 use Exception;
+use think\facade\Db;
 
 class StorePlatforms
 {
@@ -123,5 +126,85 @@ class StorePlatforms
             'platform_type' => $platform
         ];
         return StorePlatform::where($where)->count();
+    }
+
+    /**
+     * 删除平台
+     * @param int $platform_id
+     * @throws \Exception
+     * @return bool
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function deletePlatform(int $platform_id)
+    {
+        Db::startTrans();
+        try {
+            # 查询平台
+            $where = [
+                'id' => $platform_id
+            ];
+            $model = new StorePlatform;
+            $model = $model->withTrashed()->where($where)->find();
+            if (!$model) {
+                throw new Exception('该平台不存在');
+            }
+            # 恢复租户数量（真实删除有效）
+            if ($model->delete_time) {
+                # 取平台类型为字段
+                $field = $model->platform_type;
+                $where      = [
+                    'id'    => $model->store_id
+                ];
+                $storeModel = Store::where($where)->find();
+                if (!$storeModel) {
+                    throw new Exception('该平台租户不存在');
+                }
+                $storeModel->$field = $storeModel->$field + 1;
+                if (!$storeModel->save()) {
+                    throw new Exception("恢复租户平台数量失败");
+                }
+            }
+            # 是否真实删除平台
+            if ($model->delete_time) {
+                $model = $model->force();
+            }
+            # 删除平台
+            if (!$model->delete()) {
+                throw new Exception('删除平台失败');
+            }
+            # 通用条件
+            $where = [
+                'platform_id' => $platform_id
+            ];
+            # 删除平台附件
+            $uploadify = SystemUpload::where($where)->select();
+            foreach ($uploadify as $uploadModel) {
+                # 是否真实删除附件
+                if ($model->delete_time) {
+                    $uploadModel = $uploadModel->force();
+                }
+                if (!$uploadModel->delete()) {
+                    throw new Exception('删除平台附件失败');
+                }
+            }
+            # 删除平台配置
+            $platformConfig = StorePlatformConfig::where($where)->select();
+            foreach ($platformConfig as $configModel) {
+                # 是否真实删除配置
+                if ($model->delete_time) {
+                    $configModel = $configModel->force();
+                }
+                if (!$configModel->delete()) {
+                    throw new Exception('删除平台配置失败');
+                }
+            }
+            Db::commit();
+            return true;
+        } catch (\Throwable $e) {
+            Db::rollback();
+            throw $e;
+        }
     }
 }

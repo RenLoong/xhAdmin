@@ -4,6 +4,7 @@ namespace app\service;
 
 use app\admin\model\SystemUpload;
 use app\admin\model\SystemUploadCate;
+use app\manager\StoreApp;
 use Exception;
 use Shopwwi\WebmanFilesystem\Storage;
 use support\Log;
@@ -22,7 +23,7 @@ class Upload
      * 下载远程文件并上传
      * @param mixed $url
      * @param mixed $cid
-     * @param mixed $appid
+     * @param array $dataId
      * @param mixed $config
      * @throws \Exception
      * @return array|bool|mixed
@@ -30,7 +31,7 @@ class Upload
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public static function remoteFile(string $url, int $cid = 0, int $appid = 0, array $config = []): array
+    public static function remoteFile(string $url, int $cid = 0, array $dataId = [], array $config = []): array
     {
         $fileInfo = pathinfo($url);
         if (!isset($fileInfo['extension'])) {
@@ -50,7 +51,7 @@ class Upload
         }
         $fileMimeType = self::getFileMimeType($tempFile);
         $uploadFile   = new UploadFile($tempFile, $fileInfo['basename'], $fileMimeType, 0);
-        if (!$data = self::upload($uploadFile, $cid, $appid)) {
+        if (!$data = self::upload($uploadFile, $cid, $dataId)) {
             throw new Exception('上传文件失败');
         }
         return $data;
@@ -71,24 +72,25 @@ class Upload
         finfo_close($finfo);
         return $mime_type;
     }
-
+    
     /**
      * 上传文件
      * @param mixed $file
      * @param int $cid
+     * @param array $dataId
      * @param array $config TODO:该参数预留后续使用
-     * @return array|bool|mixed
+     * @return mixed
+     * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-05-11
+     * @email 416716328@qq.com
      */
-    public static function upload($file, int $cid = 0, int $appid = 0, array $config = [])
+    public static function upload($file, int $cid = 0, array $dataId = [], array $config = [])
     {
         try {
             $category = self::getCategory($cid);
             $path     = "upload/{$category['dir_name']}";
             $result   = (new Storage)->path($path)->upload($file, false);
-            $data     = self::addUpload($result, $category, $appid);
+            $data     = self::addUpload($result, $category, $dataId);
             return $data;
         } catch (\Throwable $e) {
             Log::error($e->getMessage());
@@ -195,20 +197,27 @@ class Upload
      * 附件储存
      * @param mixed $result
      * @param mixed $category
-     * @param mixed $appid
+     * @param array $dataId
      * @throws \Exception
      * @return mixed
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    private static function addUpload($result, array $category, int $appid = 0)
+    private static function addUpload($result, array $category, array $dataId = [])
     {
         $fiel_name = basename($result->file_name);
         $where     = [
             ['filename', '=', $fiel_name],
             ['adapter', '=', $result->adapter],
         ];
+        # 查询条件
+        isset($dataId['store_id']) && $where[] = ['store_id','=',$dataId['store_id']];
+        isset($dataId['platform_id']) && $where[] = ['platform_id','=',$dataId['platform_id']];
+        isset($dataId['appid']) && $where[] = ['appid','=',$dataId['appid']];
+        isset($dataId['uid']) && $where[] = ['uid','=',$dataId['uid']];
+
+        # 查询数据
         $fileModel = SystemUpload::where($where)->find();
         if ($fileModel) {
             $fileModel->update_at = date('Y-m-d H:i:s');
@@ -222,7 +231,14 @@ class Upload
         $data['format']   = $result->extension;
         $data['size']     = $result->size;
         $data['adapter']  = $result->adapter;
-        $data['appid'] = $appid;
+
+        # 组装入库数据
+        isset($dataId['store_id']) && $data['store_id'] = $dataId['store_id'];
+        isset($dataId['platform_id']) && $data['platform_id'] = $dataId['platform_id'];
+        isset($dataId['appid']) && $data['appid'] = $dataId['appid'];
+        isset($dataId['uid']) && $data['uid'] = $dataId['uid'];
+
+        # 数据入库
         if (!(new SystemUpload)->save($data)) {
             throw new Exception('附件上传失败');
         }

@@ -5,6 +5,7 @@ namespace app\model;
 use app\enum\PlatformTypes;
 use app\Model;
 use app\service\Upload;
+use think\model\concern\SoftDelete;
 
 /**
  * 商户平台
@@ -15,6 +16,10 @@ use app\service\Upload;
  */
 class StorePlatform extends Model
 {
+    # 软删除
+    use SoftDelete;
+    protected $deleteTime = 'delete_time';
+
     protected $append = [
         'configs'
     ];

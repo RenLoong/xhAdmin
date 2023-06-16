@@ -58,13 +58,15 @@ class PublicsController extends BaseController
                 'lock'      => "{$this->moduleName}/Index/lock",
                 "user_edit" => "{$this->moduleName}/Store/edit",
             ],
+            # 自定义登录页（配合remote_url使用）
+            // 'login_url'         => '/storeLogin',
             // 远程组件
             'remote_url'     => [
-                // [
-                //     'title'  => '用户注册',
-                //     'path'   => '/register',
-                //     'remote' => 'remote/register'
-                // ],
+                [
+                    'title'  => '用户登录',
+                    'path'   => '/storeLogin',
+                    'remote' => 'remote/storeLogin'
+                ],
             ],
             // 附件库API
             'uploadify_api'  => [

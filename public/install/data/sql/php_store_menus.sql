@@ -41,7 +41,7 @@ CREATE TABLE `php_store_menus`  (
   `is_default` enum('0','1') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '0' COMMENT '默认权限：0否，1是',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `path`(`path`) USING BTREE COMMENT '唯一索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 32 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '租户-权限菜单' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 33 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '租户-权限菜单' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of php_store_menus
@@ -77,5 +77,6 @@ INSERT INTO `php_store_menus` VALUES (28, '2023-05-03 17:40:24', '2023-05-03 17:
 INSERT INTO `php_store_menus` VALUES (29, '2023-05-03 17:42:57', '2023-05-03 17:42:57', 'store', 'UserFinance/index', '\\app\\store\\controller\\', 23, '财务管理', 0, '[\"GET\"]', '1', 'table/index', '', '', '0', '0', '0');
 INSERT INTO `php_store_menus` VALUES (30, '2023-05-03 17:44:02', '2023-05-03 17:44:36', 'store', 'UserFinance/actionFinance', '\\app\\store\\controller\\', 29, '操作财务', 0, '[\"GET\",\"PUT\"]', '1', 'form/index', '', '', '0', '0', '0');
 INSERT INTO `php_store_menus` VALUES (31, '2023-05-03 19:53:40', '2023-05-03 19:53:40', 'store', '', '', 20, '分配应用', 0, '[\"GET\"]', '0', 'remote/index', 'remote/app/index', '', '0', '0', '0');
+INSERT INTO `php_store_menus` VALUES (32, '2023-06-16 11:44:08', '2023-06-16 11:44:08', 'store', 'Platform/del', '\\app\\store\\controller\\', 21, '删除平台', 0, '[\"GET\",\"DELETE\"]', '1', '', '', '', '0', '0', '0');
 
 SET FOREIGN_KEY_CHECKS = 1;

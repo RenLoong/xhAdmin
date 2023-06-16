@@ -5,6 +5,7 @@ namespace app;
 use app\model\SystemAuthRule;
 use app\model\SystemConfig;
 use Exception;
+use think\facade\Db;
 
 /**
  * @title SAAS框架
@@ -15,9 +16,11 @@ class Install
 {
     /**
      * 安装前置操作
-     *
-     * @param  type $version
+     * @param mixed $version
      * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
     public static function beforeUpdate($version)
     {
@@ -25,19 +28,92 @@ class Install
 
     /**
      * 安装后置操作
-     *
-     * @param  type $version
-     * @param  type $context
+     * @param mixed $version
+     * @param mixed $context
      * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
     public static function update($version, $context)
     {
         # 更新composer
         self::updateComposer();
+        # 修复配置项
+        self::fixConfig();
         # 更新配置项
         self::insertConfig();
         # 更新附件库
         self::saveMenus();
+        # 升级附件库独立数据
+        self::uploadifyData();
+    }
+
+    /**
+     * 升级附件库为独立数据
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    private static function uploadifyData()
+    {
+        # 获取前缀
+        $default = config('thinkorm.default');
+        $connections = config('thinkorm.connections');
+        isset($connections[$default]['prefix']) && $prefix = $connections[$default]['prefix'];
+        # 租户新增菜单
+        $sql = "INSERT INTO `{$prefix}store_menus` VALUES (32, '2023-06-16 11:44:08', '2023-06-16 11:44:08', 'store', 'Platform/del', '\\app\\store\\controller\\', 21, '删除平台', 0, '[\"GET\",\"DELETE\"]', '1', '', '', '', '0', '0', '0')";
+        Db::execute($sql);
+        # 平台配置增加删除时间
+        $sql = "ALTER TABLE `{$prefix}store_platform_config` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
+        Db::execute($sql);
+        # 租户平台增加删除时间
+        $sql = "ALTER TABLE `{$prefix}store_platform` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
+        Db::execute($sql);
+        # 附件库分类增加字段
+        $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
+        $sql .= "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `store_id` datetime NULL AFTER `delete_time`;";
+        $sql .= "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `platform_id` datetime NULL AFTER `store_id`;";
+        $sql .= "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `appid` datetime NULL AFTER `platform_id`;";
+        $sql .= "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `uid` datetime NULL AFTER `appid`;";
+        Db::execute($sql);
+        # 附件库增加字段
+        $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
+        $sql .= "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `store_id` datetime NULL AFTER `delete_time`;";
+        $sql .= "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `platform_id` datetime NULL AFTER `store_id`;";
+        $sql .= "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `appid` datetime NULL AFTER `platform_id`;";
+        $sql .= "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `uid` datetime NULL AFTER `appid`;";
+        Db::execute($sql);
+    }
+
+    /**
+     * 修改配置项
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    private static function fixConfig()
+    {
+        # 版权名称
+        $where = ['name' => 'store_copyright_name'];
+        $count  = SystemConfig::where($where)->count();
+        if ($count >= 2) {
+            SystemConfig::where($where)->delete();
+        }
+        # 系统教程
+        $where = ['name' => 'store_copyright_tutorial'];
+        $count  = SystemConfig::where($where)->count();
+        if ($count >= 2) {
+            SystemConfig::where($where)->delete();
+        }
+        # 专属客服
+        $where = ['name' => 'store_copyright_service'];
+        $count  = SystemConfig::where($where)->count();
+        if ($count >= 2) {
+            SystemConfig::where($where)->delete();
+        }
     }
 
     /**

@@ -27,6 +27,8 @@ class SystemUploadController extends BaseController
     public function index(Request $request)
     {
         list($where, $orderBy, $limit) = $this->getParams($request);
+        empty($orderBy) && $orderBy = ['update_at'=> 'desc'];
+        
         $data = SystemUpload::with(['category'])
             ->where($where)
             ->order($orderBy)
@@ -157,7 +159,8 @@ class SystemUploadController extends BaseController
     {
         $file = $request->file('file');
         $cid = (int)$request->post('cid');
-        $data = Upload::upload($file, $cid);
+        $store_id = hp_admin_id('hp_store');
+        $data = Upload::upload($file, $cid,['store_id'=> $store_id]);
         if (!$data) {
             return $this->fail('上传失败');
         }
