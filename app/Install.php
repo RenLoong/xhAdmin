@@ -79,6 +79,7 @@ class Install
                     'pid' => 21,
                     'title' => '删除平台',
                     'method' => ['GET', 'DELETE'],
+                    'show'  => '0',
                     'is_api' => '1',
                 ];
                 (new StoreMenus)->save($data);
