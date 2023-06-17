@@ -84,6 +84,15 @@ class Install
                 ];
                 (new StoreMenus)->save($data);
             }
+            $where = [
+                'path'  => 'Platform/del',
+                'show'  => '1',
+            ];
+            $model = StoreMenus::where($where)->find();
+            if ($model) {
+                $model->show = '0';
+                $model->save();
+            }
 
             # 检测存在租户废弃版权名称
             if (self::checkColumn("{$prefix}store",'copyright_name')) {
