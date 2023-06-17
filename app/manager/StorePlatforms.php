@@ -168,37 +168,38 @@ class StorePlatforms
             }
             # 是否真实删除平台
             if ($model->delete_time) {
+                # 执行真实删除方法
                 $model = $model->force();
+                # 通用条件
+                $where = [
+                    'platform_id' => $platform_id
+                ];
+                # 删除平台附件
+                $uploadify = SystemUpload::where($where)->select();
+                foreach ($uploadify as $uploadModel) {
+                    # 是否真实删除附件
+                    if ($model->delete_time) {
+                        $uploadModel = $uploadModel->force();
+                    }
+                    if (!$uploadModel->delete()) {
+                        throw new Exception('删除平台附件失败');
+                    }
+                }
+                # 删除平台配置
+                $platformConfig = StorePlatformConfig::where($where)->select();
+                foreach ($platformConfig as $configModel) {
+                    # 是否真实删除配置
+                    if ($model->delete_time) {
+                        $configModel = $configModel->force();
+                    }
+                    if (!$configModel->delete()) {
+                        throw new Exception('删除平台配置失败');
+                    }
+                }
             }
             # 删除平台
             if (!$model->delete()) {
                 throw new Exception('删除平台失败');
-            }
-            # 通用条件
-            $where = [
-                'platform_id' => $platform_id
-            ];
-            # 删除平台附件
-            $uploadify = SystemUpload::where($where)->select();
-            foreach ($uploadify as $uploadModel) {
-                # 是否真实删除附件
-                if ($model->delete_time) {
-                    $uploadModel = $uploadModel->force();
-                }
-                if (!$uploadModel->delete()) {
-                    throw new Exception('删除平台附件失败');
-                }
-            }
-            # 删除平台配置
-            $platformConfig = StorePlatformConfig::where($where)->select();
-            foreach ($platformConfig as $configModel) {
-                # 是否真实删除配置
-                if ($model->delete_time) {
-                    $configModel = $configModel->force();
-                }
-                if (!$configModel->delete()) {
-                    throw new Exception('删除平台配置失败');
-                }
             }
             Db::commit();
             return true;

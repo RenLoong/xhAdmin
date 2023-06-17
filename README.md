@@ -24,8 +24,8 @@
 
 [官网](https://kfadmin.net/) |
 [在线体验](https://demo.kfadmin.net/admin/) |
-[帮助文档](https://kfadmin.net/) |
-[技术社区](https://support.qq.com/products/423209/)
+[帮助文档](https://www.kancloud.cn/me_coder/kfadmin/3169580) |
+[安装教程](https://www.kancloud.cn/me_coder/kfadmin/3169582) |
 [应用市场](https://kfadmin.net/)
 
 </div>
@@ -59,86 +59,19 @@ Nignx
 PHP 8.0（必须）
 MySQL 5.7（必须）
 Redis
+Swoole
 ```
 
 > 温馨提示：虚拟空间不支持，推荐使用 bt 宝塔面板，服务器推荐阿里云 ecs 或腾讯云 cvm 云服务器。
 
-### KFadmin安装教程
+### 官方导航
 
-> 1、下载 <a href="https://gitee.com/yc_open/kfadmin-cloud/repository/archive/master.zip" target="_blank">
- [ KFAdmin框架 ] 
-</a>框架
+[官网](https://kfadmin.net/) |
+[在线体验](https://demo.kfadmin.net/admin/) |
+[帮助文档](https://www.kancloud.cn/me_coder/kfadmin/3169580) |
+[安装教程](https://www.kancloud.cn/me_coder/kfadmin/3169582) |
+[应用市场](https://kfadmin.net/)
 
-> 2、将代码上传至站点根目录并解压，设置站点访问目录为public。
-
-> 3、设置站点的配置文件，如下图所示。
-
-![KFadmin站点配置文件](https://img.alicdn.com/imgextra/i3/2064565174/O1CN01mjPQ2I1o5k5Y5z0pk_!!2064565174.png)
-
-> 在server外部设置（参考上图）。
-
-```
-upstream kfadmin_net {
-  # HPAdmin HTTP Server 的 IP 及 端口
-  server 127.0.0.1:39600;
-}
-```
-
-> 以下配置在nginx的server内部配置（参考上图）。
-```
-location /install/ {
-    try_files $uri $uri/ =404;
-}
-# Http
-location / {
-    # 将客户端的 Host 和 IP 信息一并转发到对应节点
-    proxy_set_header Host $http_host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    
-    # 转发Cookie，设置 SameSite
-    proxy_cookie_path / "/; secure; HttpOnly; SameSite=strict";
-    # 关闭重试机制
-    proxy_next_upstream off;
-    
-    # 跨域请求
-    if ($request_method = OPTIONS) {
-        add_header Access-Control-Allow-Origin $http_origin; # 必须要有
-        add_header Access-Control-Allow-Headers *; # 必须要有
-        add_header Access-Control-Allow-Methods "GET,POST,PUT, DELETE,OPTION"; # 不加也行
-        #add_header Access-Control-Allow-Credentials true; # 不加也行
-        return 200; # 204也可以，只要返回成功码即可
-    }
-    
-    location ~ .*\.(css|js|jpg|jpeg|png|bmp|swf)$
-    {
-        proxy_pass http://kfadmin_net;
-    }
-    
-    # 判断是否访问根域名
-    if ( -e $request_uri) {
-        proxy_pass http://kfadmin_net;
-        break;
-    }
-    # 执行代理访问真实服务器
-    if ( !-e $request_filename ){
-        proxy_pass http://kfadmin_net;
-        break;
-    }
-}
-```
-> 4、添加宝塔守护进程，进程的运行目录选择你自己刚才创建的站点，见图二。
-> 
-![KFadmin站点配置文件](https://img.alicdn.com/imgextra/i3/2064565174/O1CN017REHUQ1o5k5fY4iKh_!!2064565174.png)
-![KFadmin站点配置文件](https://img.alicdn.com/imgextra/i2/2064565174/O1CN01jG86os1o5k5bZu24E_!!2064565174.png)
-> 5、执行数据配置安装
-> 
-> 访问域名，会出现如下步骤，然后根据提示进行安装即可
-> 
-![KFadmin站点配置文件](https://img.alicdn.com/imgextra/i4/2064565174/O1CN01BUh9LH1o5k5VLWiAb_!!2064565174.png)
-
-> 如果出现提示相关扩展未安装，就直接安装相关的扩展，然后重启PHP，回来刷新继续安装。
-> 
 ### 官方社区
 
 产品 BUG、优化建议，欢迎社区反馈：https://support.qq.com/products/423209/

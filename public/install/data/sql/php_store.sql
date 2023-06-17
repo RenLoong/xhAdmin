@@ -36,7 +36,7 @@ CREATE TABLE `php_store` (
   `remarks` text COMMENT '平台备注',
   `copyright_service` varchar(255) DEFAULT NULL COMMENT '专属客服',
   `copyright_tutorial` text COMMENT '系统教程',
-  `last_login_ip` varchar(50) DEFAULT NULL COMMENT '登录IP',
+  `last_login_ip` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '登录IP',
   `last_login_time` datetime DEFAULT NULL COMMENT '登录时间',
   `plugins_name` text COMMENT '已授权应用标识',
   `wechat` int(11) NOT NULL DEFAULT '0' COMMENT '公众号数量',

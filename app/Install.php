@@ -84,6 +84,20 @@ class Install
                 (new StoreMenus)->save($data);
             }
 
+            # 检测存在租户废弃版权名称
+            if (self::checkColumn("{$prefix}store",'copyright_name')) {
+                $sql = "ALTER TABLE `{$prefix}store` DROP COLUMN `copyright_name`;";
+                Db::execute($sql);
+            }
+            if (self::checkColumn("{$prefix}store",'copyright_service')) {
+                $sql = "ALTER TABLE `{$prefix}store` MODIFY COLUMN `copyright_service` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '专属客服' AFTER `remarks`,";
+                Db::execute($sql);
+            }
+            if (self::checkColumn("{$prefix}store",'copyright_tutorial')) {
+                $sql = "ALTER TABLE `{$prefix}store` MODIFY COLUMN `copyright_tutorial` varchar(255) DEFAULT NULL COMMENT '专属客服' AFTER `remarks`,";
+                Db::execute($sql);
+            }
+
             # 平台配置增加删除时间
             if (!self::checkColumn("{$prefix}store_platform_config", 'delete_time')) {
                 $sql = "ALTER TABLE `{$prefix}store_platform_config` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";

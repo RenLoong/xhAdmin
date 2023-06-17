@@ -55,7 +55,7 @@ class StorePlatformController extends BaseController
         $builder = new ListBuilder;
         $data    = $builder
             ->addActionOptions('操作', [
-                'width' => 210
+                'width' => 230
             ])
             ->pageConfig()
             ->tabsConfig([
@@ -71,6 +71,22 @@ class StorePlatformController extends BaseController
                         'value' => '0'
                     ],
                 ]
+            ])
+            ->addRightButton('restore', '恢复', [
+                'type' => 'confirm',
+                'api' => 'admin/StorePlatform/restore',
+                'method' => 'delete',
+                'params'      => [
+                    'field' => 'delete_time',
+                    'where' => '!=',
+                    'value' => null,
+                ],
+            ], [
+                'title' => '温馨提示',
+                'content' => '是否确认恢复该数据',
+            ], [
+                'type' => 'warning',
+                'link' => true
             ])
             ->addRightButton('edit', '修改', [
                 'type' => 'modal',
@@ -137,7 +153,7 @@ class StorePlatformController extends BaseController
             $where['store_id'] = $store_id;
         }
         if ($status === '0') {
-            $model = $model->withTrashed();
+            $model = $model->onlyTrashed();
         }
         $orderBy = [
             'id' => 'desc'
@@ -381,6 +397,37 @@ class StorePlatformController extends BaseController
             StorePlatforms::deletePlatform($id);
             # 删除成功
             return $this->success('删除成功');
+        } catch (\Throwable $e) {
+            return $this->fail($e->getMessage());
+        }
+    }
+
+    /**
+     * 恢复平台
+     * @param \support\Request $request
+     * @return \support\Response
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function restore(Request $request)
+    {
+        try {
+            # 获取ID
+            $id = (int) $request->post('id', 0);
+
+            $model = $this->model;
+            $where = [
+                'id'=> $id
+            ];
+            $model = $model->where($where)->onlyTrashed()->find();
+            if (!$model) {
+                throw new Exception('该数据不存在');
+            }
+            if (!$model->restore()) {
+                throw new Exception('恢复失败');
+            }
+            return $this->success('恢复成功');
         } catch (\Throwable $e) {
             return $this->fail($e->getMessage());
         }

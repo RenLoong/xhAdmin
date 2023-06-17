@@ -160,7 +160,7 @@ class PublicsController extends BaseController
         $storeModel  = $model->toArray();
         $data       = [
             'id'        => $storeModel['id'],
-            'nickname'  => $storeModel['title'],
+            'nickname'  => $storeModel['contact'],
             'headimg'   => $storeModel['logo'],
             'plugins'   => $storeModel['plugins_name'],
         ];
