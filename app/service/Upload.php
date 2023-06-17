@@ -4,7 +4,6 @@ namespace app\service;
 
 use app\admin\model\SystemUpload;
 use app\admin\model\SystemUploadCate;
-use app\manager\StoreApp;
 use Exception;
 use Shopwwi\WebmanFilesystem\Storage;
 use support\Log;
@@ -211,10 +210,6 @@ class Upload
         $where =[];
         $where['filename'] = $fiel_name;
         $where['adapter'] = $result->adapter;
-        $where['store_id'] = null;
-        $where['platform_id'] = null;
-        $where['appid'] = null;
-        $where['uid'] = null;
         isset($dataId['store_id']) && $where['store_id'] = $dataId['store_id'];
         isset($dataId['platform_id']) && $where['platform_id'] = $dataId['platform_id'];
         isset($dataId['appid']) && $where['appid'] = $dataId['appid'];

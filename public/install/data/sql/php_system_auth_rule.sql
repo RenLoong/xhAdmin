@@ -41,7 +41,7 @@ CREATE TABLE `php_system_auth_rule`  (
   `is_default` enum('0','1') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '0' COMMENT '默认权限：0否，1是',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `path`(`path`) USING BTREE COMMENT '唯一索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 183 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-权限规则' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 184 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-权限规则' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of php_system_auth_rule
@@ -141,5 +141,6 @@ INSERT INTO `php_system_auth_rule` VALUES (179, '2023-05-06 20:21:59', '2023-05-
 INSERT INTO `php_system_auth_rule` VALUES (180, '2023-05-09 16:14:10', '2023-05-09 16:14:10', 'admin', 'StoreApp/index', '\\app\\admin\\controller\\', 147, '授权应用', 0, '[\"GET\",\"PUT\"]', '1', 'form/index', '', '', '0', '0', '0');
 INSERT INTO `php_system_auth_rule` VALUES (181, '2023-05-15 13:04:59', '2023-05-15 16:03:01', 'admin', 'Index/updateCheck', '\\app\\admin\\controller\\', 2, '版本更新', 0, '[\"GET\",\"POST\"]', '1', 'remote/index', 'remote/update/index', '', '0', '0', '0');
 INSERT INTO `php_system_auth_rule` VALUES (182, '2023-06-12 16:07:52', '2023-06-12 16:07:52', 'admin', 'SystemUpload/config', '\\app\\admin\\controller\\', 41, '附件库设置', 0, '[\"GET\",\"PUT\"]', '1', 'form/index', '', '', '1', '0', '0');
+INSERT INTO `php_system_auth_rule` VALUES (183, '2023-06-17 11:33:56', '2023-06-17 11:33:56', 'admin', 'Store/copyrightSet', '\\app\\admin\\controller\\', 147, '租户版权设置', 0, '[\"GET\",\"PUT\"]', '1', 'form/index', '', '', '0', '0', '0');
 
 SET FOREIGN_KEY_CHECKS = 1;

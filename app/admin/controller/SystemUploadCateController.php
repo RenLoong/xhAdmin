@@ -42,7 +42,16 @@ class SystemUploadCateController extends BaseController
      */
     public function index(Request $request)
     {
-        $data = SystemUploadCate::order(['sort' => 'asc'])->select()->toArray();
+        $where = [
+            'store_id'      => null,
+            'platform_id'   => null,
+            'appid'         => null,
+            'uid'           => null,
+        ];
+        $data = SystemUploadCate::where($where)
+        ->order(['sort' => 'asc'])
+        ->select()
+        ->toArray();
         return parent::successRes($data);
     }
 

@@ -101,6 +101,16 @@ class StoreController extends BaseController
                 'type' => 'warning',
                 'icon' => 'CompassOutlined'
             ])
+            ->addRightButton('copyrightSet', '版权设置', [
+                'type' => 'page',
+                'api'  => 'admin/Store/copyrightSet',
+                'path' => '/Store/copyrightSet',
+            ], [
+                'title' => '租户版权设置',
+            ], [
+                'type' => 'primary',
+                'icon' => 'EditOutlined'
+            ])
             ->addRightButton('platforms', '平台管理', [
                 'type' => 'page',
                 'api'  => 'admin/StorePlatform/index',
@@ -237,18 +247,6 @@ class StoreController extends BaseController
                     'span' => 12
                 ],
             ])
-            ->addRow('copyright_service', 'input', '专属客服', '', [
-                'placeholder'=> '租户首页展示的专属客服，如不填写，则按照系统配置中的显示',
-                'col' => [
-                    'span' => 12
-                ],
-            ])
-            ->addRow('copyright_tutorial', 'textarea', '系统教程', '', [
-                'placeholder'=> '租户首页展示的系统教程，如不填写，则按照系统配置中的显示',
-                'col' => [
-                    'span' => 12
-                ],
-            ])
             ->addRow('expire_time', 'input', '过期时间', '', [
                 'col' => [
                     'span' => 12
@@ -367,18 +365,6 @@ class StoreController extends BaseController
                     'span' => 12
                 ],
             ])
-            ->addRow('copyright_service', 'input', '专属客服', '', [
-                'placeholder'=> '租户首页展示的专属客服，如不填写，则按照系统配置中的显示',
-                'col' => [
-                    'span' => 12
-                ],
-            ])
-            ->addRow('copyright_tutorial', 'textarea', '系统教程', '', [
-                'placeholder'=> '租户首页展示的系统教程，如不填写，则按照系统配置中的显示',
-                'col' => [
-                    'span' => 12
-                ],
-            ])
             ->addRow('expire_time', 'input', '过期时间', '', [
                 'col' => [
                     'span' => 12
@@ -439,6 +425,56 @@ class StoreController extends BaseController
                 'col' => [
                     'span' => 12
                 ],
+            ])
+            ->setFormData($formData)
+            ->create();
+        return parent::successRes($data);
+    }
+
+    /**
+     * 版权设置
+     * @param \support\Request $request
+     * @return \support\Response
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function copyrightSet(Request $request)
+    {
+        $id    = $request->get('id');
+        $where = [
+            'id' => $id
+        ];
+        $model = $this->model;
+        $model = $model->where($where)->find();
+        if (!$model) {
+            return parent::fail('该数据不存在');
+        }
+        if ($request->method() === 'PUT') {
+            $post = $request->post();
+
+            if (!$model->save($post)) {
+                return $this->fail('保存失败');
+            }
+            return $this->success('保存成功');
+        }
+        $formData = $model->toArray();
+        $builder = new FormBuilder;
+        $data    = $builder
+            ->setMethod('PUT')
+            ->addRow('title', 'input', '租户名称', '', [
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('copyright_service', 'input', '专属客服', '', [
+                'placeholder'=> '租户首页展示的专属客服，如不填写，则按照系统配置中的显示',
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('copyright_tutorial', 'textarea', '系统教程', '', [
+                'placeholder'=> '租户首页展示的系统教程，如不填写，则按照系统配置中的显示',
             ])
             ->setFormData($formData)
             ->create();

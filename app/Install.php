@@ -101,19 +101,19 @@ class Install
                 Db::execute($sql);
             }
             if (!self::checkColumn("{$prefix}system_upload_cate", 'delete_time')) {
-                $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `store_id` datetime NULL AFTER `delete_time`;";
+                $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `store_id` int(11) NULL AFTER `delete_time`;";
                 Db::execute($sql);
             }
             if (!self::checkColumn("{$prefix}system_upload_cate", 'delete_time')) {
-                $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `platform_id` datetime NULL AFTER `store_id`;";
+                $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `platform_id` int(11) NULL AFTER `store_id`;";
                 Db::execute($sql);
             }
             if (!self::checkColumn("{$prefix}system_upload_cate", 'delete_time')) {
-                $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `appid` datetime NULL AFTER `platform_id`;";
+                $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `appid` int(11) NULL AFTER `platform_id`;";
                 Db::execute($sql);
             }
             if (!self::checkColumn("{$prefix}system_upload_cate", 'delete_time')) {
-                $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `uid` datetime NULL AFTER `appid`;";
+                $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `uid` int(11) NULL AFTER `appid`;";
                 Db::execute($sql);
             }
 
@@ -123,19 +123,19 @@ class Install
                 Db::execute($sql);
             }
             if (!self::checkColumn("{$prefix}system_upload", 'store_id')) {
-                $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `store_id` datetime NULL AFTER `delete_time`;";
+                $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `store_id` int(11) NULL AFTER `delete_time`;";
                 Db::execute($sql);
             }
             if (!self::checkColumn("{$prefix}system_upload", 'platform_id')) {
-                $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `platform_id` datetime NULL AFTER `store_id`;";
+                $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `platform_id` int(11) NULL AFTER `store_id`;";
                 Db::execute($sql);
             }
             if (!self::checkColumn("{$prefix}system_upload", 'appid')) {
-                $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `appid` datetime NULL AFTER `platform_id`;";
+                $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `appid` int(11) NULL AFTER `platform_id`;";
                 Db::execute($sql);
             }
             if (!self::checkColumn("{$prefix}system_upload", 'uid')) {
-                $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `uid` datetime NULL AFTER `appid`;";
+                $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `uid` int(11) NULL AFTER `appid`;";
                 Db::execute($sql);
             }
         } catch (\Throwable $e) {
@@ -233,6 +233,26 @@ class Install
                 SystemAuthRule::where(['path' => 'Uploadify/tabs'])->save(['show' => '1', 'pid' => 7]);
                 SystemAuthRule::where(['path' => 'SystemUpload/index'])->save(['show' => '0']);
                 SystemAuthRule::where(['path' => 'SystemUploadCate/index'])->save(['show' => '0']);
+            }
+        }
+        # 是否存在版权配置
+        $where = [
+            'path'      => 'Store/copyrightSet',
+        ];
+        $count = SystemAuthRule::where($where)->find();
+        if (!$count) {
+            $model            = new SystemAuthRule;
+            $model->module    = 'admin';
+            $model->path      = 'Store/copyrightSet';
+            $model->namespace = '\\app\\admin\\controller\\';
+            $model->pid       = 147;
+            $model->title     = '租户版权设置';
+            $model->method    = ['GET', 'PUT'];
+            $model->is_api    = '1';
+            $model->component = 'form/index';
+            $model->show      = '0';
+            if (!$model->save()) {
+                throw new Exception('更新菜单失败');
             }
         }
     }
