@@ -452,11 +452,10 @@ class StoreController extends BaseController
         }
         if ($request->method() === 'PUT') {
             $post = $request->post();
-
             if (!$model->save($post)) {
-                return $this->fail('保存失败');
+                return $this->fail('保存版权设置失败');
             }
-            return $this->success('保存成功');
+            return $this->success('保存版权设置成功');
         }
         $formData = $model->toArray();
         $builder = new FormBuilder;

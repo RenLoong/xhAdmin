@@ -266,7 +266,27 @@ class Install
             $model->component = 'form/index';
             $model->show      = '0';
             if (!$model->save()) {
-                throw new Exception('更新菜单失败');
+                throw new Exception('更新租户版权菜单失败');
+            }
+        }
+        # 恢复平台菜单
+        $where = [
+            'path'      => 'StorePlatform/restore',
+        ];
+        $count = SystemAuthRule::where($where)->count();
+        if (!$count) {
+            $model            = new SystemAuthRule;
+            $model->module    = 'admin';
+            $model->path      = 'StorePlatform/restore';
+            $model->namespace = '\\app\\admin\\controller\\';
+            $model->pid       = 157;
+            $model->title     = '恢复删除平台';
+            $model->method    = ['GET', 'PUT'];
+            $model->is_api    = '1';
+            $model->component = '';
+            $model->show      = '0';
+            if (!$model->save()) {
+                throw new Exception('更新恢复删除平台菜单失败');
             }
         }
     }
