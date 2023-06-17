@@ -13,7 +13,7 @@
         class="form-container"
         v-if="updated.version > updated.client_version"
       >
-        <n-form-item label="更新内容">
+        <n-form-item :label="`${updated.title}，客户端版本号：${updated.client_version}，最新：${updated.version}`">
           <n-input
             type="textarea"
             :value="updated.content"
