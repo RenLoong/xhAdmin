@@ -82,6 +82,235 @@ class PlatformConfigForm
         ];
     }
 
+    # 通用支付配置
+    private static function parsePay()
+    {
+        return [
+            'label'    => '支付设置',
+            'value'    => 'pay',
+            'children' => [
+                [
+                    'type'  => 'n-divider',
+                    'field' => 'wechat_pay',
+                    'title' => '',
+                    'value' => '',
+                    'extra' => [
+                        'children'  => [
+                            'default'       => '微信支付V2',
+                        ],
+                    ]
+                ],
+                [
+                    'type'  => 'input',
+                    'field' => 'mch_id',
+                    'title' => '微信商户号',
+                    'value' => '',
+                    'extra' => [
+                        'col' => [
+                            'span' => 12
+                        ],
+                    ]
+                ],
+                [
+                    'type'  => 'input',
+                    'field' => 'mch_key',
+                    'title' => '支付密钥',
+                    'value' => '',
+                    'extra' => [
+                        'col' => [
+                            'span' => 12
+                        ],
+                    ]
+                ],
+                [
+                    'type'  => 'input',
+                    'field' => 'appid',
+                    'title' => 'APPID',
+                    'value' => '',
+                    'extra' => [
+                        'col' => [
+                            'span' => 12
+                        ],
+                    ]
+                ],
+                [
+                    'type'  => 'uploadify',
+                    'field' => 'wechat_cart_file',
+                    'title' => 'cert证书',
+                    'value' => '',
+                    'extra' => [
+                        'col'   => [
+                            'span' => 6
+                        ],
+                        'props' => [
+                            'format' => ['cart', 'pem']
+                        ],
+                    ]
+                ],
+                [
+                    'type'  => 'uploadify',
+                    'field' => 'wechat_key_file',
+                    'title' => 'key证书',
+                    'value' => '',
+                    'extra' => [
+                        'col'   => [
+                            'span' => 6
+                        ],
+                        'props' => [
+                            'format' => ['key', 'pem']
+                        ],
+                    ]
+                ],
+                [
+                    'type'  => 'n-divider',
+                    'field' => 'alipay',
+                    'title' => '',
+                    'value' => '',
+                    'extra' => [
+                        'children'  => [
+                            'default'       => '支付宝配置',
+                        ],
+                    ]
+                ],
+                [
+                    'type'  => 'input',
+                    'field' => 'alipay_appid',
+                    'title' => 'APPID',
+                    'value' => '',
+                    'extra' => [
+                    ]
+                ],
+                [
+                    'type'  => 'uploadify',
+                    'field' => 'alipay_public_key',
+                    'title' => '支付宝公钥',
+                    'value' => '',
+                    'extra' => [
+                        'col' => [
+                            'span' => 8
+                        ],
+                        'props' => [
+                            'format' => ['pem']
+                        ],
+                    ]
+                ],
+                [
+                    'type'  => 'uploadify',
+                    'field' => 'alipay_app_public_key',
+                    'title' => '应用公钥',
+                    'value' => '',
+                    'extra' => [
+                        'col' => [
+                            'span' => 8
+                        ],
+                        'props' => [
+                            'format' => ['pem']
+                        ],
+                    ]
+                ],
+                [
+                    'type'  => 'uploadify',
+                    'field' => 'alipay_app_private_key',
+                    'title' => '应用私钥',
+                    'value' => '',
+                    'extra' => [
+                        'col' => [
+                            'span' => 8
+                        ],
+                        'props' => [
+                            'format' => ['pem']
+                        ],
+                    ]
+                ],
+            ],
+        ];
+    }
+
+    # 通用短信配置
+    private static function parseSms()
+    {
+        return [
+            'label'    => '短信配置',
+            'value'    => 'sms',
+            'children' => [
+                [
+                    'type'  => 'n-divider',
+                    'field' => 'aliyun_sms',
+                    'title' => '',
+                    'value' => '',
+                    'extra' => [
+                        'children'  => [
+                            'default'       => '阿里云短信',
+                        ],
+                    ]
+                ],
+                [
+                    'type'  => 'input',
+                    'field' => 'aliyun_access_key_id',
+                    'title' => 'accessKeyId',
+                    'value' => '',
+                    'extra' => [
+                        'col' => [
+                            'span' => 12
+                        ],
+                    ]
+                ],
+                [
+                    'type'  => 'input',
+                    'field' => 'aliyun_accessKey_secret',
+                    'title' => 'accessKeySecret',
+                    'value' => '',
+                    'extra' => [
+                        'col' => [
+                            'span' => 12
+                        ],
+                    ]
+                ],
+                [
+                    'type'  => 'input',
+                    'field' => 'aliyun_sms_tpl_id',
+                    'title' => '通用短信模板ID',
+                    'value' => '',
+                    'extra' => [
+                    ]
+                ],
+                // [
+                //     'type'  => 'n-divider',
+                //     'field' => 'qq_sms',
+                //     'title' => '',
+                //     'value' => '',
+                //     'extra' => [
+                //         'children'  => [
+                //             'default'       => '腾讯云短信',
+                //         ],
+                //     ]
+                // ],
+                // [
+                //     'type'  => 'input',
+                //     'field' => 'qq_access_key_id',
+                //     'title' => 'accessKeyId',
+                //     'value' => '',
+                //     'extra' => [
+                //         'col' => [
+                //             'span' => 12
+                //         ],
+                //     ]
+                // ],
+                // [
+                //     'type'  => 'input',
+                //     'field' => 'qq_accessKey_secret',
+                //     'title' => 'accessKeySecret',
+                //     'value' => '',
+                //     'extra' => [
+                //         'col' => [
+                //             'span' => 12
+                //         ],
+                //     ]
+                // ],
+            ],
+        ];
+    }
+
     /**
      * 获取表单配置
      * @return array
@@ -188,62 +417,8 @@ class PlatformConfigForm
                             ],
                         ],
                     ],
-                    [
-                        'label'    => '支付设置',
-                        'value'    => 'pay',
-                        'children' => [
-                            [
-                                'type'  => 'input',
-                                'field' => 'mch_id',
-                                'title' => 'mch_id',
-                                'value' => '',
-                                'extra' => [
-                                    'col' => [
-                                        'span' => 12
-                                    ],
-                                ]
-                            ],
-                            [
-                                'type'  => 'input',
-                                'field' => 'wechat_alipay_key',
-                                'title' => '支付密钥',
-                                'value' => '',
-                                'extra' => [
-                                    'col' => [
-                                        'span' => 12
-                                    ],
-                                ]
-                            ],
-                            [
-                                'type'  => 'uploadify',
-                                'field' => 'wechat_cart_file',
-                                'title' => 'cert证书',
-                                'value' => '',
-                                'extra' => [
-                                    'col'   => [
-                                        'span' => 12
-                                    ],
-                                    'props' => [
-                                        'format' => ['cart', 'pem']
-                                    ],
-                                ]
-                            ],
-                            [
-                                'type'  => 'uploadify',
-                                'field' => 'wechat_key_file',
-                                'title' => 'key证书',
-                                'value' => '',
-                                'extra' => [
-                                    'col'   => [
-                                        'span' => 12
-                                    ],
-                                    'props' => [
-                                        'format' => ['key', 'pem']
-                                    ],
-                                ]
-                            ],
-                        ],
-                    ],
+                    self::parsePay(),
+                    self::parseSms(),
                 ],
             ],
             // 微信小程序
@@ -254,7 +429,9 @@ class PlatformConfigForm
                         'label'    => '平台设置',
                         'value'    => 'setting',
                         'children' => self::baseConfig(),
-                    ]
+                    ],
+                    self::parsePay(),
+                    self::parseSms(),
                 ],
             ],
             // 抖音应用
@@ -265,7 +442,9 @@ class PlatformConfigForm
                         'label'    => '平台设置',
                         'value'    => 'setting',
                         'children' => self::baseConfig(),
-                    ]
+                    ],
+                    self::parsePay(),
+                    self::parseSms(),
                 ],
             ],
             // 网页应用
@@ -277,45 +456,8 @@ class PlatformConfigForm
                         'value'    => 'setting',
                         'children' => self::baseConfig(),
                     ],
-                    [
-                        'label'    => '支付设置',
-                        'value'    => 'pay',
-                        'children' => [
-                            [
-                                'type'  => 'input',
-                                'field' => 'appid',
-                                'title' => 'APPID',
-                                'value' => '',
-                                'extra' => [
-                                    'col' => [
-                                        'span' => 12
-                                    ],
-                                ]
-                            ],
-                            [
-                                'type'  => 'input',
-                                'field' => 'mch_id',
-                                'title' => 'MCH_ID',
-                                'value' => '',
-                                'extra' => [
-                                    'col' => [
-                                        'span' => 12
-                                    ],
-                                ]
-                            ],
-                            [
-                                'type'  => 'input',
-                                'field' => 'mch_key',
-                                'title' => 'MCH_KEY',
-                                'value' => '',
-                                'extra' => [
-                                    'col' => [
-                                        'span' => 12
-                                    ],
-                                ]
-                            ],
-                        ],
-                    ]
+                    self::parsePay(),
+                    self::parseSms(),
                 ],
             ],
             // APP应用
@@ -326,7 +468,9 @@ class PlatformConfigForm
                         'label'    => '平台设置',
                         'value'    => 'setting',
                         'children' => self::baseConfig(),
-                    ]
+                    ],
+                    self::parsePay(),
+                    self::parseSms(),
                 ],
             ],
             // 其他应用
@@ -337,7 +481,9 @@ class PlatformConfigForm
                         'label'    => '平台设置',
                         'value'    => 'setting',
                         'children' => self::baseConfig(),
-                    ]
+                    ],
+                    self::parsePay(),
+                    self::parseSms(),
                 ],
             ],
         ];

@@ -413,7 +413,7 @@ class PlatformController extends BaseController
         $builder = new FormBuilder;
         foreach ($list as $value) {
             $extra = isset($value['extra']) ? $value['extra'] : [];
-            if (in_array($value['type'], ['uploadify', 'n-tag'])) {
+            if (in_array($value['type'], ['uploadify', 'n-tag','n-divider'])) {
                 // TAG标签
                 if ($value['type'] === 'n-tag') {
                     $slot                         = isset($config[$value['field']]) && $config[$value['field']] ? $config[$value['field']] : '暂无数据';
@@ -510,7 +510,7 @@ class PlatformController extends BaseController
         ];
         $model = $model->where($where)->find();
         if (!$model) {
-            return $this->fail('该平台不存在在');
+            return $this->fail('该平台不存在');
         }
         $data = $model->toArray();
         return $this->successRes($data);
