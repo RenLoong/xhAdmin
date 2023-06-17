@@ -197,6 +197,13 @@ class PluginController extends BaseController
                     'style'   => PluginTypeStyle::parseAlias('type'),
                 ],
             ])
+            // itemRender: { name: '$input', props: { placeholder: '请输入名称' } }
+            ->addColumn('min_version', '版本要求',[
+                'width'             => 100,
+                'titlePrefix'       => [
+                    'content'       => '该应用对于主框架的版本最低要求',
+                ],
+            ])
             ->create();
         return parent::successRes($data);
     }
@@ -229,6 +236,12 @@ class PluginController extends BaseController
             return json($response);
         }
         $data = $response['data'];
+        foreach ($data['data'] as $key => $value) {
+            $data['data'][$key]['min_version'] = "无";
+            if ($value['saas_version']) {
+                $data['data'][$key]['min_version'] = $value['saas_version'];                
+            }
+        }
         return $this->successRes($data);
     }
 
