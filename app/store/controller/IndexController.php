@@ -153,21 +153,22 @@ class IndexController extends BaseController
     private function getTutorial(string $tutorialConfig): string
     {
         $tutorialArray = explode("\n", $tutorialConfig);
-        $tutorial      = '';
-        if ($tutorialConfig) {
-            $tutorialArr = [];
-            foreach ($tutorialArray as $value) {
-                list($linkLabel, $linkValue) = explode('|', $value);
-                if (!$linkLabel) {
-                    continue;
-                }
-                if (!$linkValue) {
-                    continue;
-                }
-                $tutorialArr[] = "<a href='{$linkValue}' target='_blank'>{$linkLabel}</a>";
-            }
-            $tutorial = implode('，', $tutorialArr);
+        if (empty($tutorialArray)) {
+            return '';
         }
+        $tutorial      = '';
+        $tutorialArr = [];
+        foreach ($tutorialArray as $value) {
+            $tutorialLink = explode('|', $value);
+            if (!isset($tutorialLink[0])) {
+                continue;
+            }
+            if (!isset($tutorialLink[1])) {
+                continue;
+            }
+            $tutorialArr[] = "<a href='{$tutorialLink[1]}' target='_blank'>{$tutorialLink[0]}</a>";
+        }
+        $tutorial = implode('，', $tutorialArr);
         return $tutorial;
     }
 
