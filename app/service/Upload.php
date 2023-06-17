@@ -261,7 +261,10 @@ class Upload
         }
         $category = SystemUploadCate::where($where)->find();
         if (!$category) {
-            throw new Exception('获取附件分类错误');
+            $category = SystemUploadCate::order(['id'=>'asc'])->find();
+        }
+        if (!$category) {
+            throw new Exception('没有更多的附件分类可用');
         }
         return $category->toArray();
     }
