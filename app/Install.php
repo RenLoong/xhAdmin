@@ -246,6 +246,15 @@ class Install
      */
     private static function insertConfig()
     {
+        # 检测微信APPID是否存在
+        $where = [
+            'id' => 4,
+            'name' => 'wx_app_id'
+        ];
+        $model = SystemConfig::where($where)->find();
+        if ($model) {
+            $model->delete();
+        }
         # 检测分类是否存在
         $where = [
             'name' => 'store_copyright'
@@ -253,14 +262,14 @@ class Install
         $count = SystemConfigGroup::where($where)->count();
         $cid   = 0;
         if (!$count) {
-            $data = [
+            $data  = [
                 'title' => '租户版权',
                 'name' => 'store_copyright',
                 'icon' => 'AntDesignOutlined',
             ];
             $model = new SystemConfigGroup;
             $model->save($data);
-            $cid   = $model->id;
+            $cid = $model->id;
         }
         $model = SystemConfig::where(['name' => 'store_copyright_name'])->find();
         if (!$model) {
