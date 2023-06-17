@@ -7,6 +7,7 @@ use app\admin\service\kfcloud\CloudService;
 use app\BaseController;
 use app\store\validate\StoreApp;
 use Exception;
+use support\Log;
 use support\Request;
 use think\facade\Db;
 
@@ -135,7 +136,20 @@ class PlatformAppController extends BaseController
                 return $this->fail($e->getMessage());
             }
         }
-        return $this->successRes($model->toArray());
+        $data = $model->toArray();
+        // 执行应用插件方法
+        $class = "\\plugin\\{$model->name}\\api\\Created";
+        if (method_exists($class, 'read')) {
+            $post['id'] = $model->id;
+            $logicCls = new $class;
+            try {
+                $userData = $logicCls->read($model->id);
+                isset($userData['username']) && $data['username'] = $userData['username'];
+            } catch (\Throwable $e) {
+                Log::error("获取管理员数据出错：{$e->getMessage()}");
+            }
+        }
+        return $this->successRes($data);
     }
 
     /**
