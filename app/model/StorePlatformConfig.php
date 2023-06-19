@@ -22,15 +22,15 @@ class StorePlatformConfig extends Model
     /**
      * 获取数据外链地址
      * @param mixed $value
+     * @param mixed $data
      * @return mixed
+     * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-05-05
+     * @email 416716328@qq.com
      */
-    protected function getConfigValueAttr($value)
+    protected function getConfigValueAttr($value, $data)
     {
-        $ext = strrchr($value, '.');
-        if (in_array($ext, ['.jpg', '.jpeg', '.gif', '.png'])) {
+        if ($value && $data['form_type'] === 'uploadify') {
             $value = Upload::url((string) $value);
         }
         return $value;

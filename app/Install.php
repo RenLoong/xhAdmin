@@ -100,18 +100,18 @@ class Install
                 Db::execute($sql);
             }
             if (self::checkColumn("{$prefix}store",'copyright_service')) {
-                $sql = "ALTER TABLE `{$prefix}store` MODIFY COLUMN `copyright_service` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '专属客服' AFTER `remarks`,";
+                $sql = "ALTER TABLE `{$prefix}store` MODIFY COLUMN `copyright_service` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '专属客服' AFTER `remarks`";
                 Db::execute($sql);
             } else {
-                $sql = "ALTER TABLE `{$prefix}store` ADD COLUMN `copyright_service` varchar(255) DEFAULT NULL AFTER `expire_time`;";
-                Db::execute($sql);            
+                $sql = "ALTER TABLE `{$prefix}store` ADD COLUMN `copyright_service` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '专属客服' AFTER `expire_time`;";
+                Db::execute($sql);
             }
             if (self::checkColumn("{$prefix}store",'copyright_tutorial')) {
-                $sql = "ALTER TABLE `{$prefix}store` MODIFY COLUMN `copyright_tutorial` text DEFAULT NULL COMMENT '专属客服' AFTER `remarks`;";
+                $sql = "ALTER TABLE `{$prefix}store` MODIFY COLUMN `copyright_tutorial` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '系统教程' AFTER `remarks`;";
                 Db::execute($sql);
             } else {
-                $sql = "ALTER TABLE `{$prefix}store` ADD COLUMN `copyright_tutorial` text DEFAULT NULL AFTER `copyright_service`;";
-                Db::execute($sql);            
+                $sql = "ALTER TABLE `{$prefix}store` ADD COLUMN `copyright_tutorial` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '系统教程' AFTER `copyright_service`;";
+                Db::execute($sql);
             }
 
             # 平台配置增加删除时间

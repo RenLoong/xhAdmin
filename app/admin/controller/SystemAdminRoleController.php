@@ -280,7 +280,11 @@ class SystemAdminRoleController extends BaseController
             $disabled = false;
             $disabled = $value['is_default'] === '1';
             // 组装树状格式数据
-            $data[$i]['label']          = $value['title'];
+            $label                = $value['title'];
+            if ($value['path']) {
+                $label .= "（{$value['path']}）";
+            }
+            $data[$i]['label']          = $label;
             $data[$i]['key']            = $value['id'];
             $data[$i]['disabled']       = $disabled;
             $data[$i]['level']          = $value['_level'];

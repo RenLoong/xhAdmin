@@ -51,7 +51,7 @@ class StorePlatform extends Model
             'platform_id' => $data['id'],
         ];
         $list    = StorePlatformConfig::where($where)
-            ->field('config_field,config_value')
+            ->field('form_type,config_field,config_value')
             ->select()
             ->toArray();
         $configs = [];

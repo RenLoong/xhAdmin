@@ -26,6 +26,35 @@ class PlatformConfigForm
     }
 
     /**
+     * 获取配置列表数据
+     * @param string $key
+     * @return array<array>
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function getConfigData(string $key)
+    {
+        $config = self::parseConfig();
+        $platformConfig = isset($config[$key]) ? $config[$key] : [];
+        $data           = [];
+        foreach ($platformConfig['list'] as $tabs) {
+            if (isset($tabs['children']) && is_array($tabs['children'])) {
+                foreach ($tabs['children'] as $value) {
+                    if ($value['type'] !== 'n-divider') {
+                        $data[] = [
+                            'field'         => $value['field'],
+                            'form_type'     => $value['type'],
+                            'value'         => $value['value']
+                        ];
+                    }
+                }
+            }
+        }
+        return $data;
+    }
+
+    /**
      * 通用配置
      * @return array
      * @copyright 贵州猿创科技有限公司

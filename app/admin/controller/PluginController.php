@@ -12,6 +12,7 @@ use app\enum\PlatformTypesStyle;
 use app\enum\PluginType;
 use app\enum\PluginTypeStyle;
 use app\utils\Utils;
+use Exception;
 use process\Monitor;
 use support\Request;
 use ZipArchive;
@@ -197,7 +198,6 @@ class PluginController extends BaseController
                     'style'   => PluginTypeStyle::parseAlias('type'),
                 ],
             ])
-            // itemRender: { name: '$input', props: { placeholder: '请输入名称' } }
             ->addColumn('min_version', '版本要求',[
                 'width'             => 100,
                 'titlePrefix'       => [
@@ -393,7 +393,15 @@ class PluginController extends BaseController
             }
             # 输出安装完成
             console_log("{$name} --- 安装完成");
-        } finally {
+        }catch(\Throwable $e){
+            # 安装失败，删除安装目录
+            $plugin_dir = base_path("/plugin/{$name}");
+            if (is_dir($plugin_dir)) {
+                chdir($plugin_dir);
+                shell_exec("rm -rf {$plugin_dir}");
+            }
+            return $this->failFul($e->getMessage(), $e->getCode());
+        }finally {
             if ($monitor_support_pause) {
                 Monitor::resume();
             }

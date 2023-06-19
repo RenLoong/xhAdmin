@@ -347,7 +347,7 @@ export default {
                 })
                 if (_plugin) {
                     pluginOptions.push({
-                        label: `${item.title} -- [${item.platform_text}}]`,
+                        label: `${item.title} -- [${item.platform_text}]`,
                         value: item.name
                     })
                 }

@@ -28,6 +28,7 @@ CREATE TABLE `php_store_platform_config`  (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   `store_id` int(11) NULL DEFAULT NULL,
   `platform_id` int(11) NULL DEFAULT NULL,
+  `form_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `config_field` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `config_value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
   PRIMARY KEY (`id`) USING BTREE

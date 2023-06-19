@@ -62,8 +62,8 @@ class PlatformController extends BaseController
             ->pageConfig()
             ->tabsConfig([
                 'active' => '1',
-                'field'  => 'status',
-                'list'   => [
+                'field' => 'status',
+                'list' => [
                     [
                         'label' => '平台列表',
                         'value' => '1'
@@ -76,7 +76,7 @@ class PlatformController extends BaseController
             ])
             ->addTopButton('add', '开通平台', [
                 'type' => 'modal',
-                'api'  => 'store/Platform/add',
+                'api' => 'store/Platform/add',
                 'path' => '/Platform/add',
             ], [
                 'title' => '开通平台',
@@ -88,7 +88,7 @@ class PlatformController extends BaseController
                 '应用',
                 [
                     'type' => 'table',
-                    'api'  => 'store/PlatformApp/index',
+                    'api' => 'store/PlatformApp/index',
                     'path' => '/PlatformApp/index',
                 ],
                 [
@@ -103,7 +103,7 @@ class PlatformController extends BaseController
                 '配置',
                 [
                     'type' => 'modal',
-                    'api'  => 'store/Platform/config',
+                    'api' => 'store/Platform/config',
                     'path' => '/Platform/config',
                 ],
                 [
@@ -131,23 +131,23 @@ class PlatformController extends BaseController
                 ],
             ])
             ->addColumnEle('platform_type', '平台类型', [
-                'width'  => 150,
+                'width' => 150,
                 'params' => [
-                    'type'    => 'tags',
+                    'type' => 'tags',
                     'options' => PlatformTypes::dictOptions(),
-                    'style'   => PlatformTypesStyle::parseAlias('type'),
+                    'style' => PlatformTypesStyle::parseAlias('type'),
                 ],
             ])
             ->addColumnEle('status', '状态', [
-                'width'  => 100,
+                'width' => 100,
                 'params' => [
-                    'type'      => 'switch',
-                    'checked'   => [
-                        'text'  => '正常',
+                    'type' => 'switch',
+                    'checked' => [
+                        'text' => '正常',
                         'value' => '1'
                     ],
                     'unchecked' => [
-                        'text'  => '停用',
+                        'text' => '停用',
                         'value' => '0'
                     ]
                 ],
@@ -166,15 +166,15 @@ class PlatformController extends BaseController
      */
     public function index(Request $request)
     {
-        $status = $request->get('status', '1');
+        $status  = $request->get('status', '1');
         $orderBy = [
             'id' => 'desc'
         ];
         $model   = $this->model;
         if ($status === '0') {
-            $model = $model->withTrashed();
+            $model = $model->onlyTrashed();
         }
-        $data    = $model->order($orderBy)
+        $data = $model->order($orderBy)
             ->paginate()
             ->toArray();
         return $this->successRes($data);
@@ -190,8 +190,8 @@ class PlatformController extends BaseController
      */
     public function add(Request $request)
     {
-        $store_id   = hp_admin_id('hp_store');
-        $model = $this->model;
+        $store_id = hp_admin_id('hp_store');
+        $model    = $this->model;
         if ($request->method() === 'POST') {
             $post             = $request->post();
             $post['store_id'] = $store_id;
@@ -214,39 +214,57 @@ class PlatformController extends BaseController
             try {
                 $model        = $this->model;
                 $platformData = [
-                    'store_id'      => $store_id,
+                    'store_id' => $store_id,
                     'platform_type' => $post['platform_type']
                 ];
                 if (!$model->save($platformData)) {
                     throw new Exception('保存失败');
                 }
+                $fields = PlatformConfigForm::getConfigData($post['platform_type']);
                 // 保存配置项
                 $configData = [
-                    'store_id'    => $store_id,
+                    'store_id' => $store_id,
                     'platform_id' => $model->id,
                 ];
-                $fields     = [
-                    'web_name'    => $post['title'],
-                    'domain'      => $post['domain'],
-                    'logo'        => Upload::path($post['logo']),
-                    'description' => '',
-                ];
                 if ($post['platform_type'] === 'wechat') {
-                    $apiUrl                            = "/store/Wechat?store_id={$store_id}";
-                    $fields['wechat_api_url']          = $apiUrl;
-                    $fields['wechat_token']            = md5(time());
-                    $fields['wechat_encoding_aes_key'] = md5($model->id . time());
+                    $apiUrl = "/store/Wechat?store_id={$store_id}";
+                    array_merge($fields, [
+                        [
+                            'field' => 'wechat_api_url',
+                            'form_type' => 'n-tag',
+                            'value' => $apiUrl,
+                        ],
+                        [
+                            'field' => 'wechat_token',
+                            'form_type' => 'n-tag',
+                            'value' => md5(time()),
+                        ],
+                        [
+                            'field' => 'wechat_encoding_aes_key',
+                            'form_type' => 'n-tag',
+                            'value' => md5($model->id . time()),
+                        ],
+                    ]);
                 }
-                foreach ($fields as $field => $val) {
-                    $configData['config_field'] = $field;
-                    $configData['config_value'] = $val;
+                foreach ($fields as $value) {
+                    # 平台名称
+                    $value['field'] === 'web_name' && $value['value'] = $post['title'];
+                    # 平台域名
+                    $value['field'] === 'domain' && $value['value'] = $post['domain'];
+                    # 平台logo
+                    $value['field'] === 'logo' && $value['value'] = Upload::path($post['logo']);
+
+                    # 写入数据
+                    $configData['form_type']    = $value['form_type'];
+                    $configData['config_field'] = $value['field'];
+                    $configData['config_value'] = $value['value'];
                     if (!(new StorePlatformConfig)->save($configData)) {
                         throw new Exception('保存配置项失败');
                     }
                 }
                 // 扣除平台数量
                 $where = [
-                    'id'        => $model->store_id
+                    'id' => $model->store_id
                 ];
                 if (!Store::where($where)->setDec($post['platform_type'], 1)) {
                     throw new Exception('创建平台失败');
@@ -259,7 +277,7 @@ class PlatformController extends BaseController
             }
         }
         $platformTypeOptions = StorePlatforms::getSelectOptions($store_id, true);
-        $builder = new FormBuilder;
+        $builder             = new FormBuilder;
         $builder->setMethod('POST');
         $builder->addRow('title', 'input', '平台名称', '', [
             'col' => [
@@ -272,13 +290,13 @@ class PlatformController extends BaseController
             ],
         ]);
         $builder->addRow('platform_type', 'select', '平台类型', 'other', [
-            'col'     => [
+            'col' => [
                 'span' => 12
             ],
             'options' => $platformTypeOptions
         ]);
         $builder->addComponent('logo', 'uploadify', '平台图标', '', [
-            'col'   => [
+            'col' => [
                 'span' => 12
             ],
             'props' => [
@@ -325,10 +343,9 @@ class PlatformController extends BaseController
         $model       = $this->model;
         if ($request->method() === 'PUT') {
             $post = $request->post();
-
             foreach ($post as $field => $value) {
                 $where          = [
-                    'platform_id'  => $platform_id,
+                    'platform_id' => $platform_id,
                     'config_field' => $field
                 ];
                 $platformConfig = StorePlatformConfig::where($where)->find();
@@ -337,10 +354,11 @@ class PlatformController extends BaseController
                     $platformConfig->store_id     = hp_admin_id('hp_store');
                     $platformConfig->platform_id  = $platform_id;
                     $platformConfig->config_field = $field;
-                    $platformConfig->config_value = $value;
-                } else {
-                    $platformConfig->config_value = $value;
                 }
+                if (is_array($value) && count($value) === 1) {
+                    $value = Upload::path($value);
+                }
+                $platformConfig->config_value = $value;
                 if (!$platformConfig->save()) {
                     return $this->fail('保存失败');
                 }
@@ -413,7 +431,7 @@ class PlatformController extends BaseController
         $builder = new FormBuilder;
         foreach ($list as $value) {
             $extra = isset($value['extra']) ? $value['extra'] : [];
-            if (in_array($value['type'], ['uploadify', 'n-tag','n-divider'])) {
+            if (in_array($value['type'], ['uploadify', 'n-tag', 'n-divider'])) {
                 // TAG标签
                 if ($value['type'] === 'n-tag') {
                     $slot                         = isset($config[$value['field']]) && $config[$value['field']] ? $config[$value['field']] : '暂无数据';
@@ -455,6 +473,7 @@ class PlatformController extends BaseController
             'platform_id' => $model->id
         ];
         $field   = [
+            'form_type',
             'config_field',
             'config_value',
         ];
@@ -466,10 +485,13 @@ class PlatformController extends BaseController
         $data = [];
 
         // 标记为URL的字段
-        $isUrl = [
+        $isUrl     = [
             'wechat_api_url'
         ];
-        $url   = "http://{$request->host(true)}";
+        $referer   = $request->header('referer');
+        $parse_url = parse_url($referer);
+        isset($parse_url['scheme']) && $protocol = $parse_url['scheme'] . '://';
+        $url = "{$protocol}{$request->host(true)}";
         foreach ($list as $value) {
             if (in_array($value['config_field'], $isUrl)) {
                 $value['config_value'] = "{$url}{$value['config_value']}";

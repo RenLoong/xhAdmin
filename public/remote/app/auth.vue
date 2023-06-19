@@ -21,7 +21,7 @@
         <n-grid-item class="item" v-for="(item, index) in ajaxParams.plugin_list" :key="index">
           <div class="app-item" :class="{ 'active': modalDialogActive.find((name) => item?.name === name) }"
             @click="hanldSelect(item?.name ?? '')">
-            <img :src="item?.logo ?? ''" class="logo" alt="">
+            <img :src="item?.logo ?? ''" class="logo" alt="" />
             <div class="title">{{ item?.title ?? '错误' }}</div>
           </div>
         </n-grid-item>

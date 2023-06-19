@@ -2,7 +2,6 @@
 
 namespace app\admin\utils;
 
-use app\admin\model\SystemAdmin;
 use Exception;
 use app\admin\model\SystemAdminRole;
 use app\admin\model\SystemAuthRule;
@@ -30,35 +29,32 @@ class VueRoutesMgr
 
     /**
      * 获取管理员菜单与Vue路由
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-07
-     * @param  SystemAdmin $adminModel
+     * @param array $admin
      * @return array
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
      */
-    public static function run(SystemAdmin $adminModel): array
+    public static function run(array $admin): array
     {
         // 默认选择菜单
         $active = 'Index/index';
         // 获取管理员权限
-        $adminRoleRule = self::getAdminRoleRule($adminModel);
+        $adminRoleRule = self::getAdminRoleRule($admin);
+        
         return ['active' => $active, 'list' => $adminRoleRule];
     }
 
     /**
      * 获取部门权限
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-07
-     * @param  SystemAdmin $adminModel
+     * @param array $admin
      * @return array
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
      */
-    public static function getAdminRoleRule(SystemAdmin $adminModel): array
+    public static function getAdminRoleRule(array $admin): array
     {
         $where     = [
-            'id' => $adminModel->role_id
+            'id' => $admin['role_id']
         ];
         $roleModel = SystemAdminRole::where($where)
             ->field(['rule', 'is_system'])
@@ -72,10 +68,11 @@ class VueRoutesMgr
         $model = SystemAuthRule::order(['sort' => 'asc', 'id' => 'asc']);
         if ($roleModel->is_system != '1') {
             // 普通级部门（查询已授权规则）
-            $data = $model->whereIn('path', $rule)->field(self::$visible)
+            $data = $model->whereIn('path', $rule)
+                ->field(self::$visible)
                 ->select()
                 ->each(function ($e) {
-                    $e->method = current($e->method);
+                    is_array($e->method) && $e->method = current($e->method);
                     return $e;
                 })->toArray();
             // 递归查询父级权限
@@ -87,8 +84,7 @@ class VueRoutesMgr
             // 两次排序
             $data = list_sort_by($data, 'id', 'asc');
             $data = list_sort_by($data, 'sort', 'asc');
-        }
-        else {
+        } else {
             // 系统级部门（查询全部规则返回）
             $data = $model->field(self::$visible)
                 ->select()
@@ -104,16 +100,14 @@ class VueRoutesMgr
 
     /**
      * 获取部门权限规则列表
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-09
-     * @param  SystemAdmin $adminModel
+     * @param array $admin
      * @return array
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
      */
-    public static function getAdminRoleColumn(SystemAdmin $adminModel): array
+    public static function getAdminRoleColumn(array $admin): array
     {
-        $rule = self::getAdminRoleRule($adminModel);
+        $rule = self::getAdminRoleRule($admin);
         $data = [];
         foreach ($rule as $key => $value) {
             $data[$key] = $value['path'];
@@ -130,13 +124,13 @@ class VueRoutesMgr
     private static function getParentRule(array &$list, string $rule): array
     {
         $where = [
-            ['path', '=', $rule],
+            ['id', '=', $rule],
         ];
         $model = SystemAuthRule::where($where)
             ->field(self::$visible)
             ->find();
         if (!$model) {
-            throw new Exception('父级规则不存在');
+            throw new Exception("{$rule}，父级规则不存在");
         }
         $data = $model->toArray();
         array_push($list, $data);

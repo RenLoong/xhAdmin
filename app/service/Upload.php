@@ -122,7 +122,11 @@ class Upload
      */
     public static function url(string $path): string
     {
-        return (string) (new Storage)->url($path);
+        if (!$path) {
+            return '';
+        }
+        $url = (string) (new Storage)->url($path);
+        return $url;
     }
 
     /**

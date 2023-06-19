@@ -174,8 +174,8 @@ class PublicsController extends BaseController
         $where = [
             'id' => $admin_id
         ];
-        $admin = SystemAdmin::where($where)->find();
-
+        $adminModel = SystemAdmin::where($where)->find();
+        $admin      = $adminModel->toArray();
         $data = VueRoutesMgr::run($admin);
         return parent::successRes($data);
     }

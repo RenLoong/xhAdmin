@@ -5,11 +5,16 @@ namespace app\admin\controller;
 use app\admin\builder\FormBuilder;
 use app\admin\builder\ListBuilder;
 use app\admin\model\Store;
+use app\admin\model\StoreApp;
+use app\admin\model\StorePlatform;
+use app\admin\model\Users;
 use app\admin\validate\Store as ValidateStore;
 use app\BaseController;
 use app\enum\PlatformTypes;
+use app\model\StorePlatformConfig;
 use app\service\Upload;
 use support\Request;
+use think\facade\Db;
 
 /**
  * 租户管理
@@ -55,7 +60,7 @@ class StoreController extends BaseController
         $builder = new ListBuilder;
         $data    = $builder
             ->addActionOptions('操作', [
-                'width'  => 130,
+                'width' => 130,
                 'params' => [
                     'group' => true
                 ]
@@ -67,7 +72,7 @@ class StoreController extends BaseController
             ])
             ->addTopButton('add', '开通', [
                 'type' => 'page',
-                'api'  => 'admin/Store/add',
+                'api' => 'admin/Store/add',
                 'path' => '/Store/add',
             ], [
                 'title' => '开通租户',
@@ -78,8 +83,8 @@ class StoreController extends BaseController
                 'toStore',
                 '管理租户',
                 [
-                    'type'        => 'link',
-                    'api'         => 'admin/Store/login',
+                    'type' => 'link',
+                    'api' => 'admin/Store/login',
                     'aliasParams' => [
                         'id' => 'store_id'
                     ],
@@ -91,9 +96,9 @@ class StoreController extends BaseController
                 ]
             )
             ->addRightButton('storeApp', '授权应用', [
-                'type'        => 'page',
-                'api'         => 'admin/StoreApp/index',
-                'path'        => '/StoreApp/index',
+                'type' => 'page',
+                'api' => 'admin/StoreApp/index',
+                'path' => '/StoreApp/index',
                 'aliasParams' => [
                     'id' => 'store_id'
                 ],
@@ -103,7 +108,7 @@ class StoreController extends BaseController
             ])
             ->addRightButton('copyrightSet', '版权设置', [
                 'type' => 'page',
-                'api'  => 'admin/Store/copyrightSet',
+                'api' => 'admin/Store/copyrightSet',
                 'path' => '/Store/copyrightSet',
             ], [
                 'title' => '租户版权设置',
@@ -113,7 +118,7 @@ class StoreController extends BaseController
             ])
             ->addRightButton('platforms', '平台管理', [
                 'type' => 'page',
-                'api'  => 'admin/StorePlatform/index',
+                'api' => 'admin/StorePlatform/index',
                 'path' => '/StorePlatform/index',
             ], [], [
                 'type' => 'info',
@@ -121,7 +126,7 @@ class StoreController extends BaseController
             ])
             ->addRightButton('edit', '修改租户', [
                 'type' => 'page',
-                'api'  => 'admin/Store/edit',
+                'api' => 'admin/Store/edit',
                 'path' => '/Store/edit',
             ], [
                 'title' => '修改租户',
@@ -130,11 +135,11 @@ class StoreController extends BaseController
                 'icon' => 'EditOutlined'
             ])
             ->addRightButton('del', '删除租户', [
-                'type'   => 'confirm',
-                'api'    => 'admin/Store/del',
+                'type' => 'confirm',
+                'api' => 'admin/Store/del',
                 'method' => 'delete',
             ], [
-                'title'   => '温馨提示',
+                'title' => '温馨提示',
                 'content' => '是否确认删除该数据',
             ], [
                 'type' => 'error',
@@ -143,40 +148,40 @@ class StoreController extends BaseController
             ->addColumn('title', '名称')
             ->addColumn('username', '账号')
             ->addColumnEle('logo', '图标', [
-                'width'     => 60,
+                'width' => 60,
                 'params' => [
                     'type' => 'image',
                 ],
             ])
             ->addColumnEle('status', '状态', [
-                'width'  => 100,
+                'width' => 100,
                 'params' => [
-                    'type'      => 'switch',
-                    'api'       => '/admin/Store/rowEdit',
-                    'checked'   => [
-                        'text'  => '正常',
+                    'type' => 'switch',
+                    'api' => '/admin/Store/rowEdit',
+                    'checked' => [
+                        'text' => '正常',
                         'value' => '1'
                     ],
                     'unchecked' => [
-                        'text'  => '冻结',
+                        'text' => '冻结',
                         'value' => '0'
                     ]
                 ],
             ])
             ->addColumnEle('surplusNum', '租户资产：已创建/总数量', [
                 'minWidth' => '100px',
-                'params'   => [
-                    'type'     => 'assets',
+                'params' => [
+                    'type' => 'assets',
                     'resource' => $platformAssets,
                 ]
             ])
             ->addColumnEdit('expire_time', '过期时间', [
-                'params'     => [
+                'params' => [
                     'api' => '/admin/Store/rowEdit'
                 ],
                 'editRender' => [
                     'attrs' => [
-                        'type'     => 'date',
+                        'type' => 'date',
                         'transfer' => true,
                     ],
                 ],
@@ -223,7 +228,7 @@ class StoreController extends BaseController
             hpValidate($validate, $post, 'add');
 
             $post['logo'] = Upload::path($post['logo']);
-            $model = $this->model;
+            $model        = $this->model;
             if (!$model->save($post)) {
                 return parent::fail('保存失败');
             }
@@ -265,16 +270,16 @@ class StoreController extends BaseController
                 ],
             ])
             ->addComponent('logo', 'uploadify', '租户图标', '', [
-                'col'   => [
+                'col' => [
                     'span' => 6
                 ],
                 'props' => [
-                    'type'   => 'image',
+                    'type' => 'image',
                     'format' => ['jpg', 'png', 'gif']
                 ],
             ])
             ->addRow('remarks', 'textarea', '租户备注', '', [
-                'col'   => [
+                'col' => [
                     'span' => 18
                 ],
             ])
@@ -345,10 +350,10 @@ class StoreController extends BaseController
             }
             return parent::success('保存成功');
         }
-        $formData = $model->toArray();
+        $formData                = $model->toArray();
         $formData['expire_time'] = date('Y-m-d', strtotime($formData['expire_time']));
-        $builder = new FormBuilder;
-        $data    = $builder
+        $builder                 = new FormBuilder;
+        $data                    = $builder
             ->setMethod('PUT')
             ->addRow('username', 'input', '租户账号', '', [
                 'col' => [
@@ -383,16 +388,16 @@ class StoreController extends BaseController
                 ],
             ])
             ->addComponent('logo', 'uploadify', '租户图标', '', [
-                'col'   => [
+                'col' => [
                     'span' => 6
                 ],
                 'props' => [
-                    'type'   => 'image',
+                    'type' => 'image',
                     'format' => ['jpg', 'png', 'gif']
                 ],
             ])
             ->addRow('remarks', 'textarea', '租户备注', '', [
-                'col'   => [
+                'col' => [
                     'span' => 18
                 ],
             ])
@@ -458,8 +463,8 @@ class StoreController extends BaseController
             return $this->success('保存版权设置成功');
         }
         $formData = $model->toArray();
-        $builder = new FormBuilder;
-        $data    = $builder
+        $builder  = new FormBuilder;
+        $data     = $builder
             ->setMethod('PUT')
             ->addRow('title', 'input', '租户名称', '', [
                 'col' => [
@@ -467,13 +472,13 @@ class StoreController extends BaseController
                 ],
             ])
             ->addRow('copyright_service', 'input', '专属客服', '', [
-                'placeholder'=> '租户首页展示的专属客服，如不填写，则按照系统配置中的显示',
+                'placeholder' => '租户首页展示的专属客服，如不填写，则按照系统配置中的显示',
                 'col' => [
                     'span' => 12
                 ],
             ])
             ->addRow('copyright_tutorial', 'textarea', '系统教程', '', [
-                'placeholder'=> '租户首页展示的系统教程，如不填写，则按照系统配置中的显示',
+                'placeholder' => '租户首页展示的系统教程，如不填写，则按照系统配置中的显示',
             ])
             ->setFormData($formData)
             ->create();
@@ -490,20 +495,61 @@ class StoreController extends BaseController
      */
     public function del(Request $request)
     {
-        $id    = $request->get('id');
+        $id    = $request->post('id');
         $model = $this->model;
 
-        $where = [
-            'id' => $id
-        ];
-        $model = $model->where($where)->find();
-        if (!$model) {
-            return parent::fail('该数据不存在');
+        # 开启事务
+        Db::startTrans();
+        try {
+            # 查询租户信息
+            $where = [
+                'id' => $id
+            ];
+            $model = $model->where($where)->find();
+            if (!$model) {
+                throw new \Exception('该数据不存在');
+            }
+            # 删除租户下平台
+            $where         = [
+                'store_id'  => $model->id
+            ];
+            $platformCount = StorePlatform::where($where)->count();
+            if ($platformCount) {
+                if (!StorePlatform::where($where)->delete()) {
+                    throw new \Exception('删除租户平台失败');
+                }
+            }
+            # 删除租户下的所有用户
+            $userCount = Users::where($where)->count();
+            if ($userCount) {
+                if (!Users::where($where)->delete()) {
+                    throw new \Exception('删除租户用户失败');
+                }
+            }
+            # 删除平台下配置
+            $configCount = StorePlatformConfig::where($where)->count();
+            if ($configCount) {
+                if (!StorePlatformConfig::where($where)->delete()) {
+                    throw new \Exception('删除租户配置失败');
+                }
+            }
+            # 删除平台下应用
+            $appCount = StoreApp::where($where)->count();
+            if ($appCount) {
+                if (!StoreApp::where($where)->delete()) {
+                    throw new \Exception('删除租户应用失败');
+                }
+            }
+            # 删除租户
+            if (!$model->delete()) {
+                throw new \Exception('删除租户失败');
+            }
+            Db::commit();
+            return $this->success('删除成功');
+        } catch (\Throwable $e) {
+            Db::rollback();
+            return $this->fail($e->getMessage());
         }
-        if (!$model->delete()) {
-            return parent::fail('删除失败');
-        }
-        return parent::success('删除成功');
     }
 
     /**

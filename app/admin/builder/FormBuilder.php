@@ -51,18 +51,18 @@ class FormBuilder extends Form
         // 额外扩展配置
         $extraConfig       = [
             'submitBtn' => [
-                'type'    => 'success',
+                'type' => 'success',
                 'content' => '提交保存',
-                'show'    => true,
-                'style'   => [
+                'show' => true,
+                'style' => [
                     'padding' => '0 30px'
                 ]
             ],
-            'resetBtn'  => [
-                'type'    => 'warning',
+            'resetBtn' => [
+                'type' => 'warning',
                 'content' => '数据重置',
-                'show'    => true,
-                'style'   => [
+                'show' => true,
+                'style' => [
                     'padding' => '0 30px'
                 ]
             ]
@@ -97,14 +97,51 @@ class FormBuilder extends Form
      * @Email 416716328@qq.com
      * @DateTime 2023-05-05
      */
-    public function addRow(string $field, string $type, string $title,$value = '', array $extra = []): FormBuilder
+    public function addRow(string $field, string $type, string $title, $value = '', array $extra = []): FormBuilder
     {
-        // 创建组件
+        # 创建组件
         $component = Elm::$type($field, $title, $value);
+        # 设置字段，默认数据等
+        $component->field($field)->title($title)->value($value);
+        # 设置后缀提示语
+        if (isset($extra['prompt'])) {
+            $prompt = $extra['prompt'];
+            unset($extra['prompt']);
+            if (!is_array($prompt)) {
+                !isset($prompt['props']) && $prompt['props'] = [
+                    'style' => ['width' => '100%'],
+                ];
+                !isset($prompt['text']) && $prompt['text'] = '无默认词语';
+                $prompt = [
+                    'type'          => 'div',
+                    'props'         => $prompt['props']['style'],
+                    'children'      => [
+                        $prompt['text']
+                    ]
+                ];
+            } else {
+                # 设置默认类型
+                $prompt['type'] = 'div';
+                # 合并参数
+                $prompt['props'] = array_merge([
+                    'loading'=>true,
+                ], isset($prompt['props']) ? $prompt['props'] : []);
+                if (isset($prompt['text'])) {
+                    $prompt['children'] = [
+                        $prompt['text']
+                    ];
+                    unset($prompt['text']);
+                }
+            }
+            $component->appendRule('suffix',$prompt);
+        }
+        # 设置组件属性
         foreach ($extra as $componentType => $componentValue) {
             $component->$componentType($componentValue);
         }
+        # 设置组件
         $this->builder->append($component);
+        # 返回组件
         return $this;
     }
 
@@ -122,15 +159,17 @@ class FormBuilder extends Form
      */
     public function addComponent(string $field, string $type, string $title, $value = '', array $extra = []): FormBuilder
     {
-        // 创建自定义组件
+        # 创建自定义组件
         $component = new CustomComponent($type);
-        // 设置字段，默认数据等
+        # 设置字段，默认数据等
         $component->field($field)->title($title)->value($value);
-        // 设置组件属性
+        # 设置组件属性
         foreach ($extra as $componentType => $componentValue) {
             $component->$componentType($componentValue);
         }
+        # 设置组件
         $this->builder->append($component);
+        # 返回组件
         return $this;
     }
 
@@ -164,7 +203,7 @@ class FormBuilder extends Form
         return $this;
     }
 
-    
+
     /**
      * 表单验证
      * @param mixed $validate
@@ -173,7 +212,7 @@ class FormBuilder extends Form
      * @Email 416716328@qq.com
      * @DateTime 2023-04-29
      */
-    public function formValidate($validate):FormBuilder
+    public function formValidate($validate): FormBuilder
     {
         /**
          * 实例验证类
@@ -202,7 +241,7 @@ class FormBuilder extends Form
         ]);
         // 设置默认样式
         $component->style([
-            'width'  => '100%',
+            'width' => '100%',
             'margin' => '0 15px',
         ]);
         foreach ($extra as $componentType => $componentValue) {
@@ -226,10 +265,10 @@ class FormBuilder extends Form
     public function addTab(string $field, string $title, array $children): FormBuilder
     {
         $component[] = [
-            'type'     => 'n-tab-pane',
-            'props'    => [
+            'type' => 'n-tab-pane',
+            'props' => [
                 'name' => $field,
-                'tab'  => $title,
+                'tab' => $title,
             ],
             'children' => $children
         ];
