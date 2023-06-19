@@ -3,6 +3,7 @@
 namespace app\admin\builder;
 
 use app\admin\builder\components\Button;
+use app\admin\builder\components\Screen;
 use app\admin\builder\components\Table;
 use support\Response;
 
@@ -15,10 +16,12 @@ use support\Response;
  */
 class ListBuilder
 {
-    // 表格设置
+    # 表格设置
     use Table;
-    // 表格按钮
+    # 表格按钮
     use Button;
+    # 表格筛选
+    use Screen;
 
     // 在每个对象的静态缓存中存储现有属性。
     protected static $cache = [];
@@ -70,10 +73,27 @@ class ListBuilder
      */
     public function create(): array
     {
-        $resutl              = $this->parseRule();
+        $resutl = $this->parseRule();
+        # 筛选查询
+        if (!empty($resutl['formConfig'])) {
+            $configProps = array_merge([
+                'type' => 'submit',
+                'status' => 'primary',
+                'content' => '查询',
+            ], $resutl['screenConfig']);
+            unset($resutl['screenConfig']);
+            array_push(
+                $resutl['formConfig']['items'],
+                [
+                    'itemRender' => [
+                        'name' => '$button',
+                        'props' => $configProps,
+                    ],
+                ]
+            );
+        }
         $data['tableConfig'] = $resutl;
-
-        // 移除按钮属性
+        # 移除按钮属性
         if (isset($data['tableConfig']['topButtonList'])) {
             unset($data['tableConfig']['topButtonList']);
         }
@@ -86,8 +106,7 @@ class ListBuilder
         $data['tabsConfig']      = $resutl['tabsConfig'];
         $data['topButtonList']   = $resutl['topButtonList'];
         $data['rightButtonList'] = $resutl['rightButtonList'];
-
-        // 返回数据
+        # 返回数据
         return $data;
     }
 

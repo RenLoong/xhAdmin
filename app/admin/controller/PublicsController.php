@@ -176,7 +176,7 @@ class PublicsController extends BaseController
         ];
         $adminModel = SystemAdmin::where($where)->find();
         $admin      = $adminModel->toArray();
-        $data = VueRoutesMgr::run($admin);
+        $data       = VueRoutesMgr::run($admin);
         return parent::successRes($data);
     }
 
