@@ -287,6 +287,7 @@ export default {
       display: block;
       padding: 10px;
       margin-top: 10px;
+      white-space: pre-line;
     }
   }
 }
