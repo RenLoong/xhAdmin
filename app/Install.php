@@ -48,8 +48,8 @@ class Install
         self::insertConfig();
         # 更新附件库
         self::saveMenus();
-        # 升级附件库独立数据
-        self::uploadifyData();
+        # 字段操作
+        self::fieldModify();
     }
 
     /**
@@ -59,7 +59,7 @@ class Install
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    private static function uploadifyData()
+    private static function fieldModify()
     {
         try {
             # 获取前缀
@@ -93,6 +93,15 @@ class Install
                 $model->show = '0';
                 $model->save();
             }
+            # 平台配置-表单类型
+            if (self::checkColumn("{$prefix}store_platform_config",'form_type')) {
+                $sql = "ALTER TABLE `{$prefix}store_platform_config` MODIFY COLUMN `store_platform_config` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '表单类型' AFTER `platform_id`;";
+                Db::execute($sql);
+            } else {
+                $sql = "ALTER TABLE `{$prefix}store_platform_config` ADD COLUMN `store_platform_config` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '表单类型' AFTER `platform_id`;";
+                Db::execute($sql);
+            }
+
 
             # 检测存在租户废弃版权名称
             if (self::checkColumn("{$prefix}store",'copyright_name')) {

@@ -156,9 +156,6 @@ class SystemAdminController extends BaseController
                 'col'       => [
                     'span'  => 12
                 ],
-                'prompt'     => [
-                    'text'      => '测试',
-                ],
             ])
             ->addRow('password', 'input', '登录密码', '', [
                 'col'       => [

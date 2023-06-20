@@ -104,35 +104,17 @@ class FormBuilder extends Form
         # 设置字段，默认数据等
         $component->field($field)->title($title)->value($value);
         # 设置后缀提示语
-        if (isset($extra['prompt'])) {
-            $prompt = $extra['prompt'];
+        if (isset($extra['prompt']) && is_array($extra['prompt'])) {
+            $promptData = $extra['prompt'];
             unset($extra['prompt']);
-            if (!is_array($prompt)) {
-                !isset($prompt['props']) && $prompt['props'] = [
-                    'style' => ['width' => '100%'],
-                ];
-                !isset($prompt['text']) && $prompt['text'] = '无默认词语';
-                $prompt = [
-                    'type'          => 'div',
-                    'props'         => $prompt['props']['style'],
-                    'children'      => [
-                        $prompt['text']
-                    ]
-                ];
-            } else {
-                # 设置默认类型
-                $prompt['type'] = 'div';
-                # 合并参数
-                $prompt['props'] = array_merge([
-                    'loading'=>true,
-                ], isset($prompt['props']) ? $prompt['props'] : []);
-                if (isset($prompt['text'])) {
-                    $prompt['children'] = [
-                        $prompt['text']
-                    ];
-                    unset($prompt['text']);
-                }
+            # 设置默认提示语
+            if (!isset($promptData['text'])) {
+                throw new \Exception('请设置提示词语');
             }
+            $prompt['type'] = 'prompt-tip';
+            $prompt['props'] = $promptData;
+            unset($prompt['text']);
+            # 插入组件
             $component->appendRule('suffix',$prompt);
         }
         # 设置组件属性
