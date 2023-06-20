@@ -472,6 +472,12 @@ class PluginController extends BaseController
             Monitor::pause();
         }
         try {
+            # 执行备份应用
+            PluginLogic::backup($name);
+        } catch (\Throwable $e) {
+            return $this->fail($e->getMessage());
+        }
+        try {
             # 解压zip到plugin目录
             if ($has_zip_archive) {
                 $zip = new ZipArchive;
@@ -501,7 +507,15 @@ class PluginController extends BaseController
             }
             # 输出更新完成
             console_log("{$name} --- 更新完成");
-        } finally {
+        }catch(\Throwable $e){
+            try {
+                # 更新应用失败，回滚代码
+                PluginLogic::rollback($name);
+            } catch (\Throwable $e) {
+                return $this->fail($e->getMessage());
+            }
+            return $this->fail($e->getMessage());
+        }finally {
             if ($monitor_support_pause) {
                 Monitor::resume();
             }

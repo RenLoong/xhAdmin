@@ -14,9 +14,9 @@
         proxy_next_upstream off;
 
         # 设置超时时间
-        proxy_connect_timeout 600;
-        proxy_send_timeout 600;
-        proxy_read_timeout 600;
+        proxy_connect_timeout 300;
+        proxy_send_timeout 300;
+        proxy_read_timeout 300;
         
         # 跨域请求
         if ($request_method = OPTIONS) {

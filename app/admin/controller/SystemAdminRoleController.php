@@ -194,10 +194,14 @@ class SystemAdminRoleController extends BaseController
         }
         if ($request->method() == 'PUT') {
             $post = $request->post();
-            $where       = [
-                ['id','in',$post['rule']]
+            if (empty($post['rule'])) {
+                return $this->fail('规则授权错误');
+            }
+            $rule = $post['rule'];
+            $where   = [
+                ['id','in',$rule]
             ];
-            $paths      = SystemAuthRule::where($where)->column('path');
+            $paths = SystemAuthRule::where($where)->column('path');
             $model->rule = array_values(array_filter($paths));
             if (!$model->save()) {
                 return parent::fail('保存失败');
@@ -239,7 +243,7 @@ class SystemAdminRoleController extends BaseController
                     // 是否允许多选节点
                     'multiple'              => true,
                     // 是否关联子节点
-                    'cascade'               => true,
+                    // 'cascade'               => true,
                     // 选择框位置
                     'checkboxPlacement'     => 'left',
                     // 子节点为块元素

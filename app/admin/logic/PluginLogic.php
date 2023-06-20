@@ -2,9 +2,89 @@
 namespace app\admin\logic;
 use app\admin\service\kfcloud\CloudService;
 use Exception;
+use ZipArchive;
 
 class PluginLogic
 {
+    /**
+     * 回滚插件备份
+     * @param string $name
+     * @throws \Exception
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function rollback(string $name)
+    {
+        $zip_file = base_path("/runtime/backupPlugin/{$name}.zip");
+        $extract_to = base_path("/plugin");
+        if (!is_file($zip_file)) {
+            throw new Exception("备份文件不存在");
+        }
+        if (!is_dir($extract_to)) {
+            throw new Exception("插件目录不存在");
+        }
+        $cmd = self::getUnzipCmd($zip_file, $extract_to);
+        if (!$cmd) {
+            throw new Exception("系统不支持解压命令");
+        }
+        self::unzipWithCmd($cmd);
+        # 删除源代码包
+        unlink($zip_file);
+    }
+
+    /**
+     * 备份插件
+     * @param mixed $name
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function backup(string $name)
+    {
+        $zip_file = base_path("/runtime/backupPlugin/{$name}.zip");
+        if (!is_dir(dirname($zip_file))) {
+            mkdir(dirname($zip_file), 0755, true);
+        }
+        $zip = new ZipArchive;
+        $openStatus = $zip->open($zip_file, ZipArchive::CREATE);
+        if ($openStatus !== true) {
+            throw new Exception('源代码备份失败');
+        }
+        $sourcePath = base_path("/plugin/{$name}");
+        self::addFileToZip($sourcePath, $zip, $name);
+        $zip->close();
+    }
+    
+    /**
+     * 扫描插件目录并备份
+     * @param string $sourcePath
+     * @param \ZipArchive $zip
+     * @param string $name
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    private static function addFileToZip(string $sourcePath,ZipArchive $zip, string $name)
+    {
+        $files = scandir($sourcePath);
+        foreach ($files as $file) {
+            if ($file != "." && $file != "..") {
+                $path = $sourcePath . DIRECTORY_SEPARATOR . $file;
+                if (is_dir($path)) {
+                    $zip->addEmptyDir($name . DIRECTORY_SEPARATOR . $file);
+                    self::addFileToZip($path, $zip, $name . DIRECTORY_SEPARATOR . $file);
+                }
+                else {
+                    $zip->addFile($path, $name . DIRECTORY_SEPARATOR . $file);
+                }
+            }
+        }
+    }
+
     /**
      * 使用解压命令解压
      * @param mixed $cmd

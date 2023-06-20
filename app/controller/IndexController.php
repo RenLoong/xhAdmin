@@ -2,9 +2,8 @@
 
 namespace app\controller;
 
+use app\admin\logic\AppCoreLogic;
 use app\BaseController;
-use app\Install;
-use app\service\Upload;
 use support\Request;
 
 /**
@@ -40,6 +39,7 @@ class IndexController extends BaseController
      */
     public function test()
     {
+        // AppCoreLogic::backup();
         // $url = 'http://mj.xg.kfadmin.net/storage/image/2023-06-13/709a00b11d7b8a13d5c6e49d001e2a9d.png';
         // $data = Upload::remoteFile($url);
         // return $this->successRes($data);

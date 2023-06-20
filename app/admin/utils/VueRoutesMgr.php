@@ -75,12 +75,6 @@ class VueRoutesMgr
                     is_array($e->method) && $e->method = current($e->method);
                     return $e;
                 })->toArray();
-            // 递归查询父级权限
-            foreach ($data as $value) {
-                if (!in_array($value['pid'], $rule) && $value['pid']) {
-                    self::getParentRule($data, $value['pid']);
-                }
-            }
             // 两次排序
             $data = list_sort_by($data, 'id', 'asc');
             $data = list_sort_by($data, 'sort', 'asc');

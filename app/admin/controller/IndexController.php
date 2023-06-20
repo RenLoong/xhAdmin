@@ -2,6 +2,7 @@
 
 namespace app\admin\controller;
 
+use app\admin\logic\AppCoreLogic;
 use app\admin\logic\PluginLogic;
 use app\admin\model\StoreApp;
 use app\admin\service\kfcloud\SystemInfo;
@@ -35,16 +36,16 @@ class IndexController extends BaseController
         $teamInfo   = SystemInfo::info();
         $inKeys     = array_keys($teamInfo);
         $teamFields = [
-            'about_name'    => '研发企业',
-            'ecology'       => '系统生态',
+            'about_name' => '研发企业',
+            'ecology' => '系统生态',
             'fream_version' => '框架版本',
-            'service_wx'    => '微信咨询',
+            'service_wx' => '微信咨询',
         ];
         $team       = [];
         foreach ($teamFields as $field => $label) {
             if (in_array($field, $inKeys)) {
                 $team[] = [
-                    'title'  => $label,
+                    'title' => $label,
                     'values' => $teamInfo[$field],
                 ];
             }
@@ -100,11 +101,11 @@ class IndexController extends BaseController
                 ->count();
             // 组装图表数据
             $platform_echarts[] = [
-                'name'   => $value['text'],
-                'type'   => 'line',
-                'stack'  => 'Total',
+                'name' => $value['text'],
+                'type' => 'line',
+                'stack' => 'Total',
                 'smooth' => true,
-                'data'   => [
+                'data' => [
                     $today,
                     #今日
                     $week,
@@ -122,9 +123,9 @@ class IndexController extends BaseController
         }
 
         $data = [
-            'team'             => $team,
-            'product'          => $product,
-            'platformApp'      => $platformApp,
+            'team' => $team,
+            'product' => $product,
+            'platformApp' => $platformApp,
             'platform_echarts' => $platform_echarts
         ];
         return $this->successRes($data);
@@ -146,7 +147,7 @@ class IndexController extends BaseController
         }
         $system_version = $data['system_version'];
         $version_name   = $data['system_version_name'];
-        $versionData = [
+        $versionData    = [
             'version_name' => '未知',
             'version' => 0,
             'client_version_name' => $version_name,
@@ -154,6 +155,7 @@ class IndexController extends BaseController
         ];
         // 检测更新
         if ($request->method() === 'DELETE') {
+            # 检测更新
             $data = Updated::verify($system_version, $version_name)->array();
             if (!$data) {
                 return $this->json('没有获取到更新信息', 666, $versionData);
@@ -163,85 +165,22 @@ class IndexController extends BaseController
             }
             return json($data);
         } else if ($request->method() === 'POST') {
-            $version = (int)$request->post('version');
-            $response     = Updated::getSystemDownKey($version)->array();
-            if (!$response) {
-                return $this->fail('获取更新KEY失败');
-            }
-            if (!isset($response['code']) && !isset($response['data'])) {
-                return $this->fail('请求更新失败');
-            }
-            if ($response['code'] !== 200) {
-                return json($response);
-            }
-            $key = $response['data']['key'];
-            $packRes = Updated::getZip($key);
-            $pack    = $packRes->array();
-            if (is_array($pack) && isset($pack['code'])) {
-                return json($pack);
-            }
-            // 写入包体
-            $zip_file = runtime_path('/updated.zip');
-            file_put_contents($zip_file, $packRes->body());
-            // 效验系统函数
-            $has_zip_archive = class_exists(ZipArchive::class, false);
-            if (!$has_zip_archive) {
-                $cmd = PluginLogic::getUnzipCmd($zip_file, base_path());
-                if (!$cmd) {
-                    return $this->fail('请给php安装zip模块或者给系统安装unzip命令');
-                }
-                if (!function_exists('proc_open')) {
-                    return $this->fail('请解除proc_open函数的禁用或者给php安装zip模块');
-                }
-            }
-            $monitor_support_pause = method_exists(Monitor::class, 'pause');
-            if ($monitor_support_pause) {
-                Monitor::pause();
-            }
             try {
-                // 解压zip到根目录
-                if ($has_zip_archive) {
-                    $zip = new ZipArchive;
-                    $zip->open($zip_file);
-                }
-                if (!empty($zip)) {
-                    $zip->extractTo(base_path());
-                    echo "框架代码更新成功...\n";
-                    unset($zip);
-                } else {
-                    PluginLogic::unzipWithCmd($cmd);
-                }
-                // 更新类路径
-                $install_class = "app\\Install";
-                if (class_exists($install_class)) {
-                    // 执行更新前置
-                    $context       = null;
-                    if (method_exists($install_class, 'beforeUpdate')) {
-                        $context = call_user_func([$install_class, 'beforeUpdate'], $version);
-                        echo "框架前置更新成功...\n";
-                    }
-                    unlink($zip_file);
-                    // 执行update更新
-                    if (method_exists($install_class, 'update')) {
-                        call_user_func([$install_class, 'update'], $version, $context);
-                        echo "执行更新安装成功...\n";
-                    }
-                    // 删除更新类
-                    unlink(app_path('/Install.php'));
-                }
-            } finally {
-                if ($monitor_support_pause) {
-                    Monitor::resume();
-                }
+                # 获取版本号
+                $version = (int) $request->post('version');
+                # 获取框架更新KEY
+                $downKey = AppCoreLogic::getDownKey($version);
+                # 下载更新包
+                AppCoreLogic::downPack($downKey);
+                # 开始更新框架
+                AppCoreLogic::update($version);
+                # 更新完成
+                return $this->fail('版本更新成功');
+            } catch (\Throwable $e) {
+                return $this->fail($e->getMessage());
             }
-            // 重启框架
-            Utils::reloadWebman();
-            echo "更新重启成功...\n";
-
-            // 执行返回
-            return $this->success('更新成功');
         } else {
-            // 获取更新信息
+            # 获取更新信息
             $data = Updated::systemUpdateInfo($system_version, $version_name)->array();
             if (!$data) {
                 return $this->failFul('没有获取到更新信息', 666);

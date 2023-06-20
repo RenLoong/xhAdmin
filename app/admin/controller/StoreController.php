@@ -140,7 +140,7 @@ class StoreController extends BaseController
                 'method' => 'delete',
             ], [
                 'title' => '温馨提示',
-                'content' => '是否确认删除该数据',
+                'content' => '该数据删除将不可恢复，请谨慎操作',
             ], [
                 'type' => 'error',
                 'icon' => 'RestOutlined'
@@ -515,28 +515,28 @@ class StoreController extends BaseController
             ];
             $platformCount = StorePlatform::where($where)->count();
             if ($platformCount) {
-                if (!StorePlatform::where($where)->delete()) {
+                if (!StorePlatform::where($where)->delete(true)) {
                     throw new \Exception('删除租户平台失败');
                 }
             }
             # 删除租户下的所有用户
             $userCount = Users::where($where)->count();
             if ($userCount) {
-                if (!Users::where($where)->delete()) {
+                if (!Users::where($where)->delete(true)) {
                     throw new \Exception('删除租户用户失败');
                 }
             }
             # 删除平台下配置
             $configCount = StorePlatformConfig::where($where)->count();
             if ($configCount) {
-                if (!StorePlatformConfig::where($where)->delete()) {
+                if (!StorePlatformConfig::where($where)->delete(true)) {
                     throw new \Exception('删除租户配置失败');
                 }
             }
             # 删除平台下应用
             $appCount = StoreApp::where($where)->count();
             if ($appCount) {
-                if (!StoreApp::where($where)->delete()) {
+                if (!StoreApp::where($where)->delete(true)) {
                     throw new \Exception('删除租户应用失败');
                 }
             }

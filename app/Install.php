@@ -95,10 +95,10 @@ class Install
             }
             # 平台配置-表单类型
             if (self::checkColumn("{$prefix}store_platform_config",'form_type')) {
-                $sql = "ALTER TABLE `{$prefix}store_platform_config` MODIFY COLUMN `store_platform_config` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '表单类型' AFTER `platform_id`;";
+                $sql = "ALTER TABLE `{$prefix}store_platform_config` MODIFY COLUMN `form_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '表单类型' AFTER `platform_id`;";
                 Db::execute($sql);
             } else {
-                $sql = "ALTER TABLE `{$prefix}store_platform_config` ADD COLUMN `store_platform_config` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '表单类型' AFTER `platform_id`;";
+                $sql = "ALTER TABLE `{$prefix}store_platform_config` ADD COLUMN `form_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '表单类型' AFTER `platform_id`;";
                 Db::execute($sql);
             }
 
@@ -418,6 +418,11 @@ class Install
         $oldComposerPath = base_path('/composer.json');
         $oldComposer     = self::composerJSON($oldComposerPath);
         if ($oldComposer) {
+            # 检测旧版本是否必须包含的包
+            $requireKeys = array_keys($oldComposer['require']);
+            if (!in_array('wikimedia/composer-merge-plugin', $requireKeys)) {
+                $oldComposer['require']['wikimedia/composer-merge-plugin'] = '^2.1';
+            }
             $newComposer['require'] = $oldComposer['require'];
         }
         if (!isset($oldComposer['prefer-stable'])) {
