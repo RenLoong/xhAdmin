@@ -98,6 +98,8 @@ class SystemUploadController extends BaseController
         if (isset($storage['public'])) {
             unset($storage['public']);
         }
+        $docLink  = "<a href='https://www.runoob.com/http/mime-types.html' style='color:red;' target='_blank'>《点击查看更多类型》</a>";
+        $prompt   = "示例：image/jpg,image/jpeg,image/png，上传文件类型 为空则不限制，多个使用小写逗号隔开{$docLink}";
         $builder  = $builder->setMethod('PUT');
         $children = new FormBuilder;
         $children->addRow('default', 'select', '当前使用', $default, [
@@ -105,10 +107,14 @@ class SystemUploadController extends BaseController
         ]);
         $children->addRow('max_size', 'input', '单个文件上传大小(MB)', $max_size);
         $children->addRow('ext_yes', 'input', '允许上传类型', $ext_yes, [
-            'placeholder' => '示例：image/jpg,image/jpeg,image/png,image/gif，不允许上传文件类型 为空则不限制，多个使用小写逗号隔开'
+            'prompt' => [
+                'text'      => $prompt,
+            ],
         ]);
         $children->addRow('ext_no', 'input', '不允许上传类型', $ext_no, [
-            'placeholder' => '示例：image/jpg,image/jpeg,image/png,image/gif，不允许上传文件类型 为空则不限制，多个使用小写逗号隔开'
+            'prompt' => [
+                'text'      => $prompt,
+            ],
         ]);
         $builder = $builder->addTab(
             'config',

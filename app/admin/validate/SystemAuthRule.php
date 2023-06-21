@@ -33,6 +33,7 @@ class SystemAuthRule extends Validate
             'pid',
             'title',
             'component',
+            'path',
             'sort',
         ],
         'edit' => [
@@ -40,6 +41,7 @@ class SystemAuthRule extends Validate
             'pid',
             'title',
             'component',
+            'path',
             'sort',
         ],
     ];

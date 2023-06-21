@@ -84,12 +84,11 @@ class SystemAdminRoleController extends BaseController
      */
     public function index(Request $request)
     {
-        $page = $request->get('page', 10);
         $admin_id = hp_admin_id('hp_admin');
         $where = [
             ['pid', '=', $admin_id],
         ];
-        $data = SystemAdminRole::where($where)->paginate($page)->toArray();
+        $data = SystemAdminRole::where($where)->paginate()->toArray();
         return parent::successRes($data);
     }
 

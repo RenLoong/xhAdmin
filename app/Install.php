@@ -61,124 +61,119 @@ class Install
      */
     private static function fieldModify()
     {
-        try {
-            # 获取前缀
-            $default     = config('thinkorm.default');
-            $connections = config('thinkorm.connections');
-            isset($connections[$default]['prefix']) && $prefix = $connections[$default]['prefix'];
-            # 租户新增菜单
-            $where = [
-                'path' => 'Platform/del'
+        # 获取前缀
+        $default     = config('thinkorm.default');
+        $connections = config('thinkorm.connections');
+        isset($connections[$default]['prefix']) && $prefix = $connections[$default]['prefix'];
+        # 租户新增菜单
+        $where = [
+            'path' => 'Platform/del'
+        ];
+        $count = StoreMenus::where($where)->count();
+        if (!$count) {
+            $data = [
+                'module' => 'store',
+                'path' => 'Platform/del',
+                'namespace' => '\\app\\store\\controller\\',
+                'pid' => 21,
+                'title' => '删除平台',
+                'method' => ['GET', 'DELETE'],
+                'show'  => '0',
+                'is_api' => '1',
             ];
-            $count = StoreMenus::where($where)->count();
-            if (!$count) {
-                $data = [
-                    'module' => 'store',
-                    'path' => 'Platform/del',
-                    'namespace' => '\\app\\store\\controller\\',
-                    'pid' => 21,
-                    'title' => '删除平台',
-                    'method' => ['GET', 'DELETE'],
-                    'show'  => '0',
-                    'is_api' => '1',
-                ];
-                (new StoreMenus)->save($data);
-            }
-            $where = [
-                'path'  => 'Platform/del',
-                'show'  => '1',
-            ];
-            $model = StoreMenus::where($where)->find();
-            if ($model) {
-                $model->show = '0';
-                $model->save();
-            }
-            # 平台配置-表单类型
-            if (self::checkColumn("{$prefix}store_platform_config",'form_type')) {
-                $sql = "ALTER TABLE `{$prefix}store_platform_config` MODIFY COLUMN `form_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '表单类型' AFTER `platform_id`;";
-                Db::execute($sql);
-            } else {
-                $sql = "ALTER TABLE `{$prefix}store_platform_config` ADD COLUMN `form_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '表单类型' AFTER `platform_id`;";
-                Db::execute($sql);
-            }
+            (new StoreMenus)->save($data);
+        }
+        $where = [
+            'path'  => 'Platform/del',
+            'show'  => '1',
+        ];
+        $model = StoreMenus::where($where)->find();
+        if ($model) {
+            $model->show = '0';
+            $model->save();
+        }
+        # 平台配置-表单类型
+        if (self::checkColumn("{$prefix}store_platform_config",'form_type')) {
+            $sql = "ALTER TABLE `{$prefix}store_platform_config` MODIFY COLUMN `form_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '表单类型' AFTER `platform_id`;";
+            Db::execute($sql);
+        } else {
+            $sql = "ALTER TABLE `{$prefix}store_platform_config` ADD COLUMN `form_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '表单类型' AFTER `platform_id`;";
+            Db::execute($sql);
+        }
 
+        # 检测存在租户废弃版权名称
+        if (self::checkColumn("{$prefix}store",'copyright_name')) {
+            $sql = "ALTER TABLE `{$prefix}store` DROP COLUMN `copyright_name`;";
+            Db::execute($sql);
+        }
+        if (self::checkColumn("{$prefix}store",'copyright_service')) {
+            $sql = "ALTER TABLE `{$prefix}store` MODIFY COLUMN `copyright_service` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '专属客服' AFTER `remarks`";
+            Db::execute($sql);
+        } else {
+            $sql = "ALTER TABLE `{$prefix}store` ADD COLUMN `copyright_service` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '专属客服' AFTER `expire_time`;";
+            Db::execute($sql);
+        }
+        if (self::checkColumn("{$prefix}store",'copyright_tutorial')) {
+            $sql = "ALTER TABLE `{$prefix}store` MODIFY COLUMN `copyright_tutorial` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '系统教程' AFTER `remarks`;";
+            Db::execute($sql);
+        } else {
+            $sql = "ALTER TABLE `{$prefix}store` ADD COLUMN `copyright_tutorial` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '系统教程' AFTER `copyright_service`;";
+            Db::execute($sql);
+        }
 
-            # 检测存在租户废弃版权名称
-            if (self::checkColumn("{$prefix}store",'copyright_name')) {
-                $sql = "ALTER TABLE `{$prefix}store` DROP COLUMN `copyright_name`;";
-                Db::execute($sql);
-            }
-            if (self::checkColumn("{$prefix}store",'copyright_service')) {
-                $sql = "ALTER TABLE `{$prefix}store` MODIFY COLUMN `copyright_service` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '专属客服' AFTER `remarks`";
-                Db::execute($sql);
-            } else {
-                $sql = "ALTER TABLE `{$prefix}store` ADD COLUMN `copyright_service` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '专属客服' AFTER `expire_time`;";
-                Db::execute($sql);
-            }
-            if (self::checkColumn("{$prefix}store",'copyright_tutorial')) {
-                $sql = "ALTER TABLE `{$prefix}store` MODIFY COLUMN `copyright_tutorial` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '系统教程' AFTER `remarks`;";
-                Db::execute($sql);
-            } else {
-                $sql = "ALTER TABLE `{$prefix}store` ADD COLUMN `copyright_tutorial` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '系统教程' AFTER `copyright_service`;";
-                Db::execute($sql);
-            }
+        # 平台配置增加删除时间
+        if (!self::checkColumn("{$prefix}store_platform_config", 'delete_time')) {
+            $sql = "ALTER TABLE `{$prefix}store_platform_config` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
+            Db::execute($sql);
+        }
+        # 租户平台增加删除时间
+        if (!self::checkColumn("{$prefix}store_platform", 'delete_time')) {
+            $sql = "ALTER TABLE `{$prefix}store_platform` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
+            Db::execute($sql);
+        }
 
-            # 平台配置增加删除时间
-            if (!self::checkColumn("{$prefix}store_platform_config", 'delete_time')) {
-                $sql = "ALTER TABLE `{$prefix}store_platform_config` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
-                Db::execute($sql);
-            }
-            # 租户平台增加删除时间
-            if (!self::checkColumn("{$prefix}store_platform", 'delete_time')) {
-                $sql = "ALTER TABLE `{$prefix}store_platform` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
-                Db::execute($sql);
-            }
+        # 附件库分类增加字段
+        if (!self::checkColumn("{$prefix}system_upload_cate", 'delete_time')) {
+            $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
+            Db::execute($sql);
+        }
+        if (!self::checkColumn("{$prefix}system_upload_cate", 'delete_time')) {
+            $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `store_id` int(11) NULL AFTER `delete_time`;";
+            Db::execute($sql);
+        }
+        if (!self::checkColumn("{$prefix}system_upload_cate", 'delete_time')) {
+            $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `platform_id` int(11) NULL AFTER `store_id`;";
+            Db::execute($sql);
+        }
+        if (!self::checkColumn("{$prefix}system_upload_cate", 'delete_time')) {
+            $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `appid` int(11) NULL AFTER `platform_id`;";
+            Db::execute($sql);
+        }
+        if (!self::checkColumn("{$prefix}system_upload_cate", 'delete_time')) {
+            $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `uid` int(11) NULL AFTER `appid`;";
+            Db::execute($sql);
+        }
 
-            # 附件库分类增加字段
-            if (!self::checkColumn("{$prefix}system_upload_cate", 'delete_time')) {
-                $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
-                Db::execute($sql);
-            }
-            if (!self::checkColumn("{$prefix}system_upload_cate", 'delete_time')) {
-                $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `store_id` int(11) NULL AFTER `delete_time`;";
-                Db::execute($sql);
-            }
-            if (!self::checkColumn("{$prefix}system_upload_cate", 'delete_time')) {
-                $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `platform_id` int(11) NULL AFTER `store_id`;";
-                Db::execute($sql);
-            }
-            if (!self::checkColumn("{$prefix}system_upload_cate", 'delete_time')) {
-                $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `appid` int(11) NULL AFTER `platform_id`;";
-                Db::execute($sql);
-            }
-            if (!self::checkColumn("{$prefix}system_upload_cate", 'delete_time')) {
-                $sql = "ALTER TABLE `{$prefix}system_upload_cate` ADD COLUMN `uid` int(11) NULL AFTER `appid`;";
-                Db::execute($sql);
-            }
-
-            # 附件库增加字段
-            if (!self::checkColumn("{$prefix}system_upload", 'delete_time')) {
-                $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
-                Db::execute($sql);
-            }
-            if (!self::checkColumn("{$prefix}system_upload", 'store_id')) {
-                $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `store_id` int(11) NULL AFTER `delete_time`;";
-                Db::execute($sql);
-            }
-            if (!self::checkColumn("{$prefix}system_upload", 'platform_id')) {
-                $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `platform_id` int(11) NULL AFTER `store_id`;";
-                Db::execute($sql);
-            }
-            if (!self::checkColumn("{$prefix}system_upload", 'appid')) {
-                $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `appid` int(11) NULL AFTER `platform_id`;";
-                Db::execute($sql);
-            }
-            if (!self::checkColumn("{$prefix}system_upload", 'uid')) {
-                $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `uid` int(11) NULL AFTER `appid`;";
-                Db::execute($sql);
-            }
-        } catch (\Throwable $e) {
-            Log::error($e->getMessage());
+        # 附件库增加字段
+        if (!self::checkColumn("{$prefix}system_upload", 'delete_time')) {
+            $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `delete_time` datetime NULL AFTER `update_at`;";
+            Db::execute($sql);
+        }
+        if (!self::checkColumn("{$prefix}system_upload", 'store_id')) {
+            $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `store_id` int(11) NULL AFTER `delete_time`;";
+            Db::execute($sql);
+        }
+        if (!self::checkColumn("{$prefix}system_upload", 'platform_id')) {
+            $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `platform_id` int(11) NULL AFTER `store_id`;";
+            Db::execute($sql);
+        }
+        if (!self::checkColumn("{$prefix}system_upload", 'appid')) {
+            $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `appid` int(11) NULL AFTER `platform_id`;";
+            Db::execute($sql);
+        }
+        if (!self::checkColumn("{$prefix}system_upload", 'uid')) {
+            $sql = "ALTER TABLE `{$prefix}system_upload` ADD COLUMN `uid` int(11) NULL AFTER `appid`;";
+            Db::execute($sql);
         }
     }
 
@@ -448,8 +443,9 @@ class Install
         if (file_exists($newComposerPath)) {
             unlink($newComposerPath);
         }
-        p($output, '框架更新结果');
-        var_dump($output);
+        if (is_string($output)) {
+            console_log($output);
+        }
         if ($output === null) {
             console_log("composer安装失败");
         } else {
