@@ -1,4 +1,4 @@
-APP_DEBUG = true
+APP_DEBUG = false
 
 KF_SERVER_PORT = {SERVER_PORT}
 

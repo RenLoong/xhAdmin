@@ -117,27 +117,27 @@ class AppCoreLogic
             }
             if (!empty($zip)) {
                 $zip->extractTo(base_path());
-                echo "框架代码更新成功...\n";
+                console_log("框架代码更新成功...");
                 unset($zip);
             } else {
                 PluginLogic::unzipWithCmd($cmd);
             }
-            // 更新类路径
+            # 更新类路径
             $install_class = "app\\Install";
             if (class_exists($install_class)) {
-                // 执行更新前置
+                # 执行更新前置
                 $context       = null;
                 if (method_exists($install_class, 'beforeUpdate')) {
                     $context = call_user_func([$install_class, 'beforeUpdate'], $version);
-                    echo "框架前置更新成功...\n";
+                    console_log("框架前置更新成功...");
                 }
                 unlink($zip_file);
-                // 执行update更新
+                # 执行update更新
                 if (method_exists($install_class, 'update')) {
                     call_user_func([$install_class, 'update'], $version, $context);
-                    echo "执行更新安装成功...\n";
+                    console_log("框架更新成功...");
                 }
-                // 删除更新类
+                # 删除更新类
                 unlink(app_path('/Install.php'));
             }
             # 提交事务
