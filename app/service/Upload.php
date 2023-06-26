@@ -85,16 +85,22 @@ class Upload
      */
     public static function upload($file, int $cid = 0, array $dataId = [], array $config = [])
     {
-        try {
-            $category = self::getCategory($cid);
-            $path     = "upload/{$category['dir_name']}";
-            $result   = (new Storage)->path($path)->upload($file, false);
-            $data     = self::addUpload($result, $category, $dataId);
-            return $data;
-        } catch (\Throwable $e) {
-            Log::error($e->getMessage());
-            return false;
+        # 获取分类
+        $category = self::getCategory($cid);
+        # 上传目标地址
+        $path     = "upload/{$category['dir_name']}";
+        # 上传目录
+        $uploadDir = dirname($path);
+        # 检测目录不存在则创建
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0775, true);
         }
+        # 上传附件
+        $result   = (new Storage)->path($path)->upload($file, false);
+        # 增加附件库
+        $data     = self::addUpload($result, $category, $dataId);
+        # 返回上传数据
+        return $data;
     }
 
     /**
