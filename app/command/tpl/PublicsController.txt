@@ -1,6 +1,6 @@
 <?php
 
-namespace app\admin\controller;
+namespace plugin\{PLUGIN_NAME}\app\admin\controller;
 
 use app\utils\Password;
 use Exception;
@@ -94,7 +94,7 @@ class PublicsController extends BaseController
                 'del'   => "{$moduleName}/SystemUploadCate/del",
             ],
         ];
-        return parent::successRes($data);
+        return $this->successRes($data);
     }
 
     /**
@@ -129,7 +129,7 @@ class PublicsController extends BaseController
             throw new Exception('该用户已被冻结');
         }
         $session = $request->session();
-        $session->set('hp_admin', $adminModel->toArray());
+        $session->set('hp_{PLUGIN_NAME}', $adminModel->toArray());
 
         // 更新登录信息
         $ip                          = $request->getRealIp($safe_mode = true);
@@ -158,7 +158,7 @@ class PublicsController extends BaseController
         ];
         $adminModel = SystemAdmin::with(['role'])->where($where)->find();
         $data       = $adminModel->toArray();
-        return parent::successRes($data);
+        return $this->successRes($data);
     }
 
     /**
@@ -170,7 +170,7 @@ class PublicsController extends BaseController
      */
     public function menus()
     {
-        $admin_id = hp_admin_id('hp_admin');
+        $admin_id = hp_admin_id('hp_{PLUGIN_NAME}');
 
         $where = [
             'id' => $admin_id
@@ -178,7 +178,7 @@ class PublicsController extends BaseController
         $adminModel = SystemAdmin::where($where)->find();
         $admin      = $adminModel->toArray();
         $data       = VueRoutesMgr::run($admin);
-        return parent::successRes($data);
+        return $this->successRes($data);
     }
 
     /**
@@ -192,7 +192,7 @@ class PublicsController extends BaseController
     public function loginout(Request $request)
     {
         $session = $request->session();
-        $session->delete('hp_admin');
-        return parent::success('成功退出');
+        $session->delete('hp_{PLUGIN_NAME}');
+        return $this->success('成功退出');
     }
 }

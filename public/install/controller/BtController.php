@@ -15,18 +15,19 @@ class BtController
     public function install()
     {
         # 获取数据
-        $step  = isset($_GET['step']) ? $_GET['step'] : '';
+        $step = isset($_GET['step']) ? $_GET['step'] : '';
         $total = isset($_GET['total']) ? intval($_GET['total']) : 0;
-        $post  = $_POST;
+        $post = $_POST;
         # 宝塔相关数据
-        if (!isset($post['btData'])) return Json::fail('缺少宝塔面板数据');
+        if (!isset($post['btData']))
+            return Json::fail('缺少宝塔面板数据');
         $btData = isset($post['btData']) ? $post['btData'] : null;
-        $panel_ssl   = isset($btData['panel_ssl']) ? (bool)$btData['panel_ssl'] : false;
-        $panelLogic = new BtPanelLogic($btData['panel_port'],$btData['panel_key'],$panel_ssl);
+        $panel_ssl = isset($btData['panel_ssl']) ? (bool) $btData['panel_ssl'] : false;
+        $panelLogic = new BtPanelLogic($btData['panel_port'], $btData['panel_key'], $panel_ssl);
         $server_name = str_replace('.', '_', basename(ROOT_PATH));
         # 执行安装步骤
         switch ($step) {
-                # 安装数据库结构
+            # 安装数据库结构
             case 'structure':
                 $database = isset($post['database']) ? $post['database'] : [];
                 if (!$database) {
@@ -39,7 +40,7 @@ class BtController
                     $sqlTrees = Dir::tree(KF_INSTALL_PATH . '/data/sql');
                     if ($total >= count($sqlTrees)) {
                         return Json::json('安装数据库结构完成...', 200, [
-                            'next'  => 'database'
+                            'next' => 'database'
                         ]);
                     }
                     $sqlItem = isset($sqlTrees[$total]) ? $sqlTrees[$total] : null;
@@ -48,26 +49,22 @@ class BtController
                     }
                     // 替换SQL
                     $sql = Helpers::strReplace($sqlItem['path'], $database['prefix']);
-                    $SQLstatus = $pdo->query($sql);
+                    $SQLCount = $pdo->exec($sql);
                     $installName = str_replace(['.sql', 'php_'], '', $sqlItem['filename']);
-                    if ($SQLstatus === false) {
+                    if ($SQLCount) {
                         throw new Exception("安装 【{$installName}】 数据表结构失败");
                     }
-                    if (is_object($SQLstatus)) {
-                        $SQLstatus->fetchAll(PDO::FETCH_ASSOC);
-                        return Json::json("安装 【{$installName}】 数据表成功", 200, [
-                            'next'  => 'structure',
-                            'total' => $total + 1
-                        ]);
-                    }
-                    throw new Exception("安装 【{$installName}】 数据表结构失败");
+                    return Json::json("安装 【{$installName}】 数据表成功", 200, [
+                        'next' => 'structure',
+                        'total' => $total + 1
+                    ]);
                 } catch (\Throwable $e) {
                     return Json::failFul($e->getMessage(), 404);
                 }
-                # 写入数据库数据
+            # 写入数据库数据
             case 'database':
                 $database = isset($post['database']) ? $post['database'] : null;
-                $site     = isset($post['site']) ? $post['site'] : null;
+                $site = isset($post['site']) ? $post['site'] : null;
                 if (is_null($site) || is_null($database)) {
                     return Json::fail('安装数据失败');
                 }
@@ -96,7 +93,7 @@ class BtController
                 } catch (\Throwable $e) {
                     return Json::failFul($e->getMessage(), 404);
                 }
-                # 安装守护进程配置
+            # 安装守护进程配置
             case 'supervisor':
                 $panelLogic->addSupervisor($server_name);
                 # 安装完成
@@ -107,7 +104,7 @@ class BtController
                         'next' => 'config'
                     ]
                 );
-                # 写入文件配置
+            # 写入文件配置
             case 'config':
                 # 安装Env配置文件
                 Helpers::installEnv($post);
@@ -124,7 +121,7 @@ class BtController
                 return Json::fail('安装失败...');
         }
     }
-    
+
     /**
      * 安装前检测
      * @throws \Exception
@@ -138,21 +135,29 @@ class BtController
         # 获取数据
         $post = $_POST;
         # 数据验证
-        if (!isset($post['btData'])) return Json::fail('缺少宝塔面板数据');
-        if (!isset($post['serverData'])) return Json::fail('请设置框架启动端口');
-        if (!isset($post['serverData']['server_port'])) return Json::fail('请设置框架启动端口');
-        if (!isset($post['database'])) return Json::fail('缺少数据库信息');
-        if (!isset($post['cloud'])) return Json::fail('缺少云服务信息');
-        if (!isset($post['site'])) return Json::fail('缺少站点信息');
+        if (!isset($post['btData']))
+            return Json::fail('缺少宝塔面板数据');
+        if (!isset($post['serverData']))
+            return Json::fail('请设置框架启动端口');
+        if (!isset($post['serverData']['server_port']))
+            return Json::fail('请设置框架启动端口');
+        if (!isset($post['database']))
+            return Json::fail('缺少数据库信息');
+        if (!isset($post['cloud']))
+            return Json::fail('缺少云服务信息');
+        if (!isset($post['site']))
+            return Json::fail('缺少站点信息');
         $btData = isset($post['btData']) ? $post['btData'] : null;
         $serverData = isset($post['serverData']) ? $post['serverData'] : null;
         $databased = isset($post['database']) ? $post['database'] : null;
-        $cloud     = isset($post['cloud']) ? $post['cloud'] : null;
-        $site      = isset($post['site']) ? $post['site'] : null;
+        $cloud = isset($post['cloud']) ? $post['cloud'] : null;
+        $site = isset($post['site']) ? $post['site'] : null;
         # 数据库验证
         try {
+            # 验证宝塔面板
+            Validated::validateBt($btData);
             # 检测端口是否被占用
-            if (Validated::validatePort((int)$serverData['server_port'])) {
+            if (Validated::validatePort((int) $serverData['server_port'])) {
                 throw new Exception("{$serverData['server_port']}端口已被占用");
             }
             # 验证宝塔面板

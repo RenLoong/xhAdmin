@@ -24,11 +24,11 @@ class BtPanel
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public function __construct(string $BT_PANEL, string $BT_KEY,bool $ssl = false)
+    public function __construct(string $BT_PANEL, string $BT_KEY, bool $ssl = false)
     {
         $this->BT_PANEL = $BT_PANEL;
         $this->BT_KEY = $BT_KEY;
-        $this->BT_SSL   = $ssl;
+        $this->BT_SSL = $ssl;
     }
 
     /**
@@ -127,13 +127,13 @@ class BtPanel
      * @param array $data
      * @return array
      */
-    public function stopSupervisor(array $data):array
+    public function stopSupervisor(array $data): array
     {
         $data = array_merge([
             'program' => '',
             'numprocs' => 1
         ], $data);
-        return $this->send('/plugin?action=a&name=supervisor&s=StopProcess',$data);
+        return $this->send('/plugin?action=a&name=supervisor&s=StopProcess', $data);
     }
 
     /**
@@ -191,12 +191,12 @@ class BtPanel
     {
         $now_time = time();
         $p_data = array(
-            'request_token'     => md5($now_time . '' . md5($this->BT_KEY)),
-            'request_time'      => $now_time
+            'request_token' => md5($now_time . '' . md5($this->BT_KEY)),
+            'request_time' => $now_time
         );
         return $p_data;
     }
-    
+
     /**
      * 发起POST请求
      * @param mixed $url 目标网填，带http://

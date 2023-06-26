@@ -33,55 +33,55 @@ class PublicsController extends BaseController
         $empower_token = empowerFile('token');
         $private_key = empowerFile('private_key');
         $data = [
-            'web_name'          => getHpConfig('web_name'),
-            'web_title'         => '登录',
-            'web_logo'          => empty($web_logo) ? '' : $web_logo,
-            'version_name'      => $systemInfo['system_version_name'],
-            'version'           => $systemInfo['system_version'],
+            'web_name' => getHpConfig('web_name'),
+            'web_title' => '登录',
+            'web_logo' => empty($web_logo) ? '' : $web_logo,
+            'version_name' => $systemInfo['system_version_name'],
+            'version' => $systemInfo['system_version'],
             // 版权token
-            'empower_token'         => $empower_token,
+            'empower_token' => $empower_token,
             // 版权私钥
-            'empower_private_key'   => $private_key,
+            'empower_private_key' => $private_key,
             // 登录页链接
-            'login_link'        => [
-                'register'      => '',
-                'forget'        => '',
-                'other_login'   => [],
+            'login_link' => [
+                'register' => '',
+                'forget' => '',
+                'other_login' => [],
             ],
             // 公用接口
-            'public_api'     => [
-                'login'     => "{$this->moduleName}/Publics/login",
-                'loginout'  => "{$this->moduleName}/Publics/loginout",
-                'user'      => "{$this->moduleName}/Publics/user",
-                'menus'     => "{$this->moduleName}/Publics/menus",
-                'clear'     => "{$this->moduleName}/Index/clear",
-                'lock'      => "{$this->moduleName}/Index/lock",
+            'public_api' => [
+                'login' => "{$this->moduleName}/Publics/login",
+                'loginout' => "{$this->moduleName}/Publics/loginout",
+                'user' => "{$this->moduleName}/Publics/user",
+                'menus' => "{$this->moduleName}/Publics/menus",
+                'clear' => "{$this->moduleName}/Index/clear",
+                'lock' => "{$this->moduleName}/Index/lock",
                 "user_edit" => "{$this->moduleName}/Store/edit",
             ],
             # 自定义登录页（配合remote_url使用）
-            // 'login_url'         => '/storeLogin',
+            'login_url' => '/storeLogin',
             // 远程组件
-            'remote_url'     => [
+            'remote_url' => [
                 [
-                    'title'  => '用户登录',
-                    'path'   => '/storeLogin',
+                    'title' => '用户登录',
+                    'path' => '/storeLogin',
                     'remote' => 'remote/storeLogin'
                 ],
             ],
             // 附件库API
-            'uploadify_api'  => [
-                'index'  => "{$this->moduleName}/SystemUpload/index",
+            'uploadify_api' => [
+                'index' => "{$this->moduleName}/SystemUpload/index",
                 'upload' => "{$this->moduleName}/SystemUpload/upload",
-                'edit'   => "{$this->moduleName}/SystemUpload/edit",
-                'del'    => "{$this->moduleName}/SystemUpload/del",
-                'move'   => "{$this->moduleName}/SystemUpload/move",
+                'edit' => "{$this->moduleName}/SystemUpload/edit",
+                'del' => "{$this->moduleName}/SystemUpload/del",
+                'move' => "{$this->moduleName}/SystemUpload/move",
             ],
             // 附件库分类
             'uploadify_cate' => [
                 'index' => "{$this->moduleName}/SystemUploadCate/index",
-                'add'   => "{$this->moduleName}/SystemUploadCate/add",
-                'edit'  => "{$this->moduleName}/SystemUploadCate/edit",
-                'del'   => "{$this->moduleName}/SystemUploadCate/del",
+                'add' => "{$this->moduleName}/SystemUploadCate/add",
+                'edit' => "{$this->moduleName}/SystemUploadCate/edit",
+                'del' => "{$this->moduleName}/SystemUploadCate/del",
             ],
         ];
         return parent::successRes($data);
@@ -105,14 +105,14 @@ class PublicsController extends BaseController
 
         // 查询数据
         $where = [
-            'username'          => $post['username']
+            'username' => $post['username']
         ];
         $adminModel = Store::where($where)->find();
         if (!$adminModel) {
             return $this->fail('登录账号错误');
         }
         // 验证登录密码
-        if (!Password::passwordVerify((string) $post['password'], (string)$adminModel->password)) {
+        if (!Password::passwordVerify((string) $post['password'], (string) $adminModel->password)) {
             return $this->fail('登录密码错误');
         }
         // 判断状态
@@ -153,16 +153,16 @@ class PublicsController extends BaseController
         if (!$admin_id) {
             return parent::success('该用户不存在');
         }
-        $where    = [
-            'id'    => $admin_id
+        $where = [
+            'id' => $admin_id
         ];
-        $model      = Store::where($where)->find();
-        $storeModel  = $model->toArray();
-        $data       = [
-            'id'        => $storeModel['id'],
-            'nickname'  => $storeModel['contact'],
-            'headimg'   => $storeModel['logo'],
-            'plugins'   => $storeModel['plugins_name'],
+        $model = Store::where($where)->find();
+        $storeModel = $model->toArray();
+        $data = [
+            'id' => $storeModel['id'],
+            'nickname' => $storeModel['contact'],
+            'headimg' => $storeModel['logo'],
+            'plugins' => $storeModel['plugins_name'],
         ];
         return parent::successRes($data);
     }
@@ -177,8 +177,8 @@ class PublicsController extends BaseController
     public function menus()
     {
         $order = [
-            'sort'      => 'asc',
-            'id'        => 'asc'
+            'sort' => 'asc',
+            'id' => 'asc'
         ];
         $field = [
             'id',
@@ -194,8 +194,8 @@ class PublicsController extends BaseController
         ];
         $list = StoreMenus::order($order)->field($field)->select()->toArray();
         $data = [
-            'active'        => 'Index/index',
-            'list'          => $list
+            'active' => 'Index/index',
+            'list' => $list
         ];
         return parent::successRes($data);
     }

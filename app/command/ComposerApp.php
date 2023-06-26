@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ComposerApp extends Command
 {
-    protected static $defaultName = 'Composer:app';
+    protected static $defaultName = 'yc-composer:app';
     protected static $defaultDescription = 'Composer validate';
     # composer通用命令
     private static $composerCommand = 'export COMPOSER_HOME=/www/server/php/80/bin;COMPOSER_ALLOW_SUPERUSER=1;';

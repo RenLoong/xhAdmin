@@ -167,6 +167,17 @@ class StorePlatformController extends BaseController
     }
 
     /**
+     * 添加
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function add()
+    {
+    }
+
+    /**
      * 修改
      * @param Request $request
      * @return \support\Response

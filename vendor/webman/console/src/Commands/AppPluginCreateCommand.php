@@ -63,10 +63,10 @@ class AppPluginCreateCommand extends Command
         $this->mkdir("$base_path/plugin/$name/public", 0777, true);
         $this->mkdir("$base_path/plugin/$name/api", 0777, true);
         $this->createFunctionsFile("$base_path/plugin/$name/app/functions.php");
-        $this->createControllerFile("$base_path/plugin/$name/app/controller/IndexController.php", $name);
         $this->createViewFile("$base_path/plugin/$name/app/view/index/index.html");
         $this->createConfigFiles("$base_path/plugin/$name/config", $name);
         $this->createApiFiles("$base_path/plugin/$name/api", $name);
+        $this->createDefaultController("$base_path/plugin/$name/app/controller/IndexController.php", $name);
     }
 
     /**
@@ -83,37 +83,50 @@ class AppPluginCreateCommand extends Command
     }
 
     /**
-     * @param $path
-     * @param $name
+     * 创建默认控制器
+     * @param string $path
+     * @param string $pluginName
      * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
-    protected function createControllerFile($path, $name)
+    protected function createDefaultController(string $path, string $pluginName)
     {
         $content = <<<EOF
-<?php
+        <?php
 
-namespace plugin\\$name\\app\\controller;
+        namespace plugin\\$pluginName\\app\\controller;
 
-use support\\Request;
+        use support\\Request;
+        use app\\BaseController;
 
-class IndexController
-{
-
-    public function index()
-    {
-        return view('index/index', ['name' => '$name']);
-    }
-
-}
-
-EOF;
+        class IndexController extends BaseController
+        {
+            /**
+             * 默认控制器
+             * @return mixed
+             * @author 贵州猿创科技有限公司
+             * @copyright 贵州猿创科技有限公司
+             * @email 416716328@qq.com
+             */
+            public function index()
+            {
+                return \$this->success('Hello $pluginName');
+            }
+        }
+        EOF;
         file_put_contents($path, $content);
 
     }
 
     /**
-     * @param $path
+     * 创建视图文件
+     * @param mixed $path
      * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
     protected function createViewFile($path)
     {

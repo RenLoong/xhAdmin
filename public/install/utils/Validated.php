@@ -35,8 +35,8 @@ class Validated
         if (!isset($data['panel_key']) || empty($data['panel_key'])) {
             throw new Exception('请输入宝塔面板密钥');
         }
-        $panel_ssl = isset($data['panel_ssl']) ? (bool)$data['panel_ssl'] : false;
-        $bt = new BtPanelLogic($data['panel_port'], $data['panel_key'],$panel_ssl);
+        $panel_ssl = isset($data['panel_ssl']) ? (bool) $data['panel_ssl'] : false;
+        $bt = new BtPanelLogic($data['panel_port'], $data['panel_key'], $panel_ssl);
         # 验证宝塔是否通信成功
         $bt->validateBtConnect();
         # 验证nginx是否安装
@@ -45,6 +45,7 @@ class Validated
         $bt->validateSoft('mysql');
         # 验证守护进程软件是否安装
         $bt->validateSoft('supervisor');
+
         # 守护进程服务是否已安装
         $server_name = str_replace('.', '_', basename(ROOT_PATH));
         $bt->valiSupervisorNames($server_name);
