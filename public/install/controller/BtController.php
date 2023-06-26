@@ -33,10 +33,10 @@ class BtController
                 if (!$database) {
                     return Json::fail('获取安装数据库配置失败');
                 }
-                // 数据库连接
+                # 数据库连接
                 try {
                     $pdo = Db::connect($database);
-                    // 获取SQL文件树
+                    # 获取SQL文件树
                     $sqlTrees = Dir::tree(KF_INSTALL_PATH . '/data/sql');
                     if ($total >= count($sqlTrees)) {
                         return Json::json('安装数据库结构完成...', 200, [
@@ -47,11 +47,11 @@ class BtController
                     if (is_null($sqlItem)) {
                         throw new Exception('安装数据库结构失败');
                     }
-                    // 替换SQL
+                    # 替换SQL
                     $sql = Helpers::strReplace($sqlItem['path'], $database['prefix']);
-                    $SQLCount = $pdo->exec($sql);
+                    $status = $pdo->exec($sql);
                     $installName = str_replace(['.sql', 'php_'], '', $sqlItem['filename']);
-                    if ($SQLCount) {
+                    if ($status) {
                         throw new Exception("安装 【{$installName}】 数据表结构失败");
                     }
                     return Json::json("安装 【{$installName}】 数据表成功", 200, [
@@ -65,28 +65,30 @@ class BtController
             case 'database':
                 $database = isset($post['database']) ? $post['database'] : null;
                 $site = isset($post['site']) ? $post['site'] : null;
-                if (is_null($site) || is_null($database)) {
+                if (!$site || !$database) {
                     return Json::fail('安装数据失败');
                 }
                 $date = date('Y-m-d H:i:s');
-                // 获取管理员参数
-                $username = isset($site['username']) ? $site['username'] : '';
-                $password = isset($site['password']) ? $site['password'] : '';
-
                 try {
-                    // 数据库连接
+                    # 数据库连接
                     $pdo = Db::connect($database);
-                    // 写入站点信息
-                    $configSql = '';
-                    $configSql .= "INSERT INTO `{$database['prefix']}system_config` VALUES (1,'{$date}', '{$date}', 1, '站点名称', 'web_name', '{$site['web_name']}', 'input', '', '请输入站点名称', 0);";
-                    $configSql .= "INSERT INTO `{$database['prefix']}system_config` VALUES (2,'{$date}', '{$date}', 1, '站点域名', 'web_url', '{$site['web_url']}', 'input', '', '请输入站点域名', 0);";
-                    $pdo->query("{$configSql}");
-
-                    // 写入管理员信息
+                    # 写入站点名称
+                    $sql = "INSERT INTO `{$database['prefix']}system_config` VALUES (1,'{$date}', '{$date}', 1, '站点名称', 'web_name', '{$site['web_name']}', 'input', '', '请输入站点名称', 0);";
+                    $query = $pdo->prepare($sql);
+                    $query->execute();
+                    # 写入站点域名
+                    $sql = "INSERT INTO `{$database['prefix']}system_config` VALUES (2,'{$date}', '{$date}', 1, '站点域名', 'web_url', '{$site['web_url']}', 'input', '', '请输入站点域名', 0);";
+                    $query = $pdo->prepare("{$sql}");
+                    $query->execute();
+                    # 获取管理员参数
+                    $username = isset($site['username']) ? $site['username'] : '';
+                    $password = isset($site['password']) ? $site['password'] : '';
+                    # 写入管理员信息
                     $password = Password::passwordHash($password);
-                    $adminSql = "INSERT INTO `{$database['prefix']}system_admin` VALUES (1,'{$date}', '{$date}', 1, 0, '{$username}', '{$password}', '1', '系统管理员', '', '{$date}', NULL, '', '0');";
-                    $pdo->query("{$adminSql}");
-                    // 安装完成
+                    $sql = "INSERT INTO `{$database['prefix']}system_admin` VALUES (1,'{$date}', '{$date}', 1, 0, '{$username}', '{$password}', '1', '系统管理员', '', '{$date}', NULL, '', '0');";
+                    $query = $pdo->prepare("{$sql}");
+                    $query->execute();
+                    # 安装完成
                     return Json::json('安装站点数据完成...', 200, [
                         'next' => 'supervisor'
                     ]);

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @title 数据库管理服务
  * @desc 控制器描述
@@ -9,8 +8,10 @@ class Db
 {
     /**
      * 连接数据库
-     *
-     * @return \PDO
+     * @param array $data
+     * @return PDO
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
      */
     public static function connect(array $data): \PDO
     {
@@ -29,11 +30,13 @@ class Db
         if (!isset($data['port']) || empty($data['port'])) {
             throw new PDOException('请输入数据库端口');
         }
-        $pdo = new \PDO(
-            "mysql:host={$data['host']};dbname={$data['database']}",
-            $data['username'],
-            $data['password']
-        );
-        return $pdo;
+        $dsn    = "mysql:host={$data['host']};dbname={$data['database']};port={$data['port']};";
+        $params = [
+            \PDO::MYSQL_ATTR_INIT_COMMAND => "set names utf8mb4",
+            \PDO::ATTR_EMULATE_PREPARES => false,
+            \PDO::ATTR_TIMEOUT => 5,
+            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+        ];
+        return new \PDO($dsn, $data['username'], $data['password'], $params);
     }
 }

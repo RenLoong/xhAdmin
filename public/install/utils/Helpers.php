@@ -69,6 +69,7 @@ class Helpers
             "{PASSWORD}",
             "{HOSTPORT}",
             "{CHARSET}",
+            "{CHARSET_CI}",
             "{PREFIX}",
             "{UPLOAD_PUBLIC_URL}",
             "{SERVER_PORT}"
@@ -80,7 +81,8 @@ class Helpers
             $user,
             $password,
             $port,
-            $charset,
+            'utf8mb4',
+            'utf8mb4_general_ci',
             $prefix,
             $web_url,
             $server_port,

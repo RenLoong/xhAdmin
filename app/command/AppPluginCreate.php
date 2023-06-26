@@ -305,7 +305,7 @@ class AppPluginCreate extends Command
             // Fallback language
             'fallback_locale' => ['zh_CN', 'en'],
             // Folder where language files are stored
-            'path' => base_path() . "/plugin/$pluginName/resource/translations",
+            'path' => base_path('/resource/translations'),
         ];
         EOF;
         file_put_contents("$path/translation.php", $content);
@@ -440,14 +440,12 @@ class AppPluginCreate extends Command
         {
             /**
              * 默认控制器文件
-             * @param string \$path
-             * @param string \$name
-             * @return void
+             * @param \\support\\Request \$request
+             * @return \\support\\Response
              * @author 贵州猿创科技有限公司
              * @copyright 贵州猿创科技有限公司
-             * @email 416716328@qq.com
              */
-            public function index()
+            public function index(Request \$request)
             {
                 return view('index/index', ['name' => '$name']);
             }
