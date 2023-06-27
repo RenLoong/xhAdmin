@@ -5,6 +5,20 @@ use app\utils\Password;
 class BtController
 {
     /**
+     * 构造函数
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function __construct()
+    {
+        if (!empty($_POST['database'])) {
+            $config = $_POST['database'];
+            Db::connect($config);
+        }
+    }
+
+    /**
      * 安装前检测
      * @throws \Exception
      * @return string
@@ -35,7 +49,6 @@ class BtController
                 }
                 # 数据库连接
                 try {
-                    $pdo = Db::connect($database);
                     # 获取SQL文件树
                     $sqlTrees = Dir::tree(KF_INSTALL_PATH . '/data/sql');
                     if ($total >= count($sqlTrees)) {
@@ -49,12 +62,11 @@ class BtController
                     }
                     # 替换SQL
                     $sql = Helpers::strReplace($sqlItem['path'], $database['prefix']);
-                    $SQLObject = $pdo->query($sql);
+                    $status = Manager::statement($sql);
                     $installName = str_replace(['.sql', 'php_'], '', $sqlItem['filename']);
-                    if (!$SQLObject) {
+                    if (!$status) {
                         throw new Exception("安装 【{$installName}】 数据表结构失败");
                     }
-                    $SQLObject->fetchAll(PDO::FETCH_ASSOC);
 
                     # 返回成功
                     return Json::json("安装 【{$installName}】 数据表成功", 200, [
@@ -73,12 +85,9 @@ class BtController
                 }
                 $date = date('Y-m-d H:i:s');
                 try {
-                    # 数据库连接
-                    $pdo = Db::connect($database);
                     # 写入站点名称
                     $sql = "INSERT INTO `{$database['prefix']}system_config` VALUES (1,'{$date}', '{$date}', 1, '站点名称', 'web_name', '{$site['web_name']}', 'input', '', '请输入站点名称', 0);";
-                    $query = $pdo->prepare($sql);
-                    $query->execute();
+                    DB::statement($sql);
                     # 写入站点域名
                     $sql = "INSERT INTO `{$database['prefix']}system_config` VALUES (2,'{$date}', '{$date}', 1, '站点域名', 'web_url', '{$site['web_url']}', 'input', '', '请输入站点域名', 0);";
                     $query = $pdo->prepare("{$sql}");
@@ -137,6 +146,10 @@ class BtController
      */
     public function database()
     {
+        $sql = file_get_contents(KF_INSTALL_PATH . '/data/sql/php_system_admin.sql');
+        print_r(Db::sqlReplace($sql));
+        exit;
+        $data = Db::query($sql);
         # 获取数据
         $post = $_POST;
         # 数据验证

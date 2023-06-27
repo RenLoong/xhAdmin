@@ -10,12 +10,12 @@ class Json
     /**
      * 返回JSON数据
      *
-     * @param string $msg
-     * @param integer $code
+     * @param mixed $msg
+     * @param mixed $code
      * @param array $data
      * @return string
      */
-    public static function json(string $msg, int $code, array $data = []): string
+    public static function json(mixed $msg, mixed $code, array $data = []): string
     {
         $json['msg'] = $msg;
         $json['code'] = $code;

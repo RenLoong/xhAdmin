@@ -484,18 +484,30 @@ class PluginController extends BaseController
                 $zip->open($zip_file, ZIPARCHIVE::CHECKCONS);
             }
 
-            $context       = null;
-            $install_class = "\\plugin\\{$name}\\api\\Install";
-            # 执行beforeUpdate
-            if (class_exists($install_class) && method_exists($install_class, 'beforeUpdate')) {
-                $context = call_user_func([$install_class, 'beforeUpdate'], $installed_version, $version);
-            }
-
+            # 解压目录
             if (!empty($zip)) {
                 $zip->extractTo(base_path('/plugin/'));
                 unset($zip);
             } else {
                 PluginLogic::unzipWithCmd($cmd);
+            }
+            # 软重启
+            if (function_exists('posix_kill')) {
+                try {
+                    console_log("更新解压完成---开始软重启");
+                    # 重启子进程
+                    posix_kill(posix_getppid(), SIGUSR1);
+                    console_log("更新时软重启失败");
+                } catch (\Throwable $e) {
+                    console_log("软重启失败---{$e->getMessage()}");
+                }
+            }
+            
+            $context       = null;
+            $install_class = "\\plugin\\{$name}\\api\\Install";
+            # 执行beforeUpdate
+            if (class_exists($install_class) && method_exists($install_class, 'beforeUpdate')) {
+                $context = call_user_func([$install_class, 'beforeUpdate'], $installed_version, $version);
             }
             # 检测composer
             ComposerMgr::composerMergePlugin($name);

@@ -40,6 +40,10 @@
         "illuminate/redis": "^9.52",
         "symfony/cache": "^6.0",
         "yzh52521/webman-validate": "^0.1.3",
+        "illuminate/database": "^9.52",
+        "illuminate/pagination": "^9.52",
+        "illuminate/events": "^9.52",
+        "symfony/var-dumper": "^6.0",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "suggest": {
