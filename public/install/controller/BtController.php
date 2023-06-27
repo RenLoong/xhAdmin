@@ -49,11 +49,14 @@ class BtController
                     }
                     # 替换SQL
                     $sql = Helpers::strReplace($sqlItem['path'], $database['prefix']);
-                    $status = $pdo->exec($sql);
+                    $SQLObject = $pdo->query($sql);
                     $installName = str_replace(['.sql', 'php_'], '', $sqlItem['filename']);
-                    if ($status) {
+                    if (!$SQLObject) {
                         throw new Exception("安装 【{$installName}】 数据表结构失败");
                     }
+                    $SQLObject->fetchAll(PDO::FETCH_ASSOC);
+
+                    # 返回成功
                     return Json::json("安装 【{$installName}】 数据表成功", 200, [
                         'next' => 'structure',
                         'total' => $total + 1
