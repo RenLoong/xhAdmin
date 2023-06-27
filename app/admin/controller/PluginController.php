@@ -491,12 +491,7 @@ class PluginController extends BaseController
             } else {
                 PluginLogic::unzipWithCmd($cmd);
             }
-            # 切换工作目录
-            $basePath = base_path();
-            chdir($basePath);
-            # 软重启
-            shell_exec("php webman reload");
-
+            
             $context       = null;
             $install_class = "\\plugin\\{$name}\\api\\Install";
             # 执行beforeUpdate
