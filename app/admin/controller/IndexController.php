@@ -171,7 +171,7 @@ class IndexController extends BaseController
                 # 开始更新框架
                 AppCoreLogic::update($version);
                 # 更新完成
-                return $this->fail('版本更新成功');
+                return $this->success('版本更新成功');
             } catch (\Throwable $e) {
                 return $this->fail($e->getMessage());
             }

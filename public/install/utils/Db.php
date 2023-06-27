@@ -87,11 +87,20 @@ class Db
         //启动Eloquent，实际上就是解析链接信息，开始建立数据库的链接
         $capsule->bootEloquent();
     }
+
+    /**
+     * Summary of sqlReplace
+     * @param string $sql
+     * @return array|string
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
     public static function sqlReplace(string $sql)
     {
         $sql = preg_replace('/\/\*.*?\*\//s', '', $sql);
-        print_r($sql);
-        exit;
+        $sql = str_replace("\n\n","",$sql);
+        return $sql;
     }
 
     /**

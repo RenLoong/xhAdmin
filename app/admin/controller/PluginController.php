@@ -45,10 +45,10 @@ class PluginController extends BaseController
                 'cloud',
                 '云服务',
                 [
-                    'type'  => 'remote',
+                    'type' => 'remote',
                     'modal' => true,
-                    'api'   => 'admin/PluginCloud/index',
-                    'path'  => 'remote/cloud/index'
+                    'api' => 'admin/PluginCloud/index',
+                    'path' => 'remote/cloud/index'
                 ],
                 [
                     'title' => '云服务中心',
@@ -62,8 +62,8 @@ class PluginController extends BaseController
                 'doc',
                 '文档',
                 [
-                    'type'        => 'link',
-                    'api'         => 'admin/Plugin/getDoc',
+                    'type' => 'link',
+                    'api' => 'admin/Plugin/getDoc',
                     'aliasParams' => [
                         'name',
                         'version'
@@ -78,11 +78,11 @@ class PluginController extends BaseController
                 'update',
                 '更新',
                 [
-                    'type'        => 'remote',
-                    'modal'       => true,
-                    'api'         => 'admin/Plugin/update',
-                    'path'        => 'remote/cloud/update',
-                    'params'      => [
+                    'type' => 'remote',
+                    'modal' => true,
+                    'api' => 'admin/Plugin/update',
+                    'path' => 'remote/cloud/update',
+                    'params' => [
                         'field' => 'is_update',
                         'value' => 'update',
                     ],
@@ -103,11 +103,11 @@ class PluginController extends BaseController
                 'install',
                 '安装',
                 [
-                    'type'        => 'remote',
-                    'modal'       => true,
-                    'api'         => 'admin/Plugin/install',
-                    'path'        => 'remote/cloud/install',
-                    'params'      => [
+                    'type' => 'remote',
+                    'modal' => true,
+                    'api' => 'admin/Plugin/install',
+                    'path' => 'remote/cloud/install',
+                    'params' => [
                         'field' => 'installed',
                         'value' => 'install',
                     ],
@@ -128,11 +128,11 @@ class PluginController extends BaseController
                 'uninstall',
                 '卸载',
                 [
-                    'type'        => 'confirm',
-                    'api'         => 'admin/Plugin/uninstall',
-                    'path'        => 'remote/cloud/uninstall',
-                    'method'      => 'delete',
-                    'params'      => [
+                    'type' => 'confirm',
+                    'api' => 'admin/Plugin/uninstall',
+                    'path' => 'remote/cloud/uninstall',
+                    'method' => 'delete',
+                    'params' => [
                         'field' => 'installed',
                         'value' => 'uninstall',
                     ],
@@ -142,7 +142,7 @@ class PluginController extends BaseController
                     ],
                 ],
                 [
-                    'title'   => '温馨提示',
+                    'title' => '温馨提示',
                     'content' => "是否确认卸载该应用插件？\n该操作者将不可恢复数据，请自行备份应用数据",
                 ],
                 [
@@ -151,8 +151,8 @@ class PluginController extends BaseController
             )
             ->tabsConfig([
                 'active' => '0',
-                'field'  => 'active',
-                'list'   => [
+                'field' => 'active',
+                'list' => [
                     [
                         'label' => '全部',
                         'value' => '0',
@@ -173,13 +173,13 @@ class PluginController extends BaseController
             ])
             ->addColumn('dev.title', '开发者')
             ->addColumnEle('money', '价格', [
-                'width'  => 150,
+                'width' => 150,
                 'params' => [
                     'type' => 'money'
                 ]
             ])
             ->addColumnEle('logo', '图标', [
-                'width'  => 80,
+                'width' => 80,
                 'params' => [
                     'type' => 'image',
                 ],
@@ -191,17 +191,17 @@ class PluginController extends BaseController
                 ],
             ])
             ->addColumnEle('plugin_type', '应用类型', [
-                'width'  => 100,
+                'width' => 100,
                 'params' => [
-                    'type'    => 'tags',
+                    'type' => 'tags',
                     'options' => PluginType::dictOptions(),
-                    'style'   => PluginTypeStyle::parseAlias('type'),
+                    'style' => PluginTypeStyle::parseAlias('type'),
                 ],
             ])
-            ->addColumn('min_version', '版本要求',[
-                'width'             => 100,
-                'titlePrefix'       => [
-                    'content'       => '该应用对于主框架的版本最低要求',
+            ->addColumn('min_version', '版本要求', [
+                'width' => 100,
+                'titlePrefix' => [
+                    'content' => '该应用对于主框架的版本最低要求',
                 ],
             ])
             ->create();
@@ -218,17 +218,17 @@ class PluginController extends BaseController
      */
     public function index(Request $request)
     {
-        $page = (int) $request->get('page', 1);
-        $active   = $request->get('active', '0');
+        $page   = (int) $request->get('page', 1);
+        $active = $request->get('active', '0');
 
         $installed = PluginLogic::getLocalPlugins();
-        $query = [
-            'active'    => $active,
-            'page'      => $page,
-            'plugins'   => $installed
+        $query     = [
+            'active' => $active,
+            'page' => $page,
+            'plugins' => $installed
         ];
-        $body = CloudService::list($query);
-        $response = $body->array();
+        $body      = CloudService::list($query);
+        $response  = $body->array();
         if (!$response) {
             return $this->fail('请求服务失败');
         }
@@ -239,7 +239,7 @@ class PluginController extends BaseController
         foreach ($data['data'] as $key => $value) {
             $data['data'][$key]['min_version'] = "无";
             if ($value['saas_version']) {
-                $data['data'][$key]['min_version'] = $value['saas_version'];                
+                $data['data'][$key]['min_version'] = $value['saas_version'];
             }
         }
         return $this->successRes($data);
@@ -255,9 +255,9 @@ class PluginController extends BaseController
      */
     public function getDoc(Request $request)
     {
-        $name   = $request->get('name');
-        $version   = $request->get('version');
-        $detail = CloudService::detail($name, $version)->array();
+        $name    = $request->get('name');
+        $version = $request->get('version');
+        $detail  = CloudService::detail($name, $version)->array();
         if (!$detail) {
             return $this->fail('获取应用失败');
         }
@@ -280,7 +280,7 @@ class PluginController extends BaseController
      */
     public function buy(Request $request)
     {
-        $name = $request->post('name');
+        $name    = $request->post('name');
         $version = $request->post('version');
         return json(CloudService::buyApp($name, $version)->array());
     }
@@ -295,7 +295,7 @@ class PluginController extends BaseController
      */
     public function detail(Request $request)
     {
-        $name = $request->get('name');
+        $name    = $request->get('name');
         $version = $request->get('version');
 
         $response = CloudService::detail($name, $version)->array();
@@ -305,7 +305,7 @@ class PluginController extends BaseController
         if (!isset($response['code'])) {
             return $this->fail('插件数据出错');
         }
-        $localVersion = PluginLogic::getPluginVersion($name);
+        $localVersion                     = PluginLogic::getPluginVersion($name);
         $response['data']['localVersion'] = $localVersion;
         return json($response);
     }
@@ -320,8 +320,8 @@ class PluginController extends BaseController
      */
     public function install(Request $request)
     {
-        $name              = $request->post('name');
-        $version           = $request->post('version');
+        $name    = $request->post('name');
+        $version = $request->post('version');
 
         # 检测应用是否已安装
         $installed_version = PluginLogic::getPluginVersion($name);
@@ -393,7 +393,7 @@ class PluginController extends BaseController
             }
             # 输出安装完成
             console_log("{$name} --- 安装完成");
-        }catch(\Throwable $e){
+        } catch (\Throwable $e) {
             # 安装失败，删除安装目录
             $plugin_dir = base_path("/plugin/{$name}");
             if (is_dir($plugin_dir)) {
@@ -401,7 +401,7 @@ class PluginController extends BaseController
                 shell_exec("rm -rf {$plugin_dir}");
             }
             return $this->failFul($e->getMessage(), $e->getCode());
-        }finally {
+        } finally {
             if ($monitor_support_pause) {
                 Monitor::resume();
             }
@@ -491,18 +491,12 @@ class PluginController extends BaseController
             } else {
                 PluginLogic::unzipWithCmd($cmd);
             }
+            # 切换工作目录
+            $basePath = base_path();
+            chdir($basePath);
             # 软重启
-            if (function_exists('posix_kill')) {
-                try {
-                    console_log("更新解压完成---开始软重启");
-                    # 重启子进程
-                    posix_kill(posix_getppid(), SIGUSR1);
-                    console_log("更新时软重启失败");
-                } catch (\Throwable $e) {
-                    console_log("软重启失败---{$e->getMessage()}");
-                }
-            }
-            
+            shell_exec("php webman reload");
+
             $context       = null;
             $install_class = "\\plugin\\{$name}\\api\\Install";
             # 执行beforeUpdate
@@ -519,7 +513,7 @@ class PluginController extends BaseController
             }
             # 输出更新完成
             console_log("{$name} --- 更新完成");
-        }catch(\Throwable $e){
+        } catch (\Throwable $e) {
             try {
                 # 更新应用失败，回滚代码
                 PluginLogic::rollback($name);
@@ -527,7 +521,7 @@ class PluginController extends BaseController
                 return $this->fail($e->getMessage());
             }
             return $this->fail($e->getMessage());
-        }finally {
+        } finally {
             if ($monitor_support_pause) {
                 Monitor::resume();
             }
