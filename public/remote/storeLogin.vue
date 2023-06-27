@@ -2,7 +2,7 @@
     <div class="box-container">
         <div class="box-block">
             <div class="login-banner">
-                <div class="title">租户后台管理</div>
+                <div class="title">用户数据管理</div>
                 <img src="/image/storeLogin-img.png" alt="">
             </div>
             <div class="login-box">
