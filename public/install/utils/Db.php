@@ -35,6 +35,34 @@ class Db
         return Capsule::statement($sql);
     }
 
+    /**
+     * 获取PDO
+     * @return PDO
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function pdo()
+    {
+        return Capsule::connection()->getPdo();
+    }
+
+    /**
+     * 批量执行SQL
+     * @param string $sql
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function exceSQL(string $sql)
+    {
+        $data = self::sqlReplace($sql);
+        foreach ($data as $sql) {
+            self::query($sql);
+        }
+    }
+
 
     /**
      * 连接数据库
@@ -89,9 +117,9 @@ class Db
     }
 
     /**
-     * Summary of sqlReplace
+     * 替换SQL文件多余字符串
      * @param string $sql
-     * @return array|string
+     * @return array<string>|bool
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
@@ -99,7 +127,11 @@ class Db
     public static function sqlReplace(string $sql)
     {
         $sql = preg_replace('/\/\*.*?\*\//s', '', $sql);
-        $sql = str_replace("\n\n","",$sql);
+        $sql = preg_replace('/--.*/i', '', $sql);
+        $sql = str_replace("\n","",$sql);
+        $sql = str_replace("\r","",$sql);
+        $sql = explode(';', $sql);
+        $sql = array_filter($sql);
         return $sql;
     }
 

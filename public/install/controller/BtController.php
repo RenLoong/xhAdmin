@@ -57,17 +57,15 @@ class BtController
                         ]);
                     }
                     $sqlItem = isset($sqlTrees[$total]) ? $sqlTrees[$total] : null;
-                    if (is_null($sqlItem)) {
+                    if (!$sqlItem) {
                         throw new Exception('安装数据库结构失败');
                     }
                     # 替换SQL
                     $sql = Helpers::strReplace($sqlItem['path'], $database['prefix']);
-                    $status = Manager::statement($sql);
+                    # 执行SQL
+                    Db::exceSQL($sql);
+                    # 获取安装名称
                     $installName = str_replace(['.sql', 'php_'], '', $sqlItem['filename']);
-                    if (!$status) {
-                        throw new Exception("安装 【{$installName}】 数据表结构失败");
-                    }
-
                     # 返回成功
                     return Json::json("安装 【{$installName}】 数据表成功", 200, [
                         'next' => 'structure',
@@ -87,19 +85,20 @@ class BtController
                 try {
                     # 写入站点名称
                     $sql = "INSERT INTO `{$database['prefix']}system_config` VALUES (1,'{$date}', '{$date}', 1, '站点名称', 'web_name', '{$site['web_name']}', 'input', '', '请输入站点名称', 0);";
-                    DB::statement($sql);
+                    # 执行SQL
+                    Db::exceSQL($sql);
                     # 写入站点域名
                     $sql = "INSERT INTO `{$database['prefix']}system_config` VALUES (2,'{$date}', '{$date}', 1, '站点域名', 'web_url', '{$site['web_url']}', 'input', '', '请输入站点域名', 0);";
-                    $query = $pdo->prepare("{$sql}");
-                    $query->execute();
+                    # 执行SQL
+                    Db::exceSQL($sql);
                     # 获取管理员参数
                     $username = isset($site['username']) ? $site['username'] : '';
                     $password = isset($site['password']) ? $site['password'] : '';
                     # 写入管理员信息
                     $password = Password::passwordHash($password);
                     $sql = "INSERT INTO `{$database['prefix']}system_admin` VALUES (1,'{$date}', '{$date}', 1, 0, '{$username}', '{$password}', '1', '系统管理员', '', '{$date}', NULL, '', '0');";
-                    $query = $pdo->prepare("{$sql}");
-                    $query->execute();
+                    # 执行SQL
+                    Db::exceSQL($sql);
                     # 安装完成
                     return Json::json('安装站点数据完成...', 200, [
                         'next' => 'supervisor'
@@ -146,10 +145,6 @@ class BtController
      */
     public function database()
     {
-        $sql = file_get_contents(KF_INSTALL_PATH . '/data/sql/php_system_admin.sql');
-        print_r(Db::sqlReplace($sql));
-        exit;
-        $data = Db::query($sql);
         # 获取数据
         $post = $_POST;
         # 数据验证
@@ -172,6 +167,16 @@ class BtController
         $site = isset($post['site']) ? $post['site'] : null;
         # 数据库验证
         try {
+            # 验证数据库版本
+            $queryString = Db::pdo()->query("select VERSION() as mysql_version");
+            $version     = $queryString->fetchColumn(0);
+            if (!$version) {
+                throw new Exception('数据库版本检测失败');
+            }
+            $min_version = '5.6';
+            if (version_compare($version, $min_version) <= 0) {
+                throw new Exception("数据库要求最低{$min_version}版本");
+            }
             # 验证宝塔面板
             Validated::validateBt($btData);
             # 检测端口是否被占用
@@ -180,17 +185,6 @@ class BtController
             }
             # 验证宝塔面板
             Validated::validateBt($btData);
-            # 验证数据连接
-            $pdo = Db::connect($databased);
-            $mysqlPodSql = $pdo->query("select VERSION() as mysql_version");
-            $version = $mysqlPodSql->fetchColumn(0);
-            if (!$version) {
-                throw new Exception('数据库版本检测失败');
-            }
-            $min_version = '5.7';
-            if (version_compare($version, $min_version) <= 0) {
-                throw new Exception("数据库要求最低{$min_version}版本");
-            }
             # 验证云服务
             Validated::validateCloud($cloud);
             # 验证站点数据
