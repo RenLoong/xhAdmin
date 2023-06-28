@@ -1,0 +1,21 @@
+<?php
+
+namespace plugin\{PLUGIN_NAME}\api;
+use Request;
+
+class Login
+{
+    /**
+     * 管理员登录并返回跳转的目标地址
+     * @param \Request $request
+     * @param int $appid
+     * @return string
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function login(Request $request, int $appid)
+    {
+        return 'url';
+    }
+}

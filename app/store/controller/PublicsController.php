@@ -151,12 +151,15 @@ class PublicsController extends BaseController
     {
         $admin_id = hp_admin_id('hp_store');
         if (!$admin_id) {
-            return parent::success('该用户不存在');
+            return $this->failFul('登录超时，请重新登录',12000);
         }
         $where = [
             'id' => $admin_id
         ];
         $model = Store::where($where)->find();
+        if (!$model) {
+            return $this->failFul('该用户不存在',12000);
+        }
         $storeModel = $model->toArray();
         $data = [
             'id' => $storeModel['id'],

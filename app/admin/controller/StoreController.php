@@ -13,6 +13,7 @@ use app\BaseController;
 use app\enum\PlatformTypes;
 use app\model\StorePlatformConfig;
 use app\service\Upload;
+use Exception;
 use support\Request;
 use think\facade\Db;
 
@@ -507,42 +508,42 @@ class StoreController extends BaseController
             ];
             $model = $model->where($where)->find();
             if (!$model) {
-                throw new \Exception('该数据不存在');
+                throw new Exception('该数据不存在');
             }
             # 删除租户下平台
             $where         = [
                 'store_id'  => $model->id
             ];
-            $platformCount = StorePlatform::where($where)->count();
-            if ($platformCount) {
-                if (!StorePlatform::where($where)->delete(true)) {
-                    throw new \Exception('删除租户平台失败');
+            $platforms = StorePlatform::where($where)->withTrashed()->select();
+            foreach ($platforms as $platformModel) {
+                if (!$platformModel->force()->delete()) {
+                    throw new Exception('删除租户平台失败');
                 }
             }
             # 删除租户下的所有用户
-            $userCount = Users::where($where)->count();
-            if ($userCount) {
-                if (!Users::where($where)->delete(true)) {
-                    throw new \Exception('删除租户用户失败');
+            $users = Users::where($where)->select();
+            foreach ($users as $userModel) {
+                if (!$userModel->delete()) {
+                    throw new Exception('删除租户用户失败');
                 }
             }
             # 删除平台下配置
-            $configCount = StorePlatformConfig::where($where)->count();
-            if ($configCount) {
-                if (!StorePlatformConfig::where($where)->delete(true)) {
-                    throw new \Exception('删除租户配置失败');
+            $configs = StorePlatformConfig::where($where)->withTrashed()->select();
+            foreach ($configs as $configModel) {
+                if (!$configModel->force()->delete()) {
+                    throw new Exception('删除租户配置失败');
                 }
             }
             # 删除平台下应用
-            $appCount = StoreApp::where($where)->count();
-            if ($appCount) {
-                if (!StoreApp::where($where)->delete(true)) {
-                    throw new \Exception('删除租户应用失败');
+            $apps = StoreApp::where($where)->select();
+            foreach ($apps as $appModel) {
+                if (!$appModel->delete()) {
+                    throw new Exception('删除租户应用失败');
                 }
             }
             # 删除租户
             if (!$model->delete()) {
-                throw new \Exception('删除租户失败');
+                throw new Exception('删除租户失败');
             }
             Db::commit();
             return $this->success('删除成功');

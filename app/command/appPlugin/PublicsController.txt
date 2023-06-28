@@ -1,0 +1,186 @@
+<?php
+
+namespace plugin\{PLUGIN_NAME}\app\admin\controller;
+
+use app\admin\logic\PluginLogic;
+use app\manager\Users;
+use app\utils\Password;
+use Exception;
+use support\Request;
+use app\admin\model\SystemAdmin;
+use app\admin\service\kfcloud\SystemInfo;
+use app\admin\utils\VueRoutesMgr;
+use app\admin\validate\SystemAdmin as ValidateSystemAdmin;
+use app\BaseController;
+
+class PublicsController extends BaseController
+{
+    /**
+     * 不需要登录的方法
+     * @var string[]
+     */
+    protected $noNeedLogin = ['site', 'login', 'captcha'];
+
+    /**
+     * 应用信息
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
+     */
+    public function site()
+    {
+        # 应用插件名称
+        $pluginName = $this->moduleName;
+        # 应用版本号
+        $systemInfo = PluginLogic::getPluginVersionData($pluginName);
+        # 授权密钥
+        $empower_token = empowerFile('token');
+        $private_key   = empowerFile('private_key');
+        $data          = [
+            'web_name' => 'KF开发示例',
+            'web_title' => '用户登录',
+            'web_logo' => '',
+            'version_name' => $systemInfo['version_name'],
+            'version' => $systemInfo['version'],
+            // 版权token
+            'empower_token' => $empower_token,
+            // 版权私钥
+            'empower_private_key' => $private_key,
+            // 登录页链接
+            'login_link' => [
+                'register' => '',
+                'forget' => '',
+                'other_login' => [],
+            ],
+            // 公用接口
+            'public_api' => [
+                // 登录接口
+                'login' => "app/{$pluginName}/admin/Publics/login",
+                // 自定义登录页
+                'login_file' => '',
+                // 退出接口
+                'loginout' => "app/{$pluginName}/admin/Publics/loginout",
+                // 获取用户信息
+                'user' => "app/{$pluginName}/admin/Publics/user",
+                // 获取权限菜单
+                'menus' => "app/{$pluginName}/admin/Publics/menus",
+                // 清除缓存
+                'clear' => "app/{$pluginName}/admin/Index/clear",
+                // 锁定页面
+                'lock' => "app/{$pluginName}/admin/Index/lock",
+                // 修改登录者信息
+                "user_edit" => "app/{$pluginName}/admin/Admin/editSelf",
+                // 头部toolBar远程文件
+                "header_right_file" => "app/{$pluginName}/remote/header-toolbar",
+            ],
+            // 远程组件
+            'remote_url' => [
+                /* [
+                    'title'  => '用户注册',
+                    'path'   => "app/{$pluginName}/register",
+                    'remote' => 'remote/{$pluginName}/register'
+                ],*/
+            ],
+            // 附件库API
+            'uploadify_api' => [
+                'index' => "app/{$pluginName}/admin/Upload/index",
+                'upload' => "app/{$pluginName}/admin/Upload/upload",
+                'edit' => "app/{$pluginName}/admin/Upload/edit",
+                'del' => "app/{$pluginName}/admin/Upload/del",
+                'move' => "app/{$pluginName}/admin/Upload/move",
+            ],
+            // 附件库分类
+            'uploadify_cate' => [
+                'index' => "app/{$pluginName}/admin/UploadCate/index",
+                'add' => "app/{$pluginName}/admin/UploadCate/add",
+                'edit' => "app/{$pluginName}/admin/UploadCate/edit",
+                'del' => "app/{$pluginName}/admin/UploadCate/del",
+            ],
+        ];
+        return $this->successRes($data);
+    }
+
+    /**
+     * 系统登录
+     * @param Request $request
+     * @throws Exception
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
+     */
+    public function login(Request $request)
+    {
+        try {
+            # 获取数据
+            $post = $request->post();
+            # 数据验证(示例)
+            // hpValidate(ValidateSystemAdmin::class, $post, 'login');
+    
+            # 获取应用APPID
+            $appid = $request->header('Appid');
+    
+            # 登录 (示例)
+            $users = Users::login((int) $appid, (string)$post['username'], (string)$post['password']);
+    
+            // 返回数据
+            return $this->successFul('登录成功', ['token' => $users['token']]);
+        } catch (\Throwable $e) {
+            return $this->fail($e->getMessage());
+        }
+    }
+
+
+    /**
+     * 获取管理员数据
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
+     */
+    public function user()
+    {
+        # 应用插件名称
+        $pluginName = $this->moduleName;
+        $user_id = hp_admin_id($pluginName);
+        # 查询数据
+        $data = [];
+        # 返回数据
+        return $this->successRes($data);
+    }
+
+    /**
+     * 获取菜单数据
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
+     */
+    public function menus()
+    {
+        # 应用插件名称
+        $pluginName = $this->moduleName;
+
+        # 获取菜单数据
+        $menus = config("plugin.{$pluginName}.menu");
+
+        # 返回数据
+        return $this->successRes($menus);
+    }
+
+    /**
+     * 退出登录
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
+     */
+    public function loginout(Request $request)
+    {
+        # 退出登录
+        Users::loginout();
+        return $this->success('成功退出');
+    }
+}

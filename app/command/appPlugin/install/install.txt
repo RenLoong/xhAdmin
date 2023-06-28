@@ -1,0 +1,47 @@
+<?php
+
+namespace plugin\{PLUGIN_NAME}\api;
+
+class Install
+{
+    /**
+     * 应用安装
+     * @param $version
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function install($version)
+    {
+        console_log('应用安装成功...');
+    }
+
+    /**
+     * 应用卸载
+     * @param $version
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function uninstall($version)
+    {
+        console_log('应用卸载成功...');
+    }
+
+    /**
+     * 应用更新
+     * @param $from_version
+     * @param $to_version
+     * @param $context
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function update($from_version, $to_version, $context = null)
+    {
+        console_log('应用更新成功...');
+    }
+}

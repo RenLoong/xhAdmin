@@ -40,15 +40,15 @@ class BaseController
     {
         # 请求信息
         $request    = request();
-        $path       = $request->path();
+
         # 基础模块名
         $moduleName = $this->getPathModule($request->path());
         $moduleName = getModule($moduleName);
         $this->moduleName = $moduleName;
+        
         # 插件名称
-        $pluginApp = explode('/', $path);
-        if (!empty($pluginApp[1]) && $pluginApp[1] === 'app') {
-            $this->moduleName = isset($pluginApp[2]) ? $pluginApp[2] : '';
+        if ($request->plugin) {
+            $this->moduleName = $request->plugin;
         }
     }
 

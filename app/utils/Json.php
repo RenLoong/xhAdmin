@@ -15,12 +15,12 @@ trait Json
     /**
      * 返回JSON数据
      *
-     * @param string $msg
-     * @param integer $code
+     * @param mixed $msg
+     * @param mixed $code
      * @param array $data
      * @return Response
      */
-    public static function json(string $msg, int $code, array $data = []): Response
+    public static function json(mixed $msg, mixed $code, array $data = []): Response
     {
         $json['msg'] = $msg;
         $json['code'] = $code;
@@ -34,7 +34,7 @@ trait Json
      * @param string $msg
      * @return Response
      */
-    public static function success(string $msg): Response
+    public static function success(mixed $msg): Response
     {
         return self::json($msg, 200);
     }
@@ -42,11 +42,11 @@ trait Json
     /**
      * 返回成功消息带数据
      *
-     * @param string $msg
+     * @param mixed $msg
      * @param array $data
      * @return Response
      */
-    public static function successFul(string $msg, array $data): Response
+    public static function successFul(mixed $msg, array $data): Response
     {
         return self::json($msg, 200, $data);
     }
@@ -65,10 +65,10 @@ trait Json
     /**
      * 返回失败消息
      *
-     * @param string $msg
+     * @param mixed $msg
      * @return Response
      */
-    public static function fail(string $msg): Response
+    public static function fail(mixed $msg): Response
     {
         return self::json($msg, 404);
     }
@@ -76,11 +76,11 @@ trait Json
     /**
      * 返回失败待状态码消息
      *
-     * @param string $msg
-     * @param integer $code
+     * @param mixed $msg
+     * @param mixed $code
      * @return Response
      */
-    public static function failFul(string $msg, int $code): Response
+    public static function failFul(mixed $msg, mixed $code): Response
     {
         return self::json($msg, $code);
     }

@@ -152,11 +152,17 @@ class PublicsController extends BaseController
     public function user()
     {
         $admin_id = hp_admin_id('hp_admin');
+        if (!$admin_id) {
+            return $this->failFul('登录超时，请重新登录',12000);
+        }
         // 查询数据
         $where      = [
             'id' => $admin_id
         ];
         $adminModel = SystemAdmin::with(['role'])->where($where)->find();
+        if (!$adminModel) {
+            return $this->failFul('该用户不存在',12000);
+        }
         $data       = $adminModel->toArray();
         return parent::successRes($data);
     }
@@ -171,11 +177,16 @@ class PublicsController extends BaseController
     public function menus()
     {
         $admin_id = hp_admin_id('hp_admin');
-
+        if (!$admin_id) {
+            return $this->failFul('登录超时，请重新登录',12000);
+        }
         $where = [
             'id' => $admin_id
         ];
         $adminModel = SystemAdmin::where($where)->find();
+        if (!$adminModel) {
+            return $this->failFul('该用户不存在',12000);
+        }
         $admin      = $adminModel->toArray();
         $data       = VueRoutesMgr::run($admin);
         return parent::successRes($data);

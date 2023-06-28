@@ -2,6 +2,7 @@
 
 namespace app\command;
 
+use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,15 +14,6 @@ class AppPluginCreate extends Command
 {
     protected static $defaultName = 'yc-plugin:create';
     protected static $defaultDescription = 'App Plugin Create';
-
-    # 菜单类型：默认3
-    private $menuType = 3;
-    private $menuTypeArr = [
-        1           => '配置文件菜单',
-        2           => '数据表权限菜单',
-        3           => '自主实现菜单',
-    ];
-    private $menuTypeText = null;
 
     # 后台类型：默认2
     private $adminType = 2;
@@ -40,14 +32,6 @@ class AppPluginCreate extends Command
      */
     protected function configure()
     {
-        $this->addArgument('name', InputArgument::OPTIONAL, 'App plugin name');
-
-        # 拼接菜单类型数组
-        $menuTypeText = '';
-        foreach ($this->menuTypeArr as $key => $value) {
-            $menuTypeText .= "{$key}.{$value} ";
-        }
-        $this->menuTypeText = $menuTypeText;
         # 拼接后台类型数组
         $adminTypeText      = '';
         foreach ($this->adminTypeArr as $key => $value) {
@@ -82,17 +66,13 @@ class AppPluginCreate extends Command
         }
         # 后台类型：1.官方后台 2.自主实现
         $this->adminType = $this->getAdminType($input, $output);
-        if ($this->adminType == 1) {
-            # 菜单类型：1.配置权限菜单 2.数据表权限菜单，3.自主实现菜单
-            $this->menuType = $this->getMenuType($input, $output);
-        }
+
         # 收集数据完成，提示用户确认
         $output->writeln("<fg=red>");
         $output->writeln("------插件创建信息------");
         $output->writeln("团队标识：{$teamName}");
         $output->writeln("插件名称：{$pluginName}");
         $output->writeln("插件标识：{$teamPlugin}");
-        $output->writeln("菜单类型：{$this->menuTypeArr[$this->menuType]}");
         $output->writeln("后台类型：{$this->adminTypeArr[$this->adminType]}");
         $output->writeln("------请确认创建信息------");
         $output->writeln("</>");
@@ -103,9 +83,10 @@ class AppPluginCreate extends Command
         }
         # 执行创建应用文件
         $this->createPluginFiles($teamPlugin);
-        # 执行创建权限菜单
+        # 创建应用安装文件
+        $this->createApiFiles(base_path("/plugin/{$teamPlugin}/api"), $teamPlugin);
         # 创建成功
-        $output->writeln('<fg=green>应用插件创建成功...</>');
+        $output->writeln('<fg=green>示例应用插件创建成功...</>');
         return self::SUCCESS;
     }
 
@@ -139,8 +120,115 @@ class AppPluginCreate extends Command
         $this->createViewFile("$base_path/plugin/$pluginName/app/view/index/index.html");
         # 复制配置文件
         $this->CreateConfigFiles("$base_path/plugin/$pluginName/config", $pluginName);
-        # 创建对外API文件
-        // $this->createApiFiles("$base_path/plugin/$pluginName/api", $pluginName);
+        # 创建远程默认组件
+        $this->createRemoteFiles("$base_path/plugin/$pluginName/public/remote", $pluginName);
+        # 创建初始版本文件
+        $this->CreateVersionFiles("$base_path/plugin/$pluginName", $pluginName);
+    }
+
+    /**
+     * 创建应用安装
+     * @param string $base
+     * @param string $pluginName
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    private function createApiFiles(string $base,string $pluginName)
+    {
+        # 创建应用安装文件
+        $content = file_get_contents(app_path('/command/appPlugin/install/install.txt'));
+        $content = str_replace('{PLUGIN_NAME}', $pluginName, $content);
+        file_put_contents("{$base}/Install.php", $content);
+        console_log("创建应用安装接口文件成功：{$base}/Install.php");
+
+        # 创建应用
+        $content = file_get_contents(app_path('/command/appPlugin/install/created.txt'));
+        $content = str_replace('{PLUGIN_NAME}', $pluginName, $content);
+        file_put_contents("{$base}/Created.php", $content);
+        console_log("创建应用管理员接口文件成功：{$base}/Created.php");
+
+        # 应用登录
+        $content = file_get_contents(app_path('/command/appPlugin/install/login.txt'));
+        $content = str_replace('{PLUGIN_NAME}', $pluginName, $content);
+        file_put_contents("{$base}/Login.php", $content);
+        console_log("创建应用登录接口文件成功：{$base}/Login.php");
+    }
+
+    /**
+     * 创建远程组件
+     * @param mixed $base_path
+     * @param mixed $pluginName
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    private static function createRemoteFiles($base_path, $pluginName)
+    {
+        # 检测目录并创建
+        if (!is_dir($base_path)) {
+            mkdir($base_path, 0777, true);
+        }
+        # 创建默认欢迎页面
+        $data = <<<EOF
+        <template>
+            <div>
+                这是 {$pluginName} 的欢迎页面
+            </div>
+        </template>
+
+        <script>
+        export default {
+        }
+        </script>
+
+        <style>
+        </style>
+        EOF;
+        file_put_contents($base_path . '/welcome.vue', $data);
+        console_log("创建默认欢迎页面：{$base_path}/welcome.vue");
+
+        # 创建头部工具栏页面
+        $data = <<<EOF
+        <template>
+            <div>
+                这是 {$pluginName} 的头部工具栏
+            </div>
+        </template>
+
+        <script>
+        export default {
+        }
+        </script>
+
+        <style>
+        </style>
+        EOF;
+        file_put_contents($base_path . '/header-toolbar.vue', $data);
+        console_log("创建头部工具栏页面：{$base_path}/header-toolbar.vue");
+    }
+
+    /**
+     * 
+     * @param mixed $base_path
+     * @param mixed $pluginName
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    private static function CreateVersionFiles($base_path, $pluginName)
+    {
+        $data = <<<EOF
+        {
+            "version" : 1,
+            "version_name" : "1.0.0"
+        }
+        EOF;
+        file_put_contents($base_path . '/version.json', $data);
+        console_log("创建初始版本文件：{$base_path}/version.json");
     }
 
     /**
@@ -167,17 +255,6 @@ class AppPluginCreate extends Command
         ];
         EOF;
         file_put_contents("$path/app.php", $content);
-
-        # 文件配置菜单
-        if ($this->adminType == 1 && $this->menuType == 1) {
-            console_log("创建配置文件：{$path}/menu.php");
-            $content = <<<EOF
-            <?php
-    
-            return [];
-            EOF;
-            file_put_contents("$path/menu.php", $content);
-        }
 
         console_log("创建配置文件：{$path}/autoload.php");
         $content = <<<EOF
@@ -335,7 +412,13 @@ class AppPluginCreate extends Command
 
         # 创建官方后台配置文件
         if ($this->adminType == 1) {
-            console_log("创建配置文件：{$path}/admin.php");
+            # 创建配置菜单
+            $content = file_get_contents(app_path('/command/appPlugin/config/menu.txt'));
+            $content = str_replace("admin", $pluginName, $content);
+            file_put_contents("$path/menu.php", $content);
+            console_log("创建菜单配置文件：{$path}/menu.php");
+
+            # 创建后台配置
             $content = <<<EOF
             <?php
     
@@ -344,6 +427,7 @@ class AppPluginCreate extends Command
             ];
             EOF;
             file_put_contents("$path/admin.php", $content);
+            console_log("创建配置文件：{$path}/admin.php");
         }
     }
 
@@ -410,8 +494,8 @@ class AppPluginCreate extends Command
      */
     private function copyPublicsController(string $path, string $name)
     {
-        echo "创建官方默认登录控制器：{$path}\r\n";
-        $content = file_get_contents(app_path('/command/tpl/PublicsController.txt'));
+        echo "创建官方后台登录控制器：{$path}\r\n";
+        $content = file_get_contents(app_path('/command/appPlugin/PublicsController.txt'));
         $content = str_replace('{PLUGIN_NAME}', $name, $content);
         file_put_contents($path, $content);
     }
@@ -540,29 +624,6 @@ class AppPluginCreate extends Command
             return $this->getAdminType($input, $output);
         }
         return $adminType;
-    }
-
-    /**
-     * 获取权限菜单类型
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     * @return mixed
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
-     */
-    private function getMenuType(InputInterface $input, OutputInterface $output)
-    {
-        $menuType = (int)$this->waitInput($input, $output, "菜单类型：<fg=yellow>{$this->menuTypeText}</>");
-        if (!$menuType) {
-            $output->writeln('<error>请选择权限菜单类型</error>');
-            return $this->getMenuType($input, $output);
-        }
-        if (!in_array($menuType, [1, 2, 3])) {
-            $output->writeln('<error>请选择正确的权限菜单类型</error>');
-            return $this->getMenuType($input, $output);
-        }
-        return $menuType;
     }
 
     /**

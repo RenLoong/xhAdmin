@@ -65,24 +65,24 @@ class Users extends Model
 
     /**
      * 操作用户积分
+     * @param int $appid
      * @param int $uid
      * @param int $type
      * @param int $value
      * @param string $remarks
-     * @throws Exception
      * @return bool
+     * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-05-20
      */
-    public static function actionIntegral(int $uid, int $type, int $value, string $remarks): bool
+    public static function actionIntegral(int $appid,int $uid, int $type, int $value, string $remarks): bool
     {
         $where = [
-            'id' => $uid
+            'id' => $uid,
+            'appid'=> $appid
         ];
         $model = self::where($where)->find();
         if (!$model) {
-            throw new Exception('该用户不存在');
+            throw new Exception('该用户未注册');
         }
         UsersIntegralBill::addBill($model, $type, $value, $remarks);
         if ($type == 1) {
@@ -102,24 +102,24 @@ class Users extends Model
 
     /**
      * 操作用户余额
+     * @param int $appid
      * @param int $uid
      * @param int $type
      * @param float $value
      * @param string $remarks
-     * @throws Exception
      * @return bool
+     * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-05-20
      */
-    public static function actionMoney(int $uid, int $type, float $value, string $remarks)
+    public static function actionMoney(int $appid,int $uid, int $type, float $value, string $remarks)
     {
         $where = [
-            'id' => $uid
+            'id' => $uid,
+            'appid'=> $appid
         ];
         $model = self::where($where)->find();
         if (!$model) {
-            throw new Exception('该用户不存在');
+            throw new Exception('该用户未注册');
         }
         UsersMoneyBill::addBill($model, $type, $value, $remarks);
         if ($type == 1) {
