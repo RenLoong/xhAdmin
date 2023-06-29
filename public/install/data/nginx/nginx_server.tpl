@@ -9,7 +9,8 @@
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         
         # 转发Cookie，设置 SameSite
-        proxy_cookie_path / "/; secure; HttpOnly; SameSite=strict";
+        proxy_cookie_path / "/; HttpOnly; SameSite=strict";
+        
         # 关闭重试机制
         proxy_next_upstream off;
 

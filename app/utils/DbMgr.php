@@ -1,6 +1,7 @@
 <?php
 
 namespace app\utils;
+use Exception;
 use support\Db;
 
 /**
@@ -11,9 +12,16 @@ use support\Db;
  */
 class DbMgr
 {
+    /**
+     * 执行SQL文件语句
+     * @param string $sql
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
     public static function querySQL(string $sql)
     {
-        $sql = self::sqlReplace($sql);
+        $sql = self::splitSqlFile($sql,';');
         foreach ($sql as $item) {
             Db::statement($item);
         }
@@ -43,6 +51,55 @@ class DbMgr
     {
         return self::schema()->hasTable($table);
     }
+    
+    /**
+     * 数据库字符串转义
+     * @param mixed $var
+     * @return bool|string
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function pdoQuote($var)
+    {
+        return self::instance()->getPdo()->quote($var, \PDO::PARAM_STR);
+    }
+
+    
+    /**
+     * 检查表名是否合法
+     * @param string $table
+     * @throws \Exception
+     * @return string
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function checkTableName(string $table): string
+    {
+        if (!preg_match('/^[a-zA-Z_0-9]+$/', $table)) {
+            throw new Exception('表名不合法');
+        }
+        return $table;
+    }
+
+    /**
+     * 变量或数组中的元素只能是字母数字下划线组合
+     * @param mixed $var
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public static function filterAlphaNum($var)
+    {
+        $vars = (array)$var;
+        array_walk_recursive($vars, function ($item) {
+            if (is_string($item) && !preg_match('/^[a-zA-Z_0-9]+$/', $item)) {
+                throw new Exception('参数不合法');
+            }
+        });
+        return $var;
+    }
 
     /**
      * 检测字段是否存在
@@ -57,24 +114,67 @@ class DbMgr
     {
         return self::schema()->hasColumn($table,$field);
     }
-    
+
     /**
-     * 替换SQL文件多余字符串
-     * @param string $sql
-     * @return array<string>|bool
+     * 去除sql文件中的注释
+     * @param mixed $sql
+     * @return string
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
      */
-    public static function sqlReplace(string $sql)
+    public static function removeComments($sql): string
     {
-        $sql = preg_replace('/\/\*.*?\*\//s', '', $sql);
-        $sql = preg_replace('/--.*/i', '', $sql);
-        $sql = str_replace("\n","",$sql);
-        $sql = str_replace("\r","",$sql);
-        $sql = explode(';', $sql);
-        $sql = array_filter($sql);
-        return $sql;
+        return preg_replace("/(\n--[^\n]*)/","", $sql);
+    }
+    
+    /**
+     * 分割SQL文件
+     * @param mixed $sql
+     * @param mixed $delimiter
+     * @return array
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public static function splitSqlFile($sql, $delimiter): array
+    {
+        $tokens = explode($delimiter, $sql);
+        $output = array();
+        $matches = array();
+        $token_count = count($tokens);
+        for ($i = 0; $i < $token_count; $i++) {
+            if (($i != ($token_count - 1)) || (strlen($tokens[$i] > 0))) {
+                $total_quotes = preg_match_all("/'/", $tokens[$i], $matches);
+                $escaped_quotes = preg_match_all("/(?<!\\\\)(\\\\\\\\)*\\\\'/", $tokens[$i], $matches);
+                $unescaped_quotes = $total_quotes - $escaped_quotes;
+
+                if (($unescaped_quotes % 2) == 0) {
+                    $output[] = $tokens[$i];
+                    $tokens[$i] = "";
+                } else {
+                    $temp = $tokens[$i] . $delimiter;
+                    $tokens[$i] = "";
+
+                    $complete_stmt = false;
+                    for ($j = $i + 1; (!$complete_stmt && ($j < $token_count)); $j++) {
+                        $total_quotes = preg_match_all("/'/", $tokens[$j], $matches);
+                        $escaped_quotes = preg_match_all("/(?<!\\\\)(\\\\\\\\)*\\\\'/", $tokens[$j], $matches);
+                        $unescaped_quotes = $total_quotes - $escaped_quotes;
+                        if (($unescaped_quotes % 2) == 1) {
+                            $output[] = $temp . $tokens[$j];
+                            $tokens[$j] = "";
+                            $temp = "";
+                            $complete_stmt = true;
+                            $i = $j;
+                        } else {
+                            $temp .= $tokens[$j] . $delimiter;
+                            $tokens[$j] = "";
+                        }
+
+                    }
+                }
+            }
+        }
+        return $output;
     }
 
     /**
