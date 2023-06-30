@@ -51,6 +51,11 @@ return [
         'value'  => 'fail'
     ],
     [
+        'name'   => 'pcntl_waitpid',
+        'status' => false,
+        'value'  => 'fail'
+    ],
+    [
         'name'   => 'posix_getuid',
         'status' => false,
         'value'  => 'fail'
