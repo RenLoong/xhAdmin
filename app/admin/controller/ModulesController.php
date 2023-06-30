@@ -7,6 +7,7 @@ use app\admin\builder\ListBuilder;
 use app\admin\logic\ModulesLogic;
 use app\admin\validate\Modules;
 use app\BaseController;
+use app\exception\RedirectException;
 use app\utils\DbMgr;
 use Exception;
 use Illuminate\Database\Schema\Blueprint;
@@ -46,8 +47,9 @@ class ModulesController extends BaseController
                 'link' => true
             ])
             ->addRightButton('fields', '字段', [
-                'api' => 'admin/Fields/index',
-                'path' => '/Fields/index',
+                'api'           => 'admin/Fields/index',
+                'path'          => '/Fields/index',
+                'isBack'        => true,
             ], [], [
                 'type' => 'primary',
                 'link' => true
@@ -76,7 +78,7 @@ class ModulesController extends BaseController
             ->addColumn('TABLE_NAME', '表名')
             ->addColumn('TABLE_COMMENT', '备注')
             ->addColumn('TABLE_ROWS', '记录数', [
-                'width' => 80
+                'width' => 100
             ])
             ->addColumn('ENGINE', '引擎', [
                 'width' => 130
@@ -214,7 +216,7 @@ class ModulesController extends BaseController
         $tableName = str_replace($prefix, '', $prefixTableName);
         # 系统表禁止删除
         if (in_array($tableName, ModulesLogic::dropTables())) {
-            return $this->fail("{$prefixTableName}属于系统表，禁止编辑");
+            throw new RedirectException("{$prefixTableName}属于系统表，禁止编辑",'/modules/index');
         }
         if ($request->method() == 'PUT') {
             $post = $request->post();

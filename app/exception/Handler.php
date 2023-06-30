@@ -29,6 +29,11 @@ class Handler extends ExceptionHandler
                 'code' => $code ?: 500,
                 'msg'  => $exception->getMessage(),
             ];
+            if ($exception instanceof RedirectException) {
+                $json['data'] = [
+                    'url' => $exception->getUrl(),
+                ];
+            }
             // 调试环境错误
             if ($this->debug) {
                 $json['trace']['line'] = $exception->getLine();

@@ -7,6 +7,7 @@ use app\admin\builder\ListBuilder;
 use app\admin\logic\ModulesLogic;
 use app\admin\validate\Fields;
 use app\BaseController;
+use app\exception\RedirectException;
 use app\utils\DbMgr;
 use Exception;
 use Illuminate\Database\Schema\Blueprint;
@@ -33,13 +34,13 @@ class FieldsController extends BaseController
     {
         $request               = request();
         $prefix                = config('database.connections.mysql.prefix');
-        $this->prefixTableName = $request->get('TABLE_NAME', '');
+        $this->prefixTableName = $request->input('TABLE_NAME', '');
         $this->tableName       = str_replace($prefix, '', $this->prefixTableName);
         if (!DbMgr::hasTable($this->tableName)) {
             throw new Exception('该数据表不存在');
         }
         if (in_array($this->tableName, ModulesLogic::dropTables())) {
-            throw new Exception('系统表，禁止操作字段');
+            throw new RedirectException('系统表，禁止操作字段', '/Modules/index');
         }
     }
 
@@ -65,17 +66,17 @@ class FieldsController extends BaseController
             ->addTopButton('add', '新建字段', [
                 'api' => 'admin/Fields/add',
                 'path' => '/Fields/add',
-                'queryParams' => [
-                    'TABLE_NAME' => $this->tableName
-                ]
+                'queryParams'       => [
+                    'TABLE_NAME'    => $this->tableName,
+                ],
             ], [], [
                 'type' => 'primary',
             ])
             ->addRightButton('edit', '编辑', [
                 'api' => 'admin/Fields/edit',
                 'path' => '/Fields/edit',
-                'queryParams' => [
-                    'TABLE_NAME' => $this->tableName
+                'queryParams'       => [
+                    'TABLE_NAME'    => $this->tableName
                 ]
             ], [], [
                 'type' => 'primary',
@@ -153,6 +154,37 @@ class FieldsController extends BaseController
             $post = $request->post();
             # 数据验证
             hpValidate(Fields::class, $post);
+            # 枚举必须输入额外数据
+            if ($post['type'] === 'enum' && empty($post['extra'])) {
+                return $this->fail('请输入扩展数据');
+            }
+            # 枚举类型值验证
+            if ($post['type'] === 'enum' && stripos($post['extra'], ',') === false) {
+                return $this->fail('枚举类型必须以小写逗号隔开');
+            }
+            # 枚举必须有默认值
+            if ($post['type'] === 'enum' && empty($post['default'])) {
+                return $this->fail('请输入默认值');
+            }
+            if (!in_array($post['default'],array_map('trim', explode(',', $post['extra'])))) {
+                return $this->fail('枚举默认值错误');
+            }
+            # 数字及浮点验证
+            if (in_array($post['type'], ['integer', 'string', 'char', 'float', 'decimal', 'double'])) {
+                if (empty($post['length'])) {
+                    return $this->fail('请输入数据长度');
+                }
+                $value = intval($post['length']);
+                if ($value > 11 && $post['type'] === 'integer') {
+                    return $this->fail('数字类型最大11位');
+                }
+                if ($value > 10 && in_array($post['type'], ['float', 'decimal', 'double'])) {
+                    return $this->fail('浮点类型最大10位');
+                }
+                if ($value > 255 && in_array($post['type'], ['string', 'char'])) {
+                    return $this->fail('字符串类型最大255位');
+                }
+            }
             # 验证字段是否存在
             if (DbMgr::schema()->hasColumn($this->tableName, $post['name'])) {
                 return $this->fail('字段已存在');
@@ -160,14 +192,17 @@ class FieldsController extends BaseController
             # 创建字段
             DbMgr::schema()
                 ->table($this->tableName, function (Blueprint $table) use ($post) {
-                    $params = [];
+                    $params = [
+                        'comment'       => $post['comment']
+                    ];
                     # 判断是否有长度
                     if (in_array($post['type'], ['string', 'char']) || stripos($post['type'], 'time') !== false) {
                         $params['length'] = $post['length'];
                     }
                     # 检测是否枚举类型
                     if ($post['type'] === 'enum') {
-                        $params['length'] = array_map('trim', explode(',', $post['length']));
+                        $params['default'] = $post['default'];
+                        $params['allowed'] = array_map('trim', explode(',', $post['extra']));
                     }
                     # 检测是否浮点类型
                     if (in_array($post['type'], ['float', 'decimal', 'double'])) {
@@ -175,8 +210,11 @@ class FieldsController extends BaseController
                     }
                     # 设置字段基础参数
                     $table->addColumn($post['type'], $post['name'], $params);
-                    $table->nullable();
-                    // $table->renameColumn()
+
+                    # 设置引擎
+                    $table->charset = 'utf8mb4';
+                    $table->collation = 'utf8mb4_general_ci';
+                    $table->engine = 'InnoDB';
                 });
             return $this->success('创建成功');
         }
@@ -214,6 +252,7 @@ class FieldsController extends BaseController
                 'col' => [
                     'span' => 12
                 ],
+                'placeholder' => '不输入默认值，据则默认为null'
             ])
             ->create();
         return $this->successRes($data);
@@ -229,19 +268,92 @@ class FieldsController extends BaseController
      */
     public function edit(Request $request)
     {
-        $data = [];
+        if ($request->method() === 'PUT') {
+            
+        }
+        $column_name = $request->get('COLUMN_NAME', '');
+        if (in_array($column_name,['id','create_at','update_at'])) {
+            throw new RedirectException('系统字段，禁止修改',"/Fields/index?TABLE_NAME={$this->prefixTableName}");
+        }
+        $sql     = "SELECT * FROM information_schema.COLUMNS WHERE table_name = ('{$this->prefixTableName}') and COLUMN_NAME = '{$column_name}' ORDER BY ordinal_position";
+        $columnObj    = DbMgr::instance()->select($sql);
+        if (empty($columnObj)) {
+            throw new RedirectException('获取字段数据失败',"/Fields/index?TABLE_NAME={$this->prefixTableName}");
+        }
+        isset($columnObj[0]) && $columnData = $columnObj[0];
+        if (empty($columnData)) {
+            throw new RedirectException('字段数据出错',"/Fields/index?TABLE_NAME={$this->prefixTableName}");
+        }
+        # 重设数据
+        $data['name'] = $columnData->COLUMN_NAME ?? '';
+        $data['comment'] = $columnData->COLUMN_COMMENT ?? '';
+        $data['type'] = $columnData->DATA_TYPE ?? '';
+        $data['length'] = $columnData->CHARACTER_MAXIMUM_LENGTH ?? '';
+        if ($data['type'] === 'enum') {
+            $str             = ['enum(', ')',"'"];
+            $default = implode(',',explode(',', str_replace($str, '', $columnData->COLUMN_TYPE)));
+            $data['extra'] = $default;
+            $data['default'] = $columnData->COLUMN_DEFAULT;
+        }
+        
+        $builder = new FormBuilder;
+        $data    = $builder
+            ->setMethod('PUT')
+            ->addRow('name', 'input', '字段名称', '', [
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('comment', 'input', '字段注释', '', [
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('type', 'select', '字段类型', '', [
+                'col' => [
+                    'span' => 12
+                ],
+                'options' => ModulesLogic::getFieldTypeSelect()
+            ])
+            ->addRow('extra', 'textarea', '扩展数据', '', [
+                'col' => [
+                    'span' => 12
+                ],
+                'placeholder' => '可选填，扩展数据'
+            ])
+            ->addRow('length', 'input', '数据长度', '', [
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('default', 'input', '默认数据', '', [
+                'col' => [
+                    'span' => 12
+                ],
+                'placeholder' => '不输入默认值，据则默认为null'
+            ])
+            ->setFormData($data)
+            ->create();
         return $this->successRes($data);
     }
 
     /**
      * 删除字段
      * @param \support\Request $request
-     * @return void
+     * @return \support\Response
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
      */
     public function del(Request $request)
     {
+        $column_name = $request->post('COLUMN_NAME', '');
+        if (in_array($column_name,['id','create_at','update_at'])) {
+            return $this->fail('系统字段，禁止删除');
+        }
+        # 删除字段
+        DbMgr::schema()->dropColumns($this->tableName,$column_name);
+
+        # 操作返回
+        return $this->success('删除成功');
     }
 }
