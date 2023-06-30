@@ -1,7 +1,6 @@
 <?php
 
 namespace app\admin\logic;
-use app\enum\ModulesType;
 use Illuminate\Database\Schema\Blueprint;
 
 /**
@@ -27,7 +26,7 @@ class ModulesLogic
                 'primary_key'           => true,
                 'auto_increment'        => true,
                 'length'                => 11,
-                'type'                  => ModulesType::INTEGER['value'],
+                'type'                  => 'integer',
                 'comment'               => '主键',
                 'nullable'              => null,
                 'default'               => null,
@@ -37,7 +36,7 @@ class ModulesLogic
                 'primary_key'           => false,
                 'auto_increment'        => false,
                 'length'                => null,
-                'type'                  => ModulesType::DATETIME['value'],
+                'type'                  => 'dateTime',
                 'comment'               => '创建时间',
                 'nullable'              => 1,
                 'default'               => null,
@@ -47,7 +46,7 @@ class ModulesLogic
                 'primary_key'           => false,
                 'auto_increment'        => false,
                 'length'                => null,
-                'type'                  => ModulesType::DATETIME['value'],
+                'type'                  => 'dateTime',
                 'comment'               => '更新时间',
                 'nullable'              => 1,
                 'default'               => null,
@@ -154,40 +153,60 @@ class ModulesLogic
     {
         return  [
             //method=>[控件]
-            'integer' => ['InputNumber'],
-            'string' => ['Input'],
-            'text' => ['TextArea'],
-            'date' => ['DatePicker'],
-            'enum' => ['Select'],
-            'float' => ['Input'],
+            'integer' => 'InputNumber',
+            'string' => 'input',
+            'text' => 'textarea',
+            'date' => 'DatePicker',
+            'enum' => 'Select',
+            'float' => 'Input',
 
-            'tinyInteger' => ['InputNumber'],
-            'smallInteger' => ['InputNumber'],
-            'mediumInteger' => ['InputNumber'],
-            'bigInteger' => ['InputNumber'],
+            'tinyInteger' => 'InputNumber',
+            'smallInteger' => 'InputNumber',
+            'mediumInteger' => 'InputNumber',
+            'bigInteger' => 'InputNumber',
 
-            'unsignedInteger' => ['InputNumber'],
-            'unsignedTinyInteger' => ['InputNumber'],
-            'unsignedSmallInteger' => ['InputNumber'],
-            'unsignedMediumInteger' => ['InputNumber'],
-            'unsignedBigInteger' => ['InputNumber'],
+            'unsignedInteger' => 'InputNumber',
+            'unsignedTinyInteger' => 'InputNumber',
+            'unsignedSmallInteger' => 'InputNumber',
+            'unsignedMediumInteger' => 'InputNumber',
+            'unsignedBigInteger' => 'InputNumber',
 
-            'decimal' => ['Input'],
-            'double' => ['Input'],
+            'decimal' => 'Input',
+            'double' => 'Input',
 
-            'mediumText' => ['TextArea'],
-            'longText' => ['TextArea'],
+            'mediumText' => 'TextArea',
+            'longText' => 'TextArea',
 
-            'dateTime' => ['DateTimePicker'],
+            'dateTime' => 'DateTimePicker',
 
-            'time' => ['DateTimePicker'],
-            'timestamp' => ['DateTimePicker'],
+            'time' => 'DateTimePicker',
+            'timestamp' => 'DateTimePicker',
 
-            'char' => ['Input'],
+            'char' => 'Input',
 
-            'binary' => ['Input'],
+            'binary' => 'Input',
 
-            'json' => ['input']
+            'json' => 'input'
         ];
+    }
+
+    /**
+     * 获取字段类型选项
+     * @return array<array>
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function getFieldTypeSelect()
+    {
+        $list = array_keys(self::methodControlMap());
+        $data = [];
+        foreach ($list as $key => $value) {
+            $data[$key] = [
+                'label'     => $value,
+                'value'     => $value
+            ];
+        }
+        return $data;
     }
 }

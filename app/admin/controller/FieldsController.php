@@ -5,9 +5,11 @@ namespace app\admin\controller;
 use app\admin\builder\FormBuilder;
 use app\admin\builder\ListBuilder;
 use app\admin\logic\ModulesLogic;
+use app\admin\validate\Fields;
 use app\BaseController;
 use app\utils\DbMgr;
 use Exception;
+use Illuminate\Database\Schema\Blueprint;
 use support\Request;
 
 /**
@@ -19,6 +21,7 @@ class FieldsController extends BaseController
 {
     private $tableName;
     private $prefixTableName;
+
     /**
      * 构造函数
      * @return \support\Response
@@ -115,14 +118,14 @@ class FieldsController extends BaseController
     public function index(Request $request)
     {
         # 分页参数
-        $page     = (int) $request->get('page', 1);
-        $limit    = (int) $request->get('limit', 20);
+        $page   = (int) $request->get('page', 1);
+        $limit  = (int) $request->get('limit', 20);
         $offset = ($page - 1) * $limit;
         # 数据参数
         $database = config('database.connections.mysql.database');
         $table    = $this->prefixTableName;
         # 数据表字段
-        $list     = DbMgr::instance()->select("SELECT * FROM information_schema.COLUMNS where TABLE_SCHEMA = '$database' and table_name = '$table' order by ORDINAL_POSITION limit $offset,$limit");
+        $list = DbMgr::instance()->select("SELECT * FROM information_schema.COLUMNS where TABLE_SCHEMA = '$database' and table_name = '$table' order by ORDINAL_POSITION limit $offset,$limit");
         # 获取总数
         $total = DbMgr::instance()->select("SELECT count(*) as total from information_schema.COLUMNS WHERE table_schema='{$database}' and table_name='{$table}';")[0]->total ?? 0;
         # 返回数据
@@ -145,15 +148,69 @@ class FieldsController extends BaseController
      */
     public function add(Request $request)
     {
+        if ($request->method() === 'POST') {
+            # 获取数据
+            $post = $request->post();
+            # 数据验证
+            hpValidate(Fields::class, $post);
+            # 验证字段是否存在
+            if (DbMgr::schema()->hasColumn($this->tableName, $post['name'])) {
+                return $this->fail('字段已存在');
+            }
+            # 创建字段
+            DbMgr::schema()
+                ->table($this->tableName, function (Blueprint $table) use ($post) {
+                    $params = [];
+                    # 判断是否有长度
+                    if (in_array($post['type'], ['string', 'char']) || stripos($post['type'], 'time') !== false) {
+                        $params['length'] = $post['length'];
+                    }
+                    # 检测是否枚举类型
+                    if ($post['type'] === 'enum') {
+                        $params['length'] = array_map('trim', explode(',', $post['length']));
+                    }
+                    # 检测是否浮点类型
+                    if (in_array($post['type'], ['float', 'decimal', 'double'])) {
+                        $params['length'] = array_map('trim', explode(',', $post['length']));
+                    }
+                    # 设置字段基础参数
+                    $table->addColumn($post['type'], $post['name'], $params);
+                    $table->nullable();
+                    // $table->renameColumn()
+                });
+            return $this->success('创建成功');
+        }
         $builder = new FormBuilder;
         $data    = $builder
             ->setMethod('POST')
-            ->addRow('column_name', 'input', '字段名称', '', [
+            ->addRow('name', 'input', '字段名称', '', [
                 'col' => [
                     'span' => 12
                 ],
             ])
-            ->addRow('column_comment', 'input', '字段注释', '', [
+            ->addRow('comment', 'input', '字段注释', '', [
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('type', 'select', '字段类型', '', [
+                'col' => [
+                    'span' => 12
+                ],
+                'options' => ModulesLogic::getFieldTypeSelect()
+            ])
+            ->addRow('extra', 'textarea', '扩展数据', '', [
+                'col' => [
+                    'span' => 12
+                ],
+                'placeholder' => '可选填，扩展数据'
+            ])
+            ->addRow('length', 'input', '数据长度', '', [
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('default', 'input', '默认数据', '', [
                 'col' => [
                     'span' => 12
                 ],

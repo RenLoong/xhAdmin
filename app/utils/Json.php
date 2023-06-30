@@ -84,4 +84,31 @@ trait Json
     {
         return self::json($msg, $code);
     }
+
+    /**
+     * 返回失败消息并重定向
+     * @param mixed $msg
+     * @param mixed $url
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function failRedirect(mixed $msg,mixed $url)
+    {
+        return self::json($msg, 302, ['url' => $url]);
+    }
+
+    /**
+     * 无失败消息直接重定向
+     * @param mixed $url
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function redirect($url)
+    {
+        return self::json('error', 301, ['url' => $url]);
+    }
 }
