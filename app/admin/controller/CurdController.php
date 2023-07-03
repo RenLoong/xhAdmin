@@ -109,23 +109,38 @@ class CurdController extends BaseController
                     'props' => [],
                 ],
             ])
-            ->addColumnEle('form_add', '增加', [
-                'width' => 100,
+            ->addColumnEle('form_add', '增加表单', [
+                'width' => 110,
                 'params' => [
                     'type' => 'switch',
                     'api' => "/admin/Curd/edit?TABLE_NAME={$this->prefixTableName}",
                     'checked' => [
-                        'text' => '支持',
+                        'text' => '显示',
                         'value' => '20'
                     ],
                     'unchecked' => [
-                        'text' => '不支持',
+                        'text' => '不显示',
                         'value' => '10'
                     ]
                 ],
             ])
-            ->addColumnEle('form_edit', '修改', [
-                'width' => 100,
+            ->addColumnEle('form_edit', '修改表单', [
+                'width' => 110,
+                'params' => [
+                    'type' => 'switch',
+                    'api' => "/admin/Curd/edit?TABLE_NAME={$this->prefixTableName}",
+                    'checked' => [
+                        'text' => '显示',
+                        'value' => '20'
+                    ],
+                    'unchecked' => [
+                        'text' => '不显示',
+                        'value' => '10'
+                    ]
+                ],
+            ])
+            ->addColumnEle('is_del', '支持删除', [
+                'width' => 110,
                 'params' => [
                     'type' => 'switch',
                     'api' => "/admin/Curd/edit?TABLE_NAME={$this->prefixTableName}",
@@ -484,10 +499,21 @@ class CurdController extends BaseController
         if ($model) {
             $model->$field = $value;
         } else {
-            $model             = new Curd;
-            $model->table_name = $table_name;
-            $model->field_name = $field_name;
-            $model->$field     = $value;
+            $sql       = "SELECT * FROM information_schema.COLUMNS WHERE table_name = ('{$this->prefixTableName}') and COLUMN_NAME = '{$field_name}' ORDER BY ordinal_position";
+            $columnObj = DbMgr::instance()->select($sql);
+            if (empty($columnObj)) {
+                throw new RedirectException('获取字段数据失败', "/Fields/index?TABLE_NAME={$this->prefixTableName}");
+            }
+            isset($columnObj[0]) && $columnData = (array)$columnObj[0];
+            if (empty($columnData)) {
+                throw new RedirectException('字段数据出错', "/Fields/index?TABLE_NAME={$this->prefixTableName}");
+            }
+            $model                      = new Curd;
+            $model->table_name          = $table_name;
+            $model->field_name          = $field_name;
+            $model->list_sort           = $columnData['ORDINAL_POSITION'];
+            $model->field_comment       = $columnData['COLUMN_COMMENT'];
+            $model->$field              = $value;
         }
         if (!$model->save()) {
             return $this->fail('修改失败');

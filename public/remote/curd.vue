@@ -12,6 +12,21 @@
                         <n-cascader :options="menus" @update:value="hanldSelectMenu" />
                     </n-form-item>
                 </n-gi>
+                <n-gi>
+                    <n-form-item label="是否支持添加">
+                        
+                    </n-form-item>
+                </n-gi>
+                <n-gi>
+                    <n-form-item label="是否支持编辑">
+                        
+                    </n-form-item>
+                </n-gi>
+                <n-gi>
+                    <n-form-item label="是否支持删除">
+                        
+                    </n-form-item>
+                </n-gi>
             </n-grid>
         </n-form>
         <div class="ctrl-container" v-if="menusPreView">

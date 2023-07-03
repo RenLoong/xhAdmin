@@ -27,7 +27,7 @@ class ModulesLogic
                 'auto_increment'        => true,
                 'length'                => 11,
                 'type'                  => 'integer',
-                'comment'               => '主键',
+                'comment'               => '序号',
                 'nullable'              => null,
                 'default'               => null,
             ],
