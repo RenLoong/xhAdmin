@@ -1,5 +1,7 @@
 <?php
 use app\admin\service\kfcloud\CloudService;
+use YcOpen\CloudService\Cloud;
+use YcOpen\CloudService\Request\LoginRequest;
 
 class Validated
 {
@@ -62,28 +64,13 @@ class Validated
      */
     public static function validateCloud(array $data)
     {
-        if (!isset($data['username']) || empty($data['username'])) {
-            throw new Exception('请输入云服务账号');
-        }
-        if (!isset($data['password']) || empty($data['password'])) {
-            throw new Exception('请输入云服务密码');
-        }
-        $response = Request::login($data['username'], $data['password']);
-        if (!$response) {
-            throw new Exception('云服务请求失败');
-        }
-        if (!isset($response['code'])) {
-            throw new Exception('云服务接口错误');
-        }
-        if ($response['code'] !== 200) {
-            throw new Exception($response['msg'], $response['code']);
-        }
-        // 缓存Redis
-        $redis = RedisMgr::connect();
-        $loginStatus = $redis->set(CloudService::$loginToken, $response['data']['token']);
-        if (!$loginStatus) {
-            throw new Exception('登录云服务失败');
-        }
+        $req = new LoginRequest;
+        $req->login();
+        $req->username = $data['username'];
+        $req->password = $data['password'];
+        $req->scode = 'no';
+        $cloud = new Cloud($req);
+        $cloud->send();
         return $data;
     }
 

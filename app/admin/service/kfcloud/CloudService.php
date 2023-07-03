@@ -37,7 +37,7 @@ class CloudService
         if ($scode) {
             $body['scode'] = $scode;
         }
-        return HttpService::send()->post('User/login', $body);
+        return HttpService::send()->post('Login/login', $body);
     }
 
 
@@ -52,11 +52,11 @@ class CloudService
      * @param  string   $ip
      * @return Response
      */
-    public static function installSite(string $title,string $domain)
+    public static function installSite(string $title, string $domain)
     {
         $data = [
-            'title'     => $title,
-            'domain'    => $domain
+            'title' => $title,
+            'domain' => $domain
         ];
         return HttpService::send()->post('Site/install', $data);
     }
@@ -95,7 +95,7 @@ class CloudService
      */
     public static function bill(array $data = []): Response
     {
-        return HttpService::send()->get('User/getUserBill',$data);
+        return HttpService::send()->get('User/getUserBill', $data);
     }
 
     /**
@@ -108,11 +108,11 @@ class CloudService
      */
     public static function list(array $query): Response
     {
-        $systemInfo= SystemInfo::info();
+        $systemInfo = SystemInfo::info();
         $query = array_merge([
-            'page'              => 1,
-            'limit'             => 20,
-            'saas_version'      => $systemInfo['system_version']
+            'page' => 1,
+            'limit' => 20,
+            'saas_version' => $systemInfo['system_version']
         ], $query);
         return HttpService::send()->get('Plugin/list', $query);
     }
@@ -131,10 +131,10 @@ class CloudService
         $systemInfo = SystemInfo::info();
         $installed_version = PluginLogic::getPluginVersion($name);
         $query = [
-            'name'              => $name,
-            'version'           => $version,
-            'local_version'     => $installed_version,
-            'saas_version'      => $systemInfo['system_version']
+            'name' => $name,
+            'version' => $version,
+            'local_version' => $installed_version,
+            'saas_version' => $systemInfo['system_version']
         ];
         return HttpService::send()->get('Plugin/detail', $query);
     }
@@ -152,10 +152,10 @@ class CloudService
         $systemInfo = SystemInfo::info();
         $installed_version = PluginLogic::getPluginVersion($name);
         $query = [
-            'name'              => $name,
-            'version'           => $version,
-            'local_version'     => $installed_version,
-            'saas_version'      => $systemInfo['system_version']
+            'name' => $name,
+            'version' => $version,
+            'local_version' => $installed_version,
+            'saas_version' => $systemInfo['system_version']
         ];
         return HttpService::send()->get('Plugin/buy', $query);
     }
@@ -172,7 +172,7 @@ class CloudService
     public static function unifiedOrder(string $order_no): Response
     {
         $query = [
-            'order_no'      => $order_no
+            'order_no' => $order_no
         ];
         return HttpService::send()->get('Order/unifiedOrder', $query);
     }
@@ -191,10 +191,10 @@ class CloudService
         $systemInfo = SystemInfo::info();
         $installed_version = PluginLogic::getPluginVersion($name);
         $query = [
-            'name'              => $name,
-            'version'           => $version,
-            'local_version'     => $installed_version,
-            'saas_version'      => $systemInfo['system_version']
+            'name' => $name,
+            'version' => $version,
+            'local_version' => $installed_version,
+            'saas_version' => $systemInfo['system_version']
         ];
         return HttpService::send()->get('Plugin/getKey', $query);
     }
@@ -210,9 +210,6 @@ class CloudService
      */
     public static function getZip(string $key): Response
     {
-        $query = [
-            'key' => $key
-        ];
-        return HttpService::send()->get('Plugin/getZip', $query);
+        return HttpService::send()->get($key);
     }
 }

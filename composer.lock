@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2109744ee9c038818e79f106c601d010",
+    "content-hash": "70e085e37b9890915c49904bcb3dfdde",
     "packages": [
         {
             "name": "aliyuncs/oss-sdk-php",
@@ -5459,6 +5459,40 @@
             "time": "2021-02-25T03:51:14+00:00"
         },
         {
+            "name": "yc-open/cloud-service",
+            "version": "1.0.8",
+            "source": {
+                "type": "git",
+                "url": "https://gitee.com/yc_open/client-cloud-service-center",
+                "reference": "cbd84726c137d91c0da5b0daadab768b4b3a8f79"
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.7",
+                "php": "^8.0",
+                "vlucas/phpdotenv": "^5.4"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "./src/helpers.php"
+                ],
+                "psr-4": {
+                    "YcOpen\\CloudService\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "楚羽幽",
+                    "email": "cy958416459@qq.com"
+                }
+            ],
+            "time": "2023-07-03T04:28:54+00:00"
+        },
+        {
             "name": "yzh52521/easyhttp",
             "version": "v1.0.7",
             "source": {
@@ -5579,5 +5613,5 @@
         "php": "^8.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.6.0"
 }

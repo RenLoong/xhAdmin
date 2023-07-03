@@ -9,6 +9,8 @@ use app\admin\service\kfcloud\Updated;
 use app\BaseController;
 use app\enum\PlatformTypes;
 use support\Request;
+use YcOpen\CloudService\Cloud;
+use YcOpen\CloudService\Request\SystemUpdateRequest;
 
 /**
  * 首页数据
@@ -29,15 +31,15 @@ class IndexController extends BaseController
     public function consoleCount(Request $request)
     {
         // 获取系统信息
-        $teamInfo   = SystemInfo::info();
-        $inKeys     = array_keys($teamInfo);
+        $teamInfo = SystemInfo::info();
+        $inKeys = array_keys($teamInfo);
         $teamFields = [
             'about_name' => '研发企业',
             'ecology' => '系统生态',
             'fream_version' => '框架版本',
             'service_wx' => '微信咨询',
         ];
-        $team       = [];
+        $team = [];
         foreach ($teamFields as $field => $label) {
             if (in_array($field, $inKeys)) {
                 $team[] = [
@@ -51,36 +53,36 @@ class IndexController extends BaseController
         $product = [];
 
         // 应用总数量
-        $platformTypes    = PlatformTypes::getData();
-        $platformApp      = [];
+        $platformTypes = PlatformTypes::getData();
+        $platformApp = [];
         $platform_echarts = [];
         foreach ($platformTypes as $value) {
-            $where                        = [
+            $where = [
                 ['platform.platform_type', '=', $value['value']],
             ];
-            $count                        = StoreApp::where($where)
+            $count = StoreApp::where($where)
                 ->alias('app')
                 ->join('store_platform platform', 'platform.id=app.platform_id')
                 ->count();
             $platformApp[$value['value']] = $count;
 
             // 查询图表数据
-            $today     = StoreApp::where($where)
+            $today = StoreApp::where($where)
                 ->alias('app')
                 ->join('store_platform platform', 'platform.id=app.platform_id')
                 ->whereDay('app.create_at')
                 ->count();
-            $week      = StoreApp::where($where)
+            $week = StoreApp::where($where)
                 ->alias('app')
                 ->join('store_platform platform', 'platform.id=app.platform_id')
                 ->whereWeek('app.create_at')
                 ->count();
-            $moon      = StoreApp::where($where)
+            $moon = StoreApp::where($where)
                 ->alias('app')
                 ->join('store_platform platform', 'platform.id=app.platform_id')
                 ->whereMonth('app.create_at')
                 ->count();
-            $quarter   = StoreApp::where($where)
+            $quarter = StoreApp::where($where)
                 ->alias('app')
                 ->join('store_platform platform', 'platform.id=app.platform_id')
                 ->whereTime('app.create_at', '-3 month')
@@ -90,7 +92,7 @@ class IndexController extends BaseController
                 ->join('store_platform platform', 'platform.id=app.platform_id')
                 ->whereTime('app.create_at', '-6 month')
                 ->count();
-            $year      = StoreApp::where($where)
+            $year = StoreApp::where($where)
                 ->alias('app')
                 ->join('store_platform platform', 'platform.id=app.platform_id')
                 ->whereYear('app.create_at')
@@ -141,9 +143,10 @@ class IndexController extends BaseController
         if (!isset($data['system_version'])) {
             return $this->fail('获取本地版本错误');
         }
+
         $system_version = $data['system_version'];
-        $version_name   = $data['system_version_name'];
-        $versionData    = [
+        $version_name = $data['system_version_name'];
+        $versionData = [
             'version_name' => '未知',
             'version' => 0,
             'client_version_name' => $version_name,
@@ -152,14 +155,17 @@ class IndexController extends BaseController
         // 检测更新
         if ($request->method() === 'DELETE') {
             # 检测更新
-            $data = Updated::verify($system_version, $version_name)->array();
-            if (!$data) {
-                return $this->json('没有获取到更新信息', 666, $versionData);
+            try {
+                $req = new SystemUpdateRequest;
+                $req->verify();
+                $req->version_name = $version_name;
+                $req->version = $system_version;
+                $cloud = new Cloud($req);
+                $data = $cloud->send();
+                return $this->successRes($data->toArray());
+            } catch (\Throwable $th) {
+                return $this->json($th->getMessage(), 666, $versionData);
             }
-            if (!isset($data['data'])) {
-                return $this->json('获取版本包体错误', 666, $versionData);
-            }
-            return json($data);
         } else if ($request->method() === 'POST') {
             try {
                 # 获取版本号
@@ -177,11 +183,17 @@ class IndexController extends BaseController
             }
         } else {
             # 获取更新信息
-            $data = Updated::systemUpdateInfo($system_version, $version_name)->array();
-            if (!$data) {
-                return $this->failFul('没有获取到更新信息', 666);
+            try {
+                $req = new SystemUpdateRequest;
+                $req->detail();
+                $req->version_name = $version_name;
+                $req->version = $system_version;
+                $cloud = new Cloud($req);
+                $data = $cloud->send();
+                return $this->successRes($data->toArray());
+            } catch (\Throwable $th) {
+                return $this->json($th->getMessage(), 666, $versionData);
             }
-            return json($data);
         }
     }
 

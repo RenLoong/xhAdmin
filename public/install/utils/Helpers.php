@@ -1,6 +1,8 @@
 <?php
 
 use app\admin\service\kfcloud\CloudService;
+use YcOpen\CloudService\Cloud;
+use YcOpen\CloudService\Request\SiteRequest;
 
 class Helpers
 {
@@ -27,41 +29,34 @@ class Helpers
         if (!$database) {
             throw new Exception('获取安装数据失败');
         }
-        $type     = isset($database['type']) ? $database['type'] : '';
-        $host     = isset($database['host']) ? $database['host'] : '';
+        $type = isset($database['type']) ? $database['type'] : '';
+        $host = isset($database['host']) ? $database['host'] : '';
         $databaseName = isset($database['database']) ? trim($database['database']) : '';
-        $port     = isset($database['port']) ? $database['port'] : '';
-        $user     = isset($database['username']) ? trim($database['username']) : '';
+        $port = isset($database['port']) ? $database['port'] : '';
+        $user = isset($database['username']) ? trim($database['username']) : '';
         $password = isset($database['password']) ? trim($database['password']) : '';
-        $charset  = isset($database['charset']) ? trim($database['charset']) : '';
-        $prefix   = isset($database['prefix']) ? trim($database['prefix']) : '';
-        $web_url   = isset($site['web_url']) ? trim($site['web_url']) : '';
+        $charset = isset($database['charset']) ? trim($database['charset']) : '';
+        $prefix = isset($database['prefix']) ? trim($database['prefix']) : '';
+        $web_url = isset($site['web_url']) ? trim($site['web_url']) : '';
 
         // 拼接配置文件路径
         $envTplPath = KF_INSTALL_PATH . "/data/env.tpl";
-        $envPath    = ROOT_PATH . "/.env";
+        $envPath = ROOT_PATH . "/.env";
 
         // 读取配置文件
         $envConfig = file_get_contents($envTplPath);
 
         // 云服务
-        $response = CloudService::installSite(
-            $site['web_name'],
-            $site['web_url']
-        )
-            ->array();
-        if (!$response) {
-            throw new Exception('安装云站点失败', 404);
-        }
-        if (!isset($response['code'])) {
-            throw new Exception('安装云站点失败！', 404);
-        }
-        if ($response['code'] !== 200) {
-            throw new Exception($response['msg'], $response['code']);
-        }
+
+        $req = new SiteRequest;
+        $req->install();
+        $req->web_name = $site['web_name'];
+        $req->web_url = $site['web_url'];
+        $cloud = new Cloud($req);
+        $cloud->send();
 
         // 替换配置文件参数
-        $str1      = [
+        $str1 = [
             "{TYPE}",
             "{HOSTNAME}",
             "{DATABASE}",
@@ -74,7 +69,7 @@ class Helpers
             "{UPLOAD_PUBLIC_URL}",
             "{SERVER_PORT}"
         ];
-        $str2      = [
+        $str2 = [
             $type,
             $host,
             $databaseName,

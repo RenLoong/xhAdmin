@@ -4,17 +4,16 @@ namespace app\admin\controller;
 
 use app\admin\builder\ListBuilder;
 use app\admin\logic\PluginLogic;
-use app\admin\service\kfcloud\CloudService;
+use app\admin\service\kfcloud\SystemInfo;
 use app\admin\utils\ComposerMgr;
 use app\BaseController;
-use app\enum\PlatformTypes;
-use app\enum\PlatformTypesStyle;
 use app\enum\PluginType;
 use app\enum\PluginTypeStyle;
 use app\utils\Utils;
-use Exception;
 use process\Monitor;
 use support\Request;
+use YcOpen\CloudService\Cloud;
+use YcOpen\CloudService\Request\PluginRequest;
 use ZipArchive;
 
 /**
@@ -36,7 +35,7 @@ class PluginController extends BaseController
     public function indexGetTable(Request $request)
     {
         $builder = new ListBuilder;
-        $data    = $builder
+        $data = $builder
             ->addActionOptions('操作', [
                 'width' => 230
             ])
@@ -218,24 +217,22 @@ class PluginController extends BaseController
      */
     public function index(Request $request)
     {
-        $page   = (int) $request->get('page', 1);
+        $page = (int) $request->get('page', 1);
         $active = $request->get('active', '0');
 
         $installed = PluginLogic::getLocalPlugins();
-        $query     = [
+        $systemInfo = SystemInfo::info();
+        $query = [
             'active' => $active,
             'page' => $page,
-            'plugins' => $installed
+            'plugins' => $installed,
+            'saas_version' => $systemInfo['system_version']
         ];
-        $body      = CloudService::list($query);
-        $response  = $body->array();
-        if (!$response) {
-            return $this->fail('请求服务失败');
-        }
-        if ($response['code'] !== 200) {
-            return json($response);
-        }
-        $data = $response['data'];
+        $req = new PluginRequest;
+        $req->list();
+        $req->setQuery($query, null);
+        $cloud = new Cloud($req);
+        $data = $cloud->send()->toArray();
         foreach ($data['data'] as $key => $value) {
             $data['data'][$key]['min_version'] = "无";
             if ($value['saas_version']) {
@@ -255,19 +252,19 @@ class PluginController extends BaseController
      */
     public function getDoc(Request $request)
     {
-        $name    = $request->get('name');
+        $name = $request->get('name');
         $version = $request->get('version');
-        $detail  = CloudService::detail($name, $version)->array();
-        if (!$detail) {
-            return $this->fail('获取应用失败');
-        }
-        if ($detail['code'] !== 200) {
-            return json($detail);
-        }
-        if (!isset($detail['data']['doc_url'])) {
-            return $this->fail('获取文档地址失败');
-        }
-        return $this->successRes(['url' => $detail['data']['doc_url']]);
+        $systemInfo = SystemInfo::info();
+        $installed_version = PluginLogic::getPluginVersion($name);
+        $req = new PluginRequest;
+        $req->detail();
+        $req->name = $name;
+        $req->version = $version;
+        $req->saas_version = $systemInfo['system_version'];
+        $req->local_version = $installed_version;
+        $cloud = new Cloud($req);
+        $data = $cloud->send()->toArray();
+        return $this->successRes(['url' => $data['doc_url']]);
     }
 
     /**
@@ -280,9 +277,20 @@ class PluginController extends BaseController
      */
     public function buy(Request $request)
     {
-        $name    = $request->post('name');
+        $name = $request->post('name');
         $version = $request->post('version');
-        return json(CloudService::buyApp($name, $version)->array());
+
+        $systemInfo = SystemInfo::info();
+        $installed_version = PluginLogic::getPluginVersion($name);
+        $req = new PluginRequest;
+        $req->buy();
+        $req->name = $name;
+        $req->version = $version;
+        $req->saas_version = $systemInfo['system_version'];
+        $req->local_version = $installed_version;
+        $cloud = new Cloud($req);
+        $data = $cloud->send()->toArray();
+        return $this->successRes($data);
     }
 
     /**
@@ -295,19 +303,23 @@ class PluginController extends BaseController
      */
     public function detail(Request $request)
     {
-        $name    = $request->get('name');
+        $name = $request->get('name');
         $version = $request->get('version');
 
-        $response = CloudService::detail($name, $version)->array();
-        if (!$response) {
-            return $this->fail('获取插件详情错误');
-        }
-        if (!isset($response['code'])) {
-            return $this->fail('插件数据出错');
-        }
-        $localVersion                     = PluginLogic::getPluginVersion($name);
-        $response['data']['localVersion'] = $localVersion;
-        return json($response);
+        $systemInfo = SystemInfo::info();
+        $installed_version = PluginLogic::getPluginVersion($name);
+        $req = new PluginRequest;
+        $req->detail();
+        $req->name = $name;
+        $req->version = $version;
+        $req->saas_version = $systemInfo['system_version'];
+        $req->local_version = $installed_version;
+        $cloud = new Cloud($req);
+        $data = $cloud->send()->toArray();
+
+        $localVersion = PluginLogic::getPluginVersion($name);
+        $data['localVersion'] = $localVersion;
+        return $this->successRes($data);
     }
 
     /**
@@ -320,7 +332,7 @@ class PluginController extends BaseController
      */
     public function install(Request $request)
     {
-        $name    = $request->post('name');
+        $name = $request->post('name');
         $version = $request->post('version');
 
         # 检测应用是否已安装
@@ -330,26 +342,40 @@ class PluginController extends BaseController
         }
 
         // 获取插件信息
-        $plugin = CloudService::detail($name, $version)->array();
-        if (!$plugin) {
-            return $this->fail('获取插件失败');
-        }
-        if ($plugin['code'] !== 200) {
-            return json($plugin);
-        }
+
+        $systemInfo = SystemInfo::info();
+        $req = new PluginRequest;
+        $req->detail();
+        $req->name = $name;
+        $req->version = $version;
+        $req->saas_version = $systemInfo['system_version'];
+        $req->local_version = $installed_version;
+        $cloud = new Cloud($req);
+        $data = $cloud->send()->toArray();
         // 获取下载文件url
-        $data = CloudService::getDownKey($name, $version)->array();
-        if ($data['code'] !== 200) {
-            return json($data);
-        }
-        if (!isset($data['data']['key'])) {
-            return $this->fail('获取下载KEY失败');
-        }
+        $req = new PluginRequest;
+        $req->getKey();
+        $req->name = $name;
+        $req->version = $version;
+        $req->saas_version = $systemInfo['system_version'];
+        $req->local_version = $installed_version;
+        $cloud = new Cloud($req);
+        $data = $cloud->send();
         // 下载zip文件
-        $base_path  = base_path("/plugin/{$name}");
-        $zip_file   = "{$base_path}.zip";
+        $request = new \YcOpen\CloudService\Request();
+        # 通过获取下载密钥接口获得
+        $request->setUrl($data->url);
+        # 保存文件到指定路径
+
+        $base_path = base_path("/plugin/{$name}");
+        $zip_file = "{$base_path}.zip";
         $extract_to = base_path('/plugin/');
-        PluginLogic::downloadZipFile($data['data']['key'], $zip_file);
+        $request->setSaveFile($zip_file);
+        $cloud = new Cloud($request);
+        $status = $cloud->send();
+        if (!$status) {
+            return $this->fail('安装包下载失败');
+        }
         console_log("{$name}应用插件文件下载完成");
         // 效验系统函数
         $has_zip_archive = class_exists(ZipArchive::class, false);
@@ -423,34 +449,50 @@ class PluginController extends BaseController
      */
     public function update(Request $request)
     {
-        $name              = $request->post('name');
-        $version           = $request->post('version');
+        $name = $request->post('name');
+        $version = $request->post('version');
         $installed_version = PluginLogic::getPluginVersion($name);
         if (!$installed_version) {
             return $this->fail('该应用未安装');
         }
 
         // 获取插件信息
-        $plugin = CloudService::detail($name, $version)->array();
-        if (!$plugin) {
-            return $this->fail('获取插件失败');
-        }
-        if ($plugin['code'] !== 200) {
-            return json($plugin);
-        }
+
+        $systemInfo = SystemInfo::info();
+        $req = new PluginRequest;
+        $req->detail();
+        $req->name = $name;
+        $req->version = $version;
+        $req->saas_version = $systemInfo['system_version'];
+        $req->local_version = $installed_version;
+        $cloud = new Cloud($req);
+        $cloud->send()->toArray();
         // 获取下载文件url
-        $data = CloudService::getDownKey($name, $version)->array();
-        if ($data['code'] !== 200) {
-            return json($data);
-        }
-        if (!isset($data['data']['key'])) {
-            return $this->fail('获取下载KEY失败');
-        }
         // 下载zip文件
-        $base_path  = base_path("/plugin/{$name}");
-        $zip_file   = "{$base_path}.zip";
+        $req = new PluginRequest;
+        $req->getKey();
+        $req->name = $name;
+        $req->version = $version;
+        $req->saas_version = $systemInfo['system_version'];
+        $req->local_version = $installed_version;
+        $cloud = new Cloud($req);
+        $data = $cloud->send();
+
+
+        $request = new \YcOpen\CloudService\Request();
+        # 通过获取下载密钥接口获得
+        $request->setUrl($data->url);
+        # 保存文件到指定路径
+
+        $base_path = base_path("/plugin/{$name}");
+        $zip_file = "{$base_path}.zip";
         $extract_to = base_path('/plugin/');
-        PluginLogic::downloadZipFile($data['data']['key'], $zip_file);
+        $request->setSaveFile($zip_file);
+        $cloud = new Cloud($request);
+        $status = $cloud->send();
+        if (!$status) {
+            return $this->fail('安装包下载失败');
+        }
         console_log("{$name}应用插件文件下载完成");
         // 效验系统函数
         $has_zip_archive = class_exists(ZipArchive::class, false);
@@ -483,7 +525,6 @@ class PluginController extends BaseController
                 $zip = new ZipArchive;
                 $zip->open($zip_file, ZIPARCHIVE::CHECKCONS);
             }
-
             # 解压目录
             if (!empty($zip)) {
                 $zip->extractTo(base_path('/plugin/'));
@@ -491,8 +532,8 @@ class PluginController extends BaseController
             } else {
                 PluginLogic::unzipWithCmd($cmd);
             }
-            
-            $context       = null;
+
+            $context = null;
             $install_class = "\\plugin\\{$name}\\api\\Install";
             # 执行beforeUpdate
             if (class_exists($install_class) && method_exists($install_class, 'beforeUpdate')) {
@@ -515,7 +556,13 @@ class PluginController extends BaseController
             } catch (\Throwable $e) {
                 return $this->fail($e->getMessage());
             }
-            return $this->fail($e->getMessage());
+            return $this->json($e->getMessage(), 404, [
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTrace(),
+            ]);
         } finally {
             if ($monitor_support_pause) {
                 Monitor::resume();
@@ -538,7 +585,7 @@ class PluginController extends BaseController
      */
     public function uninstall(Request $request)
     {
-        $name    = $request->post('name');
+        $name = $request->post('name');
         $version = $request->post('version');
         if (!$name || !preg_match('/^[a-zA-Z0-9_]+$/', $name)) {
             return $this->fail('参数错误');

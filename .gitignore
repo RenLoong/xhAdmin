@@ -7,3 +7,4 @@
 /tests/.phpunit.result.cache
 .user.ini
 /public/.user.ini
+/config/site.json

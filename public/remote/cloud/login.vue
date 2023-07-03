@@ -10,7 +10,7 @@
         </n-form-item>
         <n-form-item label="验证码">
           <n-input-group>
-            <n-input v-model:value="form.scode" placeholder="请输入验证码">
+            <n-input v-model:value="form.scode" placeholder="请输入验证码" class="flex-1">
             </n-input>
             <n-image :src="captcha" @click="getCaptcha()" :preview-disabled="true" class="captcha" />
           </n-input-group>
@@ -47,6 +47,7 @@ export default {
   },
   created() {
     this.init();
+    this.form.host = window.location.host;
   },
   methods: {
     openWin(path) {
@@ -61,14 +62,15 @@ export default {
             title: res?.msg ?? '操作成功',
             duration: 1500
           });
-        });
+        })
     },
     // 获取验证码
     getCaptcha() {
       var _this = this;
       _this.$http.useGet(`${_this.scodeSrc}?t=${Math.random()}`).then((res) => {
         const { data } = res
-        _this.captcha = data
+        _this.captcha = data.image
+        _this.form.token = data.token
       })
     },
     init() {
@@ -92,7 +94,7 @@ export default {
     width: 450px;
 
     .captcha {
-      width: 90px;
+      width: 120px;
       height: 32px;
       cursor: pointer;
     }

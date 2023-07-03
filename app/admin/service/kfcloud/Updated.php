@@ -24,7 +24,7 @@ class Updated
     public static function verify(int $version, string $version_name)
     {
         $query = [
-            'version'      => $version,
+            'version' => $version,
             'version_name' => $version_name,
         ];
         return HttpService::send()->get('SystemUpdate/verify', $query);
@@ -42,7 +42,7 @@ class Updated
     public static function systemUpdateInfo(int $version, string $version_name)
     {
         $query = [
-            'version'      => $version,
+            'version' => $version,
             'version_name' => $version_name,
         ];
         return HttpService::send()->get('SystemUpdate/detail', $query);

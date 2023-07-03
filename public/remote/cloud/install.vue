@@ -13,12 +13,7 @@
           <td>支持平台</td>
           <td>
             <div class="platform-box">
-              <img
-                :src="item?.url"
-                class="logo"
-                v-for="(item, index) in form.platform_icon"
-                :key="index"
-              />
+              <img :src="item?.url" class="logo" v-for="(item, index) in form.platform_icon" :key="index" />
             </div>
           </td>
           <td>应用类型</td>
@@ -51,13 +46,7 @@
       </div>
     </div>
     <div class="submit-button" v-else>
-      <n-button
-        type="warning"
-        class="button"
-        block
-        @click="onSubmit"
-        v-if="form?.order?.order_no"
-      >
+      <n-button type="warning" class="button" block @click="onSubmit" v-if="form?.is_buy">
         开始安装
       </n-button>
       <n-button type="primary" class="button" block @click="onBuy" v-else>
@@ -255,32 +244,40 @@ export default {
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;
+
   .bg-green-tr {
     --n-td-color-modal: rgba(231, 245, 238, 1);
     --n-td-text-color: rgba(24, 160, 88, 1);
   }
+
   .submit-button {
     margin-top: 30px;
+
     .button {
       height: 45px;
     }
   }
+
   .install-container {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-top: 30px;
+
     .install-box {
       text-align: center;
     }
   }
+
   .app-desc-container {
     margin-top: 20px;
+
     .app-desc-title {
       font-size: 25px;
       font-weight: 700;
       text-align: center;
     }
+
     .app-desc {
       width: 100%;
       height: 180px;
@@ -291,14 +288,17 @@ export default {
     }
   }
 }
+
 .platform-box {
   display: flex;
   gap: 12px;
 }
+
 .logo {
   width: 36px;
   height: 36px;
 }
+
 .money {
   color: red;
 }

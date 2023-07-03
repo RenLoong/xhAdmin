@@ -5675,6 +5675,43 @@
             "install-path": "../xaboy/form-builder"
         },
         {
+            "name": "yc-open/cloud-service",
+            "version": "1.0.8",
+            "version_normalized": "1.0.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://gitee.com/yc_open/client-cloud-service-center",
+                "reference": "cbd84726c137d91c0da5b0daadab768b4b3a8f79"
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.7",
+                "php": "^8.0",
+                "vlucas/phpdotenv": "^5.4"
+            },
+            "time": "2023-07-03T04:28:54+00:00",
+            "type": "library",
+            "installation-source": "source",
+            "autoload": {
+                "files": [
+                    "./src/helpers.php"
+                ],
+                "psr-4": {
+                    "YcOpen\\CloudService\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "楚羽幽",
+                    "email": "cy958416459@qq.com"
+                }
+            ],
+            "install-path": "../yc-open/cloud-service"
+        },
+        {
             "name": "yzh52521/easyhttp",
             "version": "v1.0.7",
             "version_normalized": "1.0.7.0",
