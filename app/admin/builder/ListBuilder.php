@@ -76,18 +76,12 @@ class ListBuilder
         $resutl = $this->parseRule();
         # 筛选查询
         if (!empty($resutl['formConfig'])) {
-            $configProps = array_merge([
-                'type' => 'submit',
-                'status' => 'primary',
-                'content' => '查询',
-            ], $resutl['screenConfig']);
-            unset($resutl['screenConfig']);
             array_push(
                 $resutl['formConfig']['items'],
                 [
                     'itemRender' => [
                         'name' => '$button',
-                        'props' => $configProps,
+                        'props' => $resutl['screenConfig'],
                     ],
                 ]
             );

@@ -66,8 +66,8 @@ class FieldsController extends BaseController
             ->addTopButton('add', '新建字段', [
                 'api' => 'admin/Fields/add',
                 'path' => '/Fields/add',
-                'queryParams'       => [
-                    'TABLE_NAME'    => $this->tableName,
+                'queryParams' => [
+                    'TABLE_NAME' => $this->tableName,
                 ],
             ], [], [
                 'type' => 'primary',
@@ -75,8 +75,8 @@ class FieldsController extends BaseController
             ->addRightButton('edit', '编辑', [
                 'api' => 'admin/Fields/edit',
                 'path' => '/Fields/edit',
-                'queryParams'       => [
-                    'TABLE_NAME'    => $this->tableName
+                'queryParams' => [
+                    'TABLE_NAME' => $this->tableName
                 ]
             ], [], [
                 'type' => 'primary',
@@ -166,7 +166,7 @@ class FieldsController extends BaseController
             if ($post['type'] === 'enum' && empty($post['default'])) {
                 return $this->fail('请输入默认值');
             }
-            if (!in_array($post['default'],array_map('trim', explode(',', $post['extra'])))) {
+            if (!in_array($post['default'], array_map('trim', explode(',', $post['extra'])))) {
                 return $this->fail('枚举默认值错误');
             }
             # 数字及浮点验证
@@ -193,7 +193,7 @@ class FieldsController extends BaseController
             DbMgr::schema()
                 ->table($this->tableName, function (Blueprint $table) use ($post) {
                     $params = [
-                        'comment'       => $post['comment']
+                        'comment' => $post['comment']
                     ];
                     # 判断是否有长度
                     if (in_array($post['type'], ['string', 'char']) || stripos($post['type'], 'time') !== false) {
@@ -212,9 +212,9 @@ class FieldsController extends BaseController
                     $table->addColumn($post['type'], $post['name'], $params);
 
                     # 设置引擎
-                    $table->charset = 'utf8mb4';
+                    $table->charset   = 'utf8mb4';
                     $table->collation = 'utf8mb4_general_ci';
-                    $table->engine = 'InnoDB';
+                    $table->engine    = 'InnoDB';
                 });
             return $this->success('创建成功');
         }
@@ -268,34 +268,148 @@ class FieldsController extends BaseController
      */
     public function edit(Request $request)
     {
-        if ($request->method() === 'PUT') {
-            
-        }
         $column_name = $request->get('COLUMN_NAME', '');
-        if (in_array($column_name,['id','create_at','update_at'])) {
-            throw new RedirectException('系统字段，禁止修改',"/Fields/index?TABLE_NAME={$this->prefixTableName}");
+        if (in_array($column_name, ['id', 'create_at', 'update_at'])) {
+            throw new RedirectException('系统字段，禁止修改', "/Fields/index?TABLE_NAME={$this->prefixTableName}");
         }
-        $sql     = "SELECT * FROM information_schema.COLUMNS WHERE table_name = ('{$this->prefixTableName}') and COLUMN_NAME = '{$column_name}' ORDER BY ordinal_position";
-        $columnObj    = DbMgr::instance()->select($sql);
+        $sql       = "SELECT * FROM information_schema.COLUMNS WHERE table_name = ('{$this->prefixTableName}') and COLUMN_NAME = '{$column_name}' ORDER BY ordinal_position";
+        $columnObj = DbMgr::instance()->select($sql);
         if (empty($columnObj)) {
-            throw new RedirectException('获取字段数据失败',"/Fields/index?TABLE_NAME={$this->prefixTableName}");
+            throw new RedirectException('获取字段数据失败', "/Fields/index?TABLE_NAME={$this->prefixTableName}");
         }
         isset($columnObj[0]) && $columnData = $columnObj[0];
         if (empty($columnData)) {
-            throw new RedirectException('字段数据出错',"/Fields/index?TABLE_NAME={$this->prefixTableName}");
+            throw new RedirectException('字段数据出错', "/Fields/index?TABLE_NAME={$this->prefixTableName}");
         }
         # 重设数据
-        $data['name'] = $columnData->COLUMN_NAME ?? '';
+        $data['name']    = $columnData->COLUMN_NAME ?? '';
         $data['comment'] = $columnData->COLUMN_COMMENT ?? '';
-        $data['type'] = $columnData->DATA_TYPE ?? '';
-        $data['length'] = $columnData->CHARACTER_MAXIMUM_LENGTH ?? '';
+        $data['type']    = $columnData->DATA_TYPE ?? '';
+        $data['length']  = $columnData->CHARACTER_MAXIMUM_LENGTH ?? '';
+        $data['extra']   = '';
+        $data['default'] = '';
         if ($data['type'] === 'enum') {
-            $str             = ['enum(', ')',"'"];
-            $default = implode(',',explode(',', str_replace($str, '', $columnData->COLUMN_TYPE)));
-            $data['extra'] = $default;
+            $str             = ['enum(', ')', "'"];
+            $default         = implode(',', explode(',', str_replace($str, '', $columnData->COLUMN_TYPE)));
+            $data['extra']   = $default;
             $data['default'] = $columnData->COLUMN_DEFAULT;
         }
-        
+        if ($request->method() === 'PUT') {
+            # 获取数据
+            $post = $request->post();
+            # 数据验证
+            hpValidate(Fields::class, $post);
+
+            # 获取字段数据
+            $table     = DbMgr::filterAlphaNum($this->prefixTableName);
+            $method    = DbMgr::filterAlphaNum($post['type']);
+            $field     = DbMgr::filterAlphaNum($post['name']);
+            $old_field = DbMgr::filterAlphaNum($column_name ?? null);
+            $default   = $post['default'] ? DbMgr::pdoQuote($post['default']) : '';
+            $comment   = DbMgr::pdoQuote($post['comment']);
+            $length    = (int) $post['length'];
+
+            # 枚举必须输入额外数据
+            if ($method === 'enum' && empty($post['extra'])) {
+                return $this->fail('请输入扩展数据');
+            }
+            # 枚举类型值验证
+            if ($method === 'enum' && stripos($post['extra'], ',') === false) {
+                return $this->fail('枚举类型必须以小写逗号隔开');
+            }
+            # 枚举必须有默认值
+            if ($method === 'enum' && empty($post['default'])) {
+                return $this->fail('请输入默认值');
+            }
+            if ($method === 'enum' && !in_array($post['default'], array_map('trim', explode(',', $post['extra'])))) {
+                return $this->fail('枚举默认值错误');
+            }
+            # 数字及浮点验证
+            if (in_array($method, ['integer', 'string', 'char', 'float', 'decimal', 'double'])) {
+                if (empty($length)) {
+                    return $this->fail('请输入数据长度');
+                }
+                if ($length > 11 && $method === 'integer') {
+                    return $this->fail('数字类型最大11位');
+                }
+                if ($length > 10 && in_array($method, ['float', 'decimal', 'double'])) {
+                    return $this->fail('浮点类型最大10位');
+                }
+                if ($length > 255 && in_array($method, ['string', 'char'])) {
+                    return $this->fail('字符串类型最大255位');
+                }
+            }
+            # 验证字段是否存在
+            if (!DbMgr::schema()->hasColumn($this->tableName, $column_name)) {
+                return $this->fail('该字段不存在');
+            }
+            # 字段名称
+            if ($old_field && $old_field !== $field) {
+                $sql = "ALTER TABLE `$table` CHANGE COLUMN `$old_field` `$field` ";
+            } else {
+                $sql = "ALTER TABLE `$table` MODIFY `$field` ";
+            }
+            # 整型类型
+            if (stripos($post['type'], 'integer') !== false) {
+                $type = str_ireplace('integer', 'int', $post['type']);
+                if (stripos($post['type'], 'unsigned') !== false) {
+                    $type = str_ireplace('unsigned', '', $type);
+                    $sql .= "$type ";
+                    $sql .= 'unsigned ';
+                } else {
+                    $sql .= "$type ";
+                }
+            } else {
+                switch ($post['type']) {
+                    case 'string':
+                        $length = $post['length'] ?: 255;
+                        $sql .= "varchar($length) ";
+                        break;
+                    case 'char':
+                        $length = $post['length'] ?: 255;
+                        $sql .= "varchar($length) ";
+                    case 'time':
+                        $sql .= $length ? "$method($length) " : "$method ";
+                        break;
+                    case 'enum':
+                        $args = array_map('trim', explode(',', (string) $post['extra']));
+                        foreach ($args as $key => $value) {
+                            $args[$key] = DbMgr::pdoQuote($value);
+                        }
+                        $sql .= 'enum(' . implode(',', $args) . ') ';
+                        break;
+                    case 'double':
+                    case 'float':
+                    case 'decimal':
+                        if (trim($post['length'])) {
+                            $args    = array_map('intval', explode(',', $post['length']));
+                            $args[1] = $args[1] ?? $args[0];
+                            $sql .= "$method($args[0], $args[1]) ";
+                            break;
+                        }
+                        $sql .= "$method ";
+                        break;
+                    default:
+                        $sql .= "$method ";
+
+                }
+            }
+            # 设置默认值只
+            if ($method != 'text' && $default) {
+                $sql .= "DEFAULT $default ";
+            }
+            # 设置注释
+            if ($comment !== null) {
+                $sql .= "COMMENT $comment ";
+            }
+            # 执行SQL
+            if (DbMgr::instance()->statement($sql) === false) {
+                return $this->fail('修改失败');
+            }
+            # 返回消息
+            return $this->success('修改成功');
+        }
+
         $builder = new FormBuilder;
         $data    = $builder
             ->setMethod('PUT')
@@ -347,11 +461,11 @@ class FieldsController extends BaseController
     public function del(Request $request)
     {
         $column_name = $request->post('COLUMN_NAME', '');
-        if (in_array($column_name,['id','create_at','update_at'])) {
+        if (in_array($column_name, ['id', 'create_at', 'update_at'])) {
             return $this->fail('系统字段，禁止删除');
         }
         # 删除字段
-        DbMgr::schema()->dropColumns($this->tableName,$column_name);
+        DbMgr::schema()->dropColumns($this->tableName, $column_name);
 
         # 操作返回
         return $this->success('删除成功');

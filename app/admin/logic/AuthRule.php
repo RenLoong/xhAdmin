@@ -88,7 +88,7 @@ class AuthRule
      * @param  array $data
      * @return array
      */
-    private static function getChildrenOptions(array $data): array
+    public static function getChildrenOptions(array $data): array
     {
         $list = [];
         $i = 0;

@@ -16,7 +16,13 @@ trait Screen
     # 筛选表单
     protected $formConfig = [];
     # 筛选表单配置
-    protected $screenConfig = [];
+    protected $screenConfig = [
+        'api'           => '',
+        'method'        => 'GET',
+        'type'          => 'submit',
+        'status'        => 'primary',
+        'content'       => '查询',
+    ];
 
     /**
      * 添加筛选单元格
@@ -48,7 +54,7 @@ trait Screen
             $item['itemRender']['props'] = $extra;
         }
         array_push($this->formConfig['items'], $item);
-        array_push($this->formConfig['data'], [$field => '']);
+        $this->formConfig['data'][$field] = '';
         return $this;
     }
 
@@ -61,7 +67,7 @@ trait Screen
      */
     public function screenConfig(array $config):ListBuilder
     {
-        $this->screenConfig = $config;
+        $this->screenConfig = array_merge($this->screenConfig,$config);
         return $this;
     }
 }

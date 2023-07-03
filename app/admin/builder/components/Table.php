@@ -72,7 +72,7 @@ trait Table
         // 启用筛选代理，当点击筛选时会自动触发 query 行为 
         'filter' => true,
         // 启用表单代理，当点击表单提交按钮时会自动触发 reload 行为
-        'form'   => true,
+        'form'   => false,
         // 数据代理字段
         'props'  => [
             // 默认无分页
@@ -367,7 +367,7 @@ trait Table
     public function filterConfig(array $config = []): ListBuilder
     {
         $this->filterConfig = array_merge([
-            'remote' => true
+            'remote' => false
         ], $config);
         return $this;
     }
@@ -570,7 +570,7 @@ trait Table
             'editRender' => [
                 'name'  => 'input',
                 'attrs' => [
-                    'placeholder' => '请输入',
+                    'placeholder' => "请输入{$title}",
                 ],
             ],
         ], $extra);
@@ -629,8 +629,8 @@ trait Table
      * @Author 贵州猿创科技有限公司
      * @Email 416716328@qq.com
      * @DateTime 2023-03-07
-     * @param  string      $key
-     * @param  type        $value
+     * @param  string       $key
+     * @param  mixed        $value
      * @return ListBuilder
      */
     public function config(string $key, $value): ListBuilder

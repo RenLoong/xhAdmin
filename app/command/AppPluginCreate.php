@@ -415,8 +415,13 @@ class AppPluginCreate extends Command
             # 创建配置菜单
             $content = file_get_contents(app_path('/command/appPlugin/config/menu.txt'));
             $content = str_replace("admin", $pluginName, $content);
-            file_put_contents("$path/menu.php", $content);
+            file_put_contents("{$path}/menu.php", $content);
             console_log("创建菜单配置文件：{$path}/menu.php");
+
+            # 创建菜单JSON文件
+            $pluginRoot = dirname($path);
+            $content = file_get_contents(app_path('/command/appPlugin/config/menu.json'));
+            file_put_contents("{$pluginRoot}/menu.json", $content);
 
             # 创建后台配置
             $content = <<<EOF
@@ -426,7 +431,7 @@ class AppPluginCreate extends Command
                 'admin',
             ];
             EOF;
-            file_put_contents("$path/admin.php", $content);
+            file_put_contents("{$path}/admin.php", $content);
             console_log("创建配置文件：{$path}/admin.php");
         }
     }
