@@ -7,6 +7,7 @@ use app\admin\logic\AuthRule;
 use app\admin\logic\ModulesLogic;
 use app\admin\logic\PluginLogic;
 use app\admin\model\Curd;
+use app\admin\utils\Util;
 use app\BaseController;
 use app\enum\CurdForm;
 use app\enum\CurdTable;
@@ -27,6 +28,8 @@ class CurdController extends BaseController
     private $tableName;
     # 带前缀表名
     private $prefixTableName;
+    # 数据库名称
+    private $database;
 
     /**
      * 构造函数
@@ -38,9 +41,15 @@ class CurdController extends BaseController
     public function __construct()
     {
         $request               = request();
+        $this->database        = config('database.connections.mysql.database');
         $prefix                = config('database.connections.mysql.prefix');
         $this->prefixTableName = $request->input('TABLE_NAME', '');
-        $this->tableName       = str_replace($prefix, '', $this->prefixTableName);
+        if (strpos($this->prefixTableName, $prefix) === false) {
+            $this->tableName       = $this->prefixTableName;
+            $this->prefixTableName = "{$prefix}{$this->prefixTableName}";
+        } else {
+            $this->tableName = str_replace($prefix, '', $this->prefixTableName);
+        }
         if (!DbMgr::hasTable($this->tableName)) {
             throw new Exception('该数据表不存在');
         }
@@ -74,6 +83,12 @@ class CurdController extends BaseController
                 ],
             ], [
                 'title' => 'CURD构建',
+                'style' => [
+                    'width' => '60%',
+                    'height' => '650px',
+                    'showIcon' => false,
+                    'maskClosable' => false,
+                ],
             ], [
                 'type' => 'primary',
             ])
@@ -233,35 +248,35 @@ class CurdController extends BaseController
             # 获取参数
             $tableName = ucfirst($this->tableName);
             $app_name  = $request->post('app_name', '');
-            $menu_id  = $request->post('menu_id', '');
+            $menu_id   = $request->post('menu_id', '');
             if ($app_name === '') {
                 return $this->fail('请选择构建至某个应用');
             }
             if ($menu_id === '') {
                 return $this->fail('请选择构建至某个菜单');
             }
-            # 是否生成菜单
-            if ($menu_id !== 'cancel') {
-                $this->createdMenu($app_name, $tableName, $menu_id);
-            }
-            return $this->fail('测试');
             # 获取CURD代码及目标路径
             $curdData = $this->getCurdCode($app_name, $tableName);
+            # 构建控制器
             if (!file_put_contents(base_path($curdData['controllerPath']), $curdData['controller'])) {
                 throw new Exception('生成控制器失败');
             }
+            # 构建模型
             if (!file_put_contents(base_path($curdData['modelPath']), $curdData['model'])) {
                 throw new Exception('生成模型失败');
             }
-            # 生成应用验证器
+            # 构建验证器
             if (!file_put_contents(base_path($curdData['validatePath']), $curdData['validate'])) {
                 throw new Exception('生成验证器失败');
             }
             # 是否生成菜单
             if ($menu_id !== 'cancel') {
-                $this->createdMenu($app_name, $tableName, $menu_id);
+                $this->createdMenu($app_name, $tableName, (int) $menu_id);
             }
-            return $this->failFul('CURD操作完成', 305);
+            # 平滑重启服务
+            Util::reloadWebman();
+            # 返回成功
+            return $this->success('CURD操作完成');
         } catch (\Throwable $e) {
             # 回滚文件
             # 返回错误
@@ -273,48 +288,174 @@ class CurdController extends BaseController
      * 生成菜单
      * @param string $app_name
      * @param string $tableName
-     * @param mixed $pid
+     * @param int $pid
+     * @throws \Exception
      * @return void
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    private function createdMenu(string $app_name, string $tableName, mixed $pid)
+    private function createdMenu(string $app_name, string $tableName, int $pid)
     {
         $menuPath = base_path("/plugin/{$app_name}/menus.json");
+        $menus    = $this->getMenusPreView($menuPath, $app_name, $tableName, $pid);
+        $content  = json_encode($menus, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        if (!file_put_contents($menuPath, $content)) {
+            throw new Exception('生成菜单失败');
+        }
+    }
+
+    /**
+     * 获取菜单生成预览数据
+     * @param string $menuPath
+     * @param string $app_name
+     * @param string $tableName
+     * @param int $pid
+     * @throws \Exception
+     * @return array
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    private function getMenusPreView(string $menuPath, string $app_name, string $tableName, int $pid)
+    {
         if (!file_exists($menuPath)) {
             throw new Exception('应用菜单文件不存在');
         }
         # 获取菜单数据
         $menus = json_decode(file_get_contents($menuPath), true);
-        $listMenu = list_sort_by($menus,'id','desc');
-        $lastMenu = current($listMenu);
-        if (empty($lastMenu['id'])) {
-            throw new Exception('菜单最后的ID数据异常');
+        $menus = empty($menus) ? [] : $menus;
+        if ($menus) {
+            $menus    = list_sort_by($menus, 'id', 'asc');
+            $lastMenu = end($menus);
+            if (empty($lastMenu['id'])) {
+                throw new Exception('菜单最后的ID数据异常');
+            }
         }
-        p($lastMenu);
-        $data  = [];
-        # 列表菜单数据
-        array_push($menus, [
-            'id'                => $lastMenu['id']+1,
-            'module'            => $tableName,
-            'path_text'         => '',
-            'path'              => '',
-            'pid'               => '',
-            'title'             => '',
-            'method'            => '',
-            'component'         => '',
-            'auth_params'       => '',
-            'icon'              => '',
-            'show'              => '',
-        ]);
-        # 添加菜单数据
-        # 修改菜单数据
-        # 重组菜单数据
-        // $content = json_encode($menus,JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
-        // if (!file_put_contents($menuPath, $content)) {
-        //     throw new Exception('生成菜单失败');
-        // }
+        # 获取表信息
+        $sql       = "SELECT * from information_schema.TABLES WHERE table_schema='{$this->database}' and table_name='{$this->prefixTableName}';";
+        $tableInfo = DbMgr::instance()->select($sql);
+        $tableInfo = (array) current($tableInfo);
+        # 菜单ID
+        $oneMenu        = [];
+        $twoMenu        = [];
+        # 顶级菜单
+        if ($pid === 0) {
+            $oneMenu = [
+                'id' => $lastMenu['id'] + 1,
+                'module' => "app/{$app_name}/admin",
+                'path' => "{$tableName}/group",
+                'pid' => $pid,
+                'title' => "{$tableInfo['TABLE_COMMENT']}",
+                'method' => ['GET'],
+                'component' => '',
+                'auth_params' => '',
+                'icon' => '',
+                'show' => '1',
+                'is_api' => '0'
+            ];
+            $twoMenu  = [
+                'id' => $oneMenu['id'] + 1,
+                'module' => "app/{$app_name}/admin",
+                'path' => "{$tableName}/tabs",
+                'pid' => $oneMenu['id'],
+                'title' => "{$tableInfo['TABLE_COMMENT']}模块",
+                'method' => ['GET'],
+                'component' => '',
+                'auth_params' => '',
+                'icon' => '',
+                'show' => '1',
+                'is_api' => '0'
+            ];
+        }
+        # 列表自增ID
+        $listMenu = [
+            'id' => empty($twoMenu['id']) ?  $lastMenu['id'] + 1 : $twoMenu['id'] + 1,
+            'module' => "app/{$app_name}/admin",
+            'path' => "{$tableName}/index",
+            'pid' => empty($twoMenu['id']) ?  $pid : $twoMenu['id'],
+            'title' => "{$tableInfo['TABLE_COMMENT']}管理",
+            'method' => ['GET'],
+            'component' => 'table/index',
+            'auth_params' => '',
+            'icon' => '',
+            'show' => '1',
+            'is_api' => '1'
+        ];
+        # 新增
+        $addMenu = [
+            'id' => $listMenu['id'] + 1,
+            'module' => "app/{$app_name}/admin",
+            'path' => "{$tableName}/add",
+            'pid' => $listMenu['id'],
+            'title' => "{$tableInfo['TABLE_COMMENT']}-添加",
+            'method' => ['GET', 'POST'],
+            'component' => 'form/index',
+            'auth_params' => '',
+            'icon' => '',
+            'show' => '0',
+            'is_api' => '1'
+        ];
+        # 修改
+        $editMenu = [
+            'id' => $addMenu['id'] + 1,
+            'module' => "app/{$app_name}/admin",
+            'path' => "{$tableName}/edit",
+            'pid' => $listMenu['id'],
+            'title' => "{$tableInfo['TABLE_COMMENT']}-修改",
+            'method' => ['GET', 'PUT'],
+            'component' => 'form/index',
+            'auth_params' => '',
+            'icon' => '',
+            'show' => '0',
+            'is_api' => '1'
+        ];
+        # 删除
+        $delMenu = [
+            'id' => $editMenu['id'] + 1,
+            'module' => "app/{$app_name}/admin",
+            'path' => "{$tableName}/del",
+            'pid' => $listMenu['id'],
+            'title' => "{$tableInfo['TABLE_COMMENT']}-删除",
+            'method' => ['GET', 'DELETE'],
+            'component' => '',
+            'auth_params' => '',
+            'icon' => '',
+            'show' => '0',
+            'is_api' => '1'
+        ];
+        # 表格
+        $tableMenu = [
+            'id' => $delMenu['id'] + 1,
+            'module' => "app/{$app_name}/admin",
+            'path' => "{$tableName}/indexGetTable",
+            'pid' => $listMenu['id'],
+            'title' => "{$tableInfo['TABLE_COMMENT']}-表格",
+            'method' => ['GET'],
+            'component' => 'table/index',
+            'auth_params' => '',
+            'icon' => '',
+            'show' => '0',
+            'is_api' => '1'
+        ];
+        $dataMenus = [
+            empty($oneMenu['path']) ? [] : $oneMenu,
+            empty($twoMenu['path']) ? [] : $twoMenu,
+            $listMenu,
+            $addMenu,
+            $editMenu,
+            $delMenu,
+            $tableMenu,
+        ];
+        $dataMenus = array_filter($dataMenus);
+        $menus     = array_column($menus, null, 'path');
+        $data      = array_column($dataMenus, null, 'path');
+        $menus     = array_merge($menus, $data);
+        $menus     = array_values($menus);
+        # 重新排序
+        $menus = list_sort_by($menus, 'id', 'asc');
+        # 返回菜单数据
+        return $menus;
     }
 
     /**
@@ -378,8 +519,8 @@ class CurdController extends BaseController
      */
     public function getPluginMenus(Request $request)
     {
-        $this->codePreview($request);
-        $app_name = $request->get('app_name', '');
+        $app_name  = $request->get('app_name', '');
+        $tableName = ucfirst($this->tableName);
         if (empty($app_name)) {
             return $this->fail('请选择应用');
         }
@@ -397,6 +538,16 @@ class CurdController extends BaseController
             return $this->fail('请先设置应用菜单数据');
         }
         $data = $list['list'];
+        foreach ($data as $key => $value) {
+            $expl = explode('/', $value['path']);
+            if (empty($expl[0])) {
+                throw new Exception('数据表格式错误');
+            }
+            # 禁用自身
+            if ($expl[0] === $tableName) {
+                $data[$key]['disabled'] = true;
+            }
+        }
         $data = DataMgr::channelLevel($data, 0, '', 'id', 'pid');
         $data = AuthRule::getChildrenOptions($data);
         $data = array_merge([
@@ -420,11 +571,28 @@ class CurdController extends BaseController
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public function codePreview(Request $request)
+    public function getPreview(Request $request)
     {
-        $app_name  = $request->get('app_name', '');
-        $tableName = ucfirst($this->tableName);
-        $data      = $this->getCurdCode($app_name, $tableName);
+        # 获取参数
+        $app_name = $request->get('app_name', '');
+        $menuId   = $request->get('menu_id', '');
+        # 数据验证
+        if (empty($app_name)) {
+            return $this->fail('请选择应用');
+        }
+        if ($menuId === '') {
+            return $this->fail('请选择构建至某个菜单');
+        }
+        # 组装参数
+        $tableName     = ucfirst($this->tableName);
+        $menuPath      = base_path("/plugin/{$app_name}/menus.json");
+        $data['menus'] = '';
+        $data['code']  = $this->getCurdCode($app_name, $tableName);
+        # 是否生成菜单
+        if ($menuId !== 'cancel') {
+            $content       = json_encode($this->getMenusPreView($menuPath, $app_name, $tableName, (int) $menuId), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+            $data['menus'] = $content;
+        }
         return $this->successRes($data);
     }
 
@@ -449,12 +617,12 @@ class CurdController extends BaseController
             throw new Exception('该应用不存在');
         }
         # 生成到指定路径
-        $pluginAdminPath    = "/plugin/{$app_name}/app/admin";
-        $suffix             = config('app.controller_suffix', '');
-        $suffix             = ucfirst($suffix);
+        $pluginAdminPath = "/plugin/{$app_name}/app/admin";
+        $suffix          = config('app.controller_suffix', '');
+        $suffix          = ucfirst($suffix);
         # 生成应用控制器
         $controllerPathRoot = "{$pluginAdminPath}/controller/{$tableName}{$suffix}.php";
-        $controllerPath = base_path($controllerPathRoot);
+        $controllerPath     = base_path($controllerPathRoot);
         if (!is_dir(dirname($controllerPath))) {
             throw new Exception('应用控制器目录错误');
         }
@@ -473,7 +641,7 @@ class CurdController extends BaseController
         $controllerSource = str_replace($str1, $str2, $controllerSource);
         # 生成应用模型
         $modelPathRoot = "{$pluginAdminPath}/model/{$tableName}.php";
-        $modelPath = base_path("{$pluginAdminPath}/model/{$tableName}.php");
+        $modelPath     = base_path("{$pluginAdminPath}/model/{$tableName}.php");
         if (!is_dir(dirname($modelPath))) {
             throw new Exception('应用模型目录错误');
         }
@@ -481,7 +649,7 @@ class CurdController extends BaseController
         $modelSource = str_replace($str1, $str2, $modelSource);
         # 生成应用验证器
         $validatePathRoot = "{$pluginAdminPath}/validate/{$tableName}.php";
-        $validatePath = base_path("{$pluginAdminPath}/validate/{$tableName}.php");
+        $validatePath     = base_path("{$pluginAdminPath}/validate/{$tableName}.php");
         if (!is_dir(dirname($validatePath))) {
             throw new Exception('应用验证器目录错误');
         }
@@ -489,12 +657,12 @@ class CurdController extends BaseController
         $validateSource = str_replace($str1, $str2, $validateSource);
         # 返回代码
         $data = [
-            'controllerPath'    => $controllerPathRoot,
-            'modelPath'         => $modelPathRoot,
-            'validatePath'      => $validatePathRoot,
-            'controller'        => $controllerSource,
-            'model'             => $modelSource,
-            'validate'          => $validateSource,
+            'controllerPath' => $controllerPathRoot,
+            'modelPath' => $modelPathRoot,
+            'validatePath' => $validatePathRoot,
+            'controller' => $controllerSource,
+            'model' => $modelSource,
+            'validate' => $validateSource,
         ];
         return $data;
     }

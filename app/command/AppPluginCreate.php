@@ -421,6 +421,13 @@ class AppPluginCreate extends Command
             # 创建菜单JSON文件
             $pluginRoot = dirname($path);
             $content = file_get_contents(app_path('/command/appPlugin/config/menu.json'));
+            $str1       = [
+                "{PLUGIN_NAME}"
+            ];
+            $str2       = [
+                $pluginName
+            ];
+            $content    = str_replace($str1, $str2, $content);
             file_put_contents("{$pluginRoot}/menu.json", $content);
 
             # 创建后台配置

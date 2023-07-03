@@ -97,6 +97,10 @@ class AuthRule
             $title                          = "{$value['title']}-{$authRule['text']}";
             $list[$i]['label']              = $title;
             $list[$i]['value']              = $value['id'];
+            $list[$i]['disabled']           = false;
+            if (!empty($value['disabled'])) {
+                $list[$i]['disabled']       = true;
+            }
             if ($value['children']) {
                 $list[$i]['children']       = self::getChildrenOptions($value['children']);
             }

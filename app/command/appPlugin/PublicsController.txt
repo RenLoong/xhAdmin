@@ -149,7 +149,7 @@ class PublicsController extends BaseController
         # 返回数据
         return $this->successRes($data);
     }
-
+    
     /**
      * 获取菜单数据
      * @return \support\Response
@@ -164,7 +164,12 @@ class PublicsController extends BaseController
 
         # 获取菜单数据
         $menus = config("plugin.{$pluginName}.menu");
-
+        # 处理菜单数据
+        foreach ($menus['list'] as $key => $value) {
+            if (is_array($value['method'])) {
+                $menus['list'][$key]['method'] = current($value['method']);
+            }
+        }
         # 返回数据
         return $this->successRes($menus);
     }

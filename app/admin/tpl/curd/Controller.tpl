@@ -1,6 +1,7 @@
 <?php
 
 namespace plugin\{PLUGIN_NAME}\app\admin\controller;
+
 use app\CurdController;
 use plugin\{PLUGIN_NAME}\app\admin\model\{CLASS_NAME};
 

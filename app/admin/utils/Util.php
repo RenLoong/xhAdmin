@@ -1,6 +1,6 @@
 <?php
 
-namespace admin\admin\utils;
+namespace app\admin\utils;
 
 use Exception;
 use Illuminate\Database\Schema\Builder;

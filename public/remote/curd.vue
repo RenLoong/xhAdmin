@@ -14,6 +14,10 @@
                 </n-gi>
             </n-grid>
         </n-form>
+        <div class="ctrl-container" v-if="menusPreView">
+            <n-divider>生成菜单预览</n-divider>
+            <HCode v-model="menusPreView" language="php" />
+        </div>
         <div class="ctrl-container" v-if="curdPreView.controllerPath">
             <n-divider>控制器代码预览</n-divider>
             <HCode v-model="curdPreView.controller" language="php" />
@@ -40,6 +44,7 @@ export default {
         return {
             plugins: [],
             menus: [],
+            menusPreView: '',
             curdPreView: {
                 controllerPath: '',
                 modelPath: '',
@@ -66,6 +71,7 @@ export default {
                 menu_id: this.formData.menu_id,
             }
             this.$http.usePost('admin/Curd/add', params).then((res) => {
+                _this.$emit("update:closeWin");
                 _this.$useNotification?.success({
                     title: res?.msg ?? "操作成功",
                     duration: 1500,
@@ -74,20 +80,22 @@ export default {
         },
         hanldSelectMenu(value) {
             this.formData.menu_id = value;
+            this.getCurdPreView();
         },
         hanldSelectApp(value) {
             this.formData.app_name = value;
             this.getPluginMenus(value);
-            this.getCurdPreView();
         },
         getCurdPreView() {
             const _this = this;
             const params = {
                 TABLE_NAME: this.ajaxParams.TABLE_NAME,
                 app_name: this.formData.app_name,
+                menu_id: this.formData.menu_id
             }
-            this.$http.useGet('admin/Curd/codePreview', params).then((res) => {
-                _this.curdPreView = res.data;
+            this.$http.useGet('admin/Curd/getPreview', params).then((res) => {
+                _this.menusPreView = res.data?.menus
+                _this.curdPreView = res.data?.code;
             })
         },
         getPlugins() {

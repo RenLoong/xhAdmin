@@ -80,6 +80,7 @@ class ModulesLogic
             'users',
             'users_integral_bill',
             'users_money_bill',
+            'curd'
         ];
     }
 

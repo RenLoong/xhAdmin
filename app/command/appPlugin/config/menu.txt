@@ -1,4 +1,7 @@
 <?php
 $menus = json_decode(file_get_contents(__DIR__.'/../menus.json'),true);
-$data = empty($menus) ? [] : $menus;
+$data = [
+    'active'        => 'Index/index',
+    'list'          => empty($menus) ? [] : $menus
+];
 return $data;
