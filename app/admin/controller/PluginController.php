@@ -351,7 +351,7 @@ class PluginController extends BaseController
         $req->saas_version = $systemInfo['system_version'];
         $req->local_version = $installed_version;
         $cloud = new Cloud($req);
-        $data = $cloud->send()->toArray();
+        $data = $cloud->send();
         // 获取下载文件url
         $req = new PluginRequest;
         $req->getKey();

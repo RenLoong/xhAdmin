@@ -176,8 +176,8 @@ class PlatformAppController extends BaseController
         $req->list();
         $req->setQuery($query, null);
         $cloud = new Cloud($req);
-        $plugins = $cloud->send()->toArray();
-        return $this->successRes($plugins);
+        $plugins = $cloud->send();
+        return $this->successRes($plugins->data);
     }
 
     /**
