@@ -113,7 +113,7 @@ class AppCoreLogic
                 PluginLogic::unzipWithCmd($cmd);
             }
             # 更新类路径
-            $install_class = "\\app\\service\\Update";
+            $install_class = "app\\service\\Update";
             if (class_exists($install_class)) {
                 # 执行更新前置
                 $context       = [];
