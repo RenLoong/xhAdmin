@@ -3,13 +3,13 @@
 namespace plugin\{PLUGIN_NAME}\app\admin\controller;
 
 use app\CurdController;
-use plugin\{PLUGIN_NAME}\app\admin\model\{CLASS_NAME};
+use plugin\{PLUGIN_NAME}\app\model\{CLASS_NAME};
 
 class {CLASS_NAME}{SUFFIX} extends CurdController
 {
     /**
      * 操作模型
-     * @var \plugin\{PLUGIN_NAME}\app\admin\model\{CLASS_NAME}
+     * @var \app\Model
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
@@ -22,10 +22,34 @@ class {CLASS_NAME}{SUFFIX} extends CurdController
     protected $modelName = null;
 
     /**
+     * 获取表名（不包含前缀）
+     * @var string
+     * @author 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    protected $tableName = null;
+
+    /**
      * 完整表名
      * @var string
      */
     protected $prefixTableName = null;
+
+    /**
+     * 表格规则
+     * @var array
+     * @author 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    protected $tableRule = {TABLE_RULE};
+
+    /**
+     * 表单规则
+     * @var array
+     * @author 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    protected $formRule = {FORM_RULE};
 
     /**
      * 构造函数

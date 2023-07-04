@@ -41,7 +41,7 @@ CREATE TABLE `php_system_auth_rule`  (
   `is_default` enum('0','1') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '0' COMMENT '默认权限：0否，1是',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `path`(`path`) USING BTREE COMMENT '唯一索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 185 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-权限规则' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 190 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-权限规则' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of php_system_auth_rule
@@ -143,4 +143,10 @@ INSERT INTO `php_system_auth_rule` VALUES (181, '2023-05-15 13:04:59', '2023-05-
 INSERT INTO `php_system_auth_rule` VALUES (182, '2023-06-12 16:07:52', '2023-06-12 16:07:52', 'admin', 'SystemUpload/config', '\\app\\admin\\controller\\', 41, '附件库设置', 0, '[\"GET\",\"PUT\"]', '1', 'form/index', '', '', '1', '0', '0');
 INSERT INTO `php_system_auth_rule` VALUES (183, '2023-06-17 11:33:56', '2023-06-17 11:33:56', 'admin', 'Store/copyrightSet', '\\app\\admin\\controller\\', 147, '租户版权设置', 0, '[\"GET\",\"PUT\"]', '1', 'form/index', '', '', '0', '0', '0');
 INSERT INTO `php_system_auth_rule` VALUES (184, '2023-06-17 12:12:00', '2023-06-17 12:12:23', 'admin', 'StorePlatform/restore', '\\app\\admin\\controller\\', 157, '恢复删除平台', 0, '[\"GET\",\"DELETE\"]', '1', '', '', '', '0', '0', '0');
+INSERT INTO `php_system_auth_rule` VALUES (185, '2023-07-01 14:03:18', '2023-07-01 14:03:18', 'admin', 'Curd/index', '\\app\\admin\\controller\\', 20, 'CURD管理', 0, '[\"GET\"]', '1', 'table/index', '', '', '0', '0', '0');
+INSERT INTO `php_system_auth_rule` VALUES (186, '2023-07-01 14:04:12', '2023-07-01 14:04:12', 'admin', 'Curd/add', '\\app\\admin\\controller\\', 185, '新建CURD', 0, '[\"GET\",\"POST\"]', '1', 'form/index', '', '', '0', '0', '0');
+INSERT INTO `php_system_auth_rule` VALUES (187, '2023-07-01 14:04:52', '2023-07-01 14:05:53', 'admin', 'Curd/edit', '\\app\\admin\\controller\\', 185, '修改CURD', 0, '[\"GET\",\"PUT\"]', '1', 'form/index', '', '', '0', '0', '0');
+INSERT INTO `php_system_auth_rule` VALUES (188, '2023-07-01 14:05:29', '2023-07-03 10:14:49', 'admin', 'Curd/detail', '\\app\\admin\\controller\\', 185, 'CURD详情', 0, '[\"GET\"]', '1', '', '', '', '0', '0', '0');
+INSERT INTO `php_system_auth_rule` VALUES (189, '2023-07-01 14:08:42', '2023-07-01 14:09:16', 'admin', 'Curd/indexGetTable', '\\app\\admin\\controller\\', 185, 'CURD数据列表', 0, '[\"GET\"]', '1', '', '', '', '0', '0', '0');
+
 SET FOREIGN_KEY_CHECKS = 1;

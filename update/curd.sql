@@ -1,0 +1,3 @@
+ALTER TABLE `php_curd` ADD COLUMN `list_title` varchar(30) NULL DEFAULT NULL COMMENT '列表名称' AFTER `field_comment`;
+ALTER TABLE `php_curd` 
+MODIFY COLUMN `list_type` enum('','text','assets','icons','image','images','input','money','remote','select','switch','tags') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '单元类型' AFTER `list_sort`;

@@ -20,6 +20,18 @@ class CurdForm extends Enum
         'text'      => '选择器',
         'value'     => 'select',
     ];
+    const DATE = [
+        'text'      => '日期选择',
+        'value'     => 'date',
+    ];
+    const DATETIME = [
+        'text'      => '日期时间',
+        'value'     => 'dateTime',
+    ];
+    const TIME = [
+        'text'      => '时间选择',
+        'value'     => 'time',
+    ];
     const RADIO = [
         'text'      => '单选框',
         'value'     => 'radio',

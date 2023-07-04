@@ -5,6 +5,7 @@ use app\admin\builder\FormBuilder;
 use app\admin\builder\ListBuilder;
 use app\BaseController;
 use app\model\Curd;
+use think\helper\Str;
 use support\Request;
 
 /**
@@ -29,10 +30,34 @@ class CurdController extends BaseController
     protected $modelName = null;
 
     /**
+     * 获取表名（不包含前缀）
+     * @var string
+     * @author 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    protected $tableName = null;
+
+    /**
      * 完整表名
      * @var string
      */
     protected $prefixTableName = null;
+
+    /**
+     * 表格规则
+     * @var array
+     * @author 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    protected $tableRule = [];
+
+    /**
+     * 表单规则
+     * @var array
+     * @author 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    protected $formRule = [];
 
     /**
      * 构造函数
@@ -42,6 +67,7 @@ class CurdController extends BaseController
     public function __construct()
     {
         $this->modelName       = $this->model->getName();
+        $this->tableName = Str::snake($this->modelName);
         $this->prefixTableName = $this->model->getTable();
         parent::__construct();
     }
@@ -196,7 +222,7 @@ class CurdController extends BaseController
     private function getTableData()
     {
         $where  = [
-            ['table_name', '=', $this->modelName],
+            ['table_name', '=', $this->tableName],
             ['list_type', '<>', ''],
         ];
         $fields = [
@@ -336,7 +362,8 @@ class CurdController extends BaseController
     private function getFormRule(string $field)
     {
         $where = [
-            $field      => '20'
+            'table_name'    => $this->tableName,
+            $field          => '20'
         ];
         $fields = [];
         $data = Curd::where($where)

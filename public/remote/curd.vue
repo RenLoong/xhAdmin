@@ -12,37 +12,26 @@
                         <n-cascader :options="menus" @update:value="hanldSelectMenu" />
                     </n-form-item>
                 </n-gi>
-                <n-gi>
-                    <n-form-item label="是否支持添加">
-                        
-                    </n-form-item>
-                </n-gi>
-                <n-gi>
-                    <n-form-item label="是否支持编辑">
-                        
-                    </n-form-item>
-                </n-gi>
-                <n-gi>
-                    <n-form-item label="是否支持删除">
-                        
-                    </n-form-item>
-                </n-gi>
             </n-grid>
         </n-form>
-        <div class="ctrl-container" v-if="menusPreView">
+        <div class="ctrl-container" v-if="menuView.path">
             <n-divider>生成菜单预览</n-divider>
-            <HCode v-model="menusPreView" language="php" />
+            <div class="text-warning">菜单文件路径：{{ menuView.path }}</div>
+            <HCode v-model="menuView.menus" language="php" />
         </div>
         <div class="ctrl-container" v-if="curdPreView.controllerPath">
             <n-divider>控制器代码预览</n-divider>
+            <div class="text-warning">控制器文件路径：{{ curdPreView.controllerPath }}</div>
             <HCode v-model="curdPreView.controller" language="php" />
         </div>
         <div class="model-container" v-if="curdPreView.modelPath">
             <n-divider>模型代码预览</n-divider>
+            <div class="text-warning">模型文件路径：{{ curdPreView.modelPath }}</div>
             <HCode v-model="curdPreView.model" language="php" />
         </div>
         <div class="validate-container" v-if="curdPreView.validatePath">
             <n-divider>验证器代码预览</n-divider>
+            <div class="text-warning">验证器文件路径：{{ curdPreView.validatePath }}</div>
             <HCode v-model="curdPreView.validate" language="php" />
         </div>
         <div class="button">
@@ -58,8 +47,11 @@ export default {
     data() {
         return {
             plugins: [],
-            menus: [],
-            menusPreView: '',
+            menus:[],
+            menuView: {
+                path: '',
+                menus:''
+            },
             curdPreView: {
                 controllerPath: '',
                 modelPath: '',
@@ -109,7 +101,7 @@ export default {
                 menu_id: this.formData.menu_id
             }
             this.$http.useGet('admin/Curd/getPreview', params).then((res) => {
-                _this.menusPreView = res.data?.menus
+                _this.menuView = res.data?.menus
                 _this.curdPreView = res.data?.code;
             })
         },
@@ -147,5 +139,8 @@ export default {
         display: flex;
         justify-content: center;
     }
+}
+.text-warning{
+    color:red;
 }
 </style>

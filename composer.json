@@ -78,12 +78,6 @@
             "pestphp/pest-plugin": true
         }
     },
-    "repositories": {
-        "packagist": {
-            "type": "composer",
-            "url": "https://mirrors.aliyun.com/composer/"
-        }
-    },
     "extra": {
         "merge-plugin": {
             "include": [

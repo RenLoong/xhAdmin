@@ -81,12 +81,12 @@ class AppCoreLogic
 
     /**
      * 执行更新
-     * @param string $version
+     * @param int $version 版本号
      * @return void
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      */
-    public static function update(string $version)
+    public static function update(int $version)
     {
         # 备份框架核心
         self::backup();
@@ -123,10 +123,10 @@ class AppCoreLogic
                 PluginLogic::unzipWithCmd($cmd);
             }
             # 更新类路径
-            $install_class = "app\\Install";
+            $install_class = "\\app\\service\\Update";
             if (class_exists($install_class)) {
                 # 执行更新前置
-                $context       = null;
+                $context       = [];
                 if (method_exists($install_class, 'beforeUpdate')) {
                     $context = call_user_func([$install_class, 'beforeUpdate'], $version);
                     console_log("框架前置更新成功...");
@@ -137,8 +137,6 @@ class AppCoreLogic
                     call_user_func([$install_class, 'update'], $version, $context);
                     console_log("框架更新成功...");
                 }
-                # 删除更新类
-                unlink(app_path('/Install.php'));
             }
             # 提交事务
             Db::commit();
