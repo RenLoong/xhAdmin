@@ -40,12 +40,12 @@ class ComposerMgr
         $composerPath = base_path("/plugin/{$name}/packages/*/composer.json");
         $data = self::scanPluginComposerJson($composerPath);
         # 通用命令代码
-        $composerCommand = self::$composerCommand;
+        // $composerCommand = self::$composerCommand;
         # 切换工作目录
         $basePath = base_path();
         chdir($basePath);
         foreach ($data as $package_name) {
-            $command = "{$composerCommand}composer update {$package_name} --no-interaction 2>&1";
+            $command = "composer update {$package_name} --no-scripts --no-interaction 2>&1";
             $output = shell_exec($command);
             p($output,"composer---执行结果");
         }
@@ -101,7 +101,7 @@ class ComposerMgr
     private static function installPluginPackages(array $packages)
     {
         # 通用命令代码
-        $composerCommand = self::$composerCommand;
+        // $composerCommand = self::$composerCommand;
         # 切换工作目录
         $basePath = base_path();
         chdir($basePath);
@@ -109,7 +109,7 @@ class ComposerMgr
             if (!$package_name) {
                 continue;
             }
-            $command = "{$composerCommand}composer require {$package_name}:dev-master --no-interaction 2>&1";
+            $command = "composer require {$package_name}:dev-master  --no-scripts --no-interaction 2>&1";
             $output = shell_exec($command);
             if ($output === null) {
                 echo "{$package_name}，依赖包安装失败";
@@ -117,23 +117,23 @@ class ComposerMgr
             }else{
                 console_log($output);
                 if (strpos($output,"Installation failed, reverting")) {
-                    self::installDevMain($composerCommand,$package_name);
+                    self::installDevMain($package_name);
                 }
             }
         }
-        shell_exec("composer --no-interaction dump-autoload");
+        shell_exec("composer dump-autoload --no-scripts --no-interaction 2>&1");
     }
 
     /**
      * 安装dev-main版本
-     *
-     * @param  string $composerCommand
-     * @param  string $package_name
+     * @param string $package_name
      * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
      */
-    private static function installDevMain(string $composerCommand,string $package_name)
+    private static function installDevMain(string $package_name)
     {
-        $command = "{$composerCommand}composer require {$package_name}:dev-main --no-interaction 2>&1";
+        $command = "composer require {$package_name}:dev-main --no-scripts --no-interaction 2>&1";
         $output = shell_exec($command);
         if ($output === null) {
             console_log("{$package_name}，依赖包安装失败");
@@ -145,8 +145,6 @@ class ComposerMgr
     // 更新composer包
     private static function updatePluginPackages(array $packages)
     {
-        # 通用命令代码
-        $composerCommand = self::$composerCommand;
         # 切换工作目录
         $basePath = base_path();
         chdir($basePath);
@@ -154,7 +152,7 @@ class ComposerMgr
             if (!$package_name) {
                 continue;
             }
-            $command = "{$composerCommand}composer update {$package_name} --no-interaction 2>&1";
+            $command = "composer update {$package_name} --no-scripts --no-interaction 2>&1";
             $output = shell_exec($command);
             if ($output === null) {
                 console_log("{$package_name}，依赖包更新失败");
@@ -162,7 +160,7 @@ class ComposerMgr
                 console_log((string)$output);
             }
         }
-        shell_exec("composer --no-interaction dump-autoload");
+        shell_exec("composer dump-autoload --no-scripts --no-interaction 2>&1");
     }
 
     /**
@@ -179,7 +177,7 @@ class ComposerMgr
             return;
         }
         # 通用命令代码
-        $composerCommand = self::$composerCommand;
+        // $composerCommand = self::$composerCommand;
         # 切换工作目录
         $basePath = base_path();
         chdir($basePath);
@@ -187,7 +185,7 @@ class ComposerMgr
             if (!$package_name) {
                 continue;
             }
-            $command = "{$composerCommand}composer remove {$package_name} --no-interaction 2>&1";
+            $command = "composer remove {$package_name} --no-scripts --no-interaction 2>&1";
             $output = shell_exec($command);
             if ($output === null) {
                 console_log("{$package_name}，依赖包卸载失败");
@@ -195,6 +193,6 @@ class ComposerMgr
                 p($output);
             }
         }
-        shell_exec("composer --no-interaction dump-autoload");
+        shell_exec("composer dump-autoload --no-scripts --no-interaction 2>&1");
     }
 }

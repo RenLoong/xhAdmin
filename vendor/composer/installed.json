@@ -5676,19 +5676,19 @@
         },
         {
             "name": "yc-open/cloud-service",
-            "version": "1.0.10",
-            "version_normalized": "1.0.10.0",
+            "version": "1.0.12",
+            "version_normalized": "1.0.12.0",
             "source": {
                 "type": "git",
                 "url": "https://gitee.com/yc_open/client-cloud-service-center",
-                "reference": "5534f537bcd77980b3a515e62a9a99094a87f7e3"
+                "reference": "d268d43d5887b370fe95d2f1c385fd4615aada34"
             },
             "require": {
                 "guzzlehttp/guzzle": "^7.7",
                 "php": "^8.0",
                 "vlucas/phpdotenv": "^5.4"
             },
-            "time": "2023-07-04T04:28:58+00:00",
+            "time": "2023-07-04T11:16:09+00:00",
             "type": "library",
             "installation-source": "source",
             "autoload": {
