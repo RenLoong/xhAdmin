@@ -47,6 +47,8 @@ class Validated
         $bt->validateSoft('mysql');
         # 验证守护进程软件是否安装
         $bt->validateSoft('supervisor');
+        # 升级composer
+        $bt->updateComposer();
 
         # 守护进程服务是否已安装
         $server_name = str_replace('.', '_', basename(ROOT_PATH));

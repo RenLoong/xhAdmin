@@ -151,6 +151,31 @@ class BtPanel
         ], $data);
         return $this->send('/plugin?action=a&name=supervisor&s=GetProcessList', $data);
     }
+    /**
+     * 升级composer
+     *
+     * @param array $data
+     * @return array
+     */
+    public function updateComposer(array $data=[])
+    {
+        $data = array_merge([
+            'action' => 'update_composer',
+            'repo'=>'https://mirrors.aliyun.com/composer/'
+        ], $data);
+        return $this->send('/files?action=update_composer', $data);
+    }
+    public function getSiteDomains(array $data = []): array
+    {
+        $data = array_merge([
+            'search' => $_SERVER['HTTP_HOST'],
+            'table'=>'sites',
+            'limit'=>10,
+            'p'=>1,
+            'type'=>0
+        ], $data);
+        return $this->send('/data?action=getData', $data);
+    }
 
     /**
      * 发送接口请求
