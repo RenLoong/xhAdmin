@@ -1,6 +1,8 @@
 <?php
 
 use app\utils\Password;
+use YcOpen\CloudService\Cloud;
+use YcOpen\CloudService\Request\SystemUpdateRequest;
 
 class BtController
 {
@@ -126,6 +128,18 @@ class BtController
                 # 重启一下守护进程
                 $panelLogic->reloadSupervisor($server_name);
                 # 安装Env配置成功
+                # 安装完成,写入版本信息
+                $req = new SystemUpdateRequest;
+                $req->detail();
+                $req->version = 1;
+                $req->version_name = '1.0.0';
+                $cloud = new Cloud($req);
+                $data=$cloud->send();
+                $versionJson=json_encode([
+                    'version'=>$data->version,
+                    'version_name'=>$data->version_name
+                ],JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);
+                file_put_contents(ROOT_PATH.'/version.json',$versionJson);
                 return Json::json(
                     '全部安装完成，即将跳转...',
                     200
@@ -147,6 +161,11 @@ class BtController
     {
         # 获取数据
         $post = $_POST;
+        $btData = isset($post['btData']) ? $post['btData'] : null;
+        # 验证宝塔面板
+        Validated::validateBt($btData);
+        return Json::fail('缺少宝塔面板数据');
+
         # 数据验证
         if (!isset($post['btData']))
             return Json::fail('缺少宝塔面板数据');
@@ -177,14 +196,13 @@ class BtController
             if (version_compare($version, $min_version) <= 0) {
                 throw new Exception("数据库要求最低{$min_version}版本");
             }
-            # 验证宝塔面板
-            Validated::validateBt($btData);
             # 检测端口是否被占用
             if (Validated::validatePort((int) $serverData['server_port'])) {
                 throw new Exception("{$serverData['server_port']}端口已被占用");
             }
             # 验证宝塔面板
             Validated::validateBt($btData);
+
             # 验证云服务
             Validated::validateCloud($cloud);
             # 验证站点数据

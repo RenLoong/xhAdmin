@@ -47,8 +47,12 @@ class BtPanelLogic
      */
     public function getNginxConfig():array
     {
-        $siteDirName = basename(ROOT_PATH);
-        $configPath = "/www/server/panel/vhost/nginx/{$siteDirName}.conf";
+        $data=$this->btPanel->getSiteDomains();
+        if(empty($data['data'])){
+            throw new Exception('未获取到当前域名站点信息');
+        }
+        // $siteDirName = basename(ROOT_PATH);
+        $configPath = "/www/server/panel/vhost/nginx/{$data['data'][0]['name']}.conf";
         $response = $this->btPanel->getFileBody(['path' => $configPath]);
         if (!isset($response['data'])) {
             throw new Exception('无法获取到Nginx配置文件');
@@ -268,5 +272,11 @@ class BtPanelLogic
             'numprocs'      => 1
         ];
         return $this->btPanel->startSupervisor($params);
+    }
+    public function __call($name, $arguments)
+    {
+        if (method_exists($this->btPanel, $name)) {
+            return $this->btPanel->$name(...$arguments);
+        }
     }
 }

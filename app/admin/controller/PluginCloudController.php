@@ -6,6 +6,12 @@ use app\admin\service\kfcloud\CloudService;
 use app\BaseController;
 use support\Redis;
 use support\Request;
+use YcOpen\CloudService\Cloud;
+use YcOpen\CloudService\Request\CaptchaRequest;
+use YcOpen\CloudService\Request\CouponRequest;
+use YcOpen\CloudService\Request\LoginRequest;
+use YcOpen\CloudService\Request\SiteRequest;
+use YcOpen\CloudService\Request\UserRequest;
 
 /**
  * 云服务中心
@@ -25,15 +31,11 @@ class PluginCloudController extends BaseController
      */
     public function index(Request $request)
     {
-        // 检测云服务是否登录
-        if (!Redis::get(CloudService::$loginToken)) {
-            return $this->failFul('请先登录', 11000);
-        }
-        $data = CloudService::user()->array();
-        if (!$data) {
-            return $this->failFul('请求服务失败，请重新登录', 11000);
-        }
-        return json($data);
+        $req = new UserRequest;
+        $req->info();
+        $cloud = new Cloud($req);
+        $data = $cloud->send();
+        return $this->successRes($data->toArray());
     }
 
     /**
@@ -56,15 +58,21 @@ class PluginCloudController extends BaseController
         if (!isset($post['scode']) || !$post['scode']) {
             return $this->fail('请输入图像验证码');
         }
-        $response = CloudService::login(
-            (string) $post['username'],
-            (string) $post['password'],
-            (string) $post['scode']
-        )->array();
-        if ($response['code'] == 200) {
-            Redis::set(CloudService::$loginToken, $response['data']['token'], 0);
+        if (empty($post['host'])) {
+            return $this->fail('当前站点HOST未设置');
         }
-        return json($response);
+        $req = new LoginRequest;
+        $req->login();
+        $req->setParams($post, null);
+        $cloud = new Cloud($req);
+        $data = $cloud->send();
+        $site = new SiteRequest;
+        $site->install();
+        $site->domain = $post['host'];
+        $site->title = getHpConfig('web_name');
+        $cloud = new Cloud($site);
+        $cloud->send();
+        return $this->successRes($data->toArray());
     }
 
 
@@ -75,24 +83,64 @@ class PluginCloudController extends BaseController
      * @Email 416716328@qq.com
      * @DateTime 2023-03-23
      * @param  Request $request
-     * @return void
+     * @return \support\Response
      */
     public function bill(Request $request)
     {
         $params = $request->get();
-        return json(CloudService::bill($params)->array());
+        $req = new UserRequest;
+        $req->getUserBill();
+        $req->setQuery($params, null);
+        $cloud = new Cloud($req);
+        $data = $cloud->send();
+        return $this->successRes($data->toArray());
     }
 
     /**
      * 获取图像验证码
      * @param Request $request
-     * @return string
+     * @return \support\Response
      * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
      * @DateTime 2023-05-06
      */
     public function captcha(Request $request)
     {
-        return CloudService::captcha()->body();
+        $req = new CaptchaRequest;
+        $req->captchaCode();
+        $req->bg='255,255,255';
+        $cloud = new Cloud($req);
+        $data = $cloud->send();
+        return $this->successRes($data->toArray());
+    }
+    /**
+     * 获取可用优惠券
+     * @param Request $request
+     * @return \support\Response
+     */
+    public function getAvailableCoupon(Request $request)
+    {
+        $G=$request->get();
+        $req=new CouponRequest;
+        $req->getAvailableCoupon();
+        $req->setQuery($G,null);
+        $cloud = new Cloud($req);
+        $data = $cloud->send();
+        return $this->successRes($data->toArray());
+    }
+    /**
+     * 获取优惠券列表
+     * @param Request $request
+     * @return \support\Response
+     */
+    public function getCouponList(Request $request)
+    {
+        $G=$request->get();
+        $req=new CouponRequest;
+        $req->getCouponList();
+        $req->setQuery($G,null);
+        $cloud = new Cloud($req);
+        $data = $cloud->send();
+        return $this->successRes($data->toArray());
     }
 }

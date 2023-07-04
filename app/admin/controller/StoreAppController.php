@@ -6,8 +6,11 @@ use app\admin\builder\FormBuilder;
 use app\admin\logic\PluginLogic;
 use app\admin\model\Store;
 use app\admin\service\kfcloud\CloudService;
+use app\admin\service\kfcloud\SystemInfo;
 use app\BaseController;
 use support\Request;
+use YcOpen\CloudService\Cloud;
+use YcOpen\CloudService\Request\PluginRequest;
 
 /**
  * 租户授权应用
@@ -61,16 +64,22 @@ class StoreAppController extends BaseController
             }
             return $this->success('授权成功');
         }
-        $installed = PluginLogic::getLocalPlugins();
+        $systemInfo = SystemInfo::info();
         $query     = [
             'active'  => '2',
-            'limit'   => 1000,
-            'plugins' => $installed
+            'limit' => 1000,
+            'saas_version' => $systemInfo['system_version']
         ];
-        $response  = CloudService::list($query)->array();
-        $plugins   = [];
-        if ($response && $response['code'] === 200) {
-            $plugins = $response['data']['data'];
+        $plugins=[];
+        try {
+            $req = new PluginRequest;
+            $req->list();
+            $req->setQuery($query, null);
+            $cloud = new Cloud($req);
+            $data = $cloud->send();
+            $plugins=$data['data'];
+        } catch (\Throwable $th) {
+            p($th->getMessage());
         }
         $builder = new FormBuilder;
         $data    = $builder

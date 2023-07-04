@@ -3,13 +3,15 @@
 namespace app\store\controller;
 
 use app\admin\logic\PluginLogic;
-use app\admin\service\kfcloud\CloudService;
+use app\admin\service\kfcloud\SystemInfo;
 use app\BaseController;
 use app\store\validate\StoreApp;
 use Exception;
 use support\Log;
 use support\Request;
 use think\facade\Db;
+use YcOpen\CloudService\Cloud;
+use YcOpen\CloudService\Request\PluginRequest;
 
 /**
  * 应用管理
@@ -73,7 +75,7 @@ class PlatformAppController extends BaseController
             $post['store_id'] = hp_admin_id('hp_store');
 
             hpValidate(StoreApp::class, $post, 'add');
-            
+
             Db::startTrans();
             try {
                 $model = $this->model;
@@ -106,11 +108,11 @@ class PlatformAppController extends BaseController
     public function edit(Request $request)
     {
         $app_id = $request->get('app_id');
-        $model  = $this->model;
-        $where  = [
+        $model = $this->model;
+        $where = [
             ['id', '=', $app_id],
         ];
-        $model  = $model->where($where)->find();
+        $model = $model->where($where)->find();
         if (!$model) {
             return $this->fail('该应用不存在');
         }
@@ -118,7 +120,7 @@ class PlatformAppController extends BaseController
             $post = $request->post();
 
             hpValidate(StoreApp::class, $post, 'edit');
-            
+
             Db::startTrans();
             try {
                 $model->save($post);
@@ -163,19 +165,19 @@ class PlatformAppController extends BaseController
     public function plugins(Request $request)
     {
         $installed = PluginLogic::getLocalPlugins();
-        $query     = [
-            'active'    => '2',
-            'limit'     => 1000,
-            'plugins'   => $installed
+        $systemInfo = SystemInfo::info();
+        $query = [
+            'active' => '2',
+            'limit' => 1000,
+            'plugins' => $installed,
+            'saas_version' => $systemInfo['system_version']
         ];
-        $data = CloudService::list($query)->array();
-        if (!$data) {
-            return $this->successRes([]);
-        }
-        if ($data['code'] !== 200) {
-            return $this->successRes([]);
-        }
-        return $this->successRes($data['data']['data']);
+        $req = new PluginRequest;
+        $req->list();
+        $req->setQuery($query, null);
+        $cloud = new Cloud($req);
+        $plugins = $cloud->send();
+        return $this->successRes($plugins->data);
     }
 
     /**
@@ -190,12 +192,12 @@ class PlatformAppController extends BaseController
     {
         $platform_id = $request->post('platform_id');
         $app_id = $request->post('app_id');
-        $model       = $this->model;
-        $where       = [
-            'platform_id'   => $platform_id,
-            'id'            => $app_id
+        $model = $this->model;
+        $where = [
+            'platform_id' => $platform_id,
+            'id' => $app_id
         ];
-        $model       = $model->where($where)->find();
+        $model = $model->where($where)->find();
         if (!$model) {
             return $this->fail('该应用不存在');
         }
@@ -217,12 +219,12 @@ class PlatformAppController extends BaseController
     public function login(Request $request)
     {
         $app_id = $request->post('app_id');
-        $model  = $this->model;
+        $model = $this->model;
 
         $where = [
-            'id'    => $app_id
+            'id' => $app_id
         ];
-        $model  = $model->where($where)->find();
+        $model = $model->where($where)->find();
         if (!$model) {
             return $this->fail('找不到该应用');
         }

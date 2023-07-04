@@ -1,8 +1,9 @@
 <?php
 namespace app\admin\logic;
 
-use app\admin\service\kfcloud\CloudService;
 use Exception;
+use YcOpen\CloudService\Cloud;
+use YcOpen\CloudService\Request;
 use ZipArchive;
 
 class PluginLogic
@@ -18,7 +19,7 @@ class PluginLogic
      */
     public static function rollback(string $name)
     {
-        $zip_file   = base_path("/runtime/backupPlugin/{$name}.zip");
+        $zip_file = base_path("/runtime/backupPlugin/{$name}.zip");
         $extract_to = base_path("/plugin");
         if (!is_file($zip_file)) {
             throw new Exception("备份文件不存在");
@@ -49,7 +50,7 @@ class PluginLogic
         if (!is_dir(dirname($zip_file))) {
             mkdir(dirname($zip_file), 0755, true);
         }
-        $zip        = new ZipArchive;
+        $zip = new ZipArchive;
         $openStatus = $zip->open($zip_file, ZipArchive::CREATE);
         if ($openStatus !== true) {
             throw new Exception('源代码备份失败');
@@ -96,7 +97,7 @@ class PluginLogic
      */
     public static function unzipWithCmd($cmd)
     {
-        $desc    = [
+        $desc = [
             0 => ["pipe", "r"],
             1 => ["pipe", "w"],
             2 => ["pipe", "w"],
@@ -123,15 +124,13 @@ class PluginLogic
      * @Email 416716328@qq.com
      * @DateTime 2023-05-08
      */
-    public static function downloadZipFile($key, $file)
+    public static function downloadZipFile($url, $file)
     {
-        $data     = CloudService::getZip($key);
-        $response = $data->array();
-        if (is_array($response) && isset($response['code'])) {
-            throw new Exception($response['msg'], $response['code']);
-        }
-        $zip_content = $data->body();
-        file_put_contents($file, $zip_content);
+        $req = new Request();
+        $req->setUrl($url);
+        $req->setSaveFile($file);
+        $cloud = new Cloud($req);
+        $cloud->send();
     }
 
     /**
@@ -163,7 +162,7 @@ class PluginLogic
     {
         if (ini_get('open_basedir')) {
             $searchPath = array_merge(explode(PATH_SEPARATOR, ini_get('open_basedir')), $extraDirs);
-            $dirs       = [];
+            $dirs = [];
             foreach ($searchPath as $path) {
                 if (@is_dir($path)) {
                     $dirs[] = $path;
@@ -182,7 +181,7 @@ class PluginLogic
 
         $suffixes = [''];
         if ('\\' === DIRECTORY_SEPARATOR) {
-            $pathExt  = getenv('PATHEXT');
+            $pathExt = getenv('PATHEXT');
             $suffixes = array_merge($pathExt ? explode(PATH_SEPARATOR, $pathExt) : ['.exe', '.bat', '.cmd', '.com'], $suffixes);
         }
         foreach ($suffixes as $suffix) {
@@ -206,32 +205,13 @@ class PluginLogic
      */
     public static function getPluginVersion($name)
     {
-        $data = self::getPluginVersionData($name);
-        return $data['version'];
-    }
-
-    /**
-     * 获取应用版本数据
-     * @param mixed $name
-     * @return mixed
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
-     */
-    public static function getPluginVersionData($name)
-    {
         $json = base_path("/plugin/{$name}/version.json");
         if (!is_file($json)) {
-            return [
-                'version' => 1,
-                'version_name' => '1.0.0'
-            ];
+            return 1;
         }
         $config = json_decode(file_get_contents($json), true);
-        # 返回数据
-        return $config ? $config : ['version' => 1, 'version_name' => '1.0.0'];
+        return isset($config['version']) ? $config['version'] : 1;
     }
-
 
     /**
      * 获取已安装的插件列表
@@ -243,7 +223,7 @@ class PluginLogic
     public static function getLocalPlugins(): array
     {
         clearstatcache();
-        $installed    = [];
+        $installed = [];
         $plugin_names = array_diff(scandir(base_path('/plugin/')), array('.', '..')) ?: [];
         foreach ($plugin_names as $plugin_name) {
             if (is_dir(base_path("/plugin/{$plugin_name}")) && $version = self::getPluginVersion($plugin_name)) {

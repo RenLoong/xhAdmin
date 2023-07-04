@@ -1,11 +1,14 @@
 <?php
 
 namespace app\admin\logic;
-use app\admin\service\kfcloud\Updated;
+
 use app\utils\Utils;
 use Exception;
 use process\Monitor;
 use think\facade\Db;
+use YcOpen\CloudService\Cloud;
+use YcOpen\CloudService\Request;
+use YcOpen\CloudService\Request\SystemUpdateRequest;
 use ZipArchive;
 
 /**
@@ -37,46 +40,33 @@ class AppCoreLogic
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public static function getDownKey(string $version):string
+    public static function getDownKey(string $version): string
     {
-        $response = Updated::getSystemDownKey($version)->array();
-        if (!$response) {
-            throw new Exception('获取更新KEY失败');
-        }
-        if (!isset($response['code']) && !isset($response['data'])) {
-            throw new Exception('请求更新失败');
-        }
-        if ($response['code'] !== 200) {
-            throw new Exception($response['msg'],$response['code']);
-        }
-        if (empty($response['data']['key'])) {
-            throw new Exception('更新KEY错误');
-        }
-        return $response['data']['key'];
+        $req = new SystemUpdateRequest;
+        $req->getKey();
+        $req->target_version = $version;
+        $cloud = new Cloud($req);
+        $data = $cloud->send();
+        return $data->url;
     }
 
     /**
      * 下载文件流储存至包
-     * @param string $key
+     * @param string $url
      * @throws \Exception
      * @return void
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public static function downPack(string $key)
+    public static function downPack(string $url)
     {
-        $packRes = Updated::getZip($key);
-        $pack    = $packRes->array();
-        if (is_array($pack) && isset($pack['code'])) {
-            throw new Exception($pack['msg'],$pack['code']);
-        }
-        // 写入包体
         $zip_file = runtime_path('/core/updated.zip');
-        if (!is_dir(dirname($zip_file))) {
-            mkdir(dirname($zip_file), 0755, true);
-        }
-        file_put_contents($zip_file, $packRes->body());
+        $req = new Request();
+        $req->setUrl($url);
+        $req->setSaveFile($zip_file);
+        $cloud = new Cloud($req);
+        $cloud->send();
     }
 
     /**
@@ -140,7 +130,7 @@ class AppCoreLogic
             }
             # 提交事务
             Db::commit();
-        }catch(\Throwable $e){
+        } catch (\Throwable $e) {
             # 回滚事务
             Db::rollback();
             console_log("更新失败，回滚事务：{$e->getMessage()}");
@@ -159,7 +149,7 @@ class AppCoreLogic
         Utils::reloadWebman();
         echo "更新重启成功...\n";
     }
-    
+
     /**
      * 备份框架目录及文件
      * @return void
@@ -174,7 +164,7 @@ class AppCoreLogic
             mkdir(dirname($zipFile), 0755, true);
         }
         # 打开压缩包资源
-        $zip      = new ZipArchive;
+        $zip = new ZipArchive;
         $zipStatus = $zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE);
         if (!$zipStatus) {
             throw new Exception('打开备份源包地址失败');
@@ -233,7 +223,7 @@ class AppCoreLogic
         console_log("框架回滚成功...");
     }
 
-    
+
     /**
      * 遍历打包文件
      * @param string $sourcePath
@@ -243,7 +233,7 @@ class AppCoreLogic
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      */
-    private static function addFileToZip(string $sourcePath,ZipArchive $zip, string $name)
+    private static function addFileToZip(string $sourcePath, ZipArchive $zip, string $name)
     {
         $files = scandir($sourcePath);
         foreach ($files as $file) {
@@ -252,12 +242,11 @@ class AppCoreLogic
                 if (is_dir($path)) {
                     $zip->addEmptyDir($name . DIRECTORY_SEPARATOR . $file);
                     self::addFileToZip($path, $zip, $name . DIRECTORY_SEPARATOR . $file);
-                }
-                else {
+                } else {
                     $zip->addFile($path, $name . DIRECTORY_SEPARATOR . $file);
                 }
             }
         }
     }
-    
+
 }

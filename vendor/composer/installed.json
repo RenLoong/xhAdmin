@@ -1248,8 +1248,8 @@
         },
         {
             "name": "illuminate/bus",
-            "version": "v9.52.8",
-            "version_normalized": "9.52.8.0",
+            "version": "v9.52.10",
+            "version_normalized": "9.52.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/bus.git",
@@ -1310,17 +1310,17 @@
         },
         {
             "name": "illuminate/collections",
-            "version": "v9.52.8",
-            "version_normalized": "9.52.8.0",
+            "version": "v9.52.10",
+            "version_normalized": "9.52.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/collections.git",
-                "reference": "0168d0e44ea0c4fe5451fe08cde7049b9e9f9741"
+                "reference": "d3710b0b244bfc62c288c1a87eaa62dd28352d1f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/collections/zipball/0168d0e44ea0c4fe5451fe08cde7049b9e9f9741",
-                "reference": "0168d0e44ea0c4fe5451fe08cde7049b9e9f9741",
+                "url": "https://api.github.com/repos/illuminate/collections/zipball/d3710b0b244bfc62c288c1a87eaa62dd28352d1f",
+                "reference": "d3710b0b244bfc62c288c1a87eaa62dd28352d1f",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -1338,7 +1338,7 @@
             "suggest": {
                 "symfony/var-dumper": "Required to use the dump method (^6.0)."
             },
-            "time": "2023-02-22T11:32:27+00:00",
+            "time": "2023-06-11T21:17:10+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -1374,8 +1374,8 @@
         },
         {
             "name": "illuminate/conditionable",
-            "version": "v9.52.8",
-            "version_normalized": "9.52.8.0",
+            "version": "v9.52.10",
+            "version_normalized": "9.52.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/conditionable.git",
@@ -1429,8 +1429,8 @@
         },
         {
             "name": "illuminate/container",
-            "version": "v9.52.8",
-            "version_normalized": "9.52.8.0",
+            "version": "v9.52.10",
+            "version_normalized": "9.52.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/container.git",
@@ -1489,8 +1489,8 @@
         },
         {
             "name": "illuminate/contracts",
-            "version": "v9.52.8",
-            "version_normalized": "9.52.8.0",
+            "version": "v9.52.10",
+            "version_normalized": "9.52.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/contracts.git",
@@ -1546,17 +1546,17 @@
         },
         {
             "name": "illuminate/database",
-            "version": "v9.52.8",
-            "version_normalized": "9.52.8.0",
+            "version": "v9.52.10",
+            "version_normalized": "9.52.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/database.git",
-                "reference": "64f570ea10543b6f1777db5615e6386293e05fee"
+                "reference": "93cfc8e1f9ac147e6a2851ecabe8d8f21ad85182"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/database/zipball/64f570ea10543b6f1777db5615e6386293e05fee",
-                "reference": "64f570ea10543b6f1777db5615e6386293e05fee",
+                "url": "https://api.github.com/repos/illuminate/database/zipball/93cfc8e1f9ac147e6a2851ecabe8d8f21ad85182",
+                "reference": "93cfc8e1f9ac147e6a2851ecabe8d8f21ad85182",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -1586,7 +1586,7 @@
                 "illuminate/pagination": "Required to paginate the result set (^9.0).",
                 "symfony/finder": "Required to use Eloquent model factories (^6.0)."
             },
-            "time": "2023-05-29T15:05:51+00:00",
+            "time": "2023-06-11T21:17:10+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -1625,8 +1625,8 @@
         },
         {
             "name": "illuminate/events",
-            "version": "v9.52.8",
-            "version_normalized": "9.52.8.0",
+            "version": "v9.52.10",
+            "version_normalized": "9.52.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/events.git",
@@ -1689,8 +1689,8 @@
         },
         {
             "name": "illuminate/macroable",
-            "version": "v9.52.8",
-            "version_normalized": "9.52.8.0",
+            "version": "v9.52.10",
+            "version_normalized": "9.52.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/macroable.git",
@@ -1744,8 +1744,8 @@
         },
         {
             "name": "illuminate/pagination",
-            "version": "v9.52.8",
-            "version_normalized": "9.52.8.0",
+            "version": "v9.52.10",
+            "version_normalized": "9.52.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/pagination.git",
@@ -1803,8 +1803,8 @@
         },
         {
             "name": "illuminate/pipeline",
-            "version": "v9.52.8",
-            "version_normalized": "9.52.8.0",
+            "version": "v9.52.10",
+            "version_normalized": "9.52.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/pipeline.git",
@@ -1860,8 +1860,8 @@
         },
         {
             "name": "illuminate/redis",
-            "version": "v9.52.8",
-            "version_normalized": "9.52.8.0",
+            "version": "v9.52.10",
+            "version_normalized": "9.52.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/redis.git",
@@ -1923,17 +1923,17 @@
         },
         {
             "name": "illuminate/support",
-            "version": "v9.52.8",
-            "version_normalized": "9.52.8.0",
+            "version": "v9.52.10",
+            "version_normalized": "9.52.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/support.git",
-                "reference": "5c38d755c5fa767d5b689867888ee4e5f53fc8a6"
+                "reference": "223c608dbca27232df6213f776bfe7bdeec24874"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/support/zipball/5c38d755c5fa767d5b689867888ee4e5f53fc8a6",
-                "reference": "5c38d755c5fa767d5b689867888ee4e5f53fc8a6",
+                "url": "https://api.github.com/repos/illuminate/support/zipball/223c608dbca27232df6213f776bfe7bdeec24874",
+                "reference": "223c608dbca27232df6213f776bfe7bdeec24874",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -1967,7 +1967,7 @@
                 "symfony/var-dumper": "Required to use the dd function (^6.0).",
                 "vlucas/phpdotenv": "Required to use the Env class and env helper (^5.4.1)."
             },
-            "time": "2023-04-04T18:35:58+00:00",
+            "time": "2023-06-11T21:11:53+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -2343,17 +2343,17 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "2.66.0",
-            "version_normalized": "2.66.0.0",
+            "version": "2.68.1",
+            "version_normalized": "2.68.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "496712849902241f04902033b0441b269effe001"
+                "reference": "4f991ed2a403c85efbc4f23eb4030063fdbe01da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/496712849902241f04902033b0441b269effe001",
-                "reference": "496712849902241f04902033b0441b269effe001",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/4f991ed2a403c85efbc4f23eb4030063fdbe01da",
+                "reference": "4f991ed2a403c85efbc4f23eb4030063fdbe01da",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -2382,7 +2382,7 @@
                 "phpunit/phpunit": "^7.5.20 || ^8.5.26 || ^9.5.20",
                 "squizlabs/php_codesniffer": "^3.4"
             },
-            "time": "2023-01-29T18:53:47+00:00",
+            "time": "2023-06-20T18:29:04+00:00",
             "bin": [
                 "bin/carbon"
             ],
@@ -5302,17 +5302,17 @@
         },
         {
             "name": "webman/console",
-            "version": "v1.2.35",
-            "version_normalized": "1.2.35.0",
+            "version": "v1.2.36",
+            "version_normalized": "1.2.36.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webman-php/console.git",
-                "reference": "19e3f3de09f00adca4cb9c212a2be2ae47c71f00"
+                "reference": "82c75368feab013200048cc1f87a6d376a4ca59d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webman-php/console/zipball/19e3f3de09f00adca4cb9c212a2be2ae47c71f00",
-                "reference": "19e3f3de09f00adca4cb9c212a2be2ae47c71f00",
+                "url": "https://api.github.com/repos/webman-php/console/zipball/82c75368feab013200048cc1f87a6d376a4ca59d",
+                "reference": "82c75368feab013200048cc1f87a6d376a4ca59d",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -5328,7 +5328,7 @@
             "require-dev": {
                 "workerman/webman": "^1.0"
             },
-            "time": "2023-05-15T06:19:43+00:00",
+            "time": "2023-07-03T10:48:08+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -5673,6 +5673,43 @@
                 "source": "https://github.com/xaboy/form-builder"
             },
             "install-path": "../xaboy/form-builder"
+        },
+        {
+            "name": "yc-open/cloud-service",
+            "version": "1.0.10",
+            "version_normalized": "1.0.10.0",
+            "source": {
+                "type": "git",
+                "url": "https://gitee.com/yc_open/client-cloud-service-center",
+                "reference": "5534f537bcd77980b3a515e62a9a99094a87f7e3"
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.7",
+                "php": "^8.0",
+                "vlucas/phpdotenv": "^5.4"
+            },
+            "time": "2023-07-04T04:28:58+00:00",
+            "type": "library",
+            "installation-source": "source",
+            "autoload": {
+                "files": [
+                    "./src/helpers.php"
+                ],
+                "psr-4": {
+                    "YcOpen\\CloudService\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "楚羽幽",
+                    "email": "cy958416459@qq.com"
+                }
+            ],
+            "install-path": "../yc-open/cloud-service"
         },
         {
             "name": "yzh52521/easyhttp",

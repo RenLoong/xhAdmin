@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => '30fc6a5dfa8e89fc400e1996a907fbdb25e371d6',
+    'reference' => 'd26108fe82c17841eacdfe1f292e0705ed1742ba',
     'name' => 'ycopen/kfadmin',
   ),
   'versions' => 
@@ -139,8 +139,8 @@
     ),
     'illuminate/bus' => 
     array (
-      'pretty_version' => 'v9.52.8',
-      'version' => '9.52.8.0',
+      'pretty_version' => 'v9.52.10',
+      'version' => '9.52.10.0',
       'aliases' => 
       array (
       ),
@@ -148,17 +148,17 @@
     ),
     'illuminate/collections' => 
     array (
-      'pretty_version' => 'v9.52.8',
-      'version' => '9.52.8.0',
+      'pretty_version' => 'v9.52.10',
+      'version' => '9.52.10.0',
       'aliases' => 
       array (
       ),
-      'reference' => '0168d0e44ea0c4fe5451fe08cde7049b9e9f9741',
+      'reference' => 'd3710b0b244bfc62c288c1a87eaa62dd28352d1f',
     ),
     'illuminate/conditionable' => 
     array (
-      'pretty_version' => 'v9.52.8',
-      'version' => '9.52.8.0',
+      'pretty_version' => 'v9.52.10',
+      'version' => '9.52.10.0',
       'aliases' => 
       array (
       ),
@@ -166,8 +166,8 @@
     ),
     'illuminate/container' => 
     array (
-      'pretty_version' => 'v9.52.8',
-      'version' => '9.52.8.0',
+      'pretty_version' => 'v9.52.10',
+      'version' => '9.52.10.0',
       'aliases' => 
       array (
       ),
@@ -175,8 +175,8 @@
     ),
     'illuminate/contracts' => 
     array (
-      'pretty_version' => 'v9.52.8',
-      'version' => '9.52.8.0',
+      'pretty_version' => 'v9.52.10',
+      'version' => '9.52.10.0',
       'aliases' => 
       array (
       ),
@@ -184,17 +184,17 @@
     ),
     'illuminate/database' => 
     array (
-      'pretty_version' => 'v9.52.8',
-      'version' => '9.52.8.0',
+      'pretty_version' => 'v9.52.10',
+      'version' => '9.52.10.0',
       'aliases' => 
       array (
       ),
-      'reference' => '64f570ea10543b6f1777db5615e6386293e05fee',
+      'reference' => '93cfc8e1f9ac147e6a2851ecabe8d8f21ad85182',
     ),
     'illuminate/events' => 
     array (
-      'pretty_version' => 'v9.52.8',
-      'version' => '9.52.8.0',
+      'pretty_version' => 'v9.52.10',
+      'version' => '9.52.10.0',
       'aliases' => 
       array (
       ),
@@ -202,8 +202,8 @@
     ),
     'illuminate/macroable' => 
     array (
-      'pretty_version' => 'v9.52.8',
-      'version' => '9.52.8.0',
+      'pretty_version' => 'v9.52.10',
+      'version' => '9.52.10.0',
       'aliases' => 
       array (
       ),
@@ -211,8 +211,8 @@
     ),
     'illuminate/pagination' => 
     array (
-      'pretty_version' => 'v9.52.8',
-      'version' => '9.52.8.0',
+      'pretty_version' => 'v9.52.10',
+      'version' => '9.52.10.0',
       'aliases' => 
       array (
       ),
@@ -220,8 +220,8 @@
     ),
     'illuminate/pipeline' => 
     array (
-      'pretty_version' => 'v9.52.8',
-      'version' => '9.52.8.0',
+      'pretty_version' => 'v9.52.10',
+      'version' => '9.52.10.0',
       'aliases' => 
       array (
       ),
@@ -229,8 +229,8 @@
     ),
     'illuminate/redis' => 
     array (
-      'pretty_version' => 'v9.52.8',
-      'version' => '9.52.8.0',
+      'pretty_version' => 'v9.52.10',
+      'version' => '9.52.10.0',
       'aliases' => 
       array (
       ),
@@ -238,12 +238,12 @@
     ),
     'illuminate/support' => 
     array (
-      'pretty_version' => 'v9.52.8',
-      'version' => '9.52.8.0',
+      'pretty_version' => 'v9.52.10',
+      'version' => '9.52.10.0',
       'aliases' => 
       array (
       ),
-      'reference' => '5c38d755c5fa767d5b689867888ee4e5f53fc8a6',
+      'reference' => '223c608dbca27232df6213f776bfe7bdeec24874',
     ),
     'league/flysystem' => 
     array (
@@ -283,12 +283,12 @@
     ),
     'nesbot/carbon' => 
     array (
-      'pretty_version' => '2.66.0',
-      'version' => '2.66.0.0',
+      'pretty_version' => '2.68.1',
+      'version' => '2.68.1.0',
       'aliases' => 
       array (
       ),
-      'reference' => '496712849902241f04902033b0441b269effe001',
+      'reference' => '4f991ed2a403c85efbc4f23eb4030063fdbe01da',
     ),
     'nikic/fast-route' => 
     array (
@@ -428,8 +428,8 @@
     array (
       'provided' => 
       array (
-        0 => '1.0.0 || 2.0.0 || 3.0.0',
-        1 => '1.0|2.0|3.0',
+        0 => '1.0|2.0|3.0',
+        1 => '1.0.0 || 2.0.0 || 3.0.0',
       ),
     ),
     'psr/simple-cache' => 
@@ -689,12 +689,12 @@
     ),
     'webman/console' => 
     array (
-      'pretty_version' => 'v1.2.35',
-      'version' => '1.2.35.0',
+      'pretty_version' => 'v1.2.36',
+      'version' => '1.2.36.0',
       'aliases' => 
       array (
       ),
-      'reference' => '19e3f3de09f00adca4cb9c212a2be2ae47c71f00',
+      'reference' => '82c75368feab013200048cc1f87a6d376a4ca59d',
     ),
     'webman/think-orm' => 
     array (
@@ -741,6 +741,15 @@
       ),
       'reference' => '5cf3f5435a63954c1d11ba82c3cd4cfe3d145acf',
     ),
+    'yc-open/cloud-service' => 
+    array (
+      'pretty_version' => '1.0.10',
+      'version' => '1.0.10.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '5534f537bcd77980b3a515e62a9a99094a87f7e3',
+    ),
     'ycopen/kfadmin' => 
     array (
       'pretty_version' => 'dev-master',
@@ -748,7 +757,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => '30fc6a5dfa8e89fc400e1996a907fbdb25e371d6',
+      'reference' => 'd26108fe82c17841eacdfe1f292e0705ed1742ba',
     ),
     'yzh52521/easyhttp' => 
     array (
