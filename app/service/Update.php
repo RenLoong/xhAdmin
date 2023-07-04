@@ -61,13 +61,18 @@ class Update
     public static function update($version, $data)
     {
         try {
+            if (empty($data)) {
+                console_log("收集数据空，无需执行sql升级...");
+            }
             $prefix = config('database.connections.mysql.prefix');
             $str    = ['`php_', '`yc_'];
             foreach ($data as $file => $sql) {
                 $sql = str_replace($str, "`{$prefix}", $sql);
                 if (!DbMgr::instance()->statement($sql)) {
+                    console_log("执行SQL {$file} 失败...");
                     continue;
                 }
+                console_log("执行SQL {$file} 成功...");
                 $filePath = base_path('/update/' . $file . '.sql');
                 if (file_exists($filePath)) {
                     unlink($filePath);
