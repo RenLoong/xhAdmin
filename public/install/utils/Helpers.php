@@ -52,8 +52,8 @@ class Helpers
 
         $req = new SiteRequest;
         $req->install();
-        $req->web_name = $site['web_name'];
-        $req->web_url = $site['web_url'];
+        $req->title = $site['web_name'];
+        $req->domain = $site['web_url'];
         $cloud = new Cloud($req);
         $cloud->send();
 

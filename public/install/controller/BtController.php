@@ -161,11 +161,6 @@ class BtController
     {
         # 获取数据
         $post = $_POST;
-        $btData = isset($post['btData']) ? $post['btData'] : null;
-        # 验证宝塔面板
-        Validated::validateBt($btData);
-        return Json::fail('缺少宝塔面板数据');
-
         # 数据验证
         if (!isset($post['btData']))
             return Json::fail('缺少宝塔面板数据');
