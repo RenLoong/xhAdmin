@@ -156,6 +156,11 @@ class ModulesController extends BaseController
             $table_name    = DbMgr::filterAlphaNum($data['table_name']);
             $table_comment = DbMgr::pdoQuote($data['table_comment']);
             $prefix = config('database.connections.mysql.prefix', '');
+            
+            # 检测表名称是否带前缀
+            if (strpos($table_name,$prefix) !== false) {
+                return $this->fail("表名称不允许带 {$prefix} 前缀");
+            }
 
             # 检测该表名称
             if (DbMgr::hasTable($table_name)) {
@@ -181,7 +186,9 @@ class ModulesController extends BaseController
             # 设置表备注
             $prefixTableName = $prefix . $table_name;
             DbMgr::instance()->statement("ALTER TABLE `{$prefixTableName}` COMMENT {$table_comment}");
-
+            if (!DbMgr::hasTable($table_name)) {
+                return $this->fail('创建失败');
+            }
             # 创建数据表成功
             return $this->success('创建成功');
         }
@@ -226,14 +233,21 @@ class ModulesController extends BaseController
             if (!DbMgr::hasTable($post['old_table_name'])) {
                 return $this->fail('该数据表不存在');
             }
+            $table_name    = DbMgr::filterAlphaNum($post['table_name']);
+            $table_comment = DbMgr::pdoQuote($post['table_comment']);
+            $prefix = config('database.connections.mysql.prefix', '');
+            # 检测表名称是否带前缀
+            if (strpos($table_name,$prefix) !== false) {
+                return $this->fail("表名称不允许带 {$prefix} 前缀");
+            }
             # 修改表名称
-            if ($post['old_table_name'] !== $post['table_name']) {
-                DbMgr::schema()->rename($post['old_table_name'], $post['table_name']);
+            if ($post['old_table_name'] !== $table_name) {
+                DbMgr::schema()->rename($post['old_table_name'], $table_name);
             }
             # 修改表注释
-            if ($post['old_table_comment'] !== $post['table_comment']) {
+            if ($post['old_table_comment'] !== $table_comment) {
                 $tableName = $prefix . $post['table_name'];
-                $table_comment = DbMgr::pdoQuote($post['table_comment']);
+                $table_comment = DbMgr::pdoQuote($table_comment);
                 DbMgr::instance()->statement("ALTER TABLE `{$tableName}` COMMENT {$table_comment}");
             }
             return $this->success('表变更成功');
