@@ -7,8 +7,8 @@
             <div class="flex items-center">{{ platform.configs?.web_name }}【{{ platform?.platform_type_text ?? '应用' }}】
             </div>
         </div>
-        <n-grid :cols="5" :y-gap="22" :x-gap="8" class="app-list">
-            <n-grid-item class="item" v-for="(item, index) in platformApp" :key="index">
+        <div class="app-list">
+            <div class="item" v-for="(item, index) in platformApp" :key="index">
                 <div class="app-item">
                     <img :src="item.logo" class="logo" alt="">
                     <div class="status">{{ item.status === '1' ? '使用中' : '已停用' }}</div>
@@ -48,11 +48,11 @@
                     </div>
                     <div class="title">{{ item.title }}</div>
                 </div>
-            </n-grid-item>
-            <n-grid-item class="action" @click="hanldShowDialog">
+            </div>
+            <div class="item action" @click="hanldShowDialog">
                 <AppIcons icon="PlusOutlined" :size="48" color="#888" />
-            </n-grid-item>
-        </n-grid>
+            </div>
+        </div>
         <!-- 组件弹窗 -->
         <n-modal v-model:show="modalDialog.show" v-bind="modalDialog">
             <n-form :model="form" labn-position="top" class="form-container">
@@ -451,8 +451,12 @@
             padding: 10px;
             overflow-y: auto;
             overflow-x: hidden;
+            display: flex;
+            flex-wrap: wrap;
 
             .item {
+                margin: 5px 40px 5px 5px;
+
                 .app-item {
                     position: relative;
                     width: 120px;

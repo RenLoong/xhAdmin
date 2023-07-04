@@ -279,6 +279,7 @@ class PluginController extends BaseController
     {
         $name = $request->post('name');
         $version = $request->post('version');
+        $coupon_code = $request->post('coupon_code');
 
         $systemInfo = SystemInfo::info();
         $installed_version = PluginLogic::getPluginVersion($name);
@@ -288,6 +289,7 @@ class PluginController extends BaseController
         $req->version = $version;
         $req->saas_version = $systemInfo['system_version'];
         $req->local_version = $installed_version;
+        $req->coupon_code = $coupon_code;
         $cloud = new Cloud($req);
         $data = $cloud->send()->toArray();
         return $this->successRes($data);

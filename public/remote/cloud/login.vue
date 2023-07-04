@@ -94,7 +94,7 @@ export default {
     width: 450px;
 
     .captcha {
-      width: 120px;
+      width: auto;
       height: 32px;
       cursor: pointer;
     }

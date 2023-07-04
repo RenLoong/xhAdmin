@@ -64,12 +64,10 @@ class StoreAppController extends BaseController
             }
             return $this->success('授权成功');
         }
-        $installed = PluginLogic::getLocalPlugins();
         $systemInfo = SystemInfo::info();
         $query     = [
             'active'  => '2',
             'limit' => 1000,
-            'plugins' => $installed,
             'saas_version' => $systemInfo['system_version']
         ];
         $plugins=[];

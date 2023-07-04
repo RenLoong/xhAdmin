@@ -8,6 +8,7 @@ use support\Redis;
 use support\Request;
 use YcOpen\CloudService\Cloud;
 use YcOpen\CloudService\Request\CaptchaRequest;
+use YcOpen\CloudService\Request\CouponRequest;
 use YcOpen\CloudService\Request\LoginRequest;
 use YcOpen\CloudService\Request\SiteRequest;
 use YcOpen\CloudService\Request\UserRequest;
@@ -107,6 +108,37 @@ class PluginCloudController extends BaseController
     {
         $req = new CaptchaRequest;
         $req->captchaCode();
+        $req->bg='255,255,255';
+        $cloud = new Cloud($req);
+        $data = $cloud->send();
+        return $this->successRes($data->toArray());
+    }
+    /**
+     * 获取可用优惠券
+     * @param Request $request
+     * @return \support\Response
+     */
+    public function getAvailableCoupon(Request $request)
+    {
+        $G=$request->get();
+        $req=new CouponRequest;
+        $req->getAvailableCoupon();
+        $req->setQuery($G,null);
+        $cloud = new Cloud($req);
+        $data = $cloud->send();
+        return $this->successRes($data->toArray());
+    }
+    /**
+     * 获取优惠券列表
+     * @param Request $request
+     * @return \support\Response
+     */
+    public function getCouponList(Request $request)
+    {
+        $G=$request->get();
+        $req=new CouponRequest;
+        $req->getCouponList();
+        $req->setQuery($G,null);
         $cloud = new Cloud($req);
         $data = $cloud->send();
         return $this->successRes($data->toArray());
