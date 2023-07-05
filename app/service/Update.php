@@ -109,6 +109,7 @@ class Update
         # 获取composer
         $composerPath = "{$basePath}/composer.json";
         if (!file_exists($composerPath)) {
+            Log::error('无法找到composer.json文件...');
             return;
         }
         # 切换工作目录
