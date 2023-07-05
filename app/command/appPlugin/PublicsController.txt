@@ -184,6 +184,8 @@ class PublicsController extends BaseController
      */
     public function loginout(Request $request)
     {
+        # 获取应用APPID
+        $appid = $request->header('Appid');
         # 退出登录
         Users::loginout();
         return $this->success('成功退出');
