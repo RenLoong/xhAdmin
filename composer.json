@@ -45,8 +45,7 @@
         "illuminate/events": "^9.52",
         "symfony/var-dumper": "^6.0",
         "wikimedia/composer-merge-plugin": "^2.1",
-        "doctrine/dbal": "^3.6",
-        "yc-open/cloud-service": "^1.1"
+        "doctrine/dbal": "^3.6"
     },
     "suggest": {
         "ext-event": "For better performance. "
