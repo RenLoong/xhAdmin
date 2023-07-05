@@ -5460,11 +5460,11 @@
         },
         {
             "name": "yc-open/cloud-service",
-            "version": "1.0.12",
+            "version": "1.0.13",
             "source": {
                 "type": "git",
                 "url": "https://gitee.com/yc_open/client-cloud-service-center",
-                "reference": "d268d43d5887b370fe95d2f1c385fd4615aada34"
+                "reference": "f99eedbb88405a2e26a884deb5978dfc80c4707b"
             },
             "require": {
                 "guzzlehttp/guzzle": "^7.7",
@@ -5490,7 +5490,7 @@
                     "email": "cy958416459@qq.com"
                 }
             ],
-            "time": "2023-07-04T11:16:09+00:00"
+            "time": "2023-07-05T12:57:47+00:00"
         },
         {
             "name": "yzh52521/easyhttp",
