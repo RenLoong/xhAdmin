@@ -39,7 +39,6 @@ class IndexController extends BaseController
      */
     public function test()
     {
-        Update::beforeUpdate(1000);
         return $this->fail('test');
     }
 }

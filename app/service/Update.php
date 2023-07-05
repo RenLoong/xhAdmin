@@ -71,16 +71,21 @@ class Update
         $prefix = config('database.connections.mysql.prefix');
         $str    = ['`php_', '`yc_'];
         foreach ($data['sql'] as $key => $sql) {
+            # 获取文件名称
+            $file = $data['files'][$key];
+            $filePath = base_path('/update/' . $file . '.sql');
+            # 替换为真实SQL
             $sql = str_replace($str, "`{$prefix}", $sql);
             try {
                 DbMgr::instance()->statement($sql);
             } catch (\Throwable $e) {
                 Log::error("执行更新SQL错误：{$e->getMessage()}");
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
                 continue;
             }
-            $file = $data['files'][$key];
             console_log("执行SQL {$file} 成功...");
-            $filePath = base_path('/update/' . $file . '.sql');
             if (file_exists($filePath)) {
                 unlink($filePath);
             }
