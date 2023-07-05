@@ -22,7 +22,7 @@ class Update
      */
     public static function beforeUpdate($version)
     {
-        $sqlDir = base_path('/update/');
+        $sqlDir = base_path('/update');
         if (!is_dir($sqlDir)) {
             return [];
         }
@@ -37,13 +37,18 @@ class Update
         if (empty($data)) {
             return [];
         }
-        $dataList = [];
+        $dataList = [
+            'files'     => [],
+            'sql'       => [],
+        ];
         foreach ($data as $value) {
-            $item = file_get_contents($sqlDir . $value);
+            $item = file_get_contents("{$sqlDir}/{$value}");
             if (!empty($item)) {
                 $keyName = str_replace('.sql','',$value);
+                $dataList['files'][] = $keyName;
                 $item = DbMgr::removeComments($item);
-                $dataList[$keyName] = $item;
+                $item = DbMgr::splitSqlFile($item,';');
+                $dataList['sql'] = array_merge($dataList['sql'],$item);
             }
         }
         return $dataList;
@@ -60,33 +65,32 @@ class Update
      */
     public static function update($version, $data)
     {
-        try {
-            if (empty($data)) {
-                console_log("收集数据空，无需执行sql升级...");
-            }
-            $prefix = config('database.connections.mysql.prefix');
-            $str    = ['`php_', '`yc_'];
-            foreach ($data as $file => $sql) {
-                $sql = str_replace($str, "`{$prefix}", $sql);
-                if (!DbMgr::instance()->statement($sql)) {
-                    console_log("执行SQL {$file} 失败...");
-                    continue;
-                }
-                console_log("执行SQL {$file} 成功...");
-                $filePath = base_path('/update/' . $file . '.sql');
-                if (file_exists($filePath)) {
-                    unlink($filePath);
-                }
-            }
-            $updateDir = base_path('/update');
-            if (is_dir($updateDir)) {
-                rmdir($updateDir);
-            }
-            # 更新composer
-            self::updateComposer();
-        } catch (\Throwable $e) {
-            Log::error("执行更新SQL错误：{$e->getMessage()}");
+        if (empty($data)) {
+            console_log("收集数据空，无需执行sql升级...");
         }
+        $prefix = config('database.connections.mysql.prefix');
+        $str    = ['`php_', '`yc_'];
+        foreach ($data['sql'] as $key => $sql) {
+            $sql = str_replace($str, "`{$prefix}", $sql);
+            try {
+                DbMgr::instance()->statement($sql);
+            } catch (\Throwable $e) {
+                Log::error("执行更新SQL错误：{$e->getMessage()}");
+                continue;
+            }
+            $file = $data['files'][$key];
+            console_log("执行SQL {$file} 成功...");
+            $filePath = base_path('/update/' . $file . '.sql');
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+        }
+        $updateDir = base_path('/update');
+        if (is_dir($updateDir)) {
+            rmdir($updateDir);
+        }
+        # 更新composer
+        self::updateComposer();
     }
 
     /**
