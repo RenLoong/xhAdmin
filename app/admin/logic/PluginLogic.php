@@ -214,6 +214,28 @@ class PluginLogic
     }
 
     /**
+     * 获取应用版本数据
+     * @param mixed $name
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function getPluginVersionData($name)
+    {
+        $json = base_path("/plugin/{$name}/version.json");
+        if (!is_file($json)) {
+            return [
+                'version' => 1,
+                'version_name' => '1.0.0'
+            ];
+        }
+        $config = json_decode(file_get_contents($json), true);
+        # 返回数据
+        return $config ? $config : ['version' => 1, 'version_name' => '1.0.0'];
+    }
+
+    /**
      * 获取已安装的插件列表
      * @return array
      * @copyright 贵州猿创科技有限公司

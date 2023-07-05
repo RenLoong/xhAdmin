@@ -20,6 +20,10 @@ class CurdForm extends Enum
         'text'      => '选择器',
         'value'     => 'select',
     ];
+    const SWITCH = [
+        'text'      => '开关组件',
+        'value'     => 'switch',
+    ];
     const DATE = [
         'text'      => '日期选择',
         'value'     => 'date',

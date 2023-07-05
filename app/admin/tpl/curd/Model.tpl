@@ -1,6 +1,6 @@
 <?php
 
-namespace plugin\{PLUGIN_NAME}\app\admin\model;
+namespace plugin\{PLUGIN_NAME}\app\model;
 
 use app\Model;
 

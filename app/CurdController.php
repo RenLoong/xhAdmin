@@ -52,12 +52,20 @@ class CurdController extends BaseController
     protected $tableRule = [];
 
     /**
-     * 表单规则
+     * 添加表单规则
      * @var array
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    protected $formRule = [];
+    protected $addForm = [];
+
+    /**
+     * 修改表单规则
+     * @var array
+     * @author 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    protected $editForm = [];
 
     /**
      * 构造函数
@@ -87,7 +95,7 @@ class CurdController extends BaseController
         # 设置分页
         $builder->pageConfig();
         # 获取表格规则
-        $tableData = $this->getTableData();
+        $tableData = $this->tableRule;
         # 是否支持CURD
         $addButton  = $this->isButton('form_add');
         $editButton = $this->isButton('form_edit');
@@ -129,12 +137,12 @@ class CurdController extends BaseController
         }
         # 设置规则
         foreach ($tableData as $item) {
-            $extra = $this->getExtra($item);
-            if ($item['list_type'] === 'text') {
-                $builder->addColumn($item['field_name'], $item['field_comment'], $extra);
+            $extra = is_array($item['extra']) ? $item['extra'] : [];
+            if ($item['type'] === 'text') {
+                $builder->addColumn($item['field'], $item['title'], $extra);
             } else {
-                $extra['params']['type'] = $item['list_type'];
-                $builder->addColumnEle($item['field_name'], $item['field_comment'], $extra);
+                $extra['params']['type'] = $item['type'];
+                $builder->addColumnEle($item['field'], $item['title'], $extra);
             }
         }
         # 生成表格
@@ -190,57 +198,6 @@ class CurdController extends BaseController
     }
 
     /**
-     * 获取扩展参数
-     * @param array $item
-     * @return array<string>
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     */
-    private function getExtra(array $item)
-    {
-        if (empty($item['list_extra'])) {
-            return [];
-        }
-        $extras = explode(',', $item['list_extra']);
-        $data   = [];
-        foreach ($extras as $value) {
-            $expl = explode(':', $value);
-            if (empty($expl[0]) || empty($expl[1])) {
-                continue;
-            }
-            $data[$expl[0]] = $expl[1];
-        }
-        return $data;
-    }
-
-    /**
-     * 获取CURD列表数据
-     * @return array
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     */
-    private function getTableData()
-    {
-        $where  = [
-            ['table_name', '=', $this->tableName],
-            ['list_type', '<>', ''],
-        ];
-        $fields = [
-            'field_name',
-            'field_name',
-            'field_comment',
-            'list_type',
-            'list_extra',
-        ];
-        $data   = Curd::where($where)
-            ->order('list_sort asc')
-            ->field($fields)
-            ->select()
-            ->toArray();
-        return $data;
-    }
-
-    /**
      * 添加数据
      * @param \support\Request $request
      * @return \support\Response
@@ -264,24 +221,22 @@ class CurdController extends BaseController
         }
         $builder = new FormBuilder;
         $builder->setMethod('POST');
-        $formRule = $this->getFormRule('form_add');
+        $formRule = $this->addForm;
         foreach ($formRule as $value) {
-            $extra = [
-                'col'       => 12
-            ];
-            if (!in_array($value['form_type'],['icons','uploadify','remote'])) {
+            $extra = empty($formRule['extra']) ? [] : $formRule['extra'];
+            if (!in_array($value['type'],['switch','icons','uploadify','remote'])) {
                 $builder->addRow(
-                    $value['field_name'],
-                    $value['form_type'],
-                    $value['field_comment'],
+                    $value['field'],
+                    $value['type'],
+                    $value['title'],
                     '',
                     $extra
                 );
             } else {
                 $builder->addComponent(
-                    $value['field_name'],
-                    $value['form_type'],
-                    $value['field_comment'],
+                    $value['field'],
+                    $value['type'],
+                    $value['title'],
                     '',
                     $extra
                 );
@@ -324,24 +279,22 @@ class CurdController extends BaseController
         }
         $builder = new FormBuilder;
         $builder->setMethod('PUT');
-        $formRule = $this->getFormRule('form_edit');
+        $formRule = $this->editForm;
         foreach ($formRule as $value) {
-            $extra = [
-                'col'       => 12
-            ];
-            if (!in_array($value['form_type'],['icons','uploadify','remote'])) {
+            $extra = empty($formRule['extra']) ? [] : $formRule['extra'];
+            if (!in_array($value['type'],['switch','icons','uploadify','remote'])) {
                 $builder->addRow(
-                    $value['field_name'],
-                    $value['form_type'],
-                    $value['field_comment'],
+                    $value['field'],
+                    $value['type'],
+                    $value['title'],
                     '',
                     $extra
                 );
             } else {
                 $builder->addComponent(
-                    $value['field_name'],
-                    $value['form_type'],
-                    $value['field_comment'],
+                    $value['field'],
+                    $value['type'],
+                    $value['title'],
                     '',
                     $extra
                 );
@@ -350,28 +303,6 @@ class CurdController extends BaseController
         $builder->setData($model);
         $data    = $builder->create();
         return $this->successRes($data);
-    }
-
-    /**
-     * 获取表单规则
-     * @param string $field
-     * @return array
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     */
-    private function getFormRule(string $field)
-    {
-        $where = [
-            'table_name'    => $this->tableName,
-            $field          => '20'
-        ];
-        $fields = [];
-        $data = Curd::where($where)
-        ->order('list_sort asc')
-        ->field($fields)
-        ->select()
-        ->toArray();
-        return $data;
     }
 
     /**

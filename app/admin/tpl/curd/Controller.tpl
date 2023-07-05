@@ -44,12 +44,20 @@ class {CLASS_NAME}{SUFFIX} extends CurdController
     protected $tableRule = {TABLE_RULE};
 
     /**
-     * 表单规则
+     * 添加表单规则
      * @var array
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    protected $formRule = {FORM_RULE};
+    protected $addForm = {ADD_FORM_RULE};
+
+    /**
+     * 修改表单规则
+     * @var array
+     * @author 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    protected $editForm = {EDIT_FORM_RULE};
 
     /**
      * 构造函数

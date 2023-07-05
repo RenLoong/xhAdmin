@@ -12,8 +12,29 @@
                         <n-cascader :options="menus" @update:value="hanldSelectMenu" />
                     </n-form-item>
                 </n-gi>
+                <n-gi>
+                    <n-form-item label="是否强制覆盖">
+                        <n-switch v-model:value="formData.is_cover" :unchecked-value="0" :checked-value="1">
+                            <template #checked>
+                                覆盖
+                            </template>
+                            <template #unchecked>
+                                不覆盖
+                            </template>
+                        </n-switch>
+                    </n-form-item>
+                </n-gi>
+                <n-gi v-if="formData.menu_id !== 'cancel'">
+                    <n-form-item label="设置菜单名称">
+                        <n-input v-model:value="formData.menu_name" placeholder="请输入菜单名称" />
+                    </n-form-item>
+                </n-gi>
             </n-grid>
         </n-form>
+        <div class="button">
+            <n-button type="primary" @click="submit">开始生成</n-button>
+            <n-button type="warning" @click="getCurdPreView">查看预览</n-button>
+        </div>
         <div class="ctrl-container" v-if="menuView.path">
             <n-divider>生成菜单预览</n-divider>
             <div class="text-warning">菜单文件路径：{{ menuView.path }}</div>
@@ -34,9 +55,6 @@
             <div class="text-warning">验证器文件路径：{{ curdPreView.validatePath }}</div>
             <HCode v-model="curdPreView.validate" language="php" />
         </div>
-        <div class="button">
-            <n-button type="primary" @click="submit">开始生成</n-button>
-        </div>
     </div>
 </template>
 <script>
@@ -47,10 +65,10 @@ export default {
     data() {
         return {
             plugins: [],
-            menus:[],
+            menus: [],
             menuView: {
                 path: '',
-                menus:''
+                menus: ''
             },
             curdPreView: {
                 controllerPath: '',
@@ -63,6 +81,8 @@ export default {
             formData: {
                 app_name: '',
                 menu_id: '',
+                is_cover: 0,
+                menu_name: ''
             },
         }
     },
@@ -75,7 +95,9 @@ export default {
             const params = {
                 TABLE_NAME: this.ajaxParams.TABLE_NAME,
                 app_name: this.formData.app_name,
+                is_cover: this.formData.is_cover,
                 menu_id: this.formData.menu_id,
+                menu_name: this.formData.menu_name
             }
             this.$http.usePost('admin/Curd/add', params).then((res) => {
                 _this.$emit("update:closeWin");
@@ -87,7 +109,9 @@ export default {
         },
         hanldSelectMenu(value) {
             this.formData.menu_id = value;
-            this.getCurdPreView();
+            if (value === 'cancel') {
+                this.formData.menu_name = '';
+            }
         },
         hanldSelectApp(value) {
             this.formData.app_name = value;
@@ -98,7 +122,9 @@ export default {
             const params = {
                 TABLE_NAME: this.ajaxParams.TABLE_NAME,
                 app_name: this.formData.app_name,
-                menu_id: this.formData.menu_id
+                is_cover: this.formData.is_cover,
+                menu_id: this.formData.menu_id,
+                menu_name: this.formData.menu_name
             }
             this.$http.useGet('admin/Curd/getPreview', params).then((res) => {
                 _this.menuView = res.data?.menus
@@ -138,9 +164,12 @@ export default {
     .button {
         display: flex;
         justify-content: center;
+        gap: 30px;
+        margin-top:30px;
     }
 }
-.text-warning{
-    color:red;
+
+.text-warning {
+    color: red;
 }
 </style>

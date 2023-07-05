@@ -20,14 +20,18 @@ class CurdRule
             ['table_name', '=', $tableName],
             ['list_type', '<>', ''],
         ];
-        $data = self::getTableData($where);
+        $data = self::getRuleData($where);
+        if (empty($data)) {
+            throw new Exception('表格规则数据为空，无法生成');
+        }
         $str = "\t";
-        foreach ($data as $key => $value) {
+        foreach ($data as $value) {
             $str .= <<<STR
             [
-                \t\t"type"          => "",
-                \t\t"field"         => "",
-                \t\t"value"         => "",
+                \t\t"type"          => "{$value['list_type']}",
+                \t\t"field"         => "{$value['field_name']}",
+                \t\t"title"         => "{$value['field_comment']}",
+                \t\t"extra"         => [],
             \t\t],
             STR;
         }
@@ -42,25 +46,36 @@ class CurdRule
     /**
      * 获取表单规则
      * @param string $tableName
+     * @param string $formType
+     * @throws \Exception
      * @return string
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public static function getFormRule(string $tableName)
+    public static function getFormRule(string $tableName,string $formType)
     {
         $where  = [
             ['table_name', '=', $tableName],
-            ['list_type', '<>', ''],
+            ["form_{$formType}", '=', '20'],
         ];
-        $data = self::getTableData($where);
+        $data = self::getRuleData($where);
+        $errorType = [
+            'add'       => '添加',
+            'edit'      => '修改'
+        ];
+        if (empty($data)) {
+            throw new Exception("{$errorType[$formType]}表单规则数据为空，无法生成");
+        }
         $str = "\t";
-        foreach ($data as $key => $value) {
+        foreach ($data as $value) {
             $str .= <<<STR
             [
-                \t\t"type"          => "",
-                \t\t"field"         => "",
+                \t\t"type"          => "{$value['form_type']}",
+                \t\t"field"         => "{$value['field_name']}",
+                \t\t"title"         => "{$value['field_comment']}",
                 \t\t"value"         => "",
+                \t\t"extra"         => [],
             \t\t],
             STR;
         }
@@ -80,13 +95,13 @@ class CurdRule
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    private static function getTableData(array $where)
+    private static function getRuleData(array $where)
     {
         $fields = [
             'field_name',
-            'field_name',
             'field_comment',
             'list_type',
+            'form_type',
             'form_add',
             'form_edit',
         ];
@@ -107,13 +122,22 @@ class CurdRule
      * @param string $app_name
      * @param string $tableName
      * @param int $pid
+     * @param string $menu_name
      * @throws \Exception
      * @return array|bool
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public static function getMenusPreView(string $menuPath, string $database,string $prefixTableName, string $app_name, string $tableName, int $pid)
+    public static function getMenusPreView(
+        string $menuPath,
+        string $database,
+        string $prefixTableName,
+        string $app_name,
+        string $tableName,
+        int $pid,
+        string $menu_name
+    )
     {
         if (!file_exists($menuPath)) {
             throw new Exception('应用菜单文件不存在');
@@ -128,10 +152,6 @@ class CurdRule
                 throw new Exception('菜单最后的ID数据异常');
             }
         }
-        # 获取表信息
-        $sql       = "SELECT * from information_schema.TABLES WHERE table_schema='{$database}' and table_name='{$prefixTableName}';";
-        $tableInfo = DbMgr::instance()->select($sql);
-        $tableInfo = (array) current($tableInfo);
         # 表名转类名
         $className = Str::studly($tableName);
         # 菜单ID
@@ -144,7 +164,7 @@ class CurdRule
                 'module' => "app/{$app_name}/admin",
                 'path' => "{$className}/group",
                 'pid' => $pid,
-                'title' => "{$tableInfo['TABLE_COMMENT']}",
+                'title' => "{$menu_name}",
                 'method' => ['GET'],
                 'component' => '',
                 'auth_params' => '',
@@ -157,7 +177,7 @@ class CurdRule
                 'module' => "app/{$app_name}/admin",
                 'path' => "{$className}/tabs",
                 'pid' => $oneMenu['id'],
-                'title' => "{$tableInfo['TABLE_COMMENT']}模块",
+                'title' => "{$menu_name}模块",
                 'method' => ['GET'],
                 'component' => '',
                 'auth_params' => '',
@@ -172,7 +192,7 @@ class CurdRule
             'module' => "app/{$app_name}/admin",
             'path' => "{$className}/index",
             'pid' => empty($twoMenu['id']) ?  $pid : $twoMenu['id'],
-            'title' => "{$tableInfo['TABLE_COMMENT']}管理",
+            'title' => "{$menu_name}管理",
             'method' => ['GET'],
             'component' => 'table/index',
             'auth_params' => '',
@@ -186,7 +206,7 @@ class CurdRule
             'module' => "app/{$app_name}/admin",
             'path' => "{$className}/add",
             'pid' => $listMenu['id'],
-            'title' => "{$tableInfo['TABLE_COMMENT']}-添加",
+            'title' => "{$menu_name}-添加",
             'method' => ['GET', 'POST'],
             'component' => 'form/index',
             'auth_params' => '',
@@ -200,7 +220,7 @@ class CurdRule
             'module' => "app/{$app_name}/admin",
             'path' => "{$className}/edit",
             'pid' => $listMenu['id'],
-            'title' => "{$tableInfo['TABLE_COMMENT']}-修改",
+            'title' => "{$menu_name}-修改",
             'method' => ['GET', 'PUT'],
             'component' => 'form/index',
             'auth_params' => '',
@@ -214,7 +234,7 @@ class CurdRule
             'module' => "app/{$app_name}/admin",
             'path' => "{$className}/del",
             'pid' => $listMenu['id'],
-            'title' => "{$tableInfo['TABLE_COMMENT']}-删除",
+            'title' => "{$menu_name}-删除",
             'method' => ['GET', 'DELETE'],
             'component' => '',
             'auth_params' => '',
@@ -228,7 +248,7 @@ class CurdRule
             'module' => "app/{$app_name}/admin",
             'path' => "{$className}/indexGetTable",
             'pid' => $listMenu['id'],
-            'title' => "{$tableInfo['TABLE_COMMENT']}-表格",
+            'title' => "{$menu_name}-表格",
             'method' => ['GET'],
             'component' => 'table/index',
             'auth_params' => '',
@@ -289,9 +309,10 @@ class CurdRule
             throw new Exception('应用控制器目录错误');
         }
         # 获取表格规则
-        $tableRule          = CurdRule::getTableRule();
+        $tableRule          = CurdRule::getTableRule($tableName);
         # 获取表单规则
-        $formRule           = CurdRule::getFormRule();
+        $addFormRule        = CurdRule::getFormRule($tableName,'add');
+        $editFormRule       = CurdRule::getFormRule($tableName,'edit');
         # CURD模板路径
         $sourcePath         = app_path('/admin/tpl/curd');
         # 控制器模板
@@ -301,14 +322,16 @@ class CurdRule
             "{CLASS_NAME}",
             "{SUFFIX}",
             "{TABLE_RULE}",
-            "{FORM_RULE}"
+            "{ADD_FORM_RULE}",
+            "{EDIT_FORM_RULE}"
         ];
         $str2             = [
             $app_name,
             $className,
             $suffix,
             $tableRule,
-            $formRule
+            $addFormRule,
+            $editFormRule
         ];
         $controllerSource = str_replace($str1, $str2, $controllerSource);
         # 生成应用模型
