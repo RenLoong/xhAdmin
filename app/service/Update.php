@@ -65,27 +65,25 @@ class Update
      */
     public static function update($version, $data)
     {
-        if (empty($data)) {
+        if (empty($data['files']) || empty($data['sql'])) {
             console_log("收集数据空，无需执行sql升级...");
         }
         $prefix = config('database.connections.mysql.prefix');
         $str    = ['`php_', '`yc_'];
-        foreach ($data['sql'] as $key => $sql) {
-            # 获取文件名称
-            $file = $data['files'][$key];
-            $filePath = base_path('/update/' . $file . '.sql');
+        foreach ($data['sql'] as $sql) {
             # 替换为真实SQL
             $sql = str_replace($str, "`{$prefix}", $sql);
             try {
                 DbMgr::instance()->statement($sql);
             } catch (\Throwable $e) {
                 Log::error("执行更新SQL错误：{$e->getMessage()}");
-                if (file_exists($filePath)) {
-                    unlink($filePath);
-                }
                 continue;
             }
-            console_log("执行SQL {$file} 成功...");
+        }
+        console_log('更新SQL执行完成...');
+        # 清空目录
+        foreach ($data['files'] as $file) {
+            $filePath = base_path("/update/{$file}.sql");
             if (file_exists($filePath)) {
                 unlink($filePath);
             }
