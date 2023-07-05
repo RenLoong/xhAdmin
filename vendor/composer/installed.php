@@ -3,7 +3,7 @@
         'name' => 'ycopen/kfadmin',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '9d83fcbd456513d79cb2572f59e79db79edc81a5',
+        'reference' => '27fee9c0fde6045a162efd6263ebd3ce15e2247e',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -421,8 +421,8 @@
         'psr/log-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0.0 || 2.0.0 || 3.0.0',
-                1 => '1.0|2.0|3.0',
+                0 => '1.0|2.0|3.0',
+                1 => '1.0.0 || 2.0.0 || 3.0.0',
             ),
         ),
         'psr/simple-cache' => array(
@@ -743,7 +743,7 @@
         'ycopen/kfadmin' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '9d83fcbd456513d79cb2572f59e79db79edc81a5',
+            'reference' => '27fee9c0fde6045a162efd6263ebd3ce15e2247e',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
