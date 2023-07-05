@@ -16,9 +16,9 @@ class ComposerStaticInit03c788487884ba2b984282564865505c
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
+        '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '8825ede83f2f289127722d4e842cf7e8' => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme/bootstrap.php',
         'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
-        '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         'b6b991a57620e2fb6b2f66f03fe9ddc2' => __DIR__ . '/..' . '/symfony/string/Resources/functions.php',
         '253c157292f75eb38082b5acb06f3f01' => __DIR__ . '/..' . '/nikic/fast-route/src/functions.php',
         '9b552a3cc426e3287cc811caefa3cf53' => __DIR__ . '/..' . '/topthink/think-helper/src/helper.php',
@@ -26,6 +26,7 @@ class ComposerStaticInit03c788487884ba2b984282564865505c
         '35fab96057f1bf5e7aba31a8a6d5fdde' => __DIR__ . '/..' . '/topthink/think-orm/stubs/load_stubs.php',
         'ef65a1626449d89d0811cf9befce46f0' => __DIR__ . '/..' . '/illuminate/events/functions.php',
         '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
+        'a35be646ad6144ec86a2505d75f87e8f' => __DIR__ . '/..' . '/yc-open/cloud-service/src/helpers.php',
         'bb86edb2c8e579242b2c4c0575786fa9' => __DIR__ . '/..' . '/yzh52521/webman-validate/src/helper.php',
         'e04d298651ac0bb903ff2ec8325ccc3b' => __DIR__ . '/../..' . '/support/helpers.php',
     );
@@ -52,6 +53,10 @@ class ComposerStaticInit03c788487884ba2b984282564865505c
         array (
             'app\\View\\Components\\' => 20,
             'app\\' => 4,
+        ),
+        'Y' => 
+        array (
+            'YcOpen\\CloudService\\' => 20,
         ),
         'W' => 
         array (
@@ -196,6 +201,10 @@ class ComposerStaticInit03c788487884ba2b984282564865505c
         'app\\' => 
         array (
             0 => __DIR__ . '/../..' . '/app',
+        ),
+        'YcOpen\\CloudService\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/yc-open/cloud-service/src',
         ),
         'Workerman\\' => 
         array (
