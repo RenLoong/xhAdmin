@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "709b9187cecc2cd290d5158e3c11d9f0",
+    "content-hash": "7d50998106d3e8d527f407b8b4af8ce2",
     "packages": [
         {
             "name": "aliyuncs/oss-sdk-php",
@@ -5460,11 +5460,23 @@
         },
         {
             "name": "yc-open/cloud-service",
-            "version": "1.0.13",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
-                "url": "https://gitee.com/yc_open/client-cloud-service-center",
-                "reference": "f99eedbb88405a2e26a884deb5978dfc80c4707b"
+                "url": "https://github.com/uRenlong/kfadmin-cloud.git",
+                "reference": "c94ed1d55c34f11f9793c34a388de7e9826b99aa"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/uRenlong/kfadmin-cloud/zipball/c94ed1d55c34f11f9793c34a388de7e9826b99aa",
+                "reference": "c94ed1d55c34f11f9793c34a388de7e9826b99aa",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
             },
             "require": {
                 "guzzlehttp/guzzle": "^7.7",
@@ -5490,7 +5502,11 @@
                     "email": "cy958416459@qq.com"
                 }
             ],
-            "time": "2023-07-05T12:57:47+00:00"
+            "support": {
+                "issues": "https://github.com/uRenlong/kfadmin-cloud/issues",
+                "source": "https://github.com/uRenlong/kfadmin-cloud/tree/1.1.0"
+            },
+            "time": "2023-07-05T14:24:40+00:00"
         },
         {
             "name": "yzh52521/easyhttp",

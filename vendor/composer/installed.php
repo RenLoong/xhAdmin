@@ -3,7 +3,7 @@
         'name' => 'ycopen/kfadmin',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '5b1db221d79f8b1a58a7a3cc89087c05ee95917c',
+        'reference' => 'ed556d996e1d9815f2774287a1a9cdc6837247ef',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -421,8 +421,8 @@
         'psr/log-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0|2.0|3.0',
-                1 => '1.0.0 || 2.0.0 || 3.0.0',
+                0 => '1.0.0 || 2.0.0 || 3.0.0',
+                1 => '1.0|2.0|3.0',
             ),
         ),
         'psr/simple-cache' => array(
@@ -732,9 +732,9 @@
             'dev_requirement' => false,
         ),
         'yc-open/cloud-service' => array(
-            'pretty_version' => '1.0.13',
-            'version' => '1.0.13.0',
-            'reference' => 'f99eedbb88405a2e26a884deb5978dfc80c4707b',
+            'pretty_version' => '1.1.0',
+            'version' => '1.1.0.0',
+            'reference' => 'c94ed1d55c34f11f9793c34a388de7e9826b99aa',
             'type' => 'library',
             'install_path' => __DIR__ . '/../yc-open/cloud-service',
             'aliases' => array(),
@@ -743,7 +743,7 @@
         'ycopen/kfadmin' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '5b1db221d79f8b1a58a7a3cc89087c05ee95917c',
+            'reference' => 'ed556d996e1d9815f2774287a1a9cdc6837247ef',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
