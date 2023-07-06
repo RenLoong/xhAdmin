@@ -17,6 +17,3 @@ CREATE TABLE `yc_curd` (
   `is_del` enum('10','20') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '10' COMMENT '是否支持删除：10不支持，20支持',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='系统-curd记录';
-ALTER TABLE `php_curd` ADD COLUMN `list_title` varchar(30) NULL DEFAULT NULL COMMENT '列表名称' AFTER `field_comment`;
-ALTER TABLE `php_curd` MODIFY COLUMN `list_type` enum('','text','assets','icons','image','images','input','money','remote','select','switch','tags') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '单元类型' AFTER `list_sort`;
-ALTER TABLE `php_curd` MODIFY COLUMN `form_type` enum('input','select','switch','radio','textarea','icons','uploadify','remote') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '表单类型' AFTER `list_extra`;
