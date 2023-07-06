@@ -223,7 +223,7 @@ class CurdController extends BaseController
         $builder->setMethod('POST');
         $formRule = $this->addForm;
         foreach ($formRule as $value) {
-            $extra = empty($formRule['extra']) ? [] : $formRule['extra'];
+            $extra = empty($value['extra']) ? [] : $value['extra'];
             if (!in_array($value['type'],['switch','icons','uploadify','remote'])) {
                 $builder->addRow(
                     $value['field'],
@@ -281,7 +281,7 @@ class CurdController extends BaseController
         $builder->setMethod('PUT');
         $formRule = $this->editForm;
         foreach ($formRule as $value) {
-            $extra = empty($formRule['extra']) ? [] : $formRule['extra'];
+            $extra = empty($value['extra']) ? [] : $value['extra'];
             if (!in_array($value['type'],['switch','icons','uploadify','remote'])) {
                 $builder->addRow(
                     $value['field'],
