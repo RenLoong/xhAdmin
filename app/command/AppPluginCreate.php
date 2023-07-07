@@ -136,6 +136,7 @@ class AppPluginCreate extends Command
         $this->mkdir("$base_path/plugin/$pluginName/app/validate", 0777, true);
         $this->mkdir("$base_path/plugin/$pluginName/app/middleware", 0777, true);
         $this->mkdir("$base_path/plugin/$pluginName/app/view/index", 0777, true);
+        $this->mkdir("$base_path/plugin/$pluginName/packages", 0777, true);
         $this->mkdir("$base_path/plugin/$pluginName/config", 0777, true);
         $this->mkdir("$base_path/plugin/$pluginName/public", 0777, true);
         $this->mkdir("$base_path/plugin/$pluginName/api", 0777, true);
@@ -441,7 +442,7 @@ class AppPluginCreate extends Command
         if ($this->adminType == 1) {
             # 创建配置菜单
             $content = file_get_contents(app_path('/command/appPlugin/config/menu.txt'));
-            $content = str_replace("admin", $pluginName, $content);
+            $content = str_replace("{PLUGIN_NAME}", $pluginName, $content);
             file_put_contents("{$path}/menu.php", $content);
             console_log("创建菜单配置文件 {$path}/menu.php");
 

@@ -1,2 +1,2 @@
 <?php
-return \app\utils\RoutesMgr::getPluginRoutes('ycUniapp');
+return \app\utils\RoutesMgr::getPluginRoutes('{PLUGIN_NAME}');

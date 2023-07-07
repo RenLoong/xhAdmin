@@ -68,7 +68,6 @@ class GlobalsMiddleware implements MiddlewareInterface
         # 验证项目是否已过期
 
         # 返回结果集
-        $response = $next($request);
         return $response;
     }
 }

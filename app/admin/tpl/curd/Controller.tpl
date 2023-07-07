@@ -3,6 +3,7 @@
 namespace plugin\{PLUGIN_NAME}\app\admin\controller;
 
 use app\admin\builder\ListBuilder;
+use app\admin\builder\FormBuilder;
 use app\BaseController;
 use plugin\{PLUGIN_NAME}\app\model\{CLASS_NAME};
 use plugin\{PLUGIN_NAME}\app\validate\{CLASS_NAME}Validate;
@@ -52,7 +53,7 @@ class {CLASS_NAME}{SUFFIX} extends BaseController
         {TABLE_RULE}
         # 渲染表格
         $data = $builder->create();
-        return parent::successRes($data);
+        return $this->successRes($data);
     }
 
     /**
@@ -68,10 +69,11 @@ class {CLASS_NAME}{SUFFIX} extends BaseController
         $where = [];
         $model = $this->model;
         $data = $model
+            ->order('id desc')
             ->where($where)
             ->paginate()
             ->toArray();
-        return parent::successRes($data);
+        return $this->successRes($data);
     }
 
     /**
@@ -92,9 +94,9 @@ class {CLASS_NAME}{SUFFIX} extends BaseController
             # 保存数据
             $model = $this->model;
             if (!$model->save($post)) {
-                return parent::fail('保存失败');
+                return $this->fail('保存失败');
             }
-            return parent::success('保存成功');
+            return $this->success('保存成功');
         }
         # 渲染页面
         $builder = new FormBuilder;
@@ -102,7 +104,7 @@ class {CLASS_NAME}{SUFFIX} extends BaseController
         {ADD_FORM_RULE}
         # 生成表单规则
         $data = $builder->create();
-        return parent::successRes($data);
+        return $this->successRes($data);
     }
 
     /**
@@ -122,7 +124,7 @@ class {CLASS_NAME}{SUFFIX} extends BaseController
         $model = $this->model;
         $model = $model->where($where)->find();
         if (!$model) {
-            return parent::fail('该数据不存在');
+            return $this->fail('该数据不存在');
         }
         if ($request->method() == 'PUT') {
             $post = $request->post();
@@ -131,9 +133,9 @@ class {CLASS_NAME}{SUFFIX} extends BaseController
             hpValidate({CLASS_NAME}Validate::class, $post, 'edit');
 
             if (!$model->save($post)) {
-                return parent::fail('保存失败');
+                return $this->fail('保存失败');
             }
-            return parent::success('保存成功');
+            return $this->success('保存成功');
         }
         # 渲染页面
         $builder = new FormBuilder;
@@ -141,7 +143,7 @@ class {CLASS_NAME}{SUFFIX} extends BaseController
         {ADD_FORM_RULE}
         # 生成表单规则
         $data = $builder->create();
-        return parent::successRes($data);
+        return $this->successRes($data);
     }
 
     /**
@@ -162,11 +164,11 @@ class {CLASS_NAME}{SUFFIX} extends BaseController
         $model = $this->model;
         $model = $model->where($where)->find();
         if (!$model) {
-            return parent::fail('该数据不存在');
+            return $this->fail('该数据不存在');
         }
         if (!$model->delete()) {
-            return parent::fail('删除失败');
+            return $this->fail('删除失败');
         }
-        return parent::success('删除成功');
+        return $this->success('删除成功');
     }
 }
