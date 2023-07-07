@@ -31,7 +31,7 @@ class CurdRule
             $str .= <<<STR
             \t\t# 设置添加按钮
             \t\t\$builder->addTopButton('add', '添加', [
-                \t\t'api'         => "plugin/{$app_name}/app/admin/{$className}/add",
+                \t\t'api'         => "app/{$app_name}/admin/{$className}/add",
                 \t\t'path'        => '/{$className}/add',
             \t\t], [], [
                     \t'type' => 'success',
@@ -49,7 +49,7 @@ class CurdRule
             \n
             \t\t# 设置编辑按钮
             \t\t\$builder->addRightButton('edit', '编辑', [
-                \t\t'api'         => 'plugin/{$app_name}/app/admin/{$className}/edit',
+                \t\t'api'         => 'app/{$app_name}/admin/{$className}/edit',
                 \t\t'path'        => '/{$className}/edit',
             \t\t], [
             \t\t], [
@@ -70,7 +70,7 @@ class CurdRule
             \t\t# 设置删除按钮
             \t\t\$builder->addRightButton('del', '删除', [
                 \t\t'type' => 'confirm',
-                \t\t'api' => 'plugin/{$app_name}/app/admin/{$className}/edit',
+                \t\t'api' => 'app/{$app_name}/admin/{$className}/edit',
                 \t\t'method' => 'delete',
             \t\t], [
                 \t\t'title' => '温馨提示',
