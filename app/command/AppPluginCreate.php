@@ -353,7 +353,7 @@ class AppPluginCreate extends Command
 
         return [
             '' => [
-                \app\middleware\GlobalsMiddleware::class 
+                \app\middleware\GlobalsMiddleware::class
             ]
         ];
         EOF;

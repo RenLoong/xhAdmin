@@ -27,6 +27,20 @@ class CurdRule
             ["form_add", '=', '20'],
         ];
         $formAdd = self::getRuleData($where);
+        # 设置编辑表单
+        $where  = [
+            ['table_name', '=', $tableName],
+            ["form_edit", '=', '20'],
+        ];
+        $formEdit = self::getRuleData($where);
+        # 设置选项
+        if ($formAdd || $formEdit) {
+            $str .= <<<STR
+            \t\t #设置操作选项
+            \t\t\$builder->addActionOptions('操作选项');\n\n
+            STR;
+        }
+
         if ($formAdd) {
             $str .= <<<STR
             \t\t# 设置添加按钮
@@ -35,15 +49,10 @@ class CurdRule
                 \t\t'path'        => '/{$className}/add',
             \t\t], [], [
                     \t'type' => 'success',
+                    \t'icon' => 'PlusOutlined'
                 \t]);
             STR;
         }
-        # 设置编辑表单
-        $where  = [
-            ['table_name', '=', $tableName],
-            ["form_edit", '=', '20'],
-        ];
-        $formEdit = self::getRuleData($where);
         if ($formEdit) {
             $str .= <<<STR
             \n
@@ -54,6 +63,7 @@ class CurdRule
             \t\t], [
             \t\t], [
                 \t\t'type' => 'success',
+                \t\t'icon' => 'EditOutlined'
             \t\t]);
             STR;
         }
