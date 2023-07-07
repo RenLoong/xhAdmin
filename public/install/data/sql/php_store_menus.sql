@@ -1,25 +1,5 @@
-/*
- Navicat Premium Data Transfer
-
- Source Server         : 腾讯云服务器-KfAdmin-cloud
- Source Server Type    : MySQL
- Source Server Version : 50737 (5.7.37-log)
- Source Host           : 1.116.41.3:3306
- Source Schema         : cloud8_hangpu_ne
-
- Target Server Type    : MySQL
- Target Server Version : 50737 (5.7.37-log)
- File Encoding         : 65001
-
- Date: 18/05/2023 18:05:56
-*/
-
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
-
--- ----------------------------
--- Table structure for php_store_menus
--- ----------------------------
 DROP TABLE IF EXISTS `php_store_menus`;
 CREATE TABLE `php_store_menus`  (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -42,10 +22,6 @@ CREATE TABLE `php_store_menus`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `path`(`path`) USING BTREE COMMENT '唯一索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 33 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '租户-权限菜单' ROW_FORMAT = DYNAMIC;
-
--- ----------------------------
--- Records of php_store_menus
--- ----------------------------
 INSERT INTO `php_store_menus` VALUES (1, '2022-10-27 17:22:51', '2023-03-07 21:36:28', 'store', '', '\\app\\store\\controller\\', 0, '首页', 0, '[\"GET\"]', '0', '', '', 'HomeOutlined', '1', '1', '1');
 INSERT INTO `php_store_menus` VALUES (2, '2022-10-27 17:22:51', '2023-05-11 18:59:20', 'store', 'Index/index', '\\app\\store\\controller\\', 1, '控制台', 0, '[\"GET\"]', '0', 'remote/index', '/remote/store', '', '1', '1', '1');
 INSERT INTO `php_store_menus` VALUES (3, '2022-10-27 17:22:51', '2023-04-16 17:16:04', 'store', 'Publics/login', '\\app\\store\\controller\\', 1, '系统登录', 0, '[\"POST\"]', '1', '', '', '', '0', '1', '1');
@@ -78,5 +54,4 @@ INSERT INTO `php_store_menus` VALUES (29, '2023-05-03 17:42:57', '2023-05-03 17:
 INSERT INTO `php_store_menus` VALUES (30, '2023-05-03 17:44:02', '2023-05-03 17:44:36', 'store', 'UserFinance/actionFinance', '\\app\\store\\controller\\', 29, '操作财务', 0, '[\"GET\",\"PUT\"]', '1', 'form/index', '', '', '0', '0', '0');
 INSERT INTO `php_store_menus` VALUES (31, '2023-05-03 19:53:40', '2023-05-03 19:53:40', 'store', '', '', 20, '分配应用', 0, '[\"GET\"]', '0', 'remote/index', 'remote/app/index', '', '0', '0', '0');
 INSERT INTO `php_store_menus` VALUES (32, '2023-06-16 11:44:08', '2023-06-16 11:44:08', 'store', 'Platform/del', '\\app\\store\\controller\\', 21, '删除平台', 0, '[\"GET\",\"DELETE\"]', '1', '', '', '', '0', '0', '0');
-
 SET FOREIGN_KEY_CHECKS = 1;

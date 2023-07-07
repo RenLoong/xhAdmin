@@ -1,25 +1,5 @@
-/*
- Navicat Premium Data Transfer
-
- Source Server         : 腾讯云服务器-KfAdmin-cloud
- Source Server Type    : MySQL
- Source Server Version : 50737 (5.7.37-log)
- Source Host           : 1.116.41.3:3306
- Source Schema         : cloud8_hangpu_ne
-
- Target Server Type    : MySQL
- Target Server Version : 50737 (5.7.37-log)
- File Encoding         : 65001
-
- Date: 18/05/2023 18:06:38
-*/
-
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
-
--- ----------------------------
--- Table structure for php_system_auth_rule
--- ----------------------------
 DROP TABLE IF EXISTS `php_system_auth_rule`;
 CREATE TABLE `php_system_auth_rule`  (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -42,10 +22,6 @@ CREATE TABLE `php_system_auth_rule`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `path`(`path`) USING BTREE COMMENT '唯一索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 190 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-权限规则' ROW_FORMAT = DYNAMIC;
-
--- ----------------------------
--- Records of php_system_auth_rule
--- ----------------------------
 INSERT INTO `php_system_auth_rule` VALUES (1, '2022-10-27 17:22:51', '2023-03-07 21:36:28', 'admin', '', '\\app\\admin\\controller\\', 0, '首页', 0, '[\"GET\"]', '0', '', '', 'HomeOutlined', '1', '1', '1');
 INSERT INTO `php_system_auth_rule` VALUES (2, '2022-10-27 17:22:51', '2023-05-10 14:47:24', 'admin', 'Index/index', '\\app\\admin\\controller\\', 1, '控制台', 0, '[\"GET\"]', '0', 'remote/index', '/remote/welcome', 'FolderOpenOutlined', '1', '1', '1');
 INSERT INTO `php_system_auth_rule` VALUES (3, '2022-10-27 17:22:51', '2023-04-16 17:16:04', 'admin', 'Publics/login', '\\app\\admin\\controller\\', 1, '系统登录', 0, '[\"POST\"]', '1', '', '', '', '0', '1', '1');
@@ -148,5 +124,4 @@ INSERT INTO `php_system_auth_rule` VALUES (186, '2023-07-01 14:04:12', '2023-07-
 INSERT INTO `php_system_auth_rule` VALUES (187, '2023-07-01 14:04:52', '2023-07-01 14:05:53', 'admin', 'Curd/edit', '\\app\\admin\\controller\\', 185, '修改CURD', 0, '[\"GET\",\"PUT\"]', '1', 'form/index', '', '', '0', '0', '0');
 INSERT INTO `php_system_auth_rule` VALUES (188, '2023-07-01 14:05:29', '2023-07-03 10:14:49', 'admin', 'Curd/detail', '\\app\\admin\\controller\\', 185, 'CURD详情', 0, '[\"GET\"]', '1', '', '', '', '0', '0', '0');
 INSERT INTO `php_system_auth_rule` VALUES (189, '2023-07-01 14:08:42', '2023-07-01 14:09:16', 'admin', 'Curd/indexGetTable', '\\app\\admin\\controller\\', 185, 'CURD数据列表', 0, '[\"GET\"]', '1', '', '', '', '0', '0', '0');
-
 SET FOREIGN_KEY_CHECKS = 1;
