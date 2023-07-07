@@ -4,13 +4,11 @@ namespace app\admin\controller;
 
 use app\admin\builder\ListBuilder;
 use app\admin\logic\AuthRule;
-use app\admin\logic\CurdRule;
+use app\admin\logic\CurdLogic;
 use app\admin\logic\ModulesLogic;
 use app\admin\model\Curd;
 use app\admin\utils\Util;
 use app\BaseController;
-use app\enum\CurdForm;
-use app\enum\CurdTable;
 use app\exception\RedirectException;
 use app\utils\DataMgr;
 use app\utils\DbMgr;
@@ -58,6 +56,7 @@ class CurdController extends BaseController
             throw new RedirectException('系统表，禁止操作字段', '/Modules/index');
         }
     }
+
     /**
      * CURD列表
      * @param \support\Request $request
@@ -103,11 +102,18 @@ class CurdController extends BaseController
                 ],
             ])
             ->addColumnEle('list_type', '表格数据', [
-                'width' => 180,
+                'width' => 100,
                 'params' => [
-                    'type' => 'select',
+                    'type' => 'switch',
                     'api' => "/admin/Curd/edit?TABLE_NAME={$this->tableName}",
-                    'options' => CurdTable::getOptions(),
+                    'checked' => [
+                        'text' => '显示',
+                        'value' => '20'
+                    ],
+                    'unchecked' => [
+                        'text' => '不显示',
+                        'value' => '10'
+                    ]
                 ],
             ])
             ->addColumnEle('form_add', '增加表单', [
@@ -155,15 +161,6 @@ class CurdController extends BaseController
                     ]
                 ],
             ])
-            ->addColumnEle('form_type', '表单控件', [
-                'width' => 150,
-                'params' => [
-                    'type' => 'select',
-                    'api' => "/admin/Curd/edit?TABLE_NAME={$this->tableName}",
-                    'options' => CurdForm::getOptions(),
-                    'props' => [],
-                ],
-            ])
             ->create();
         return $this->successRes($data);
     }
@@ -202,12 +199,8 @@ class CurdController extends BaseController
                 'field_name',
                 'list_title',
                 'list_type',
-                'list_extra',
-                'form_type',
                 'form_add',
                 'form_edit',
-                'form_extra_add',
-                'form_extra_edit',
                 'is_del',
             ];
             $fieldModel = Curd::where($where)
@@ -252,9 +245,9 @@ class CurdController extends BaseController
             # 获取参数
             $tableName = ucfirst($this->tableName);
             $app_name  = $request->post('app_name', '');
-            $is_cover  = (int)$request->post('is_cover', '0');
+            $is_cover  = (int) $request->post('is_cover', '0');
             $menu_id   = $request->post('menu_id', '');
-            $menu_name   = $request->post('menu_name', '');
+            $menu_name = $request->post('menu_name', '');
             if ($app_name === '') {
                 return $this->fail('请选择构建至某个应用');
             }
@@ -262,7 +255,7 @@ class CurdController extends BaseController
                 return $this->fail('请选择构建至某个菜单');
             }
             # 获取CURD代码及目标路径
-            $curdData = CurdRule::getCurdCode($app_name, $tableName);
+            $curdData = CurdLogic::getCurdCode($app_name, $tableName);
             if (file_exists(base_path($curdData['controllerPath'])) && $is_cover === 0) {
                 throw new Exception('该控制器已生成');
             }
@@ -316,8 +309,8 @@ class CurdController extends BaseController
      */
     private function createdMenu(string $app_name, string $tableName, int $pid, string $menu_name)
     {
-        $menuPath = base_path("/plugin/{$app_name}/menus.json");
-        $menus    = CurdRule::getMenusPreView(
+        $menuPath = base_path("/plugin/{$app_name}/menu.json");
+        $menus    = CurdLogic::getMenusPreView(
             $menuPath,
             $this->database,
             $this->prefixTableName,
@@ -391,7 +384,7 @@ class CurdController extends BaseController
      */
     public function detail(Request $request)
     {
-        $data = CurdRule::getPlugins();
+        $data = CurdLogic::getPlugins();
         return $this->successRes($data);
     }
 
@@ -410,32 +403,12 @@ class CurdController extends BaseController
         if (empty($app_name)) {
             return $this->fail('请选择应用');
         }
-        if (!is_dir(base_path("/plugin/{$app_name}"))) {
-            return $this->fail('该应用不存在');
+        $menuPath = base_path("/plugin/{$app_name}/menu.json");
+        if (!file_exists($menuPath)) {
+            return $this->fail('应用菜单文件不存在');
         }
-        if (!file_exists(base_path("/plugin/{$app_name}/config/menu.php"))) {
-            return $this->fail('该应用菜单文件不存在');
-        }
-        $list = config("plugin.{$app_name}.menu", []);
-        if (empty($list)) {
-            return $this->fail('请先设置应用菜单');
-        }
-        if (empty($list['list'])) {
-            return $this->fail('请先设置应用菜单数据');
-        }
-        $data = $list['list'];
-        foreach ($data as $key => $value) {
-            $expl = explode('/', $value['path']);
-            if (empty($expl[0])) {
-                throw new Exception('数据表格式错误');
-            }
-            # 禁用自身
-            if ($expl[0] === $className) {
-                $data[$key]['disabled'] = true;
-            }
-        }
-        $data = DataMgr::channelLevel($data, 0, '', 'id', 'pid');
-        $data = AuthRule::getChildrenOptions($data);
+        $menuData = json_decode(file_get_contents($menuPath), true);
+        $data = CurdLogic::parentLevelList($menuData, $className);
         $data = array_merge([
             [
                 'label' => '不构建菜单',
@@ -443,7 +416,7 @@ class CurdController extends BaseController
             ],
             [
                 'label' => '构建顶级菜单',
-                'value' => 0
+                'value' => 'top'
             ],
         ], $data);
         return $this->successRes($data);
@@ -461,36 +434,40 @@ class CurdController extends BaseController
     {
         # 获取参数
         $app_name  = $request->get('app_name', '');
-        $menuId    = $request->get('menu_id', '');
+        $pidIndex    = $request->get('menu_id', '');
         $menu_name = $request->get('menu_name', '');
         # 数据验证
         if (empty($app_name)) {
             return $this->fail('请选择应用');
         }
-        if ($menuId === '') {
+        if ($pidIndex === '') {
             return $this->fail('请选择构建至某个菜单');
         }
         # 组装参数
         $tableName     = ucfirst($this->tableName);
-        $menuPath      = "/plugin/{$app_name}/menus.json";
-        $menuPathRoot  = base_path("/plugin/{$app_name}/menus.json");
+        $menuPath      = "/plugin/{$app_name}/menu.json";
+        $menuPathRoot  = base_path($menuPath);
         $data['menus'] = [
             'path' => '',
             'menus' => ''
         ];
-        $data['code']  = CurdRule::getCurdCode($app_name, $tableName);
+        $data['code']  = CurdLogic::getCurdCode($app_name, $tableName);
         # 是否生成菜单
-        if ($menuId !== 'cancel') {
+        if ($pidIndex !== 'cancel') {
             if (!$menu_name) {
                 return $this->fail('请输入菜单名称');
             }
-            $menuView               = CurdRule::getMenusPreView(
+            $indexPath = [];
+            if ($pidIndex !== 'top') {
+                $indexPath= explode('-', $pidIndex);
+            }
+            $menuView               = CurdLogic::getMenusPreView(
                 $menuPathRoot,
                 $this->database,
                 $this->prefixTableName,
                 $app_name,
                 $tableName,
-                (int) $menuId,
+                $indexPath,
                 (string) $menu_name
             );
             $content                = json_encode($menuView, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);

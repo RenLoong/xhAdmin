@@ -2,62 +2,27 @@
 
 namespace plugin\{PLUGIN_NAME}\app\admin\controller;
 
-use app\CurdController;
+use app\admin\builder\ListBuilder;
+use app\BaseController;
 use plugin\{PLUGIN_NAME}\app\model\{CLASS_NAME};
+use plugin\{PLUGIN_NAME}\app\validate\{CLASS_NAME}Validate;
+use support\Request;
 
-class {CLASS_NAME}{SUFFIX} extends CurdController
+/**
+ * {TABLE_COMMENT}
+ * @author 贵州猿创科技有限公司
+ * @copyright 贵州猿创科技有限公司
+ * @email 416716328@qq.com
+ */
+class {CLASS_NAME}{SUFFIX} extends BaseController
 {
     /**
      * 操作模型
-     * @var \app\Model
+     * @var {CLASS_NAME}
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
     protected $model;
-
-    /**
-     * 模型名称
-     * @var string
-     */
-    protected $modelName = null;
-
-    /**
-     * 获取表名（不包含前缀）
-     * @var string
-     * @author 贵州猿创科技有限公司
-     * @email 416716328@qq.com
-     */
-    protected $tableName = null;
-
-    /**
-     * 完整表名
-     * @var string
-     */
-    protected $prefixTableName = null;
-
-    /**
-     * 表格规则
-     * @var array
-     * @author 贵州猿创科技有限公司
-     * @email 416716328@qq.com
-     */
-    protected $tableRule = {TABLE_RULE};
-
-    /**
-     * 添加表单规则
-     * @var array
-     * @author 贵州猿创科技有限公司
-     * @email 416716328@qq.com
-     */
-    protected $addForm = {ADD_FORM_RULE};
-
-    /**
-     * 修改表单规则
-     * @var array
-     * @author 贵州猿创科技有限公司
-     * @email 416716328@qq.com
-     */
-    protected $editForm = {EDIT_FORM_RULE};
 
     /**
      * 构造函数
@@ -68,5 +33,140 @@ class {CLASS_NAME}{SUFFIX} extends CurdController
     {
         $this->model = new {CLASS_NAME};
         parent::__construct();
+    }
+
+    /**
+     * 获取表格
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
+     */
+    public function indexGetTable(Request $request)
+    {
+        # 实例表格
+        $builder = new ListBuilder;
+        # 设置分页
+        $builder->pageConfig();
+        {TABLE_RULE}
+        # 渲染表格
+        $data = $builder->create();
+        return parent::successRes($data);
+    }
+
+    /**
+     * 列表
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
+     */
+    public function index(Request $request)
+    {
+        $where = [];
+        $model = $this->model;
+        $data = $model
+            ->where($where)
+            ->paginate()
+            ->toArray();
+        return parent::successRes($data);
+    }
+
+    /**
+     * 添加
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
+     */
+    public function add(Request $request)
+    {
+        if ($request->method() == 'POST') {
+            # 获取数据
+            $post = $request->post();
+            # 数据验证
+            hpValidate({CLASS_NAME}Validate::class, $post, 'add');
+            # 保存数据
+            $model = $this->model;
+            if (!$model->save($post)) {
+                return parent::fail('保存失败');
+            }
+            return parent::success('保存成功');
+        }
+        # 渲染页面
+        $builder = new FormBuilder;
+        $builder->setMethod('POST');
+        {ADD_FORM_RULE}
+        # 生成表单规则
+        $data = $builder->create();
+        return parent::successRes($data);
+    }
+
+    /**
+     * 修改数据
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
+     */
+    public function edit(Request $request)
+    {
+        $id = $request->get('id');
+        $where = [
+            ['id', '=', $id]
+        ];
+        $model = $this->model;
+        $model = $model->where($where)->find();
+        if (!$model) {
+            return parent::fail('该数据不存在');
+        }
+        if ($request->method() == 'PUT') {
+            $post = $request->post();
+
+            // 数据验证
+            hpValidate({CLASS_NAME}Validate::class, $post, 'edit');
+
+            if (!$model->save($post)) {
+                return parent::fail('保存失败');
+            }
+            return parent::success('保存成功');
+        }
+        # 渲染页面
+        $builder = new FormBuilder;
+        $builder->setMethod('PUT');
+        {ADD_FORM_RULE}
+        # 生成表单规则
+        $data = $builder->create();
+        return parent::successRes($data);
+    }
+
+    /**
+     * 删除数据
+     * @param Request $request
+     * @return \support\Response
+     * @copyright 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-04-29
+     */
+    public function del(Request $request)
+    {
+        $id = $request->post('id');
+
+        $where = [
+            'id'        => $id,
+        ];
+        $model = $this->model;
+        $model = $model->where($where)->find();
+        if (!$model) {
+            return parent::fail('该数据不存在');
+        }
+        if (!$model->delete()) {
+            return parent::fail('删除失败');
+        }
+        return parent::success('删除成功');
     }
 }

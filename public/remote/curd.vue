@@ -13,7 +13,7 @@
                     </n-form-item>
                 </n-gi>
                 <n-gi>
-                    <n-form-item label="是否强制覆盖">
+                    <n-form-item label="是否强制覆盖" class="flex-1">
                         <n-switch v-model:value="formData.is_cover" :unchecked-value="0" :checked-value="1">
                             <template #checked>
                                 覆盖
@@ -32,8 +32,10 @@
             </n-grid>
         </n-form>
         <div class="button">
-            <n-button type="primary" @click="submit">开始生成</n-button>
             <n-button type="warning" @click="getCurdPreView">查看预览</n-button>
+            <n-button type="primary" v-if="curdPreView.controllerPath" @click="submit">
+                开始生成
+            </n-button>
         </div>
         <div class="ctrl-container" v-if="menuView.path">
             <n-divider>生成菜单预览</n-divider>
@@ -108,6 +110,7 @@ export default {
             })
         },
         hanldSelectMenu(value) {
+            console.log(value)
             this.formData.menu_id = value;
             if (value === 'cancel') {
                 this.formData.menu_name = '';
@@ -165,7 +168,7 @@ export default {
         display: flex;
         justify-content: center;
         gap: 30px;
-        margin-top:30px;
+        margin-top: 30px;
     }
 }
 

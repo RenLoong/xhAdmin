@@ -56,10 +56,11 @@ class SystemConfigController extends BaseController
                 'queryParams' => [
                     'cid' => $cid
                 ],
-            ], [], [
-                    'type' => 'primary',
-                    'link' => true
-                ])
+            ], [
+            ], [
+                'type' => 'primary',
+                'link' => true
+            ])
             ->addRightButton('del', '删除', [
                 'type'   => 'confirm',
                 'api'    => 'admin/SystemConfig/del',

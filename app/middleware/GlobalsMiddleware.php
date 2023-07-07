@@ -2,6 +2,8 @@
 
 namespace app\middleware;
 
+use app\exception\ErrorException;
+use app\manager\StoreApp;
 use Webman\MiddlewareInterface;
 use Webman\Http\Response;
 use Webman\Http\Request;
@@ -25,8 +27,47 @@ class GlobalsMiddleware implements MiddlewareInterface
      */
     public function process(Request $request, callable $next): Response
     {
-        // print_r('全局中间件生效');
-        /** @var Response $response */
+        # 应用名称
+        $pluginName = $request->plugin;
+        # 后台地址
+        $appAdminPath = "/app/{$pluginName}/admin";
+        # 响应结果集
+        $response = $next($request);
+        if ($request->path() === $appAdminPath) {
+            return $response;
+        }
+        # 静态文件
+        $staticFile = str_replace($appAdminPath, '', $request->path());
+        # 视图静态资源
+        $viewFilePath = base_path("/view/{$staticFile}");
+        # 判断是否存在
+        if (file_exists($viewFilePath)) {
+            return $response;
+        }
+        # 应用ID
+        $appid = $request->header('Appid', '');
+        /**
+         * 实例响应结果
+         * @var Response $response
+         */
+        if (empty($appid)) {
+            throw new ErrorException('缺少应用ID');
+        }
+        try {
+            # 获取应用信息
+            $appModel = StoreApp::detail($appid);
+        } catch (\Throwable $e) {
+            throw new ErrorException($e->getMessage());
+        }
+        # 验证是否被冻结
+        if ($appModel['status'] != '1') {
+            throw new ErrorException('该应用已被冻结');
+        }
+        # 验证应用授权是否已过期
+        # 验证代理是否已过期
+        # 验证项目是否已过期
+
+        # 返回结果集
         $response = $next($request);
         return $response;
     }

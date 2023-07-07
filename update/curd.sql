@@ -5,7 +5,7 @@ CREATE TABLE `yc_curd` (
   `table_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '数据表名称',
   `field_name` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '字段名称',
   `field_comment` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '字段注释',
-  `list_title` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '列表名称',
+  `list_title` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '列表名称',
   `list_sort` int DEFAULT '0' COMMENT '字段排序',
   `list_type` enum('','text','assets','icons','image','images','input','money','remote','select','switch','tags') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '单元类型',
   `list_extra` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '列表额外参数',

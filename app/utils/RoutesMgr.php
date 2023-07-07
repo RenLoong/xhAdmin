@@ -20,9 +20,9 @@ class RoutesMgr
 {
     // gzip开启对应文件返回类型
     private static $mimeContentType = [
-        'js'   => 'application/javascript',
+        'js' => 'application/javascript',
         'json' => 'application/json',
-        'css'  => 'text/css',
+        'css' => 'text/css',
     ];
 
     /**
@@ -55,7 +55,7 @@ class RoutesMgr
     private static function installPluginAdminView()
     {
         $plugins = PluginLogic::getLocalPlugins();
-        if (! $plugins) {
+        if (!$plugins) {
             return;
         }
         foreach ($plugins as $plugin_name => $version) {
@@ -81,16 +81,16 @@ class RoutesMgr
      */
     private static function installAdminView(array $modules)
     {
-        if (! $modules) {
+        if (!$modules) {
             return;
         }
         // 视图路径
-        $viewPath       = str_replace('\\', '/', base_path('/view'));
+        $viewPath = str_replace('\\', '/', base_path('/view'));
         // 批量注册静态模块路由
         foreach ($modules as $moduleAlias) {
-            Route::group("/{$moduleAlias}",function()use($viewPath,$moduleAlias){
+            Route::group("/{$moduleAlias}", function () use ($viewPath, $moduleAlias) {
                 // 注册不带结尾斜杠跳转
-                Route::get('',function()use($moduleAlias){
+                Route::get('', function () use ($moduleAlias) {
                     return redirect("/{$moduleAlias}/");
                 });
                 // 注册实际后台访问静态页面
@@ -99,7 +99,7 @@ class RoutesMgr
                         return response('<h1>400 Bad Request</h1>', 400);
                     }
                     $file = "{$viewPath}/index.html";
-                    if (! is_file($file)) {
+                    if (!is_file($file)) {
                         return response('<h1>404 Not Found</h1>', 404);
                     }
                     return response()->withFile($file);
@@ -112,7 +112,7 @@ class RoutesMgr
                             return response('<h1>400 Bad Request</h1>', 400);
                         }
                         $file = "{$viewPath}/assets/{$path}";
-                        if (! is_file($file)) {
+                        if (!is_file($file)) {
                             return response('<h1>404 Not Found</h1>', 404);
                         }
                         $response = response();
@@ -126,7 +126,7 @@ class RoutesMgr
                             }
                             $file = $gzipFile;
                             $response->withHeaders([
-                                'Content-Type'     => $mime_content_type,
+                                'Content-Type' => $mime_content_type,
                                 'Content-Encoding' => 'gzip'
                             ]);
                         }
@@ -149,7 +149,7 @@ class RoutesMgr
     {
         $order  = [
             'sort' => 'asc',
-            'id'   => 'asc'
+            'id' => 'asc'
         ];
         $routes = SystemAuthRule::where('is_api', '1')
             ->order($order)
@@ -173,5 +173,55 @@ class RoutesMgr
                 Route::add($value['method'], $path, $namespace);
             }
         });
+    }
+
+    /**
+     * 获取应用菜单
+     * @param string $pluginName
+     * @throws \Exception
+     * @return array
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function getPluginRoutes(string $pluginName)
+    {
+        $pluginMenuJsonPath = base_path("/plugin/{$pluginName}/menu.json");
+        if (!file_exists($pluginMenuJsonPath)) {
+            throw new Exception("插件JSON菜单文件不存在,请检查插件是否安装成功");
+        }
+        $menus = json_decode(file_get_contents($pluginMenuJsonPath), true);
+        $menus = self::getPluginMenuList($menus);
+        $data = [
+            'active' => 'Index/index',
+            'list' => empty($menus) ? [] : $menus
+        ];
+        return $data;
+    }
+
+    /**
+     * 将多层级菜单转为二维数组菜单
+     * @param array $data
+     * @param array $list
+     * @return array
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    private static function getPluginMenuList(array $data, array $list = [], int &$id = 1, int $pid = 0)
+    {
+        foreach ($data as $value) {
+            $item        = $value;
+            $item['pid'] = $pid;
+            $item['id']  = $id;
+            $item['method'] = is_array($value['method']) ? current($value['method']) : 'GET';
+            unset($item['children']);
+            $list[] = $item;
+            $id++;
+            if (!empty($value['children'])) {
+                $list = array_merge(self::getPluginMenuList($value['children'], $list, $id, $item['id']));
+            }
+        }
+        return $list;
     }
 }

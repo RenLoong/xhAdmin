@@ -1,7 +1,2 @@
 <?php
-$menus = json_decode(file_get_contents(dirname(__DIR__).'/menu.json'),true);
-$data = [
-    'active'        => 'Index/index',
-    'list'          => empty($menus) ? [] : $menus
-];
-return $data;
+return \app\utils\RoutesMgr::getPluginRoutes('ycUniapp');

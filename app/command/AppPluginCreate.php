@@ -2,7 +2,7 @@
 
 namespace app\command;
 
-use Exception;
+use app\model\StoreApp;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -78,7 +78,7 @@ class AppPluginCreate extends Command
         $output->writeln("</>");
         $confirm = $this->confirmCreate($input, $output);
         if ($confirm !== 'YES') {
-            $output->writeln('<error>应用插件创建取消</error>');
+            $output->writeln('<error>应用插件创建取消...</error>');
             return self::FAILURE;
         }
         # 执行创建应用文件
@@ -87,7 +87,33 @@ class AppPluginCreate extends Command
         $this->createApiFiles(base_path("/plugin/{$teamPlugin}/api"), $teamPlugin);
         # 创建成功
         $output->writeln('<fg=green>示例应用插件创建成功...</>');
+        # 创建开发者测试平台
+        self::createStoreApp($teamPlugin);
+        $output->writeln('<fg=red>开发者测试平台创建成功，请重启框架后访问...</>');
+        # 创建成功
         return self::SUCCESS;
+    }
+
+    /**
+     * 创建开发者测试平台
+     * @param string $name
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    private static function createStoreApp(string $name)
+    {
+        $model = new StoreApp;
+        $model->store_id = 0;
+        $model->platform_id = 0;
+        $model->title = '开发者测试平台';
+        $model->name = $name;
+        if (!$model->save()) {
+            console_log("创建 {$name} 开发者测试平台失败...");
+            return;
+        }
+        console_log("创建 {$name} 开发者测试平台成功...");
     }
 
     /**
@@ -107,6 +133,7 @@ class AppPluginCreate extends Command
         }
         $this->mkdir("$base_path/plugin/$pluginName/app/controller", 0777, true);
         $this->mkdir("$base_path/plugin/$pluginName/app/model", 0777, true);
+        $this->mkdir("$base_path/plugin/$pluginName/app/validate", 0777, true);
         $this->mkdir("$base_path/plugin/$pluginName/app/middleware", 0777, true);
         $this->mkdir("$base_path/plugin/$pluginName/app/view/index", 0777, true);
         $this->mkdir("$base_path/plugin/$pluginName/config", 0777, true);
@@ -141,19 +168,19 @@ class AppPluginCreate extends Command
         $content = file_get_contents(app_path('/command/appPlugin/install/install.txt'));
         $content = str_replace('{PLUGIN_NAME}', $pluginName, $content);
         file_put_contents("{$base}/Install.php", $content);
-        console_log("创建应用安装接口文件成功：{$base}/Install.php");
+        console_log("创建应用安装接口文件成功 {$base}/Install.php");
 
         # 创建应用
         $content = file_get_contents(app_path('/command/appPlugin/install/created.txt'));
         $content = str_replace('{PLUGIN_NAME}', $pluginName, $content);
         file_put_contents("{$base}/Created.php", $content);
-        console_log("创建应用管理员接口文件成功：{$base}/Created.php");
+        console_log("创建应用管理员接口文件成功 {$base}/Created.php");
 
         # 应用登录
         $content = file_get_contents(app_path('/command/appPlugin/install/login.txt'));
         $content = str_replace('{PLUGIN_NAME}', $pluginName, $content);
         file_put_contents("{$base}/Login.php", $content);
-        console_log("创建应用登录接口文件成功：{$base}/Login.php");
+        console_log("创建应用登录接口文件成功 {$base}/Login.php");
     }
 
     /**
@@ -188,7 +215,7 @@ class AppPluginCreate extends Command
         </style>
         EOF;
         file_put_contents($base_path . '/welcome.vue', $data);
-        console_log("创建默认欢迎页面：{$base_path}/welcome.vue");
+        console_log("创建默认欢迎页面 {$base_path}/welcome.vue");
 
         # 创建头部工具栏页面
         $data = <<<EOF
@@ -207,7 +234,7 @@ class AppPluginCreate extends Command
         </style>
         EOF;
         file_put_contents($base_path . '/header-toolbar.vue', $data);
-        console_log("创建头部工具栏页面：{$base_path}/header-toolbar.vue");
+        console_log("创建头部工具栏页面 {$base_path}/header-toolbar.vue");
     }
 
     /**
@@ -228,7 +255,7 @@ class AppPluginCreate extends Command
         }
         EOF;
         file_put_contents($base_path . '/version.json', $data);
-        console_log("创建初始版本文件：{$base_path}/version.json");
+        console_log("创建初始版本文件 {$base_path}/version.json");
     }
 
     /**
@@ -242,7 +269,7 @@ class AppPluginCreate extends Command
      */
     private function CreateConfigFiles(string $path,string $pluginName)
     {
-        console_log("创建配置文件：{$path}/app.php");
+        console_log("创建配置文件 {$path}/app.php");
         $content = <<<EOF
         <?php
 
@@ -256,7 +283,7 @@ class AppPluginCreate extends Command
         EOF;
         file_put_contents("$path/app.php", $content);
 
-        console_log("创建配置文件：{$path}/autoload.php");
+        console_log("创建配置文件 {$path}/autoload.php");
         $content = <<<EOF
         <?php
 
@@ -268,7 +295,7 @@ class AppPluginCreate extends Command
         EOF;
         file_put_contents("$path/autoload.php", $content);
         
-        console_log("创建配置文件：{$path}/container.php");
+        console_log("创建配置文件 {$path}/container.php");
         $content = <<<EOF
         <?php
 
@@ -276,7 +303,7 @@ class AppPluginCreate extends Command
         EOF;
         file_put_contents("$path/container.php", $content);
         
-        console_log("创建配置文件：{$path}/database.php");
+        console_log("创建配置文件 {$path}/database.php");
         $content = <<<EOF
         <?php
 
@@ -284,7 +311,7 @@ class AppPluginCreate extends Command
         EOF;
         file_put_contents("$path/database.php", $content);
         
-        console_log("创建配置文件：{$path}/exception.php");
+        console_log("创建配置文件 {$path}/exception.php");
         $content = <<<EOF
         <?php
 
@@ -294,7 +321,7 @@ class AppPluginCreate extends Command
         EOF;
         file_put_contents("$path/exception.php", $content);
 
-        console_log("创建配置文件：{$path}/log.php");
+        console_log("创建配置文件 {$path}/log.php");
         $content = <<<EOF
         <?php
 
@@ -319,19 +346,19 @@ class AppPluginCreate extends Command
         EOF;
         file_put_contents("$path/log.php", $content);
         
-        console_log("创建配置文件：{$path}/middleware.php");
+        console_log("创建中间件配置文件 {$path}/middleware.php");
         $content = <<<EOF
         <?php
 
         return [
             '' => [
-                
+                \app\middleware\GlobalsMiddleware::class 
             ]
         ];
         EOF;
         file_put_contents("$path/middleware.php", $content);
 
-        console_log("创建配置文件：{$path}/process.php");
+        console_log("创建配置文件 {$path}/process.php");
         $content = <<<EOF
         <?php
 
@@ -339,7 +366,7 @@ class AppPluginCreate extends Command
         EOF;
         file_put_contents("$path/process.php", $content);
 
-        console_log("创建配置文件：{$path}/redis.php");
+        console_log("创建redis配置文件 {$path}/redis.php");
         $content = <<<EOF
         <?php
         return [
@@ -353,7 +380,7 @@ class AppPluginCreate extends Command
         EOF;
         file_put_contents("$path/redis.php", $content);
 
-        console_log("创建配置文件：{$path}/route.php");
+        console_log("创建路由配置文件 {$path}/route.php");
         $content = <<<EOF
         <?php
 
@@ -361,7 +388,7 @@ class AppPluginCreate extends Command
         EOF;
         file_put_contents("$path/route.php", $content);
 
-        console_log("创建配置文件：{$path}/static.php");
+        console_log("创建静态资源中间件配置文件 {$path}/static.php");
         $content = <<<EOF
         <?php
 
@@ -372,7 +399,7 @@ class AppPluginCreate extends Command
         EOF;
         file_put_contents("$path/static.php", $content);
 
-        console_log("创建配置文件：{$path}/translation.php");
+        console_log("创建多语言配置文件 {$path}/translation.php");
         $content = <<<EOF
         <?php
 
@@ -402,7 +429,7 @@ class AppPluginCreate extends Command
         EOF;
         file_put_contents("$path/view.php", $content);
 
-        console_log("创建配置文件：{$path}/thinkorm.php");
+        console_log("创建TP-ORM配置文件 {$path}/thinkorm.php");
         $content = <<<EOF
         <?php
 
@@ -416,7 +443,7 @@ class AppPluginCreate extends Command
             $content = file_get_contents(app_path('/command/appPlugin/config/menu.txt'));
             $content = str_replace("admin", $pluginName, $content);
             file_put_contents("{$path}/menu.php", $content);
-            console_log("创建菜单配置文件：{$path}/menu.php");
+            console_log("创建菜单配置文件 {$path}/menu.php");
 
             # 创建菜单JSON文件
             $pluginRoot = dirname($path);
@@ -439,7 +466,7 @@ class AppPluginCreate extends Command
             ];
             EOF;
             file_put_contents("{$path}/admin.php", $content);
-            console_log("创建配置文件：{$path}/admin.php");
+            console_log("创建配置文件 {$path}/admin.php");
         }
     }
 
@@ -453,7 +480,7 @@ class AppPluginCreate extends Command
      */
     protected function createViewFile(string $path)
     {
-        echo "创建应用默认视图：{$path}\r\n";
+        echo "创建应用默认视图 {$path}\r\n";
         $content = <<<EOF
         <!doctype html>
         <html>
@@ -506,7 +533,7 @@ class AppPluginCreate extends Command
      */
     private function copyPublicsController(string $path, string $name)
     {
-        echo "创建官方后台登录控制器：{$path}\r\n";
+        echo "创建官方后台登录控制器 {$path}\r\n";
         $content = file_get_contents(app_path('/command/appPlugin/PublicsController.txt'));
         $content = str_replace('{PLUGIN_NAME}', $name, $content);
         file_put_contents($path, $content);
@@ -523,7 +550,7 @@ class AppPluginCreate extends Command
      */
     protected function createDefaultController(string $path, string $name)
     {
-        echo "创建应用默认控制器：{$path}\r\n";
+        echo "创建应用默认控制器 {$path}\r\n";
         $content = <<<EOF
         <?php
 
@@ -561,7 +588,7 @@ class AppPluginCreate extends Command
      */
     protected function createFunctionsFile(string $file)
     {
-        echo "创建应用函数库：{$file}\r\n";
+        echo "创建应用函数库 {$file}\r\n";
         $content = <<<EOF
         <?php
         /**
@@ -587,7 +614,7 @@ class AppPluginCreate extends Command
         if (is_dir($path)) {
             return;
         }
-        echo "创建目录：{$path}\r\n";
+        echo "创建目录 {$path}\r\n";
         mkdir($path, 0777, true);
     }
 

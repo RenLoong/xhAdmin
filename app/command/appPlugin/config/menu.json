@@ -1,8 +1,6 @@
 [
     {
-        "id": 1,
         "module": "app/{PLUGIN_NAME}/admin",
-        "pid": 0,
         "path": "admin/systemIndex",
         "title": "首页",
         "method": ["GET"],
@@ -10,110 +8,87 @@
         "auth_params": "",
         "icon": "HomeOutlined",
         "show": "1",
-        "is_api": "0"
-    },
-    {
-        "id": 2,
-        "module": "app/{PLUGIN_NAME}/admin",
-        "pid": 1,
-        "path": "Index/index",
-        "title": "控制台",
-        "method": ["GET"],
-        "component": "remote/index",
-        "auth_params": "app/{PLUGIN_NAME}/remote/welcome",
-        "icon": "FolderOpenOutlined",
-        "show": "1",
-        "is_api": "0"
-    },
-    {
-        "id": 3,
-        "module": "app/{PLUGIN_NAME}/admin",
-        "pid": 1,
-        "path": "Publics/login",
-        "title": "系统登录",
-        "method": ["POST"],
-        "component": "",
-        "auth_params": "",
-        "icon": "",
-        "show": "0",
-        "is_api": "1"
-    },
-    {
-        "id": 4,
-        "module": "app/{PLUGIN_NAME}/admin",
-        "pid": 1,
-        "path": "Publics/site",
-        "title": "获取应用信息",
-        "method": ["GET"],
-        "component": "",
-        "auth_params": "",
-        "icon": "",
-        "show": "0",
-        "is_api": "1"
-    },
-    {
-        "id": 5,
-        "module": "app/{PLUGIN_NAME}/admin",
-        "pid": 1,
-        "path": "Publics/user",
-        "title": "获取管理员信息",
-        "method": ["GET"],
-        "component": "",
-        "auth_params": "",
-        "icon": "",
-        "show": "0",
-        "is_api": "1"
-    },
-    {
-        "id": 6,
-        "module": "app/{PLUGIN_NAME}/admin",
-        "pid": 1,
-        "path": "Publics/menus",
-        "title": "获取菜单信息",
-        "method": ["GET"],
-        "component": "",
-        "auth_params": "",
-        "icon": "",
-        "show": "0",
-        "is_api": "1"
-    },
-    {
-        "id": 7,
-        "module": "app/{PLUGIN_NAME}/admin",
-        "pid": 1,
-        "path": "Publics/loginout",
-        "title": "退出登录",
-        "method": ["GET"],
-        "component": "",
-        "auth_params": "",
-        "icon": "",
-        "show": "0",
-        "is_api": "1"
-    },
-    {
-        "id": 8,
-        "module": "app/{PLUGIN_NAME}/admin",
-        "pid": 1,
-        "path": "Index/clear",
-        "title": "清除缓存",
-        "method": ["GET"],
-        "component": "",
-        "auth_params": "",
-        "icon": "",
-        "show": "0",
-        "is_api": "1"
-    },
-    {
-        "id": 9,
-        "module": "app/{PLUGIN_NAME}/admin",
-        "pid": 1,
-        "path": "Index/lock",
-        "title": "解除锁定",
-        "method": ["POST"],
-        "component": "",
-        "auth_params": "",
-        "icon": "",
-        "show": "0",
-        "is_api": "1"
+        "children":[
+            {
+                "module": "app/{PLUGIN_NAME}/admin",
+                "path": "Index/index",
+                "title": "控制台",
+                "method": ["GET"],
+                "component": "remote/index",
+                "auth_params": "app/{PLUGIN_NAME}/remote/welcome",
+                "icon": "FolderOpenOutlined",
+                "show": "1"
+            },
+            {
+                "module": "app/{PLUGIN_NAME}/admin",
+                "path": "Publics/login",
+                "title": "系统登录",
+                "method": ["POST"],
+                "component": "",
+                "auth_params": "",
+                "icon": "",
+                "show": "0"
+            },
+            {
+                "module": "app/{PLUGIN_NAME}/admin",
+                "path": "Publics/site",
+                "title": "获取应用信息",
+                "method": ["GET"],
+                "component": "",
+                "auth_params": "",
+                "icon": "",
+                "show": "0"
+            },
+            {
+                "module": "app/{PLUGIN_NAME}/admin",
+                "path": "Publics/user",
+                "title": "获取管理员信息",
+                "method": ["GET"],
+                "component": "",
+                "auth_params": "",
+                "icon": "",
+                "show": "0"
+            },
+            {
+                "module": "app/{PLUGIN_NAME}/admin",
+                "path": "Publics/menus",
+                "title": "获取菜单信息",
+                "method": ["GET"],
+                "component": "",
+                "auth_params": "",
+                "icon": "",
+                "show": "0"
+            },
+            {
+                "module": "app/{PLUGIN_NAME}/admin",
+                "path": "Publics/loginout",
+                "title": "退出登录",
+                "method": ["GET"],
+                "component": "",
+                "auth_params": "",
+                "icon": "",
+                "show": "0"
+            },
+            {
+                "module": "app/{PLUGIN_NAME}/admin",
+                "path": "Index/clear",
+                "title": "清除缓存",
+                "method": ["GET"],
+                "component": "",
+                "auth_params": "",
+                "icon": "",
+                "show": "0"
+            },
+            {
+                "module": "app/{PLUGIN_NAME}/admin",
+                "path": "Index/lock",
+                "title": "解除锁定",
+                "method": ["POST"],
+                "component": "",
+                "auth_params": "",
+                "icon": "",
+                "show": "0"
+            }
+        ]
     }
 ]
