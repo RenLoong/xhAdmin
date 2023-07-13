@@ -68,7 +68,7 @@ class Update
         if (empty($data['files']) || empty($data['sql'])) {
             console_log("收集数据空，无需执行sql升级...");
         }
-        $prefix = config('database.connections.mysql.prefix');
+        $prefix = config('database.connections.mysql.prefix','');
         $str    = ['`php_', '`yc_'];
         foreach ($data['sql'] as $sql) {
             # 替换为真实SQL
@@ -122,7 +122,6 @@ class Update
             console_log('安装云服务中心...');
             shell_exec("composer require yc-open/cloud-service --no-scripts --no-interaction 2>&1");
             console_log('云服务中心安装完成...');
-            return;
         } else {
             # 更新云服务版本
             console_log('更新云服务中心...');
@@ -138,7 +137,12 @@ class Update
             file_put_contents($composerPath, $composer);
             shell_exec("composer config --unset repos.packagist --no-scripts --no-interaction 2>&1");
             console_log('取消镜像源完成...');
-            return;
+        }
+        # 检测是否存在laravel依赖
+        if (empty($composer['require']['illuminate/database'])) {
+            console_log('安装云服务中心...');
+            shell_exec("composer require -W illuminate/database illuminate/pagination illuminate/events symfony/var-dumper doctrine/dbal --no-scripts --no-interaction 2>&1");
+            console_log('云服务中心安装完成...');
         }
     }
 }
