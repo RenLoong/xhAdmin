@@ -89,7 +89,7 @@ class Users
     public static function add(array $data): int|bool
     {
         if (empty($data['appid'])) {
-            throw new Exception('缺少平台ID');
+            throw new Exception('缺少应用ID');
         }
         # 查询APPID
         $app = StoreApp::detail((int) $data['appid']);

@@ -118,11 +118,18 @@ class Update
         $composer     = json_decode($composerJson, true);
         # 检测是否有云服务中心包
         if (empty($composer['require']['yc-open/cloud-service'])) {
+            # 安装云服务中心
             console_log('安装云服务中心...');
             shell_exec("composer require yc-open/cloud-service --no-scripts --no-interaction 2>&1");
             console_log('云服务中心安装完成...');
             return;
+        } else {
+            # 更新云服务版本
+            console_log('更新云服务中心...');
+            shell_exec("composer update yc-open/cloud-service --no-scripts --no-interaction 2>&1");
+            console_log('云服务中心更新完成...');
         }
+
         # 检测是否存在阿里云源
         if (!empty($composer['repositories'])) {
             console_log('取消镜像源...');

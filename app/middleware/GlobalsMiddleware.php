@@ -45,7 +45,11 @@ class GlobalsMiddleware implements MiddlewareInterface
             return $response;
         }
         # 应用ID
-        $appid = $request->header('Appid', '');
+        $appid = $request->header('Appid','');
+        if (empty($appid)) {
+            $appid = $request->input('Appid','');
+        }
+        
         /**
          * 实例响应结果
          * @var Response $response

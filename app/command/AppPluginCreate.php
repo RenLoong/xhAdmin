@@ -317,7 +317,7 @@ class AppPluginCreate extends Command
         <?php
 
         return [
-            '' => support\\exception\\Handler::class,
+            '' => \\app\common\\exception\\Handler::class,
         ];
         EOF;
         file_put_contents("$path/exception.php", $content);
