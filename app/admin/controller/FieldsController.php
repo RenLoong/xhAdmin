@@ -12,6 +12,7 @@ use app\utils\DbMgr;
 use Exception;
 use Illuminate\Database\Schema\Blueprint;
 use support\Request;
+use think\facade\Db;
 
 /**
  * @title 数据表字段管理
@@ -403,7 +404,7 @@ class FieldsController extends BaseController
                 $sql .= "COMMENT $comment ";
             }
             # 执行SQL
-            if (DbMgr::instance()->statement($sql) === false) {
+            if (!Db::execute($sql)) {
                 return $this->fail('修改失败');
             }
             # 返回消息

@@ -3,6 +3,7 @@
 namespace app\service;
 use app\utils\DbMgr;
 use support\Log;
+use think\facade\Db;
 
 /**
  * SAAS框架更新服务（支持跨版本升级）
@@ -56,12 +57,11 @@ class Update
 
     /**
      * 开始更新
-     * @param mixed $version 版本号
+     * @param mixed $version
      * @param mixed $data
      * @return void
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
      */
     public static function update($version, $data)
     {
@@ -70,14 +70,15 @@ class Update
         # 执行SQL
         if (empty($data['files']) || empty($data['sql'])) {
             console_log("收集数据空，无需执行sql升级...");
+            return;
         }
-        $prefix = config('database.connections.mysql.prefix','');
+        $prefix = config('thinkorm.connections.mysql.prefix','');
         $str    = ['`php_', '`yc_'];
         foreach ($data['sql'] as $sql) {
             # 替换为真实SQL
             $sql = str_replace($str, "`{$prefix}", $sql);
             try {
-                DbMgr::instance()->statement($sql);
+                Db::execute($sql);
             } catch (\Throwable $e) {
                 Log::error("执行更新SQL错误：{$e->getMessage()}");
                 continue;
@@ -121,12 +122,12 @@ class Update
         if (empty($composer['require']['yc-open/cloud-service'])) {
             # 安装云服务中心
             console_log('安装云服务中心...');
-            shell_exec("composer require yc-open/cloud-service --no-scripts --no-interaction 2>&1");
+            shell_exec("composer require yc-open/cloud-service --no-interaction 2>&1");
             console_log('云服务中心安装完成...');
         } else {
             # 更新云服务版本
             console_log('更新云服务中心...');
-            shell_exec("composer update yc-open/cloud-service --no-scripts --no-interaction 2>&1");
+            shell_exec("composer update yc-open/cloud-service --no-interaction 2>&1");
             console_log('云服务中心更新完成...');
         }
 
@@ -136,14 +137,14 @@ class Update
             unset($composer['repositories']);
             $composer = json_encode($composer, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
             file_put_contents($composerPath, $composer);
-            shell_exec("composer config --unset repos.packagist --no-scripts --no-interaction 2>&1");
+            shell_exec("composer config --unset repos.packagist --no-interaction 2>&1");
             console_log('取消镜像源完成...');
         }
         # 检测是否存在laravel依赖
         if (empty($composer['require']['illuminate/database'])) {
-            console_log('安装云服务中心...');
-            shell_exec("composer require -W illuminate/database illuminate/pagination illuminate/events symfony/var-dumper doctrine/dbal --no-scripts --no-interaction 2>&1");
-            console_log('云服务中心安装完成...');
+            console_log('安装Laravel依赖...');
+            shell_exec("composer require -W illuminate/database illuminate/pagination illuminate/events symfony/var-dumper doctrine/dbal --no-interaction 2>&1");
+            console_log('安装Laravel依赖完成...');
         }
     }
 }

@@ -12,6 +12,7 @@ use app\utils\DbMgr;
 use Exception;
 use Illuminate\Database\Schema\Blueprint;
 use support\Request;
+use think\facade\Db;
 
 class ModulesController extends BaseController
 {
@@ -185,7 +186,7 @@ class ModulesController extends BaseController
             });
             # 设置表备注
             $prefixTableName = $prefix . $table_name;
-            DbMgr::instance()->statement("ALTER TABLE `{$prefixTableName}` COMMENT {$table_comment}");
+            Db::execute("ALTER TABLE `{$prefixTableName}` COMMENT {$table_comment}");
             if (!DbMgr::hasTable($table_name)) {
                 return $this->fail('创建失败');
             }
@@ -248,7 +249,7 @@ class ModulesController extends BaseController
             if ($post['old_table_comment'] !== $table_comment) {
                 $tableName = $prefix . $post['table_name'];
                 $table_comment = DbMgr::pdoQuote($table_comment);
-                DbMgr::instance()->statement("ALTER TABLE `{$tableName}` COMMENT {$table_comment}");
+                Db::execute("ALTER TABLE `{$tableName}` COMMENT {$table_comment}");
             }
             return $this->success('表变更成功');
         }
