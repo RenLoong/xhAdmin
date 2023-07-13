@@ -8,6 +8,6 @@ namespace app\admin\model;
  * @copyright 贵州猿创科技有限公司
  * @email 416716328@qq.com
  */
-class Curd extends \app\model\Curd
+class SystemCurd extends \app\model\SystemCurd
 {
 }

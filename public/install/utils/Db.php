@@ -102,7 +102,7 @@ class Db
             'collation' => 'utf8mb4_general_ci',
             'prefix' => '',
             'strict' => true,
-            'engine' => null,
+            'engine' => 'InnoDB',
             'options' => [
                 \PDO::ATTR_TIMEOUT => 3
             ]

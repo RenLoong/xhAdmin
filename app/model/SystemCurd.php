@@ -10,6 +10,6 @@ use app\Model;
  * @copyright 贵州猿创科技有限公司
  * @email 416716328@qq.com
  */
-class Curd extends Model
+class SystemCurd extends Model
 {
 }

@@ -40,8 +40,8 @@ class ModulesController extends BaseController
                 'type' => 'primary',
             ])
             ->addRightButton('curd', 'CURD', [
-                'api' => 'admin/Curd/index',
-                'path' => '/Curd/index',
+                'api' => 'admin/SystemCurd/index',
+                'path' => '/SystemCurd/index',
             ], [], [
                 'type' => 'warning',
                 'link' => true

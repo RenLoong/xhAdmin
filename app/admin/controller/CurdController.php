@@ -6,7 +6,7 @@ use app\admin\builder\ListBuilder;
 use app\admin\logic\AuthRule;
 use app\admin\logic\CurdLogic;
 use app\admin\logic\ModulesLogic;
-use app\admin\model\Curd;
+use app\admin\model\SystemCurd;
 use app\admin\utils\Util;
 use app\BaseController;
 use app\exception\RedirectException;
@@ -76,7 +76,7 @@ class CurdController extends BaseController
             ->addTopButton('add', '构建CURD', [
                 'type' => 'remote',
                 'modal' => true,
-                'api' => 'admin/Curd/add',
+                'api' => 'admin/SystemCurd/add',
                 'path' => 'remote/curd',
                 'queryParams' => [
                     'TABLE_NAME' => $this->tableName,
@@ -97,7 +97,7 @@ class CurdController extends BaseController
             ->addColumnEle('list_title', '列表名称', [
                 'params' => [
                     'type' => 'input',
-                    'api' => "/admin/Curd/edit?TABLE_NAME={$this->tableName}",
+                    'api' => "/admin/SystemCurd/edit?TABLE_NAME={$this->tableName}",
                     'props' => [],
                 ],
             ])
@@ -105,7 +105,7 @@ class CurdController extends BaseController
                 'width' => 100,
                 'params' => [
                     'type' => 'switch',
-                    'api' => "/admin/Curd/edit?TABLE_NAME={$this->tableName}",
+                    'api' => "/admin/SystemCurd/edit?TABLE_NAME={$this->tableName}",
                     'checked' => [
                         'text' => '显示',
                         'value' => '20'
@@ -120,7 +120,7 @@ class CurdController extends BaseController
                 'width' => 100,
                 'params' => [
                     'type' => 'switch',
-                    'api' => "/admin/Curd/edit?TABLE_NAME={$this->tableName}",
+                    'api' => "/admin/SystemCurd/edit?TABLE_NAME={$this->tableName}",
                     'checked' => [
                         'text' => '显示',
                         'value' => '20'
@@ -135,7 +135,7 @@ class CurdController extends BaseController
                 'width' => 100,
                 'params' => [
                     'type' => 'switch',
-                    'api' => "/admin/Curd/edit?TABLE_NAME={$this->tableName}",
+                    'api' => "/admin/SystemCurd/edit?TABLE_NAME={$this->tableName}",
                     'checked' => [
                         'text' => '显示',
                         'value' => '20'
@@ -150,7 +150,7 @@ class CurdController extends BaseController
                 'width' => 100,
                 'params' => [
                     'type' => 'switch',
-                    'api' => "/admin/Curd/edit?TABLE_NAME={$this->tableName}",
+                    'api' => "/admin/SystemCurd/edit?TABLE_NAME={$this->tableName}",
                     'checked' => [
                         'text' => '支持',
                         'value' => '20'
@@ -203,7 +203,7 @@ class CurdController extends BaseController
                 'form_edit',
                 'is_del',
             ];
-            $fieldModel = Curd::where($where)
+            $fieldModel = SystemCurd::where($where)
                 ->field($field)
                 ->find();
             $list[$i]   = array_merge($list[$i], [
@@ -361,7 +361,7 @@ class CurdController extends BaseController
             if (empty($columnData)) {
                 throw new RedirectException('字段数据出错', "/Fields/index?TABLE_NAME={$this->prefixTableName}");
             }
-            $model                = new Curd;
+            $model                = new SystemCurd;
             $model->table_name    = $table_name;
             $model->field_name    = $field_name;
             $model->list_sort     = $columnData['ORDINAL_POSITION'];

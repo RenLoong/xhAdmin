@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS `php_curd`;
-CREATE TABLE `php_curd`  (
+DROP TABLE IF EXISTS `php_system_curd`;
+CREATE TABLE `php_system_curd`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
   `create_at` datetime NULL DEFAULT NULL COMMENT '创建时间',
   `update_at` datetime NULL DEFAULT NULL COMMENT '更新时间',
