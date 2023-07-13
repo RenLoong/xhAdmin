@@ -19,7 +19,7 @@
     <n-modal v-model:show="modalDialog.show" v-bind="modalDialog" @PositiveClick="hanldConfirm">
       <div class="app-select-list">
         <div class="item" v-for="(item, index) in ajaxParams.plugin_list" :key="index">
-          <div class="app-item" :class="{ 'active': modalDialogActive.find((name) => item?.name === name) }"
+          <div class="app-item" :class="{ 'active': modalDialogActive.includes(item.name) }"
             @click="hanldSelect(item?.name ?? '')">
             <img :src="item?.logo ?? ''" class="logo" alt="" />
             <div class="title">{{ item?.title ?? '错误' }}</div>
@@ -68,16 +68,13 @@
     methods: {
       // 确认选择
       hanldConfirm() {
-        const _this = this;
-        let actives = [];
-        for (let index = 0; index < _this.modalDialogActive.length; index++) {
-          const name = _this.modalDialogActive[index];
-          const item = _this.modelValue.find((e) => e === name);
-          if (!item) {
-            actives.push(name);
-          }
-        }
-        this.$emit('update:modelValue', actives);
+          let active=this.modelValue;
+          this.modalDialogActive.map(item=>{
+              if(!active.includes(item)){
+                  active.push(item);
+              }
+          })
+        this.$emit('update:modelValue', active);
       },
       // 设置选中
       hanldSelect(name) {
@@ -85,18 +82,17 @@
           this.modalDialogActive.push(name);
           return;
         }
-        this.modalDialogActive.forEach((item, index) => {
-          if (item === name) {
-            this.modalDialogActive.splice(index, 1);
-          } else {
+        if(!this.modalDialogActive.includes(name)){
             this.modalDialogActive.push(name)
-          }
-        });
+        }
       },
       // 显示模态框
       hanldShowDialog() {
         this.modalDialog.show = true
-        this.modalDialogActive = [];
+        this.modalDialogActive=[];
+        this.modelValue.map(name=>{
+          this.modalDialogActive.push(name);  
+        })
       },
       // 删除选中
       hanldStop(name) {
@@ -249,7 +245,13 @@
         }
 
         .title {
-          padding: 3px 0;
+            font-size: 12px;
+            line-height: 20px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
         }
       }
 
