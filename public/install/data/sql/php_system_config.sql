@@ -1,5 +1,3 @@
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `php_system_config`;
 CREATE TABLE `php_system_config`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '序号',
@@ -21,4 +19,3 @@ INSERT INTO `php_system_config` VALUES (5, '2023-03-12 14:06:09', '2023-05-03 16
 在线社区|http://www.kfadmin.net/#/document
 微信群|http://www.kfadmin.net/#/document', '一行一个信息，示例：名称|网址', 0);
 INSERT INTO `php_system_config` VALUES (6, '2023-03-12 14:06:09', '2023-05-03 16:44:15', 2, '专属客服', 'store_copyright_service', '18786709420（微信同号）', 'input', '', '客服展示信息', 0);
-SET FOREIGN_KEY_CHECKS = 1;

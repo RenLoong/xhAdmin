@@ -1,5 +1,3 @@
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `php_system_upload`;
 CREATE TABLE `php_system_upload`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '序号',
@@ -19,4 +17,3 @@ CREATE TABLE `php_system_upload`  (
   `adapter` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '选定器：oss阿里云，qiniu七牛云等等',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-附件管理器' ROW_FORMAT = DYNAMIC;
-SET FOREIGN_KEY_CHECKS = 1;

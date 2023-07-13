@@ -1,5 +1,3 @@
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `php_users_money_bill`;
 CREATE TABLE `php_users_money_bill`  (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -12,4 +10,3 @@ CREATE TABLE `php_users_money_bill`  (
   `remarks` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '变动理由',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户-余额账单' ROW_FORMAT = DYNAMIC;
-SET FOREIGN_KEY_CHECKS = 1;

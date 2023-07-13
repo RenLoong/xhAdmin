@@ -1,5 +1,3 @@
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `php_store_menus`;
 CREATE TABLE `php_store_menus`  (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -54,4 +52,3 @@ INSERT INTO `php_store_menus` VALUES (29, '2023-05-03 17:42:57', '2023-05-03 17:
 INSERT INTO `php_store_menus` VALUES (30, '2023-05-03 17:44:02', '2023-05-03 17:44:36', 'store', 'UserFinance/actionFinance', '\\app\\store\\controller\\', 29, '操作财务', 0, '[\"GET\",\"PUT\"]', '1', 'form/index', '', '', '0', '0', '0');
 INSERT INTO `php_store_menus` VALUES (31, '2023-05-03 19:53:40', '2023-05-03 19:53:40', 'store', '', '', 20, '分配应用', 0, '[\"GET\"]', '0', 'remote/index', 'remote/app/index', '', '0', '0', '0');
 INSERT INTO `php_store_menus` VALUES (32, '2023-06-16 11:44:08', '2023-06-16 11:44:08', 'store', 'Platform/del', '\\app\\store\\controller\\', 21, '删除平台', 0, '[\"GET\",\"DELETE\"]', '1', '', '', '', '0', '0', '0');
-SET FOREIGN_KEY_CHECKS = 1;

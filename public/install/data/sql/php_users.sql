@@ -1,5 +1,3 @@
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `php_users`;
 CREATE TABLE `php_users`  (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -18,4 +16,3 @@ CREATE TABLE `php_users`  (
   `last_login_ip` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '最后登录IP',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户-记录' ROW_FORMAT = Dynamic;
-SET FOREIGN_KEY_CHECKS = 1;

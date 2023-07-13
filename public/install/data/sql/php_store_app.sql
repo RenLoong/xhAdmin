@@ -1,5 +1,3 @@
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `php_store_app`;
 CREATE TABLE `php_store_app`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -13,4 +11,3 @@ CREATE TABLE `php_store_app`  (
   `status` enum('0','1') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '1' COMMENT '应用状态',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '租户-平台应用' ROW_FORMAT = Dynamic;
-SET FOREIGN_KEY_CHECKS = 1;

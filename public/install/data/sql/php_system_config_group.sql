@@ -1,5 +1,3 @@
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `php_system_config_group`;
 CREATE TABLE `php_system_config_group`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '序号',
@@ -15,4 +13,3 @@ CREATE TABLE `php_system_config_group`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-配置分组' ROW_FORMAT = DYNAMIC;
 INSERT INTO `php_system_config_group` VALUES (1, '2023-03-12 13:59:18', '2023-04-21 16:54:45', '系统设置', 'system_config', 'AntDesignOutlined', 0, '10', '0');
 INSERT INTO `php_system_config_group` VALUES (2, '2023-03-12 13:59:18', '2023-04-21 16:54:45', '租户版权', 'store_copyright', 'AntDesignOutlined', 0, '10', '0');
-SET FOREIGN_KEY_CHECKS = 1;

@@ -1,25 +1,3 @@
-/*
- Navicat Premium Data Transfer
-
- Source Server         : 雷神-笔记本-虚拟机
- Source Server Type    : MySQL
- Source Server Version : 80032
- Source Host           : localhost:3306
- Source Schema         : saas_kfadmin_com
-
- Target Server Type    : MySQL
- Target Server Version : 80032
- File Encoding         : 65001
-
- Date: 03/07/2023 18:06:46
-*/
-
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
-
--- ----------------------------
--- Table structure for php_curd
--- ----------------------------
 DROP TABLE IF EXISTS `php_curd`;
 CREATE TABLE `php_curd`  (
   `id` int NOT NULL AUTO_INCREMENT COMMENT '主键',
@@ -36,5 +14,3 @@ CREATE TABLE `php_curd`  (
   `is_del` enum('10','20') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '10' COMMENT '是否支持删除：10不支持，20支持',
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-curd记录' ROW_FORMAT = Dynamic;
-
-SET FOREIGN_KEY_CHECKS = 1;

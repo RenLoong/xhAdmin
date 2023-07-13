@@ -1,5 +1,3 @@
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `php_system_admin_log`;
 CREATE TABLE `php_system_admin_log`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -15,4 +13,3 @@ CREATE TABLE `php_system_admin_log`  (
   `params` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '操作日志JSON格式',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-操作日志' ROW_FORMAT = DYNAMIC;
-SET FOREIGN_KEY_CHECKS = 1;
