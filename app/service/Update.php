@@ -65,6 +65,9 @@ class Update
      */
     public static function update($version, $data)
     {
+        # 更新composer
+        self::updateComposer();
+        # 执行SQL
         if (empty($data['files']) || empty($data['sql'])) {
             console_log("收集数据空，无需执行sql升级...");
         }
@@ -92,8 +95,6 @@ class Update
         if (is_dir($updateDir)) {
             rmdir($updateDir);
         }
-        # 更新composer
-        self::updateComposer();
     }
 
     /**
