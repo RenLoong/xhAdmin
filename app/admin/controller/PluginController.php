@@ -457,9 +457,16 @@ class PluginController extends BaseController
         if (!$installed_version) {
             return $this->fail('该应用未安装');
         }
-
-        // 获取插件信息
-
+        try {
+            # 执行备份应用
+            PluginLogic::backup($name);
+        } catch (\Throwable $e) {
+            return $this->fail($e->getMessage());
+        }
+        # 执行删除文件
+        chdir(base_path("/plugin/{$name}"));
+        shell_exec("rm -rf ./*");
+        # 获取插件信息
         $systemInfo = SystemInfo::info();
         $req = new PluginRequest;
         $req->detail();
@@ -480,12 +487,10 @@ class PluginController extends BaseController
         $cloud = new Cloud($req);
         $data = $cloud->send();
 
-
         $request = new \YcOpen\CloudService\Request();
         # 通过获取下载密钥接口获得
         $request->setUrl($data->url);
         # 保存文件到指定路径
-
         $base_path = base_path("/plugin/{$name}");
         $zip_file = "{$base_path}.zip";
         $extract_to = base_path('/plugin/');
@@ -514,12 +519,6 @@ class PluginController extends BaseController
         $monitor_support_pause = method_exists(Monitor::class, 'pause');
         if ($monitor_support_pause) {
             Monitor::pause();
-        }
-        try {
-            # 执行备份应用
-            PluginLogic::backup($name);
-        } catch (\Throwable $e) {
-            return $this->fail($e->getMessage());
         }
         try {
             # 解压zip到plugin目录
