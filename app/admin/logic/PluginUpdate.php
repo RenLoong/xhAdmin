@@ -237,7 +237,7 @@ class PluginUpdate
             # 解压zip到plugin目录
             if ($has_zip_archive) {
                 $zip = new ZipArchive;
-                $zipStatus = $zip->open($this->pluginTempPath, ZIPARCHIVE::CHECKCONS);
+                $zipStatus = $zip->open($this->zipFile, ZIPARCHIVE::CHECKCONS);
                 if ($zipStatus !== true) {
                     $zip = null;
                 }
