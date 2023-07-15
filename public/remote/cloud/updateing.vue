@@ -54,6 +54,14 @@ export default {
                         title: '解压更新包',
                     },
                     {
+                        step: 'reload',
+                        title: '重启服务',
+                    },
+                    {
+                        step: 'ping',
+                        title: '检测服务状态',
+                    },
+                    {
                         step: 'updateData',
                         title: '更新数据同步',
                     },
@@ -83,10 +91,16 @@ export default {
                         title: res?.msg ?? "操作成功",
                         duration: 1500,
                     });
-                } else {
+                } else { 
                     _this.exceStep(res.data.next);
                 }
             }).catch((err) => {
+                if (step === 'reload') {
+                    step = 'ping';
+                    setTimeout(() => { 
+                        _this.exceStep(step);
+                    },1000)
+                } else {
                 console.log('error', err);
                 setTimeout(() => {
                     _this.$emit("update:closeWin");
@@ -95,6 +109,7 @@ export default {
                     title: res?.msg ?? "获取失败",
                     duration: 1500,
                 });
+                }
             })
         }
     },

@@ -9,6 +9,8 @@ use process\Monitor;
 use YcOpen\CloudService\Cloud;
 use YcOpen\CloudService\Request\PluginRequest;
 use ZipArchive;
+use Workerman\Timer;
+use Workerman\Worker;
 
 class PluginUpdate
 {
@@ -255,7 +257,7 @@ class PluginUpdate
             }
             # 解压成功
             return JsonMgr::successFul('解压成功', [
-                'next' => 'updateData'
+                'next' => 'reload'
             ]);
         } catch (\Throwable $e) {
             # 执行回滚
@@ -271,6 +273,48 @@ class PluginUpdate
                 Monitor::resume();
             }
         }
+    }
+
+    /**
+     * 软重启框架
+     * @return \support\Response
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function reload()
+    {
+        if (function_exists('posix_kill')) {
+            try {
+                console_log("停止主进程---执行成功");
+                // 重启子进程
+                posix_kill(posix_getppid(), SIGUSR1);
+            } catch (\Throwable $e) {
+                p("停止框架失败---{$e->getMessage()}");
+            }
+        } else {
+            Timer::add(1, function () {
+                Worker::stopAll();
+            });
+            echo "重启子进程---执行成功" . PHP_EOL;
+        }
+        return JsonMgr::successFul('重启成功', [
+            'next' => 'ping'
+        ]);
+    }
+
+    /**
+     * 检测服务
+     * @return \support\Response
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function ping()
+    {
+        return JsonMgr::successFul('重启成功', [
+            'next' => 'updateData'
+        ]);
     }
 
     /**
