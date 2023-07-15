@@ -231,10 +231,6 @@ class PluginUpdate
      */
     public function unzip()
     {
-        $monitor_support_pause = method_exists(Monitor::class, 'pause');
-        if ($monitor_support_pause) {
-            Monitor::pause();
-        }
         try {
             # 检测解压类是否存在
             $has_zip_archive = class_exists(ZipArchive::class, false);
@@ -268,10 +264,6 @@ class PluginUpdate
                 return JsonMgr::fail("更新失败，回滚失败：{$e->getMessage()}");
             }
             return JsonMgr::fail($e->getMessage());
-        } finally {
-            if ($monitor_support_pause) {
-                Monitor::resume();
-            }
         }
     }
 
@@ -286,7 +278,7 @@ class PluginUpdate
     {
         if (function_exists('posix_kill')) {
             try {
-                console_log("停止主进程---执行成功");
+                console_log("停止子进程---执行成功");
                 // 重启子进程
                 posix_kill(posix_getppid(), SIGUSR1);
             } catch (\Throwable $e) {
@@ -326,10 +318,6 @@ class PluginUpdate
      */
     public function updateData()
     {
-        $monitor_support_pause = method_exists(Monitor::class, 'pause');
-        if ($monitor_support_pause) {
-            Monitor::pause();
-        }
         try {
             $context = null;
             $install_class = "\\plugin\\{$this->name}\\api\\Install";
@@ -358,10 +346,6 @@ class PluginUpdate
                 return JsonMgr::fail("更新失败，回滚失败：{$e->getMessage()}");
             }
             return JsonMgr::fail($e->getMessage());
-        } finally {
-            if ($monitor_support_pause) {
-                Monitor::resume();
-            }
         }
     }
 }

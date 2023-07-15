@@ -91,24 +91,31 @@ export default {
                         title: res?.msg ?? "操作成功",
                         duration: 1500,
                     });
-                } else { 
+                } else {
                     _this.exceStep(res.data.next);
                 }
             }).catch((err) => {
+                if (err.response.status === 502) {
+                    step = 'ping';
+                    setTimeout(() => {
+                        _this.exceStep(step);
+                    }, 1000)
+                    return;
+                }
                 if (step === 'reload') {
                     step = 'ping';
-                    setTimeout(() => { 
+                    setTimeout(() => {
                         _this.exceStep(step);
-                    },1000)
+                    }, 1000)
                 } else {
-                console.log('error', err);
-                setTimeout(() => {
-                    _this.$emit("update:closeWin");
-                }, 2000);
-                _this.$useNotification?.error({
-                    title: res?.msg ?? "获取失败",
-                    duration: 1500,
-                });
+                    console.log('error', err);
+                    setTimeout(() => {
+                        _this.$emit("update:closeWin");
+                    }, 2000);
+                    _this.$useNotification?.error({
+                        title: res?.msg ?? "获取失败",
+                        duration: 1500,
+                    });
                 }
             })
         }
