@@ -34,13 +34,7 @@
         </tr>
       </tbody>
     </n-table>
-    <div class="install-container" v-if="installLock.status">
-      <div class="install-box">
-        <n-progress type="circle" :percentage="installLock.progress" />
-        <div>正在更新中...</div>
-      </div>
-    </div>
-    <div class="submit-button" v-else>
+    <div class="submit-button">
       <n-button type="primary" class="button" block @click="onSubmit">
         开始更新
       </n-button>
@@ -68,11 +62,6 @@ export default {
     return {
       // 页面初始化
       initLock: false,
-      // 是否在安装中
-      installLock: {
-        status: false,
-        progress: 0,
-      },
       user: {},
       form: {
         id: "",
@@ -91,49 +80,6 @@ export default {
     this.initify();
   },
   methods: {
-    // 执行安装步骤
-    install() {
-      const _this = this;
-      const queryParams = {
-        ...this.ajaxParams,
-      };
-      _this.installLock.status = true;
-      const setIntervalObj = setInterval(() => {
-        if (_this.installLock.progress < 100) {
-          const progress = Math.random();
-          const progress_num = _this.installLock.progress + progress;
-          _this.installLock.progress = parseFloat(progress_num.toFixed(2));
-        }
-      }, 300);
-      _this.$http
-        .usePost("admin/Plugin/update", queryParams)
-        .then((res) => {
-          if (res.code === 200) {
-            _this.installLock.progress = 100;
-            clearInterval(setIntervalObj);
-            setTimeout(() => {
-              _this.$emit("update:closeWin");
-            }, 2000);
-            _this.$useNotification?.success({
-              title: res?.msg ?? "操作成功",
-              duration: 1500,
-            });
-          } else {
-            clearInterval(setIntervalObj);
-            _this.installLock.status = false;
-            _this.installLock.progress = 0;
-            _this.$useNotification?.error({
-              title: res?.msg ?? "获取失败",
-              duration: 1500,
-            });
-          }
-        })
-        .catch(() => {
-          clearInterval(setIntervalObj);
-          _this.installLock.status = false;
-          _this.installLock.progress = 0;
-        });
-    },
     sendBuy() {
       const _this = this;
       const queryParams = {
@@ -175,14 +121,17 @@ export default {
       _this.$useDialog.create({
         type: "warning",
         title: "温馨提示",
-        content: "是否确认开始安装？",
+        content: "是否确认开始更新？",
         positiveText: "确定",
         negativeText: "取消",
         maskClosable: false,
         onPositiveClick() {
-          _this.install();
+          _this.openWin("remote/cloud/updateing");
         },
       });
+    },
+    openWin(path) {
+      this.$emit("update:openWin", path);
     },
     getDetail() {
       const _this = this;

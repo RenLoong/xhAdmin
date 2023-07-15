@@ -23,6 +23,7 @@ return array(
     '9b552a3cc426e3287cc811caefa3cf53' => $vendorDir . '/topthink/think-helper/src/helper.php',
     '841780ea2e1d6545ea3a253239d59c05' => $vendorDir . '/qiniu/php-sdk/src/Qiniu/functions.php',
     '35fab96057f1bf5e7aba31a8a6d5fdde' => $vendorDir . '/topthink/think-orm/stubs/load_stubs.php',
+    '2cffec82183ee1cea088009cef9a6fc3' => $vendorDir . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
     'ef65a1626449d89d0811cf9befce46f0' => $vendorDir . '/illuminate/events/functions.php',
     '667aeda72477189d0494fecd327c3641' => $vendorDir . '/symfony/var-dumper/Resources/functions/dump.php',
     'a35be646ad6144ec86a2505d75f87e8f' => $vendorDir . '/yc-open/cloud-service/src/helpers.php',

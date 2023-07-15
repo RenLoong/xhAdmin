@@ -24,6 +24,7 @@ class ComposerStaticInit03c788487884ba2b984282564865505c
         '9b552a3cc426e3287cc811caefa3cf53' => __DIR__ . '/..' . '/topthink/think-helper/src/helper.php',
         '841780ea2e1d6545ea3a253239d59c05' => __DIR__ . '/..' . '/qiniu/php-sdk/src/Qiniu/functions.php',
         '35fab96057f1bf5e7aba31a8a6d5fdde' => __DIR__ . '/..' . '/topthink/think-orm/stubs/load_stubs.php',
+        '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
         'ef65a1626449d89d0811cf9befce46f0' => __DIR__ . '/..' . '/illuminate/events/functions.php',
         '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
         'a35be646ad6144ec86a2505d75f87e8f' => __DIR__ . '/..' . '/yc-open/cloud-service/src/helpers.php',
@@ -36,6 +37,8 @@ class ComposerStaticInit03c788487884ba2b984282564865505c
         array (
             'yzh52521\\validate\\' => 18,
             'yzh52521\\EasyHttp\\' => 18,
+            'ycArtQrcode\\PhpSpreadsheet\\' => 27,
+            'ycArtQrcode\\' => 12,
         ),
         'v' => 
         array (
@@ -53,6 +56,10 @@ class ComposerStaticInit03c788487884ba2b984282564865505c
         array (
             'app\\View\\Components\\' => 20,
             'app\\' => 4,
+        ),
+        'Z' => 
+        array (
+            'ZipStream\\' => 10,
         ),
         'Y' => 
         array (
@@ -116,6 +123,7 @@ class ComposerStaticInit03c788487884ba2b984282564865505c
         array (
             'MyCLabs\\Enum\\' => 13,
             'Monolog\\' => 8,
+            'Matrix\\' => 7,
         ),
         'L' => 
         array (
@@ -159,6 +167,7 @@ class ComposerStaticInit03c788487884ba2b984282564865505c
         ),
         'C' => 
         array (
+            'Complex\\' => 8,
             'Chance\\Log\\' => 11,
             'Carbon\\' => 7,
         ),
@@ -181,6 +190,14 @@ class ComposerStaticInit03c788487884ba2b984282564865505c
         array (
             0 => __DIR__ . '/..' . '/yzh52521/easyhttp/src',
         ),
+        'ycArtQrcode\\PhpSpreadsheet\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/plugin/ycArtQrcode/packages/PhpSpreadsheet/src/PhpSpreadsheet',
+        ),
+        'ycArtQrcode\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/plugin/ycArtQrcode/packages/qr-reader/lib',
+        ),
         'voku\\' => 
         array (
             0 => __DIR__ . '/..' . '/voku/portable-ascii/src/voku',
@@ -201,6 +218,10 @@ class ComposerStaticInit03c788487884ba2b984282564865505c
         'app\\' => 
         array (
             0 => __DIR__ . '/../..' . '/app',
+        ),
+        'ZipStream\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/maennchen/zipstream-php/src',
         ),
         'YcOpen\\CloudService\\' => 
         array (
@@ -371,6 +392,10 @@ class ComposerStaticInit03c788487884ba2b984282564865505c
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
+        'Matrix\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/markbaker/matrix/classes/src',
+        ),
         'League\\MimeTypeDetection\\' => 
         array (
             0 => __DIR__ . '/..' . '/league/mime-type-detection/src',
@@ -474,6 +499,10 @@ class ComposerStaticInit03c788487884ba2b984282564865505c
         array (
             0 => __DIR__ . '/..' . '/doctrine/event-manager/lib/Doctrine/Common',
         ),
+        'Complex\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/markbaker/complex/classes/src',
+        ),
         'Chance\\Log\\' => 
         array (
             0 => __DIR__ . '/..' . '/chance-fyi/operation-log/src',
@@ -496,6 +525,16 @@ class ComposerStaticInit03c788487884ba2b984282564865505c
         0 => __DIR__ . '/../..' . '/',
     );
 
+    public static $prefixesPsr0 = array (
+        'H' => 
+        array (
+            'HTMLPurifier' => 
+            array (
+                0 => __DIR__ . '/..' . '/ezyang/htmlpurifier/library',
+            ),
+        ),
+    );
+
     public static $classMap = array (
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
@@ -512,6 +551,7 @@ class ComposerStaticInit03c788487884ba2b984282564865505c
             $loader->prefixLengthsPsr4 = ComposerStaticInit03c788487884ba2b984282564865505c::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit03c788487884ba2b984282564865505c::$prefixDirsPsr4;
             $loader->fallbackDirsPsr4 = ComposerStaticInit03c788487884ba2b984282564865505c::$fallbackDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit03c788487884ba2b984282564865505c::$prefixesPsr0;
             $loader->classMap = ComposerStaticInit03c788487884ba2b984282564865505c::$classMap;
 
         }, null, ClassLoader::class);
