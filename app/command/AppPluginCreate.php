@@ -2,7 +2,7 @@
 
 namespace app\command;
 
-use app\model\StoreApp;
+use app\common\model\StoreApp;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -239,7 +239,7 @@ class AppPluginCreate extends Command
     }
 
     /**
-     * 
+     * 创建版本文件
      * @param mixed $base_path
      * @param mixed $pluginName
      * @return void
@@ -353,7 +353,7 @@ class AppPluginCreate extends Command
 
         return [
             '' => [
-                \app\middleware\GlobalsMiddleware::class
+                \app\common\middleware\PluginsMiddleware::class
             ]
         ];
         EOF;
@@ -395,7 +395,9 @@ class AppPluginCreate extends Command
 
         return [
             'enable' => true,
-            'middleware' => [],    // Static file Middleware
+            'middleware' => [
+                \app\middleware\StaticFile::class,
+            ],
         ];
         EOF;
         file_put_contents("$path/static.php", $content);
@@ -555,7 +557,7 @@ class AppPluginCreate extends Command
         $content = <<<EOF
         <?php
 
-        namespace plugin\\$name\\app\\controller;
+        namespace plugin\\{$name}\\app\\controller;
 
         use support\\Request;
         use app\\BaseController;
@@ -571,7 +573,7 @@ class AppPluginCreate extends Command
              */
             public function index(Request \$request)
             {
-                return view('index/index', ['name' => '$name']);
+                return view('index/index', ['name' => '{$name}']);
             }
 
         }
@@ -595,6 +597,7 @@ class AppPluginCreate extends Command
         /**
          * Here is your custom functions.
          */
+
         EOF;
         file_put_contents($file, $content);
     }

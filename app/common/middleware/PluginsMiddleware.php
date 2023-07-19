@@ -2,7 +2,7 @@
 
 namespace app\middleware;
 
-use app\exception\ErrorException;
+use app\common\exception\ErrorException;
 use app\manager\StoreApp;
 use Webman\MiddlewareInterface;
 use Webman\Http\Response;
