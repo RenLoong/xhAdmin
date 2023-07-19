@@ -2,7 +2,6 @@
 
 namespace Overtrue\CosClient\Http;
 
-use JetBrains\PhpStorm\Pure;
 use Overtrue\CosClient\Support\XML;
 use Psr\Http\Message\ResponseInterface;
 
@@ -23,7 +22,7 @@ class Response extends \GuzzleHttp\Psr7\Response implements \JsonSerializable, \
 
     public function toArray()
     {
-        if (! \is_null($this->arrayResult)) {
+        if (!\is_null($this->arrayResult)) {
             return $this->arrayResult;
         }
 
@@ -36,17 +35,17 @@ class Response extends \GuzzleHttp\Psr7\Response implements \JsonSerializable, \
         return $this->arrayResult = $this->isXML() ? XML::toArray($contents) : \json_decode($contents, true);
     }
 
-    public function toObject(): ?object
+    public function toObject()
     {
         return \json_decode(\json_encode($this->toArray()));
     }
 
-    public function isXML(): bool
+    public function isXML()
     {
         return \strpos($this->getHeaderLine('content-type'), 'xml') > 0;
     }
 
-    public function jsonSerialize(): mixed
+    public function jsonSerialize()
     {
         try {
             return $this->toArray();
@@ -55,22 +54,24 @@ class Response extends \GuzzleHttp\Psr7\Response implements \JsonSerializable, \
         }
     }
 
-    public function offsetExists(mixed $offset): bool
+    public function offsetExists($offset)
     {
         return \array_key_exists($offset, $this->toArray());
     }
 
-    public function offsetGet(mixed $offset): mixed
+    public function offsetGet($offset)
     {
         return $this->toArray()[$offset] ?? null;
     }
 
-    public function offsetSet(mixed $offset, mixed $value): void
+    public function offsetSet($offset, $value)
     {
+        return null;
     }
 
-    public function offsetUnset(mixed $offset): void
+    public function offsetUnset($offset)
     {
+        return null;
     }
 
     public static function create(
@@ -79,15 +80,18 @@ class Response extends \GuzzleHttp\Psr7\Response implements \JsonSerializable, \
         $body = null,
         $version = '1.1',
         $reason = null
-    ): Response {
+    ) {
         return new self(new \GuzzleHttp\Psr7\Response($status, $headers, $body, $version, $reason));
     }
 
-    public function toString(): string
+    public function toString()
     {
         return $this->getContents();
     }
 
+    /**
+     * @return string
+     */
     public function getContents(): string
     {
         $this->getBody()->rewind();
@@ -95,56 +99,92 @@ class Response extends \GuzzleHttp\Psr7\Response implements \JsonSerializable, \
         return $this->getBody()->getContents();
     }
 
-    #[Pure]
-    final public function isInformational(): bool
+    /**
+     * Is response informative?
+     *
+     * @final
+     */
+    public function isInformational(): bool
     {
         return $this->getStatusCode() >= 100 && $this->getStatusCode() < 200;
     }
 
-    #[Pure]
-    final public function isSuccessful(): bool
+    /**
+     * Is response successful?
+     *
+     * @final
+     */
+    public function isSuccessful(): bool
     {
         return $this->getStatusCode() >= 200 && $this->getStatusCode() < 300;
     }
 
-    #[Pure]
-    final public function isRedirection(): bool
+    /**
+     * Is the response a redirect?
+     *
+     * @final
+     */
+    public function isRedirection(): bool
     {
         return $this->getStatusCode() >= 300 && $this->getStatusCode() < 400;
     }
 
-    #[Pure]
-    final public function isClientError(): bool
+    /**
+     * Is there a client error?
+     *
+     * @final
+     */
+    public function isClientError(): bool
     {
         return $this->getStatusCode() >= 400 && $this->getStatusCode() < 500;
     }
 
-    #[Pure]
-    final public function isServerError(): bool
+    /**
+     * Was there a server side error?
+     *
+     * @final
+     */
+    public function isServerError(): bool
     {
         return $this->getStatusCode() >= 500 && $this->getStatusCode() < 600;
     }
 
-    #[Pure]
-    final public function isOk(): bool
+    /**
+     * Is the response OK?
+     *
+     * @final
+     */
+    public function isOk(): bool
     {
         return 200 === $this->getStatusCode();
     }
 
-    #[Pure]
-    final public function isForbidden(): bool
+    /**
+     * Is the response forbidden?
+     *
+     * @final
+     */
+    public function isForbidden(): bool
     {
         return 403 === $this->getStatusCode();
     }
 
-    #[Pure]
-    final public function isNotFound(): bool
+    /**
+     * Is the response a not found error?
+     *
+     * @final
+     */
+    public function isNotFound(): bool
     {
         return 404 === $this->getStatusCode();
     }
 
-    #[Pure]
-    final public function isEmpty(): bool
+    /**
+     * Is the response empty?
+     *
+     * @final
+     */
+    public function isEmpty(): bool
     {
         return \in_array($this->getStatusCode(), [204, 304]) || empty($this->getContents());
     }

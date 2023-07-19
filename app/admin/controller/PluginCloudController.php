@@ -2,9 +2,7 @@
 
 namespace app\admin\controller;
 
-use app\admin\service\kfcloud\CloudService;
 use app\BaseController;
-use support\Redis;
 use support\Request;
 use YcOpen\CloudService\Cloud;
 use YcOpen\CloudService\Request\CaptchaRequest;

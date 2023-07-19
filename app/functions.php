@@ -1,6 +1,6 @@
 <?php
 
-use app\service\Upload;
+use app\common\service\UploadService;
 
 /**
  * 获取映射模块名称
@@ -56,7 +56,7 @@ function hpValidate($validate, array $data, string $scene = ''): bool
  */
 function getHpConfig($key = '', $cid = 0): string|array
 {
-    $model = new \app\model\SystemConfig;
+    $model = new \app\common\model\SystemConfig;
     $map = [];
     if ($cid) {
         $map['cid'] = $cid;
@@ -71,7 +71,7 @@ function getHpConfig($key = '', $cid = 0): string|array
                 $files = explode(',', $info['value']);
                 $list = [];
                 foreach ($files as $k => $v) {
-                    $list[$k] = Upload::url((string) $v);
+                    $list[$k] = UploadService::url((string) $v);
                 }
                 $data = $list;
             } else {
@@ -90,7 +90,7 @@ function getHpConfig($key = '', $cid = 0): string|array
                 $files = explode(',', $value['value']);
                 $list = [];
                 foreach ($files as $k => $v) {
-                    $list[$k] = Upload::url((string) $v);
+                    $list[$k] = UploadService::url((string) $v);
                 }
                 $data = $list;
             } else {

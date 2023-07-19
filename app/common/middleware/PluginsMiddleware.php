@@ -1,15 +1,15 @@
 <?php
 
-namespace app\common\middleware;
+namespace app\middleware;
 
-use app\common\exception\ErrorException;
+use app\exception\ErrorException;
 use app\manager\StoreApp;
 use Webman\MiddlewareInterface;
 use Webman\Http\Response;
 use Webman\Http\Request;
 
 /**
- * 应用插件全局中间件
+ * 应用插件中间件
  * @author 贵州猿创科技有限公司
  * @copyright 贵州猿创科技有限公司
  * @email 416716328@qq.com
@@ -45,9 +45,9 @@ class PluginsMiddleware implements MiddlewareInterface
             return $response;
         }
         # 应用ID
-        $appid = $request->header('appid','');
+        $appid = $request->header('Appid','');
         if (empty($appid)) {
-            $appid = $request->input('appid','');
+            $appid = $request->input('Appid','');
         }
         
         /**

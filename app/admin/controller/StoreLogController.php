@@ -2,7 +2,7 @@
 
 namespace app\admin\controller;
 
-use app\admin\builder\ListBuilder;
+use app\common\builder\ListBuilder;
 use app\admin\model\Store;
 use app\BaseController;
 use support\Request;

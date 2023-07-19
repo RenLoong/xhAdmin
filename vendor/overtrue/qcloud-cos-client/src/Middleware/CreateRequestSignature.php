@@ -7,14 +7,27 @@ use Psr\Http\Message\RequestInterface;
 
 class CreateRequestSignature
 {
-    public function __construct(
-        protected string $secretId,
-        protected string $secretKey,
-        protected ?string $signatureExpires = null
-    ) {
+    protected string $secretId;
+
+    protected string $secretKey;
+
+    protected ?string $signatureExpires;
+
+    /**
+     * WithSignature constructor.
+     *
+     * @param  string  $secretId
+     * @param  string  $secretKey
+     * @param  string|null  $signatureExpires
+     */
+    public function __construct(string $secretId, string $secretKey, ?string $signatureExpires = null)
+    {
+        $this->secretId = $secretId;
+        $this->secretKey = $secretKey;
+        $this->signatureExpires = $signatureExpires;
     }
 
-    public function __invoke(callable $handler): \Closure
+    public function __invoke(callable $handler)
     {
         return function (RequestInterface $request, array $options) use ($handler) {
             $request = $request->withHeader(

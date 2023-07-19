@@ -2,8 +2,8 @@
 
 namespace app\admin\controller;
 
-use app\admin\builder\FormBuilder;
-use app\admin\builder\ListBuilder;
+use app\common\builder\FormBuilder;
+use app\common\builder\ListBuilder;
 use app\admin\model\Store;
 use app\admin\validate\StorePlatform;
 use app\BaseController;

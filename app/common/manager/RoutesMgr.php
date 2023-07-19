@@ -2,19 +2,17 @@
 
 namespace app\common\manager;
 
-use app\admin\service\PluginService;
+use app\common\service\PluginService;
 use Exception;
-use app\model\SystemAuthRule;
+use app\common\model\SystemAuthRule;
 use Webman\Route;
 use support\Request;
 
 /**
  * 路由管理器
  * 仅用于后端路由管理策略
- * 
  * @author 贵州猿创科技有限公司
- * @Email 416716328@qq.com
- * @DateTime 2023-03-11
+ * @copyright (c) 贵州猿创科技有限公司
  */
 class RoutesMgr
 {

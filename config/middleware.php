@@ -6,7 +6,7 @@ return [
     'admin'     => [
         \app\admin\middleware\AuthMiddleware::class
     ],
-    # 用户中间件
+    # 租户中间件
     'store'     => [
         \app\store\middleware\AuthMiddleware::class
     ],

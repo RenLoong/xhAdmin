@@ -17,10 +17,22 @@ class Signature
         'range',
     ];
 
-    public function __construct(public string $accessKey, public  string $secretKey)
+    public string $accessKey;
+
+    public string $secretKey;
+
+    public function __construct(string $accessKey, string $secretKey)
     {
+        $this->accessKey = $accessKey;
+        $this->secretKey = $secretKey;
     }
 
+    /**
+     * @param  \Psr\Http\Message\RequestInterface  $request
+     * @param  string|null  $expires
+     *
+     * @return string
+     */
     public function createAuthorizationHeader(RequestInterface $request, ?string $expires = null): string
     {
         $signTime = self::getTimeSegments($expires);
@@ -29,7 +41,7 @@ class Signature
 
         $httpStringHashed = sha1(
             strtolower($request->getMethod())."\n".urldecode($request->getUri()->getPath())."\n".
-            implode('&', array_values($queryToBeSigned)).
+            join('&', array_values($queryToBeSigned)).
             "\n".\http_build_query($headersToBeSigned)."\n"
         );
 
@@ -41,19 +53,24 @@ class Signature
             $this->accessKey,
             $signTime,
             $signTime,
-            implode(';', array_keys($headersToBeSigned)),
-            implode(';', array_keys($queryToBeSigned)),
+            join(';', array_keys($headersToBeSigned)),
+            join(';', array_keys($queryToBeSigned)),
             $signature
         );
     }
 
+    /**
+     * @param  \Psr\Http\Message\RequestInterface  $request
+     *
+     * @return array
+     */
     protected static function getHeadersToBeSigned(RequestInterface $request): array
     {
         $headers = [];
         foreach ($request->getHeaders() as $header => $value) {
             $header = strtolower(urlencode($header));
 
-            if (str_contains($header, 'x-cos-') || \in_array($header, self::SIGN_HEADERS)) {
+            if (false !== \strpos($header, 'x-cos-') || \in_array($header, self::SIGN_HEADERS)) {
                 $headers[$header] = $value[0];
             }
         }
@@ -63,17 +80,22 @@ class Signature
         return $headers;
     }
 
+    /**
+     * @param  \Psr\Http\Message\RequestInterface  $request
+     *
+     * @return array
+     */
     protected static function getQueryToBeSigned(RequestInterface $request): array
     {
         $query = [];
         foreach (explode('&', $request->getUri()->getQuery()) as $item) {
-            if (! empty($item)) {
+            if (!empty($item)) {
                 $tmpquery = explode('=', $item);
                 $key = strtolower($tmpquery[0]);
                 if (count($tmpquery) >= 2) {
                     $value = $tmpquery[1];
                 } else {
-                    $value = '';
+                    $value = "";
                 }
                 $query[$key] = $key.'='.$value;
             }
@@ -83,6 +105,11 @@ class Signature
         return $query;
     }
 
+    /**
+     * @param  string|null  $expires
+     *
+     * @return string
+     */
     protected static function getTimeSegments(?string $expires): string
     {
         $timezone = \date_default_timezone_get();

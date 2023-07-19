@@ -3,25 +3,41 @@
 namespace Overtrue\CosClient;
 
 use ArrayAccess;
-use JetBrains\PhpStorm\Pure;
+use InvalidArgumentException;
 use JsonSerializable;
 
 class Config implements ArrayAccess, JsonSerializable
 {
-    public function __construct(protected array $options)
+    protected array $options;
+
+    /**
+     * @param array $options
+     */
+    public function __construct(array $options)
     {
+        $this->options = $options;
     }
 
-    public function get(string $key, mixed $default = null)
+    /**
+     * @param string $key
+     * @param mixed  $default
+     *
+     * @return mixed
+     */
+    public function get(string $key, $default = null)
     {
         $config = $this->options;
+
+        if (is_null($key)) {
+            return $config;
+        }
 
         if (isset($config[$key])) {
             return $config[$key];
         }
 
         foreach (explode('.', $key) as $segment) {
-            if (! is_array($config) || ! array_key_exists($segment, $config)) {
+            if (!is_array($config) || !array_key_exists($segment, $config)) {
                 return $default;
             }
             $config = $config[$segment];
@@ -30,14 +46,24 @@ class Config implements ArrayAccess, JsonSerializable
         return $config;
     }
 
-    public function set(string $key, mixed $value): array
+    /**
+     * @param string $key
+     * @param mixed  $value
+     *
+     * @return array
+     */
+    public function set(string $key, $value)
     {
+        if (is_null($key)) {
+            throw new InvalidArgumentException('Invalid config key.');
+        }
+
         $keys = explode('.', $key);
         $config = &$this->options;
 
         while (count($keys) > 1) {
             $key = array_shift($keys);
-            if (! isset($config[$key]) || ! is_array($config[$key])) {
+            if (!isset($config[$key]) || !is_array($config[$key])) {
                 $config[$key] = [];
             }
             $config = &$config[$key];
@@ -48,43 +74,42 @@ class Config implements ArrayAccess, JsonSerializable
         return $config;
     }
 
+    /**
+     * @param string $key
+     *
+     * @return bool
+     */
     public function has(string $key): bool
     {
         return (bool) $this->get($key);
     }
 
-    public function missing(string $key): bool
-    {
-        return ! $this->has($key);
-    }
-
-    #[Pure]
     public function extend(array $options): Config
     {
         return new Config(\array_merge($this->options, $options));
     }
 
-    public function offsetExists($offset): bool
+    public function offsetExists($offset)
     {
         return array_key_exists($offset, $this->options);
     }
 
-    public function offsetGet(mixed $offset): mixed
+    public function offsetGet($offset)
     {
         return $this->get($offset);
     }
 
-    public function offsetSet(mixed $offset, mixed $value): void
+    public function offsetSet($offset, $value)
     {
         $this->set($offset, $value);
     }
 
-    public function offsetUnset(mixed $offset): void
+    public function offsetUnset($offset)
     {
         $this->set($offset, null);
     }
 
-    public function jsonSerialize(): array
+    public function jsonSerialize()
     {
         return $this->options;
     }

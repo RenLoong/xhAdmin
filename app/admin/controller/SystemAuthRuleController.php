@@ -2,8 +2,8 @@
 
 namespace app\admin\controller;
 
-use app\admin\builder\FormBuilder;
-use app\admin\builder\ListBuilder;
+use app\common\builder\FormBuilder;
+use app\common\builder\ListBuilder;
 use app\admin\logic\AuthRule;
 use app\admin\model\SystemAuthRule;
 use app\admin\validate\SystemAuthRule as ValidateSystemAuthRule;

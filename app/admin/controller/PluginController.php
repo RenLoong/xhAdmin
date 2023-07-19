@@ -2,7 +2,7 @@
 
 namespace app\admin\controller;
 
-use app\admin\builder\ListBuilder;
+use app\common\builder\ListBuilder;
 use app\admin\logic\PluginLogic;
 use app\admin\logic\PluginUpdate;
 use app\admin\service\kfcloud\SystemInfo;

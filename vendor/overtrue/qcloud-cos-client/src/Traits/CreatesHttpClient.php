@@ -3,31 +3,45 @@
 namespace Overtrue\CosClient\Traits;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\HandlerStack;
 
 trait CreatesHttpClient
 {
     protected array $options = [];
-
     protected array $middlewares = [];
-
     protected ?HandlerStack $handlerStack = null;
 
-    public function createHttpClient(array $options = []): Client
+    /**
+     * @param array $options
+     *
+     * @return \GuzzleHttp\Client
+     */
+    public function createHttpClient(array $options = []): ClientInterface
     {
         return new Client(array_merge([
             'handler' => $this->getHandlerStack(),
         ], $this->options, $options));
     }
 
-    public function setHttpClientOptions(array $options): static
+    /**
+     * @param  array  $options
+     *
+     * @return $this
+     */
+    public function setHttpClientOptions(array $options): self
     {
         $this->options = $options;
 
         return $this;
     }
 
-    public function mergeHttpClientOptions(array $options): static
+    public function getHttpClientOptions(): array
+    {
+        return $this->options;
+    }
+
+    public function mergeHttpClientOptions(array $options): self
     {
         $this->options = array_merge($this->options, $options);
 
@@ -46,7 +60,7 @@ trait CreatesHttpClient
         return $this;
     }
 
-    public function setHeaders(array $headers): static
+    public function setHeaders(array $headers): self
     {
         foreach ($headers as $name => $value) {
             $this->setHeader($name, $value);
@@ -55,7 +69,7 @@ trait CreatesHttpClient
         return $this;
     }
 
-    public function setHeader(string $name, string $value): static
+    public function setHeader(string $name, string $value): self
     {
         if (empty($this->options['headers'])) {
             $this->options['headers'] = [];
@@ -66,41 +80,64 @@ trait CreatesHttpClient
         return $this;
     }
 
-    public function getHttpClientOptions(): array
+    /**
+     * Add a middleware.
+     *
+     * @param callable    $middleware
+     * @param string|null $name
+     *
+     * @return $this
+     */
+    public function pushMiddleware(callable $middleware, string $name = null)
     {
-        return $this->options;
-    }
-
-    public function pushMiddleware(callable $middleware, string $name = null): static
-    {
-        if (! is_null($name)) {
+        if (!is_null($name)) {
             $this->middlewares[$name] = $middleware;
         } else {
-            $this->middlewares[] = $middleware;
+            array_push($this->middlewares, $middleware);
         }
 
         return $this;
     }
 
+    /**
+     * Return all middlewares.
+     *
+     * @return array
+     */
     public function getMiddlewares(): array
     {
         return $this->middlewares;
     }
 
-    public function setMiddlewares(array $middlewares): static
+    /**
+     * @param  array  $middlewares
+     *
+     * @return \Overtrue\CosClient\Traits\CreatesHttpClient
+     */
+    public function setMiddlewares(array $middlewares)
     {
         $this->middlewares = $middlewares;
 
         return $this;
     }
 
-    public function setHandlerStack(HandlerStack $handlerStack): static
+    /**
+     * @param \GuzzleHttp\HandlerStack $handlerStack
+     *
+     * @return $this
+     */
+    public function setHandlerStack(HandlerStack $handlerStack)
     {
         $this->handlerStack = $handlerStack;
 
         return $this;
     }
 
+    /**
+     * Build a handler stack.
+     *
+     * @return \GuzzleHttp\HandlerStack
+     */
     public function getHandlerStack(): HandlerStack
     {
         if ($this->handlerStack) {

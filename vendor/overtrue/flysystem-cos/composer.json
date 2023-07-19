@@ -2,16 +2,15 @@
     "name": "overtrue/flysystem-cos",
     "description": "Flysystem adapter for the QCloud COS storage.",
     "require": {
-        "php": ">=8.0.2",
-        "league/flysystem": "^3.0",
-        "overtrue/qcloud-cos-client": "^2.0"
+        "php": ">=7.4",
+        "league/flysystem": "^2.0",
+        "overtrue/qcloud-cos-client": "^1.0.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5",
-        "mockery/mockery": "^1.0",
-        "league/flysystem-adapter-test-utilities": "^3.0",
-        "brainmaestro/composer-git-hooks": "dev-master",
-        "laravel/pint": "^1.6"
+        "phpunit/phpunit": "~9",
+        "mockery/mockery": "~1.0",
+        "brainmaestro/composer-git-hooks": "^2.7",
+        "friendsofphp/php-cs-fixer": "^2.15"
     },
     "autoload": {
         "psr-4": {
@@ -33,8 +32,8 @@
     "extra": {
         "hooks": {
             "pre-commit": [
-                "composer fix-style",
-                "composer test"
+                "composer test",
+                "composer check-style"
             ],
             "pre-push": [
                 "composer test",
@@ -44,20 +43,17 @@
     },
     "scripts": {
         "post-update-cmd": [
-            "cghooks remove",
-            "cghooks add --ignore-lock",
             "cghooks update"
         ],
         "post-merge": "composer install",
         "post-install-cmd": [
-            "cghooks remove",
             "cghooks add --ignore-lock",
             "cghooks update"
         ],
         "cghooks": "vendor/bin/cghooks",
-        "check-style": "vendor/bin/pint --test",
-        "fix-style": "vendor/bin/pint",
-        "test": "phpunit --colors=always"
+        "check-style": "php-cs-fixer fix --using-cache=no --diff --config=.php_cs --dry-run --ansi",
+        "fix-style": "php-cs-fixer fix --using-cache=no --config=.php_cs --ansi",
+        "test": "vendor/bin/phpunit"
     },
     "scripts-descriptions": {
         "test": "Run all tests.",

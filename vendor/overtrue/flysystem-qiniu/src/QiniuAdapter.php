@@ -1,12 +1,23 @@
 <?php
 
+/*
+ * This file is part of the overtrue/flysystem-qiniu.
+ * (c) overtrue <i@overtrue.me>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Overtrue\Flysystem\Qiniu;
 
-use JetBrains\PhpStorm\Pure;
 use League\Flysystem\Config;
 use League\Flysystem\FileAttributes;
 use League\Flysystem\FilesystemAdapter;
+use League\Flysystem\FilesystemException;
+use League\Flysystem\InvalidVisibilityProvided;
+use League\Flysystem\StorageAttributes;
 use League\Flysystem\UnableToCopyFile;
+use League\Flysystem\UnableToCreateDirectory;
+use League\Flysystem\UnableToDeleteDirectory;
 use League\Flysystem\UnableToDeleteFile;
 use League\Flysystem\UnableToMoveFile;
 use League\Flysystem\UnableToReadFile;
@@ -19,33 +30,76 @@ use Qiniu\Http\Error;
 use Qiniu\Storage\BucketManager;
 use Qiniu\Storage\UploadManager;
 
+/**
+ * Class QiniuAdapter.
+ *
+ * @author overtrue <i@overtrue.me>
+ */
 class QiniuAdapter implements FilesystemAdapter
 {
-    protected ?Auth $authManager = null;
-    protected ?UploadManager $uploadManager = null;
-    protected ?BucketManager $bucketManager = null;
-    protected ?CdnManager $cdnManager = null;
+    /**
+     * @var string
+     */
+    protected $accessKey;
 
-    public function __construct(
-        protected string $accessKey,
-        protected string $secretKey,
-        protected string $bucket,
-        protected string $domain
-    ) {
-    }
+    /**
+     * @var string
+     */
+    protected $secretKey;
 
-    public function fileExists(string $path): bool
+    /**
+     * @var string
+     */
+    protected $bucket;
+
+    /**
+     * @var string
+     */
+    protected $domain;
+
+    /**
+     * @var \Qiniu\Auth
+     */
+    protected $authManager;
+
+    /**
+     * @var \Qiniu\Storage\UploadManager
+     */
+    protected $uploadManager;
+
+    /**
+     * @var \Qiniu\Storage\BucketManager
+     */
+    protected $bucketManager;
+
+    /**
+     * @var \Qiniu\Cdn\CdnManager
+     */
+    protected $cdnManager;
+
+    /**
+     * QiniuAdapter constructor.
+     *
+     * @param string $accessKey
+     * @param string $secretKey
+     * @param string $bucket
+     * @param string $domain
+     */
+    public function __construct($accessKey, $secretKey, $bucket, $domain)
     {
-        [, $error] = $this->getBucketManager()->stat($this->bucket, $path);
-
-        return is_null($error);
+        $this->accessKey = $accessKey;
+        $this->secretKey = $secretKey;
+        $this->bucket = $bucket;
+        $this->domain = $domain;
     }
 
-    public function directoryExists(string $path): bool
-    {
-        return $this->fileExists($path);
-    }
-
+    /**
+     * Write a new file.
+     *
+     * @param string $path
+     * @param string $contents
+     * @param Config $config Config object
+     */
     public function write(string $path, string $contents, Config $config): void
     {
         $mime = $config->get('mime', 'application/octet-stream');
@@ -67,6 +121,13 @@ class QiniuAdapter implements FilesystemAdapter
         }
     }
 
+    /**
+     * Write a new file using a stream.
+     *
+     * @param string $path
+     * @param resource $contents
+     * @param Config $config Config object
+     */
     public function writeStream(string $path, $contents, Config $config): void
     {
         $data = '';
@@ -78,20 +139,119 @@ class QiniuAdapter implements FilesystemAdapter
         $this->write($path, $data, $config);
     }
 
+    public function move(string $source, string $destination, Config $config): void
+    {
+        $response = $this->getBucketManager()->rename($this->bucket, $source, $destination);
+        if (is_null($response)) {
+            throw UnableToMoveFile::fromLocationTo($source, $destination);
+        }
+    }
+
+    /**
+     * Copy a file.
+     *
+     * @param string $source
+     * @param string $destination
+     */
+    public function copy(string $source, string $destination, Config $config): void
+    {
+        $response = $this->getBucketManager()->copy($this->bucket, $source, $this->bucket, $destination);
+        if (is_null($response)) {
+            throw UnableToCopyFile::fromLocationTo($source, $destination);
+        }
+    }
+
+    /**
+     * Delete a file.
+     *
+     * @param string $path
+     *
+     * @return bool
+     */
+    public function delete(string $path): void
+    {
+        $response = $this->getBucketManager()->delete($this->bucket, $path);
+        if (is_null($response)) {
+            throw UnableToDeleteFile::atLocation($path);
+        }
+    }
+
+    /**
+     * Delete a directory.
+     *
+     * @param string $path
+     */
+    public function deleteDirectory(string $path): void
+    {
+    }
+
+    /**
+     * Create a directory.
+     *
+     * @param string $path directory name
+     * @param Config $config
+     */
+    public function createDirectory(string $path, Config $config): void
+    {
+    }
+
+    /**
+     * Check whether a file exists.
+     *
+     * @param string $path
+     *
+     * @return bool
+     */
+    public function fileExists(string $path): bool
+    {
+        [, $error] = $this->getBucketManager()->stat($this->bucket, $path);
+
+        return is_null($error);
+    }
+
+    /**
+     * Get resource url.
+     *
+     * @param string $path
+     *
+     * @return string
+     */
+    public function getUrl(string $path): string
+    {
+        $segments = $this->parseUrl($path);
+        $query = empty($segments['query']) ? '' : '?' . $segments['query'];
+
+        return $this->normalizeHost($this->domain) . ltrim(implode('/', array_map('rawurlencode', explode('/', $segments['path']))), '/') . $query;
+    }
+
+    /**
+     * Read a file.
+     *
+     * @param string $path
+     *
+     * @return string
+     */
     public function read(string $path): string
     {
-        $result = file_get_contents($this->privateDownloadUrl($path));
-        if (false === $result) {
+        $result = file_get_contents($this->getUrl($path));
+        if ($result === false) {
             throw UnableToReadFile::fromLocation($path);
         }
 
         return $result;
     }
 
+    /**
+     * Read a file as a stream.
+     *
+     * @param string $path
+     *
+     * @return resource
+     */
     public function readStream(string $path)
     {
         if (ini_get('allow_url_fopen')) {
-            if ($result = fopen($this->privateDownloadUrl($path), 'r')) {
+            if ($result = fopen($this->getUrl($path), 'r')) {
                 return $result;
             }
         }
@@ -99,64 +259,14 @@ class QiniuAdapter implements FilesystemAdapter
         throw UnableToReadFile::fromLocation($path);
     }
 
-    public function delete(string $path): void
-    {
-        [, $error] = $this->getBucketManager()->delete($this->bucket, $path);
-        if (!is_null($error)) {
-            throw UnableToDeleteFile::atLocation($path);
-        }
-    }
-
-    public function deleteDirectory(string $path): void
-    {
-        $this->delete($path);
-    }
-
-    public function createDirectory(string $path, Config $config): void
-    {
-    }
-
-    public function setVisibility(string $path, string $visibility): void
-    {
-        throw UnableToSetVisibility::atLocation($path);
-    }
-
-    public function visibility(string $path): FileAttributes
-    {
-        throw UnableToRetrieveMetadata::visibility($path);
-    }
-
-    public function mimeType(string $path): FileAttributes
-    {
-        $meta = $this->getMetadata($path);
-
-        if ($meta->mimeType() === null) {
-            throw UnableToRetrieveMetadata::mimeType($path);
-        }
-
-        return $meta;
-    }
-
-    public function lastModified(string $path): FileAttributes
-    {
-        $meta = $this->getMetadata($path);
-
-        if ($meta->lastModified() === null) {
-            throw UnableToRetrieveMetadata::lastModified($path);
-        }
-        return $meta;
-    }
-
-    public function fileSize(string $path): FileAttributes
-    {
-        $meta = $this->getMetadata($path);
-
-        if ($meta->fileSize() === null) {
-            throw UnableToRetrieveMetadata::fileSize($path);
-        }
-        return $meta;
-    }
-
+    /**
+     * List contents of a directory.
+     *
+     * @param string $path
+     * @param bool $deep
+     *
+     * @return array
+     */
     public function listContents(string $path, bool $deep): iterable
     {
         $result = $this->getBucketManager()->listFiles($this->bucket, $path);
@@ -166,23 +276,14 @@ class QiniuAdapter implements FilesystemAdapter
         }
     }
 
-    public function move(string $source, string $destination, Config $config): void
-    {
-        [, $error] = $this->getBucketManager()->rename($this->bucket, $source, $destination);
-        if (!is_null($error)) {
-            throw UnableToMoveFile::fromLocationTo($source, $destination);
-        }
-    }
-
-    public function copy(string $source, string $destination, Config $config): void
-    {
-        [, $error] = $this->getBucketManager()->copy($this->bucket, $source, $this->bucket, $destination);
-        if (!is_null($error)) {
-            throw UnableToCopyFile::fromLocationTo($source, $destination);
-        }
-    }
-
-    protected function getMetadata($path): FileAttributes|array
+    /**
+     * Get all the meta data of a file or directory.
+     *
+     * @param string $path
+     *
+     * @return array|false
+     */
+    public function getMetadata($path)
     {
         $result = $this->getBucketManager()->stat($this->bucket, $path);
         $result[0]['key'] = $path;
@@ -190,18 +291,33 @@ class QiniuAdapter implements FilesystemAdapter
         return $this->normalizeFileInfo($result[0]);
     }
 
-    public function getUrl(string $path): string
+    /**
+     * Get the size of a file.
+     *
+     * @param string $path
+     *
+     * @return FileAttributes
+     */
+    public function fileSize(string $path): FileAttributes
     {
-        $segments = $this->parseUrl($path);
-        $query = empty($segments['query']) ? '' : '?' . $segments['query'];
-
-        return $this->normalizeHost($this->domain) . ltrim(implode('/', array_map('rawurlencode', explode('/', $segments['path']))), '/') . $query;
+        $meta = $this->getMetadata($path);
+        if ($meta->fileSize() === null) {
+            throw UnableToRetrieveMetadata::fileSize($path);
+        }
+        return $meta;
     }
 
-
-    public function fetch(string $path, string $url): bool|array
+    /**
+     * Fetch url to bucket.
+     *
+     * @param string $path
+     * @param string $url
+     *
+     * @return array|false
+     */
+    public function fetch($path, $url)
     {
-        [$response, $error] = $this->getBucketManager()->fetch($url, $this->bucket, $path);
+        list($response, $error) = $this->getBucketManager()->fetch($url, $this->bucket, $path);
 
         if ($error) {
             return false;
@@ -211,99 +327,189 @@ class QiniuAdapter implements FilesystemAdapter
     }
 
     /**
-     * For laravel FilesystemAdapter.
+     * Get private file download url.
+     *
+     * @param string $path
+     * @param int $expires
+     *
+     * @return string
      */
-    public function getTemporaryUrl($path, int|string|\DateTimeInterface $expiration): string
-    {
-        if ($expiration instanceof \DateTimeInterface) {
-            $expiration = $expiration->getTimestamp();
-        }
-
-        if (is_string($expiration)) {
-            $expiration = strtotime($expiration);
-        }
-
-        return $this->privateDownloadUrl($path, $expiration);
-    }
-
-    public function privateDownloadUrl(string $path, int $expires = 3600): string
+    public function privateDownloadUrl($path, $expires = 3600)
     {
         return $this->getAuthManager()->privateDownloadUrl($this->getUrl($path), $expires);
     }
 
-    public function refresh(string|array $path): array
+    /**
+     * Refresh file cache.
+     *
+     * @param string|array $path
+     *
+     * @return array
+     */
+    public function refresh($path)
     {
+        if (is_string($path)) {
+            $path = [$path];
+        }
+
         // 将 $path 变成完整的 url
-        $urls = array_map([$this, 'getUrl'], (array) $path);
+        $urls = array_map([$this, 'getUrl'], $path);
 
         return $this->getCdnManager()->refreshUrls($urls);
     }
 
-    public function setBucketManager(BucketManager $manager): static
+    /**
+     * Get the mime-type of a file.
+     *
+     * @param string $path
+     *
+     * @return FileAttributes
+     */
+    public function mimeType(string $path): FileAttributes
+    {
+        $meta = $this->getMetadata($path);
+        if ($meta->mimeType() === null) {
+            throw UnableToRetrieveMetadata::mimeType($path);
+        }
+
+        return $meta;
+    }
+
+    /**
+     * Get the timestamp of a file.
+     *
+     * @param string $path
+     *
+     * @return array|false
+     */
+    public function lastModified(string $path): FileAttributes
+    {
+        $meta = $this->getMetadata($path);
+        if ($meta->lastModified() === null) {
+            throw UnableToRetrieveMetadata::lastModified($path);
+        }
+        return $meta;
+    }
+
+    public function visibility(string $path): FileAttributes
+    {
+        throw UnableToRetrieveMetadata::visibility($path);
+    }
+
+    public function setVisibility(string $path, string $visibility): void
+    {
+        throw UnableToSetVisibility::atLocation($path);
+    }
+
+    /**
+     * @param \Qiniu\Storage\BucketManager $manager
+     *
+     * @return $this
+     */
+    public function setBucketManager(BucketManager $manager)
     {
         $this->bucketManager = $manager;
 
         return $this;
     }
 
-    public function setUploadManager(UploadManager $manager): static
+    /**
+     * @param \Qiniu\Storage\UploadManager $manager
+     *
+     * @return $this
+     */
+    public function setUploadManager(UploadManager $manager)
     {
         $this->uploadManager = $manager;
 
         return $this;
     }
 
-    public function setAuthManager(Auth $manager): static
+    /**
+     * @param \Qiniu\Auth $manager
+     *
+     * @return $this
+     */
+    public function setAuthManager(Auth $manager)
     {
         $this->authManager = $manager;
 
         return $this;
     }
 
-    public function setCdnManager(CdnManager $manager): static
+    /**
+     * @param CdnManager $manager
+     *
+     * @return $this
+     */
+    public function setCdnManager(CdnManager $manager)
     {
         $this->cdnManager = $manager;
 
         return $this;
     }
 
+    /**
+     * @return \Qiniu\Storage\BucketManager
+     */
     public function getBucketManager()
     {
         return $this->bucketManager ?: $this->bucketManager = new BucketManager($this->getAuthManager());
     }
 
+    /**
+     * @return \Qiniu\Auth
+     */
     public function getAuthManager()
     {
         return $this->authManager ?: $this->authManager = new Auth($this->accessKey, $this->secretKey);
     }
 
+    /**
+     * @return \Qiniu\Storage\UploadManager
+     */
     public function getUploadManager()
     {
         return $this->uploadManager ?: $this->uploadManager = new UploadManager();
     }
 
+    /**
+     * @return \Qiniu\Cdn\CdnManager
+     */
     public function getCdnManager()
     {
         return $this->cdnManager ?: $this->cdnManager = new CdnManager($this->getAuthManager());
     }
 
-    public function getBucket(): string
+    /**
+     * @return string
+     */
+    public function getBucket()
     {
         return $this->bucket;
     }
 
-    public function getUploadToken(string $key = null, int $expires = 3600, array $policy = null, string $strictPolice = null): string
+    /**
+     * Get the upload token.
+     *
+     * @param string|null $key
+     * @param int $expires
+     * @param string|null $policy
+     * @param string|null $strictPolice
+     *
+     * @return string
+     */
+    public function getUploadToken($key = null, $expires = 3600, $policy = null, $strictPolice = null)
     {
         return $this->getAuthManager()->uploadToken($this->bucket, $key, $expires, $policy, $strictPolice);
     }
 
-    public function verifyCallback(string $contentType = null, string $originAuthorization = null, string $url = null, string $body = null)
-    {
-        return $this->getAuthManager()->verifyCallback($contentType, $originAuthorization, $url, $body);
-    }
-
-    #[Pure]
-    protected function normalizeFileInfo(array $stats): FileAttributes
+    /**
+     * @param array $stats
+     *
+     * @return array
+     */
+    protected function normalizeFileInfo(array $stats)
     {
         return new FileAttributes(
             $stats['key'],
@@ -314,7 +520,12 @@ class QiniuAdapter implements FilesystemAdapter
         );
     }
 
-    protected function normalizeHost($domain): string
+    /**
+     * @param string $domain
+     *
+     * @return string
+     */
+    protected function normalizeHost($domain)
     {
         if (0 !== stripos($domain, 'https://') && 0 !== stripos($domain, 'http://')) {
             $domain = "http://{$domain}";
@@ -323,31 +534,22 @@ class QiniuAdapter implements FilesystemAdapter
         return rtrim($domain, '/') . '/';
     }
 
-    protected static function parseUrl($url): array
+    /**
+     * Does a UTF-8 safe version of PHP parse_url function.
+     *
+     * @param string $url URL to parse
+     *
+     * @return mixed associative array or false if badly formed URL
+     *
+     * @see     http://us3.php.net/manual/en/function.parse-url.php
+     * @since   11.1
+     */
+    protected static function parseUrl($url)
     {
         $result = [];
 
         // Build arrays of values we need to decode before parsing
-        $entities = [
-            '%21',
-            '%2A',
-            '%27',
-            '%28',
-            '%29',
-            '%3B',
-            '%3A',
-            '%40',
-            '%26',
-            '%3D',
-            '%24',
-            '%2C',
-            '%2F',
-            '%3F',
-            '%23',
-            '%5B',
-            '%5D',
-            '%5C'
-        ];
+        $entities = ['%21', '%2A', '%27', '%28', '%29', '%3B', '%3A', '%40', '%26', '%3D', '%24', '%2C', '%2F', '%3F', '%23', '%5B', '%5D', '%5C'];
         $replacements = ['!', '*', "'", '(', ')', ';', ':', '@', '&', '=', '$', ',', '/', '?', '#', '[', ']', '/'];
 
         // Create encoded URL with special URL characters decoded so it can be parsed

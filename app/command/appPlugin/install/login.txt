@@ -1,7 +1,7 @@
 <?php
 
 namespace plugin\{PLUGIN_NAME}\api;
-use support\Request;
+use Request;
 
 class Login
 {

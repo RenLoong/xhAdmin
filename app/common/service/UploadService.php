@@ -2,8 +2,8 @@
 
 namespace app\common\service;
 
-use app\model\SystemUpload;
-use app\model\SystemUploadCate;
+use app\common\model\SystemUpload;
+use app\common\model\SystemUploadCate;
 use Exception;
 use Shopwwi\WebmanFilesystem\Storage;
 use Webman\Http\UploadFile;

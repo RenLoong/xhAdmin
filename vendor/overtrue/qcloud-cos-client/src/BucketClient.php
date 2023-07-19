@@ -2,40 +2,91 @@
 
 namespace Overtrue\CosClient;
 
+use Overtrue\CosClient\Exceptions\InvalidConfigException;
 use Overtrue\CosClient\Support\XML;
 
 class BucketClient extends Client
 {
-    protected array $requiredConfigKeys = ['bucket'];
+    /**
+     * @param  \Overtrue\CosClient\Config|array  $config
+     *
+     * @throws \Overtrue\CosClient\Exceptions\InvalidConfigException
+     */
+    public function __construct($config)
+    {
+        if (!($config instanceof Config)) {
+            $config = new Config($config);
+        }
 
-    public function putBucket(array $body = []): Http\Response
+        if (!$config->has('bucket')) {
+            throw new InvalidConfigException('No bucket configured.');
+        }
+
+        parent::__construct($config);
+
+        $this->setBaseUri(\sprintf(
+            'https://%s-%s.cos.%s.myqcloud.com/',
+            $config->get('bucket'),
+            $config->get('app_id'),
+            $config->get('region', self::DEFAULT_REGION)
+        ));
+    }
+
+    /**
+     * @param  array  $body
+     *
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function putBucket(array $body = [])
     {
         return $this->put('/', empty($body) ? [] : [
             'body' => XML::fromArray($body),
         ]);
     }
 
-    public function headBucket(): Http\Response
+    /**
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function headBucket()
     {
         return $this->head('/');
     }
 
-    public function deleteBucket(): Http\Response
+    /**
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function deleteBucket()
     {
         return $this->delete('/');
     }
 
-    public function getObjects(array $query = []): Http\Response
+    /**
+     * @param  array  $query
+     *
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function getObjects(array $query = [])
     {
         return $this->get('/', \compact('query'));
     }
 
-    public function getObjectVersions(array $query = []): Http\Response
+    /**
+     * @param  array  $query
+     *
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function getObjectVersions(array $query = [])
     {
         return $this->get('/?versions', \compact('query'));
     }
 
-    public function putACL(array $body = [], array $headers = []): Http\Response
+    /**
+     * @param  array  $body
+     * @param  array  $headers
+     *
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function putACL(array $body = [], array $headers = [])
     {
         return $this->put('/?acl', \array_filter([
             'headers' => $headers,
@@ -43,194 +94,327 @@ class BucketClient extends Client
         ]));
     }
 
-    public function getACL(): Http\Response
+    /**
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function getACL()
     {
         return $this->get('/?acl');
     }
 
-    public function putCORS(array $body): Http\Response
+    /**
+     * @param  array  $body
+     *
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function putCORS(array $body)
     {
         return $this->put('/?cors', [
             'body' => XML::fromArray($body),
         ]);
     }
 
-    public function getCORS(): Http\Response
+    /**
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function getCORS()
     {
         return $this->get('/?cors');
     }
 
-    public function deleteCORS(): Http\Response
+    /**
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function deleteCORS()
     {
         return $this->delete('/?cors');
     }
 
-    public function putLifecycle(array $body): Http\Response
+    /**
+     * @param  array  $body
+     *
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function putLifecycle(array $body)
     {
         return $this->put('/?lifecycle', [
             'body' => XML::fromArray($body),
         ]);
     }
 
-    public function getLifecycle(): Http\Response
+    /**
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function getLifecycle()
     {
         return $this->get('/?lifecycle');
     }
 
-    public function deleteLifecycle(): Http\Response
+    /**
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function deleteLifecycle()
     {
         return $this->delete('/?lifecycle');
     }
 
-    public function putPolicy(array $body): Http\Response
+    /**
+     * @param  array  $body
+     *
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function putPolicy(array $body)
     {
         return $this->put('/?policy', ['json' => $body]);
     }
 
-    public function getPolicy(): Http\Response
+    /**
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function getPolicy()
     {
         return $this->get('/?policy');
     }
 
-    public function deletePolicy(): Http\Response
+    /**
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function deletePolicy()
     {
         return $this->delete('/?policy');
     }
 
-    public function putReferer(array $body): Http\Response
+    /**
+     * @param  array  $body
+     *
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function putReferer(array $body)
     {
         return $this->put('/?referer', [
             'body' => XML::fromArray($body),
         ]);
     }
 
-    public function getReferer(): Http\Response
+    /**
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function getReferer()
     {
         return $this->get('/?referer');
     }
 
-    public function putTagging(array $body): Http\Response
+    /**
+     * @param  array  $body
+     *
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function putTagging(array $body)
     {
         return $this->put('/?tagging', [
             'body' => XML::fromArray($body),
         ]);
     }
 
-    public function getTagging(): Http\Response
+    /**
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function getTagging()
     {
         return $this->get('/?tagging');
     }
 
-    public function deleteTagging(): Http\Response
+    /**
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function deleteTagging()
     {
         return $this->delete('/?tagging');
     }
 
-    public function putWebsite(array $body): Http\Response
+    /**
+     * @param  array  $body
+     *
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function putWebsite(array $body)
     {
         return $this->put('/?website', [
             'body' => XML::fromArray($body),
         ]);
     }
 
-    public function getWebsite(): Http\Response
+    /**
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function getWebsite()
     {
         return $this->get('/?website');
     }
 
-    public function deleteWebsite(): Http\Response
+    /**
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function deleteWebsite()
     {
         return $this->delete('/?website');
     }
 
-    public function putInventory(string $id, array $body): Http\Response
+    /**
+     * @param  string  $id
+     * @param  array  $body
+     *
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function putInventory(string $id, array $body)
     {
         return $this->put(\sprintf('/?inventory&id=%s', $id), [
             'body' => XML::fromArray($body),
         ]);
     }
 
-    public function getInventory(string $id): Http\Response
+    /**
+     * @param  string  $id
+     *
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function getInventory(string $id)
     {
         return $this->get(\sprintf('/?inventory&id=%s', $id));
     }
 
-    public function getInventoryConfigurations(?string $nextContinuationToken = null): Http\Response
+    /**
+     * @param  string|null  $nextContinuationToken
+     *
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function getInventoryConfigurations(?string $nextContinuationToken = null)
     {
         return $this->get(\sprintf('/?inventory&continuation-token=%s', $nextContinuationToken));
     }
 
-    public function deleteInventory(string $id): Http\Response
+    /**
+     * @param  string  $id
+     *
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function deleteInventory(string $id)
     {
         return $this->delete(\sprintf('/?inventory&id=%s', $id));
     }
 
-    public function putVersioning(array $body): Http\Response
+    /**
+     * @param  array  $body
+     *
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function putVersioning(array $body)
     {
         return $this->put('/?versioning', [
             'body' => XML::fromArray($body),
         ]);
     }
 
-    public function getVersioning(): Http\Response
+    /**
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function getVersioning()
     {
         return $this->get('/?versioning');
     }
 
-    public function putReplication(array $body): Http\Response
+    /**
+     * @param  array  $body
+     *
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function putReplication(array $body)
     {
         return $this->put('/?replication', [
             'body' => XML::fromArray($body),
         ]);
     }
 
-    public function getReplication(): Http\Response
+    /**
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function getReplication()
     {
         return $this->get('/?replication');
     }
 
-    public function deleteReplication(): Http\Response
+    /**
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function deleteReplication()
     {
         return $this->delete('/?replication');
     }
 
-    public function putLogging(array $body): Http\Response
+    /**
+     * @param  array  $body
+     *
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function putLogging(array $body)
     {
         return $this->put('/?logging', [
             'body' => XML::fromArray($body),
         ]);
     }
 
-    public function getLogging(): Http\Response
+    /**
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function getLogging()
     {
         return $this->get('/?logging');
     }
 
-    public function putAccelerate(array $body): Http\Response
+    /**
+     * @param  array  $body
+     *
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function putAccelerate(array $body)
     {
         return $this->put('/?accelerate', [
             'body' => XML::fromArray($body),
         ]);
     }
 
-    public function getAccelerate(): Http\Response
+    /**
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function getAccelerate()
     {
         return $this->get('/?accelerate');
     }
 
-    public function putEncryption(array $body): Http\Response
+    /**
+     * @param  array  $body
+     *
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function putEncryption(array $body)
     {
         return $this->put('/?encryption', [
             'body' => XML::fromArray($body),
         ]);
     }
 
-    public function getEncryption(): Http\Response
+    /**
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function getEncryption()
     {
         return $this->get('/?encryption');
     }
 
-    public function deleteEncryption(): Http\Response
+    /**
+     * @return \Overtrue\CosClient\Http\Response
+     */
+    public function deleteEncryption()
     {
         return $this->delete('/?encryption');
     }

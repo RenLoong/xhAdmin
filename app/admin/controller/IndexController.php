@@ -5,7 +5,6 @@ namespace app\admin\controller;
 use app\admin\logic\AppCoreLogic;
 use app\admin\model\StoreApp;
 use app\admin\service\kfcloud\SystemInfo;
-use app\admin\service\kfcloud\Updated;
 use app\BaseController;
 use app\enum\PlatformTypes;
 use support\Request;

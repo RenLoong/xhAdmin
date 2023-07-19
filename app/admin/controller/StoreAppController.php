@@ -2,7 +2,7 @@
 
 namespace app\admin\controller;
 
-use app\admin\builder\FormBuilder;
+use app\common\builder\FormBuilder;
 use app\admin\logic\PluginLogic;
 use app\admin\model\Store;
 use app\admin\service\kfcloud\CloudService;

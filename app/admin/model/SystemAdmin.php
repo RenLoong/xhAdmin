@@ -2,7 +2,8 @@
 
 namespace app\admin\model;
 
-use app\model\SystemAdmin as ModelSystemAdmin;
+use app\common\model\SystemAdmin as ModelSystemAdmin;
+use app\common\model\SystemAdminRole;
 use app\common\service\UploadService;
 
 /**

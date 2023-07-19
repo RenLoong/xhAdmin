@@ -2,7 +2,7 @@
 
 namespace app\admin\controller;
 
-use app\admin\builder\FormBuilder;
+use app\common\builder\FormBuilder;
 use app\admin\model\SystemUpload;
 use app\admin\model\SystemUploadCate;
 use app\admin\validate\SystemUploadCate as ValidateSystemUploadCate;

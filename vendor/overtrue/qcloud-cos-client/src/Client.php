@@ -2,6 +2,7 @@
 
 namespace Overtrue\CosClient;
 
+use GuzzleHttp\ClientInterface;
 use Overtrue\CosClient\Exceptions\ClientException;
 use Overtrue\CosClient\Exceptions\Exception;
 use Overtrue\CosClient\Exceptions\InvalidConfigException;
@@ -37,29 +38,36 @@ class Client
 
     protected Config $config;
 
-    protected string $domain = '<bucket>-<app_id>.cos.<region>.myqcloud.com';
-
     protected \GuzzleHttp\Client $client;
 
-    protected array $requiredConfigKeys = [];
-
     /**
-     * @param  array|\Overtrue\CosClient\Config  $config
+     * @param  \Overtrue\CosClient\Config|array  $config
      *
      * @throws \Overtrue\CosClient\Exceptions\InvalidConfigException
      */
-    public function __construct(array|Config $config)
+    public function __construct($config)
     {
-        $this->config = $this->normalizeConfig($config);
+        if (!($config instanceof Config)) {
+            $config = new Config($config);
+        }
 
-        $this->configureDomain();
-        $this->configureMiddlewares();
-        $this->configureHttpClientOptions();
-    }
+        if (!$config->has('app_id') || !$config->has('secret_id') || !$config->has('secret_key')) {
+            throw new InvalidConfigException('app_id, secret_id and secret_key was required.');
+        }
 
-    public function getSchema(): string
-    {
-        return $this->config->get('use_https', true) ? 'https' : 'http';
+        $this->config = $config;
+
+        $this->mergeHttpClientOptions($config->get('guzzle', []));
+        $this->configureUserAgent($config);
+
+        $this->pushMiddleware(
+            new CreateRequestSignature(
+                $this->getSecretId(),
+                $this->getSecretKey(),
+                $this->config->get('signature_expires')
+            )
+        );
+        $this->pushMiddleware(new SetContentMd5());
     }
 
     public function getAppId(): int
@@ -77,7 +85,7 @@ class Client
         return $this->config->get('secret_key', '');
     }
 
-    public function getConfig(): Config
+    public function getConfig()
     {
         return $this->config;
     }
@@ -87,11 +95,6 @@ class Client
         return $this->client ?? $this->client = $this->createHttpClient();
     }
 
-    /**
-     * @throws ServerException
-     * @throws Exception
-     * @throws ClientException
-     */
     public function __call($method, $arguments)
     {
         try {
@@ -105,61 +108,12 @@ class Client
         }
     }
 
-    protected function configureDomain(): static
-    {
-        $replacements = [
-            '<uin>' => $this->config->get('uin'),
-            '<app_id>' => $this->config->get('app_id'),
-            '<region>' => $this->config->get('region') ?? self::DEFAULT_REGION,
-            '<bucket>' => $this->config->get('bucket'),
-        ];
-
-        $domain = $this->config->get('domain');
-
-        $this->domain = trim($domain ?: str_replace(array_keys($replacements), $replacements, $this->domain), '/');
-
-        return $this;
-    }
-
-    /**
-     * @throws \Overtrue\CosClient\Exceptions\InvalidConfigException
-     */
-    public function normalizeConfig(array|Config $config): Config
-    {
-        if (is_array($config)) {
-            $config = new Config($config);
-        }
-
-        $requiredKeys = ['app_id', 'secret_id', 'secret_key', ...$this->requiredConfigKeys];
-
-        foreach ($requiredKeys as $key) {
-            if ($config->missing($key)) {
-                throw new InvalidConfigException(sprintf('%s was required.', implode(', ', $requiredKeys)));
-            }
-        }
-
-        return $config;
-    }
-
-    public function configureMiddlewares(): void
-    {
-        $this->pushMiddleware(
-            new CreateRequestSignature(
-                $this->getSecretId(),
-                $this->getSecretKey(),
-                $this->config->get('signature_expires')
-            )
-        );
-
-        $this->pushMiddleware(new SetContentMd5());
-    }
-
-    public static function spy(): Client|\Mockery\MockInterface|\Mockery\LegacyMockInterface
+    public static function spy()
     {
         return \Mockery::mock(static::class);
     }
 
-    public static function partialMock(): \Mockery\MockInterface
+    public static function partialMock()
     {
         $mock = \Mockery::mock(static::class)->makePartial();
         $mock->shouldReceive('getHttpClient')->andReturn(\Mockery::mock(\GuzzleHttp\Client::class));
@@ -167,25 +121,23 @@ class Client
         return $mock;
     }
 
-    public static function partialMockWithConfig(array|Config $config, array $methods = ['get', 'post', 'patch', 'put', 'delete']): \Mockery\MockInterface
+    public static function partialMockWithConfig(Config $config, array $methods)
     {
-        if (\is_array($config)) {
-            $config = new Config($config);
-        }
-
-        $mock = \Mockery::mock(static::class.\sprintf('[%s]', \implode(',', $methods)), [$config]);
+        $mock = \Mockery::mock(static::class.\sprintf('[%s]', \join(',', $methods)), [$config]);
         $mock->shouldReceive('getHttpClient')->andReturn(\Mockery::mock(\GuzzleHttp\Client::class));
 
         return $mock;
     }
 
-    protected function configureHttpClientOptions(): void
+    /**
+     * @param  \Overtrue\CosClient\Config  $config
+     *
+     * @return \Overtrue\CosClient\Client
+     */
+    protected function configureUserAgent(Config $config): Client
     {
-        $this->setBaseUri(\sprintf('%s://%s/', $this->getSchema(), $this->domain));
-        $this->mergeHttpClientOptions($this->config->get('guzzle', [
-            'headers' => [
-                'User-Agent' => 'overtrue/qcloud-cos-client:'.\GuzzleHttp\Client::MAJOR_VERSION,
-            ],
-        ]));
+        $this->setHeader('User-Agent', $config->get('guzzle.headers.User-Agent', 'overtrue/qcloud-cos-client:'.ClientInterface::MAJOR_VERSION));
+
+        return $this;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace app\common\command;
+namespace app\command;
 
 use app\model\StoreApp;
 use Symfony\Component\Console\Command\Command;
@@ -353,7 +353,7 @@ class AppPluginCreate extends Command
 
         return [
             '' => [
-                \app\common\middleware\PluginsMiddleware::class
+                \app\middleware\GlobalsMiddleware::class
             ]
         ];
         EOF;

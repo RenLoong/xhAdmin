@@ -2,7 +2,7 @@
 
 namespace app\admin\middleware;
 
-use app\admin\service\VueRoutesService;
+use app\admin\utils\VueRoutesMgr;
 use Webman\MiddlewareInterface;
 use Webman\Http\Response;
 use Webman\Http\Request;
@@ -15,20 +15,18 @@ use Webman\Http\Request;
  */
 class AuthMiddleware implements MiddlewareInterface
 {
-
     /**
-     * 中间件处理
+     * 逻辑处理
      * @param \Webman\Http\Request $request
      * @param callable $handler
      * @return \Webman\Http\Response
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
      */
     public function process(Request $request, callable $handler): Response
     {
         // 从headers中拿去请求用户token
-        $authorization = $request->header('Authorization');
+        $authorization = $request->header('authorization');
         $request->sessionId($authorization);
         // 获得请求路径
         $controller = $request->controller;
@@ -88,7 +86,7 @@ class AuthMiddleware implements MiddlewareInterface
             return true;
         }
         // 获取角色规则
-        $rule = VueRoutesService::getAdminRoleColumn($admin);
+        $rule = VueRoutesMgr::getAdminRoleColumn($admin);
         // 检测是否有操作权限
         $ctrlName = str_replace('Controller', '', basename(str_replace('\\', '/', $control)));
         $path = "{$ctrlName}/{$action}";

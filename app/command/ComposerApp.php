@@ -1,6 +1,6 @@
 <?php
 
-namespace app\common\command;
+namespace app\command;
 
 use app\admin\utils\ComposerMgr;
 use Symfony\Component\Console\Command\Command;

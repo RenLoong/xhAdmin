@@ -2,12 +2,12 @@
 
 namespace app\admin\controller;
 
-use app\utils\Password;
+use app\common\manager\AuthMgr;
+use app\common\utils\Password;
 use Exception;
 use support\Request;
 use app\admin\model\SystemAdmin;
-use app\admin\service\kfcloud\SystemInfo;
-use app\admin\utils\VueRoutesMgr;
+use app\common\service\SystemInfoService;
 use app\admin\validate\SystemAdmin as ValidateSystemAdmin;
 use app\BaseController;
 
@@ -28,7 +28,7 @@ class PublicsController extends BaseController
      */
     public function site()
     {
-        $systemInfo = SystemInfo::info();
+        $systemInfo = SystemInfoService::info();
         $empower_token = empowerFile('token');
         $private_key = empowerFile('private_key');
         $moduleName = getModule('admin');
@@ -188,7 +188,7 @@ class PublicsController extends BaseController
             return $this->failFul('该用户不存在',12000);
         }
         $admin      = $adminModel->toArray();
-        $data       = VueRoutesMgr::run($admin);
+        $data       = AuthMgr::run($admin);
         return parent::successRes($data);
     }
 

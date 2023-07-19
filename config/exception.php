@@ -1,4 +1,4 @@
 <?php
 return [
-    '' => \app\exception\Handler::class,
+    '' => \app\common\exception\Handler::class,
 ];

@@ -15,18 +15,17 @@ use Webman\Http\Request;
 class AuthMiddleware implements MiddlewareInterface
 {
     /**
-     * 中间件逻辑处理
+     * 逻辑处理
      * @param \Webman\Http\Request $request
      * @param callable $handler
      * @return \Webman\Http\Response
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
      */
     public function process(Request $request, callable $handler): Response
     {
         // 从headers中拿去请求用户token
-        $authorization = $request->header('authorization');
+        $authorization = $request->header('Authorization');
         $request->sessionId($authorization);
         // 获得请求路径
         $controller = $request->controller;
@@ -71,7 +70,7 @@ class AuthMiddleware implements MiddlewareInterface
         if (!$admin) {
             // 10000 未登录固定的返回码
             $code = 12000;
-            $msg = '请先登录';
+            $msg = '请先登录租户';
             return false;
         }
         return true;
