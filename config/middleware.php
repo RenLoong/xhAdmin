@@ -4,10 +4,10 @@ return [
     ''    => [],
     # 后台中间件
     'admin'     => [
-        \app\admin\middleware\AccessMiddleware::class
+        \app\admin\middleware\AuthMiddleware::class
     ],
-    # 租户中间件
+    # 用户中间件
     'store'     => [
-        \app\store\middleware\AccessMiddleware::class
+        \app\store\middleware\AuthMiddleware::class
     ],
 ];

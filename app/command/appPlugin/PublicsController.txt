@@ -3,8 +3,8 @@
 namespace plugin\{PLUGIN_NAME}\app\admin\controller;
 
 use app\admin\logic\PluginLogic;
-use app\manager\Users;
-use app\utils\Password;
+use app\manager\UsersMgr;
+use app\common\utils\Password;
 use Exception;
 use support\Request;
 use app\admin\model\SystemAdmin;

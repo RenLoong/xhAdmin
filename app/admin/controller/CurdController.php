@@ -2,16 +2,14 @@
 
 namespace app\admin\controller;
 
-use app\admin\builder\ListBuilder;
-use app\admin\logic\AuthRule;
-use app\admin\logic\CurdLogic;
-use app\admin\logic\ModulesLogic;
-use app\admin\model\SystemCurd;
+use app\common\builder\ListBuilder;
+use app\admin\service\CurdService;
+use app\admin\service\ModulesService;
+use app\model\SystemCurd;
 use app\admin\utils\Util;
 use app\BaseController;
-use app\exception\RedirectException;
-use app\utils\DataMgr;
-use app\utils\DbMgr;
+use app\common\exception\RedirectException;
+use app\common\manager\DbMgr;
 use Exception;
 use support\Request;
 use think\helper\Str;
@@ -52,7 +50,7 @@ class CurdController extends BaseController
         if (!DbMgr::hasTable($this->tableName)) {
             throw new Exception('该数据表不存在');
         }
-        if (in_array($this->tableName, ModulesLogic::dropTables())) {
+        if (in_array($this->tableName, ModulesService::dropTables())) {
             throw new RedirectException('系统表，禁止操作字段', '/Modules/index');
         }
     }
@@ -255,7 +253,7 @@ class CurdController extends BaseController
                 return $this->fail('请选择构建至某个菜单');
             }
             # 获取CURD代码及目标路径
-            $curdData = CurdLogic::getCurdCode($app_name, $tableName);
+            $curdData = CurdService::getCurdCode($app_name, $tableName);
             if (file_exists(base_path($curdData['controllerPath'])) && $is_cover === 0) {
                 throw new Exception('该控制器已生成');
             }
@@ -310,7 +308,7 @@ class CurdController extends BaseController
     private function createdMenu(string $app_name, string $tableName, int $pid, string $menu_name)
     {
         $menuPath = base_path("/plugin/{$app_name}/menu.json");
-        $menus    = CurdLogic::getMenusPreView(
+        $menus    = CurdService::getMenusPreView(
             $menuPath,
             $this->database,
             $this->prefixTableName,
@@ -384,7 +382,7 @@ class CurdController extends BaseController
      */
     public function detail(Request $request)
     {
-        $data = CurdLogic::getPlugins();
+        $data = CurdService::getPlugins();
         return $this->successRes($data);
     }
 
@@ -408,7 +406,7 @@ class CurdController extends BaseController
             return $this->fail('应用菜单文件不存在');
         }
         $menuData = json_decode(file_get_contents($menuPath), true);
-        $data = CurdLogic::parentLevelList($menuData, $className);
+        $data = CurdService::parentLevelList($menuData, $className);
         $data = array_merge([
             [
                 'label' => '不构建菜单',
@@ -451,7 +449,7 @@ class CurdController extends BaseController
             'path' => '',
             'menus' => ''
         ];
-        $data['code']  = CurdLogic::getCurdCode($app_name, $tableName);
+        $data['code']  = CurdService::getCurdCode($app_name, $tableName);
         # 是否生成菜单
         if ($pidIndex !== 'cancel') {
             if (!$menu_name) {
@@ -461,7 +459,7 @@ class CurdController extends BaseController
             if ($pidIndex !== 'top') {
                 $indexPath= explode('-', $pidIndex);
             }
-            $menuView               = CurdLogic::getMenusPreView(
+            $menuView               = CurdService::getMenusPreView(
                 $menuPathRoot,
                 $this->database,
                 $this->prefixTableName,

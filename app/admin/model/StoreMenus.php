@@ -2,8 +2,8 @@
 
 namespace app\admin\model;
 
-use app\enum\AuthRuleRuleType;
-use app\utils\DataMgr;
+use app\admin\enum\AuthRuleRuleType;
+use app\common\utils\Data;
 
 /**
  * 租户菜单
@@ -26,7 +26,7 @@ class StoreMenus extends \app\model\StoreMenus
     {
         $orderBy = ['sort' => 'asc', 'id' => 'asc'];
         $list    = StoreMenus::order($orderBy)->select()->toArray();
-        $list    = DataMgr::channelLevel($list, 0, '', 'id', 'pid');
+        $list    = Data::channelLevel($list, 0, '', 'id', 'pid');
         $list    = self::getChildrenOptions($list);
         $list    = array_merge([
             [

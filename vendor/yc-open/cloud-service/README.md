@@ -10,18 +10,11 @@ composer require yc-open/cloud-service
 ``` php
 <?php
 require 'vendor/autoload.php';
-use YcOpen\CloudService\Request\LoginRequest;
-use YcOpen\CloudService\Cloud;
+define('ROOT_PATH',dirname(__FILE__));
+use YcOpen\CloudService\Request;
 use YcOpen\CloudService\Exception\HttpException;
 use YcOpen\CloudService\Exception\HttpResponseException;
 use YcOpen\CloudService\Exception\ValidateException;
-use YcOpen\CloudService\Request\CaptchaRequest;
-use YcOpen\CloudService\Request;
-use YcOpen\CloudService\Request\PluginRequest;
-use YcOpen\CloudService\Request\SiteRequest;
-use YcOpen\CloudService\Request\SystemUpdateRequest;
-use YcOpen\CloudService\Request\UserRequest;
-
 function p($data){
     echo '<pre>';
     print_r($data);
@@ -36,8 +29,25 @@ function pe(\Throwable $th){
         'trace'=>$th->getTrace(),
     ]);
 }
+function base_path($path=''){
+    return ROOT_PATH.'/'.$path;
+}
 try {
-
+    // Request::login()->outLogin();
+    // Request::Login();
+    /* $data=Request::coupon()->getAvailableCoupon()->setQuery(['type'=>'apps'])->cloud()->send();
+    p($data); */
+    $data=Request::SystemUpdate()->verify()->setQuery(['version'=>1,'version_name'=>'1.0.0'])->cloud()->send();
+    p($data);
+    return;
+    /* $request = new CouponRequest;
+    $request->getAvailableCoupon();
+    $request->type='apps';
+    $request->plugin_id=2;
+    $cloud=new Cloud($request);
+    $data=$cloud->send();
+    p($data);
+    return ;
     #获取验证码
     $request=new CaptchaRequest();
     $request->captchaCode();
@@ -132,7 +142,7 @@ try {
     $request->setSaveFile('/ycSuperseo.zip');
     $cloud=new Cloud($request);
     $data=$cloud->send(); 
-    p($data);
+    p($data); */
 } catch (ValidateException $e) {
     # 参数验证错误
     pe($e);

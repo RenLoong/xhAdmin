@@ -2,14 +2,14 @@
 
 namespace app;
 
-use app\utils\EnumBaseic;
+use app\common\utils\EnumBaseic;
 use Exception;
 
 /**
  * 枚举基类
+ * @author 贵州猿创科技有限公司
  * @copyright 贵州猿创科技有限公司
- * @Email 416716328@qq.com
- * @DateTime 2023-04-29
+ * @email 416716328@qq.com
  */
 abstract class Enum extends EnumBaseic
 {

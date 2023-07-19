@@ -2,7 +2,7 @@
 
 namespace app;
 
-use app\utils\Json;
+use app\common\utils\Json;
 use support\Request;
 use app\Model;
 

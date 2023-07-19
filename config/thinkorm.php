@@ -30,7 +30,7 @@ return [
             // 关闭SQL监听日志
             'trigger_sql'     => false,
             // 自定义分页类
-            'bootstrap'       => 'app\\utils\\Paginator'
+            'bootstrap'       => 'app\\common\\utils\\Paginator'
         ],
     ],
 ];

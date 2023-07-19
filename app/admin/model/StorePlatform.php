@@ -3,7 +3,7 @@
 namespace app\admin\model;
 
 use app\model\StorePlatform as ModelStorePlatform;
-use app\service\Upload;
+use app\common\service\UploadService;
 
 /**
  * 商户平台
@@ -36,6 +36,6 @@ class StorePlatform extends ModelStorePlatform
      */
     protected function getLogoAttr($value)
     {
-        return $value ? Upload::url((string)$value) : '';
+        return $value ? UploadService::url((string)$value) : '';
     }
 }

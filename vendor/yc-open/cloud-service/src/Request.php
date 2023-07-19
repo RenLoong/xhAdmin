@@ -17,6 +17,7 @@ class Request
     protected $validator;
     protected $file;
     protected $isDownFile = false;
+    protected $timeout = 10;
     public function __construct()
     {
         $this->siteinfo_file = base_path('/config/site.json');
@@ -49,7 +50,7 @@ class Request
         $option = [
             'base_uri' => $this->baseUrl,
             'headers' => $this->headers,
-            'timeout' => 10,
+            'timeout' => $this->timeout,
         ];
         # 判断url是否为http(s)开头
         if (preg_match('/^http(s)?:\/\//', $this->url)) {
@@ -65,6 +66,16 @@ class Request
         return $client->request($this->method, $this->url, $options);
     }
     /**
+     * 设置BaseUrl
+     * @param string $baseUrl
+     * @return Request
+     */
+    public function setBaseUrl(string $baseUrl)
+    {
+        $this->baseUrl = $baseUrl;
+        return $this;
+    }
+    /**
      * 设置请求地址
      * @param string $url
      * @return Request
@@ -72,6 +83,16 @@ class Request
     public function setUrl(string $url)
     {
         $this->url = $url;
+        return $this;
+    }
+    /**
+     * 设置timeout
+     * @param int $timeout
+     * @return Request
+     */
+    public function setTimeout($timeout)
+    {
+        $this->timeout = $timeout;
         return $this;
     }
     /**
@@ -298,7 +319,7 @@ class Request
     }
     /**
      * 使用内置云服务类
-     * @return DataModel
+     * @return Cloud
      */
     public function cloud()
     {
@@ -306,21 +327,18 @@ class Request
     }
     /**
      * 静态链式调用
-     *
+     * 用于调用请求类，第一个方法为必须为类名，不含Request
      * @param [type] $name
      * @param [type] $arguments
-     * @return void
+     * @return Request
      */
     public static function __callStatic($name, $arguments)
     {
-        $request = new static();
-        if($name!=='name'){
-            throw new \Exception('方法不存在');
+        $name=ucfirst($name);
+        $class=__NAMESPACE__.'\\Request\\'.$name.'Request';
+        if (!class_exists($class)) {
+            throw new \Exception($name.'：请求类不存在');
         }
-        if(!isset($arguments[0])){
-            throw new \Exception('参数不存在');
-        }
-        $fuc=$arguments[0];
-        return $request->$fuc();
+        return new $class(...$arguments);
     }
 }

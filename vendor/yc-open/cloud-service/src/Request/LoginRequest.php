@@ -31,6 +31,15 @@ class LoginRequest extends Request
         return $this;
     }
     /**
+     * 退出登录
+     * @return void
+     */
+    public function outLogin()
+    {
+        p('outLogin');
+        Redis::del('yc-cloud-service-token');
+    }
+    /**
      * 设置响应数据模型
      * @return DataModel
      */

@@ -1,97 +1,74 @@
 {
-    "name": "ycopen/kfadmin",
-    "type": "project",
-    "keywords": [
-        "high performance",
-        "http service"
+  "name": "ycopen/kfadmin",
+  "type": "project",
+  "keywords": [
+      "high performance",
+      "http service"
+  ],
+  "homepage": "https://www.kfadmin.net/",
+  "license": "Apache",
+  "description": "High performance HTTP Service Framework.",
+  "authors": [
+      {
+          "name": "贵州猿创科技有限公司",
+          "homepage": "https://www.kfadmin.net/",
+          "role": "Developer"
+      }
+  ],
+  "support": {
+      "issues": "https://gitee.com/yc_open/kfadmin-cloud/issues",
+      "forum": "https://www.kfadmin.net/",
+      "wiki": "https://gitee.com/yc_open/kfadmin-cloud/wikis",
+      "source": "https://gitee.com/yc_open/kfadmin-cloud"
+  },
+  "require": {
+    "php": ">=7.2",
+    "workerman/webman-framework": "^1.5.0",
+    "monolog/monolog": "^2.0",
+    "webman/think-orm": "^1.1",
+    "webman/captcha": "^1.0",
+    "xaboy/form-builder": "^2.0",
+    "webman/console": "^1.2",
+    "yzh52521/easyhttp": "^1.0",
+    "yzh52521/webman-validate": "^0.1.3",
+    "shopwwi/webman-filesystem": "^1.0",
+    "shopwwi/filesystem-oss": "^1.0",
+    "overtrue/flysystem-qiniu": "^3.2",
+    "overtrue/flysystem-cos": "^5.1",
+    "illuminate/redis": "^9.52",
+    "symfony/cache": "^6.0",
+    "illuminate/database": "^9.52",
+    "illuminate/pagination": "^9.52",
+    "illuminate/events": "^9.52",
+    "symfony/var-dumper": "^6.0",
+    "doctrine/dbal": "^3.6",
+    "yc-open/cloud-service": "^1.1"
+  },
+  "suggest": {
+    "ext-event": "For better performance. "
+  },
+  "autoload": {
+    "psr-4": {
+      "": "./",
+      "app\\": "./app",
+      "App\\": "./app",
+      "plugin\\": "./plugin",
+      "Plugin\\": "./plugin",
+      "app\\View\\Components\\": "./app/view/components"
+    },
+    "files": [
+      "./support/helpers.php"
+    ]
+  },
+  "scripts": {
+    "post-package-install": [
+      "support\\Plugin::install"
     ],
-    "homepage": "https://www.kfadmin.net/",
-    "license": "Apache",
-    "description": "High performance HTTP Service Framework.",
-    "authors": [
-        {
-            "name": "贵州猿创科技有限公司",
-            "homepage": "https://www.kfadmin.net/",
-            "role": "Developer"
-        }
+    "post-package-update": [
+      "support\\Plugin::install"
     ],
-    "support": {
-        "issues": "https://gitee.com/yc_open/kfadmin-cloud/issues",
-        "forum": "https://www.kfadmin.net/",
-        "wiki": "https://gitee.com/yc_open/kfadmin-cloud/wikis",
-        "source": "https://gitee.com/yc_open/kfadmin-cloud"
-    },
-    "require": {
-        "php": "^8.0",
-        "workerman/webman-framework": "^1.5.0",
-        "monolog/monolog": "^2.0",
-        "psr/container": "^1.1.1",
-        "webman/think-orm": "^1.0",
-        "webman/captcha": "^1.0",
-        "vlucas/phpdotenv": "^5.4",
-        "xaboy/form-builder": "^2.0",
-        "webman/console": "^1.2",
-        "chance-fyi/operation-log": "^2.0",
-        "yzh52521/easyhttp": "^1.0",
-        "shopwwi/webman-filesystem": "^1.0",
-        "shopwwi/filesystem-oss": "^1.0",
-        "overtrue/flysystem-qiniu": "^2.0",
-        "overtrue/flysystem-cos": "^4.0",
-        "illuminate/redis": "^9.52",
-        "symfony/cache": "^6.0",
-        "yzh52521/webman-validate": "^0.1.3",
-        "illuminate/database": "^9.52",
-        "illuminate/pagination": "^9.52",
-        "illuminate/events": "^9.52",
-        "symfony/var-dumper": "^6.0",
-        "wikimedia/composer-merge-plugin": "^2.1",
-        "doctrine/dbal": "^3.6",
-        "yc-open/cloud-service": "^1.1"
-    },
-    "suggest": {
-        "ext-event": "For better performance. "
-    },
-    "autoload": {
-        "psr-4": {
-            "": "./",
-            "app\\": "./app",
-            "App\\": "./app",
-            "app\\View\\Components\\": "./app/view/components"
-        },
-        "files": [
-            "./support/helpers.php"
-        ]
-    },
-    "scripts": {
-        "post-package-install": [
-            "support\\Plugin::install"
-        ],
-        "post-package-update": [
-            "support\\Plugin::install"
-        ],
-        "pre-package-uninstall": [
-            "support\\Plugin::uninstall"
-        ]
-    },
-    "config": {
-        "allow-plugins": {
-            "wikimedia/composer-merge-plugin": true,
-            "pestphp/pest-plugin": true
-        }
-    },
-    "extra": {
-        "merge-plugin": {
-            "include": [
-                "plugin/*/packages/*/composer.json"
-            ],
-            "require": [],
-            "recurse": true,
-            "replace": false,
-            "ignore-duplicates": false,
-            "merge-dev": false,
-            "merge-extra": false,
-            "merge-extra-deep": false,
-            "merge-scripts": false
-        }
-    }
+    "pre-package-uninstall": [
+      "support\\Plugin::uninstall"
+    ]
+  }
 }

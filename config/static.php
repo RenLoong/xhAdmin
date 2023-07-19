@@ -2,6 +2,6 @@
 return [
     'enable' => true,
     'middleware' => [
-        app\middleware\StaticFile::class,
+        app\common\middleware\StaticFile::class,
     ],
 ];

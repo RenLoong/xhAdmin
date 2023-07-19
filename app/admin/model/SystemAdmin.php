@@ -3,7 +3,7 @@
 namespace app\admin\model;
 
 use app\model\SystemAdmin as ModelSystemAdmin;
-use app\service\Upload;
+use app\common\service\UploadService;
 
 /**
  * 管理员
@@ -36,6 +36,6 @@ class SystemAdmin extends ModelSystemAdmin
      */
     public function getHeadimgAttr($value)
     {
-        return $value ? Upload::url((string)$value) : '';
+        return $value ? UploadService::url((string)$value) : '';
     }
 }

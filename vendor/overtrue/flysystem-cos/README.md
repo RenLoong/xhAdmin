@@ -1,22 +1,16 @@
-<h1 align="center">Flysystem QCloud COS</h1>
+Flysystem QCloud COS
 
-<p align="center">:floppy_disk: Flysystem adapter for the Qcloud COS storage.</p>
+---
 
-<p align="center">
-<a href="https://travis-ci.org/overtrue/flysystem-cos"><img src="https://travis-ci.org/overtrue/flysystem-cos.svg?branch=master" alt="Build Status"></a>
-<a href="https://packagist.org/packages/overtrue/flysystem-cos"><img src="https://poser.pugx.org/overtrue/flysystem-cos/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/overtrue/flysystem-cos"><img src="https://poser.pugx.org/overtrue/flysystem-cos/v/unstable.svg" alt="Latest Unstable Version"></a>
-<a href="https://scrutinizer-ci.com/g/overtrue/flysystem-cos/?branch=master"><img src="https://scrutinizer-ci.com/g/overtrue/flysystem-cos/badges/quality-score.png?b=master" alt="Scrutinizer Code Quality"></a>
-<a href="https://scrutinizer-ci.com/g/overtrue/flysystem-cos/?branch=master"><img src="https://scrutinizer-ci.com/g/overtrue/flysystem-cos/badges/coverage.png?b=master" alt="Code Coverage"></a>
-<a href="https://packagist.org/packages/overtrue/flysystem-cos"><img src="https://poser.pugx.org/overtrue/flysystem-cos/downloads" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/overtrue/flysystem-cos"><img src="https://poser.pugx.org/overtrue/flysystem-cos/license" alt="License"></a>
-</p>
+:floppy_disk: Flysystem adapter for the Qcloud COS storage.
 
-🚨 当前为 v4 版本，v4 和 [v3](https://github.com/overtrue/flysystem-cos/tree/3.x) 在配置写法上有差异，升级请注意。
+[![Build Status](https://travis-ci.org/overtrue/flysystem-cos.svg?branch=master)](https://travis-ci.org/overtrue/flysystem-cos) [![Latest Stable Version](https://poser.pugx.org/overtrue/flysystem-cos/v/stable.svg)](https://packagist.org/packages/overtrue/flysystem-cos) [![Latest Unstable Version](https://poser.pugx.org/overtrue/flysystem-cos/v/unstable.svg)](https://packagist.org/packages/overtrue/flysystem-cos) [![Total Downloads](https://poser.pugx.org/overtrue/flysystem-cos/downloads)](https://packagist.org/packages/overtrue/flysystem-cos) [![License](https://poser.pugx.org/overtrue/flysystem-cos/license)](https://packagist.org/packages/overtrue/flysystem-cos)
+
+[![Sponsor me](https://github.com/overtrue/overtrue/blob/master/sponsor-me-button-s.svg?raw=true)](https://github.com/sponsors/overtrue)
 
 ## Requirement
 
-* PHP >= 7.4
+* PHP >= 8.0.2
 
 ## Installation
 
@@ -42,6 +36,12 @@ $config = [
     
     // 可选，如果 bucket 为私有访问请打开此项
     'signed_url' => false,
+    
+    // 可选，是否使用 https，默认 false
+    'use_https' => true, 
+    
+    // 可选，自定义域名
+    'domain' => 'emample-12340000.cos.test.com', 
     
     // 可选，使用 CDN 域名时指定生成的 URL host
     'cdn' => 'https://youcdn.domain.com/',
@@ -84,9 +84,16 @@ int $flysystem->lastModified('file.md');
 
 ## :heart: Sponsor me 
 
-If you like the work I do and want to support it, [you know what to do :heart:](https://github.com/sponsors/overtrue)
+[![Sponsor me](https://github.com/overtrue/overtrue/blob/master/sponsor-me.svg?raw=true)](https://github.com/sponsors/overtrue)
 
 如果你喜欢我的项目并想支持它，[点击这里 :heart:](https://github.com/sponsors/overtrue)
+
+## Project supported by JetBrains
+
+Many thanks to Jetbrains for kindly providing a license for me to work on this and other open-source projects.
+
+[![](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)](https://www.jetbrains.com/?from=https://github.com/overtrue)
+
 
 ## License
 
