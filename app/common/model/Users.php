@@ -3,8 +3,8 @@
 namespace app\common\model;
 
 use app\Model;
-use app\service\Upload;
-use app\utils\Password;
+use app\common\service\UploadService;
+use app\common\utils\Password;
 use Exception;
 
 /**
@@ -47,7 +47,7 @@ class Users extends Model
      */
     protected function setHeadimgAttr($value)
     {
-        return $value ? Upload::path($value) : '';
+        return $value ? UploadService::path($value) : '';
     }
 
     /**
@@ -60,7 +60,7 @@ class Users extends Model
      */
     protected function getHeadimgAttr($value)
     {
-        return $value ? Upload::url((string)$value) : '';
+        return $value ? UploadService::url((string)$value) : '';
     }
 
     /**

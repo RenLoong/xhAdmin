@@ -96,9 +96,44 @@ class SystemZipCmdMgr
     }
 
     /**
+     * 打包所需文件列表
+     * @param string $zipFilePath 打包文件路径
+     * @param string $extractTo 打包目标路径
+     * @param array $files 需要打包的文件
+     * @throws \Exception
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function zipBuildFiles(string $zipFilePath, string $extractTo, array $files)
+    {
+        # 切换工作区为站点根目录
+        chdir($extractTo);
+        # 获取系统级打包命令
+        $files = implode(',', $files);
+        $cmd     = self::getZipBuildCmd($zipFilePath, $files);
+        $desc    = [
+            0 => ["pipe", "r"],
+            1 => ["pipe", "w"],
+            2 => ["pipe", "w"],
+        ];
+        $handler = proc_open($cmd, $desc, $pipes);
+        if (!is_resource($handler)) {
+            throw new Exception("打包zip时出错:proc_open调用失败");
+        }
+        $err = fread($pipes[2], 1024);
+        fclose($pipes[2]);
+        proc_close($handler);
+        if ($err) {
+            throw new Exception("打包zip时出错:$err");
+        }
+    }
+
+    /**
      * 获取系统支持的ZIP打包命令
      * @param mixed $zipFile 打包至某个目录
-     * @param mixed $extractTo 打包的目标目录
+     * @param mixed $extractTo 打包的目标目录，存在小写逗号时，表示打包指定文件
      * @param mixed $ignoreFiles 需要忽略的目录或者文件
      * @return string
      * @author 贵州猿创科技有限公司
@@ -113,9 +148,14 @@ class SystemZipCmdMgr
                 $ignoreFiles = implode(' ', $ignoreFiles);
                 $extractTo   = "{$extractTo} -x {$ignoreFiles}";
             }
-            # zip
+            # 指定打包文件列表
+            self::appointFiles($extractTo);
+            # 组装命令
             $cmd = "{$cmd} -o -qq -r {$zipFile} {$extractTo}";
-        } else if ($cmd = self::findCmd('tar')) {
+        } 
+        # tar
+        else if ($cmd = self::findCmd('tar')) {
+            # 忽略文件
             $option = '';
             if (!empty($ignoreFiles)) {
                 $ignoreFiles = array_map(function ($item) {
@@ -124,9 +164,14 @@ class SystemZipCmdMgr
                 $ignoreFiles = implode(' ', $ignoreFiles);
                 $option      = " {$ignoreFiles}";
             }
-            # 系统级命令
+            # 指定打包文件列表
+            self::appointFiles($extractTo);
+            # 组装命令
             $cmd = "{$cmd}{$option} -cf {$zipFile} {$extractTo}";
-        } else if ($cmd = self::findCmd('7z')) {
+        }
+        # 7Z
+        else if ($cmd = self::findCmd('7z')) {
+            # 忽略文件
             if (!empty($ignoreFiles)) {
                 $ignoreFiles = array_map(function ($item) {
                     return "'-xr!{$item}'";
@@ -134,20 +179,46 @@ class SystemZipCmdMgr
                 $ignoreFiles = implode(' ', $ignoreFiles);
                 $extractTo   = "{$extractTo} {$ignoreFiles}";
             }
-            # 7z
-            $cmd = "{$cmd} a {$zipFile} {$extractTo}";
-        } else if ($cmd = self::findCmd('7zz')) {
-            if (!empty($ignoreFiles)) {
-                $ignoreFiles = array_map(function ($item) {
-                    return "'-xr!{$item}'";
-                }, $ignoreFiles);
-                $ignoreFiles = implode(' ', $ignoreFiles);
-                $extractTo   = "{$extractTo} {$ignoreFiles}";
-            }
-            # 7zz
+            # 指定打包文件列表
+            self::appointFiles($extractTo);
+            # 组装命令
             $cmd = "{$cmd} a {$zipFile} {$extractTo}";
         }
+        # 7ZZ
+        else if ($cmd = self::findCmd('7zz')) {
+            # 忽略文件
+            if (!empty($ignoreFiles)) {
+                $ignoreFiles = array_map(function ($item) {
+                    return "'-xr!{$item}'";
+                }, $ignoreFiles);
+                $ignoreFiles = implode(' ', $ignoreFiles);
+                $extractTo   = "{$extractTo} {$ignoreFiles}";
+            }
+            # 指定打包文件列表
+            self::appointFiles($extractTo);
+            # 组装命令
+            $cmd = "{$cmd} a {$zipFile} {$extractTo}";
+        }
+        # 返回命令
         return $cmd;
+    }
+
+    /**
+     * 指定打包文件
+     * @param string $extractTo
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    private static function appointFiles(string &$extractTo)
+    {
+        if (strpos($extractTo, ',')) {
+            $extractTo = array_map(function ($item) {
+                return " {$item}";
+            }, explode(',', $extractTo));
+            $extractTo = implode(' ', $extractTo);
+        }
     }
 
     /**

@@ -3,7 +3,7 @@
 namespace app\common\model;
 
 use app\Model;
-use app\service\Upload;
+use app\common\service\UploadService;
 
 /**
  * 应用模型
@@ -35,7 +35,7 @@ class StoreApp extends Model
      */
     protected function setLogoAttr($value)
     {
-        return $value ? Upload::path($value) : '';
+        return $value ? UploadService::path($value) : '';
     }
 
     /**
@@ -48,7 +48,7 @@ class StoreApp extends Model
      */
     protected function getLogoAttr($value)
     {
-        return $value ? Upload::url((string) $value) : '';
+        return $value ? UploadService::url((string) $value) : '';
     }
 
     /**

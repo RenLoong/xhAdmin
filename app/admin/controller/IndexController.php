@@ -2,14 +2,11 @@
 
 namespace app\admin\controller;
 
-use app\admin\logic\AppCoreLogic;
 use app\common\model\StoreApp;
 use app\common\service\SystemInfoService;
 use app\BaseController;
 use app\common\enum\PlatformTypes;
 use support\Request;
-use YcOpen\CloudService\Cloud;
-use YcOpen\CloudService\Request\SystemUpdateRequest;
 
 /**
  * 首页数据
@@ -126,74 +123,6 @@ class IndexController extends BaseController
             'platform_echarts' => $platform_echarts
         ];
         return $this->successRes($data);
-    }
-
-    /**
-     * 更新检测升级
-     * @param Request $request
-     * @return \support\Response
-     * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-05-15
-     */
-    public function updateCheck(Request $request)
-    {
-        $data = SystemInfo::info();
-        if (!isset($data['system_version'])) {
-            return $this->fail('获取本地版本错误');
-        }
-
-        $system_version = $data['system_version'];
-        $version_name = $data['system_version_name'];
-        $versionData = [
-            'version_name' => '未知',
-            'version' => 0,
-            'client_version_name' => $version_name,
-            'client_version' => $system_version,
-        ];
-        // 检测更新
-        if ($request->method() === 'DELETE') {
-            # 检测更新
-            try {
-                $req = new SystemUpdateRequest;
-                $req->verify();
-                $req->version_name = $version_name;
-                $req->version = $system_version;
-                $cloud = new Cloud($req);
-                $data = $cloud->send();
-                return $this->successRes($data->toArray());
-            } catch (\Throwable $th) {
-                return $this->json($th->getMessage(), 666, $versionData);
-            }
-        } else if ($request->method() === 'POST') {
-            try {
-                # 获取版本号
-                $version = (int) $request->post('version');
-                # 获取框架更新KEY
-                $downKey = AppCoreLogic::getDownKey($version);
-                # 下载更新包
-                AppCoreLogic::downPack($downKey);
-                # 开始更新框架
-                AppCoreLogic::update($version);
-                # 更新完成
-                return $this->success('版本更新成功');
-            } catch (\Throwable $e) {
-                return $this->fail($e->getMessage());
-            }
-        } else {
-            # 获取更新信息
-            try {
-                $req = new SystemUpdateRequest;
-                $req->detail();
-                $req->version_name = $version_name;
-                $req->version = $system_version;
-                $cloud = new Cloud($req);
-                $data = $cloud->send();
-                return $this->successRes($data->toArray());
-            } catch (\Throwable $th) {
-                return $this->json($th->getMessage(), 666, $versionData);
-            }
-        }
     }
 
     /**

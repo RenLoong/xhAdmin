@@ -3,8 +3,8 @@
 namespace app\common\model;
 
 use app\Model;
-use app\service\Upload;
-use app\utils\Password;
+use app\common\service\UploadService;
+use app\common\utils\Password;
 
 /**
  * 管理员
@@ -46,6 +46,6 @@ class SystemAdmin extends Model
      */
     protected function setHeadimgAttr($value)
     {
-        return Upload::path($value);
+        return UploadService::path($value);
     }
 }

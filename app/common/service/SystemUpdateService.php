@@ -1,34 +1,54 @@
 <?php
 namespace app\common\service;
+use app\common\manager\ZipMgr;
+use app\common\manager\JsonMgr;
 use Exception;
 use support\Request;
-use ZipArchive;
+use YcOpen\CloudService\Request as CloudRequest;
+use YcOpen\CloudService\Cloud;
+use YcOpen\CloudService\Request\SystemUpdateRequest;
 
+/**
+ * 更新服务类
+ * 更新步骤如下：
+ * 1、备份代码
+ * 2、备份数据库
+ * 3、删除代码
+ * 4、下载更新包
+ * 5、解压更新包
+ * 6、执行数据同步更新
+ * 7、重启主进程服务
+ * 8、等待服务重启
+ * 9、更新成功
+ * @author 贵州猿创科技有限公司
+ * @copyright 贵州猿创科技有限公司
+ * @email 416716328@qq.com
+ */
 class SystemUpdateService
 {
     /**
-     * 本地版本信息
-     * @var array
+     * 当前请求管理器
+     * @var Request
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    private $versionData = [];
+    private $request = null;
 
     /**
-     * 是否支持ZIPArchive
-     * @var 
+     * 本地版本名称
+     * @var string
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    private $hasZipArchive = false;
+    private $clientVersionName = '';
 
     /**
-     * 执行系统命令解压
-     * @var 
+     * 本地版本号
+     * @var int
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    private $cmd = null;
+    private $clientVersion = 0;
 
     /**
      * 临时ZIP文件路径
@@ -39,12 +59,21 @@ class SystemUpdateService
     private $tempZipFilePath = null;
 
     /**
-     * 备份ZIP路径
+     * 备份源代码路径
      * @var string
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
     private $backupPath = null;
+
+     /**
+      * 备份覆盖代码路径
+      * @var 
+      * @author 贵州猿创科技有限公司
+      * @email 416716328@qq.com
+      */
+
+    private $backCoverPath = null;
 
     /**
      * 解压的目标路径
@@ -62,10 +91,11 @@ class SystemUpdateService
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    private static $ignoreList = [
-        '/.env',
-        '/public',
-        '/plugin',
+    private $ignoreList = [
+        '.env',
+        'public',
+        'plugin',
+        'runtime',
     ];
 
     /**
@@ -74,135 +104,220 @@ class SystemUpdateService
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    private static $backCoverList = [
-        '/config/plugin',
-        '/config/redis.php',
+    private $backCoverList = [
+        '.env',
+        'config/plugin',
+        'config/redis.php',
     ];
 
     /**
      * 构造函数
-     * @param array $versionData
+     * @param \support\Request $Request
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public function __construct(array $versionData)
+    public function __construct(Request $Request)
     {
-        $this->versionData = $versionData;
-        # 设置路径
+        # 设置请求实体
+        $this->request = $Request;
+        # 下载框架更新包临时地址
         $this->tempZipFilePath = runtime_path("/core/kfadmin.zip");
-        $this->targetPath = base_path();
+        # 解压至目标地址
+        // $this->targetPath = base_path();
+        $this->targetPath = runtime_path('temp');
+        # 备份当前版本代码地址值
         $this->backupPath = runtime_path("/core/backup.zip");
-        # 效验系统函数
-        $this->hasZipArchive = class_exists(ZipArchive::class, false);
-        $this->cmd = PluginLogic::getUnzipCmd($this->tempZipFilePath, $this->targetPath);
-        if (!$this->hasZipArchive) {
-            if (!$this->cmd) {
-                throw new Exception('请给php安装zip模块或者给系统安装unzip命令');
-            }
-            if (!function_exists('proc_open')) {
-                throw new Exception('请解除proc_open函数的禁用或者给php安装zip模块');
-            }
-        }
-        if (!function_exists('shell_exec')) {
-            throw new Exception("请开启shell_exec函数");
-        }
+        # 备份覆盖代码地址值
+        $this->backCoverPath = runtime_path("/core/cover.zip");
+        # 本地版本信息
+        $clientSystemVersion     = SystemInfoService::info();
+        $this->clientVersion = $clientSystemVersion['system_version'];
+        $this->clientVersionName = $clientSystemVersion['system_version_name'];
     }
 
     /**
      * 备份代码
-     * @param \support\Request $request
-     * @return void
+     * @return \support\Response
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public function backCode(Request $request)
+    public function backCode()
     {
         # 打包至目标压缩包
         if (!is_dir(dirname($this->backupPath))) {
             mkdir(dirname($this->backupPath), 0755, true);
         }
-        # 支持ZipArchive
-        if ($this->hasZipArchive) {
-            $zip = new ZipArchive;
-            $zipStatus = $zip->open($this->backupPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
-            if (!$zipStatus) {
-                throw new Exception('打开备份源包地址失败');
-            }
-            $basePathFiles = scandir($this->targetPath);
-            p($basePathFiles);
-            # 备份框架核心
-            // foreach (self::$backupList as $item) {
-            //     if (is_dir(base_path($item))) {
-            //         $zip->addEmptyDir($item);
-            //         $files = scanDir(base_path($item));
-            //         foreach ($files as $file) {
-            //             if ($file != "." && $file != "..") {
-            //                 $path = $item . DIRECTORY_SEPARATOR . $file;
-            //                 if (is_dir(base_path($path))) {
-            //                     $zip->addEmptyDir($path);
-            //                     self::addFileToZip(base_path($path), $zip, $path);
-            //                 } else {
-            //                     $zip->addFile(base_path($path), $path);
-            //                 }
-            //             }
-            //         }
-            //     } else {
-            //         $zip->addFile(base_path($item), $item);
-            //     }
-            // }
-            // # 关闭打包资源
-            // $zip->close();
-            // console_log("框架备份成功...");
-        }
-        # 检测如果都不支持zip模块和unzip命令则抛出异常
-        if (!$this->hasZipArchive && !$this->cmd) {
-            throw new Exception('请给php安装zip模块或者给系统安装unzip命令');
-        }
+        # 备份原始代码
+        ZipMgr::build($this->backupPath, base_path(), $this->ignoreList);
+        # 备份覆盖代码
+        ZipMgr::buildFiles($this->backCoverPath, base_path(), $this->backCoverList);
+        # 打包成功
+        return JsonMgr::successRes([
+            'next' => 'backSql'
+        ]);
     }
 
     /**
-     * 遍历打包文件
-     * @param string $sourcePath
-     * @param \ZipArchive $zip
-     * @param string $name
-     * @return void
+     * 备份数据库
+     * @return \support\Response
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
-    private static function addFileToZip(string $sourcePath, ZipArchive $zip, string $name)
+    public function backSql()
     {
-        $files = scandir($sourcePath);
-        foreach ($files as $file) {
-            if ($file != "." && $file != "..") {
-                $path = $sourcePath . DIRECTORY_SEPARATOR . $file;
-                if (is_dir($path)) {
-                    $zip->addEmptyDir($name . DIRECTORY_SEPARATOR . $file);
-                    self::addFileToZip($path, $zip, $name . DIRECTORY_SEPARATOR . $file);
-                } else {
-                    $zip->addFile($path, $name . DIRECTORY_SEPARATOR . $file);
-                }
-            }
-        }
+        return JsonMgr::successRes([
+            'next' => 'download'
+        ]);
     }
 
-    public function backSql(Request $request)
+    /**
+     * 删除代码
+     * @return \support\Response
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function delCode()
     {
+        # 检测目标路径不存在则继续下一步
+        if (!is_dir($this->targetPath)) {
+            return JsonMgr::successRes([
+                'next' => 'unzip'
+            ]);
+        }
+        # 切换工作区
+        chdir($this->targetPath);
+        # 删除原始代码
+        shell_exec("rm -rf {$this->targetPath}/*");
+        # 删除成功
+        return JsonMgr::successRes([
+            'next' => 'unzip'
+        ]);
     }
-    public function download(Request $request)
+
+    /**
+     * 下载更新包
+     * @return \support\Response
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function download()
     {
+        # 获取更新目标版本
+        $version = (int) $this->request->get('version', 0);
+        if (!$version) {
+            throw new Exception('更新目标版本参数错误');
+        }
+        # 获取更新包下载地址
+        $req = new SystemUpdateRequest;
+        $req->getKey();
+        $req->target_version = $version;
+        $cloud = new Cloud($req);
+        $data = $cloud->send();
+        $downUrl = $data->url;
+        # 下载更新包
+        $req = new CloudRequest;
+        $req->setUrl($downUrl);
+        $req->setSaveFile($this->tempZipFilePath);
+        $cloud = new Cloud($req);
+        $cloud->send();
+        # 下载成功
+        return JsonMgr::successRes([
+            'next' => 'delplugin'
+        ]);
     }
-    public function delplugin(Request $request)
+
+    /**
+     * 解压更新包
+     * @return \support\Response
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function unzip()
     {
+        # 检测目标路径不存在则创建
+        if (!is_dir($this->targetPath)) {
+            mkdir($this->targetPath, 0755, true);
+        }
+        # 解压更新包
+        ZipMgr::unzip($this->tempZipFilePath, $this->targetPath);
+        # 解压覆盖文件
+        ZipMgr::unzip($this->backCoverPath, $this->targetPath);
+        # 解压成功
+        return JsonMgr::successRes([
+            'next' => 'reload'
+        ]);
     }
-    public function unzip(Request $request)
+
+    /**
+     * 执行数据同步更新
+     * @return \support\Response
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function updateData()
     {
+        # 更新服务类
+        $class = "app\\common\\service\\UpdateService";
+        if (class_exists($class)) {
+            # 执行更新前置
+            $context       = [];
+            if (method_exists($class, 'beforeUpdate')) {
+                $context = call_user_func(
+                    [$class, 'beforeUpdate'],
+                    $this->clientVersion,
+                    $this->request
+                );
+            }
+            # 执行update更新
+            if (method_exists($class, 'update')) {
+                call_user_func(
+                    [$class, 'update'],
+                    $this->clientVersion,
+                    $context
+                );
+            }
+        }
+        # 更新成功
+        return JsonMgr::successRes([
+            'next' => 'success'
+        ]);
     }
-    public function ping(Request $request)
+
+    /**
+     * 重启主进程服务
+     * @return \support\Response
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function reload()
     {
+        # 重启主进程服务
+        FrameworkService::reloadWebman();
+        # 重启成功
+        return JsonMgr::successRes([
+            'next' => 'ping'
+        ]);
     }
-    public function updateData(Request $request)
+
+    /**
+     * 等待服务重启
+     * @return \support\Response
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function ping()
     {
+        return JsonMgr::successRes([
+            'next' => 'updateData'
+        ]);
     }
 }

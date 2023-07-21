@@ -35,6 +35,37 @@ class ZipMgr
             console_log("开始使用ZipArchive扩展打包");
         }
     }
+
+    /**
+     * 根据路径打包所需文件
+     * @param string $zipFilePath 打包文件路径
+     * @param string $extractTo 打包目标路径
+     * @param array $files 需要打包的文件
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function buildFiles(string $zipFilePath,string $extractTo,array $files = [])
+    {
+        $has_zip_archive = class_exists(ZipArchive::class, false);
+        # 检测是否支持打包
+        if (!SystemZipCmdMgr::getZipBuildCmd($zipFilePath, $extractTo) && !$has_zip_archive) {
+            throw new Exception('请给php安装zip模块或者给系统安装zip命令');
+        }
+        # 开始执行打包
+        if (SystemZipCmdMgr::getZipBuildCmd($zipFilePath, $extractTo)) {
+            # 系统级命令打包
+            if (!function_exists('proc_open')) {
+                throw new Exception('请解除proc_open函数的禁用');
+            }
+            # 开始执行系统打包
+            SystemZipCmdMgr::zipBuildFiles($zipFilePath, $extractTo,$files);
+        } else {
+            # 使用ZipArchive扩展打包
+            console_log("开始使用ZipArchive扩展打包");
+        }
+    }
     
     /**
      * 解压

@@ -2,10 +2,12 @@
 
 namespace app\admin\controller;
 
+use app\common\service\SystemRollbackService;
 use app\common\service\SystemUpdateService;
 use app\common\service\SystemInfoService;
 use app\BaseController;
 use Exception;
+use process\Monitor;
 use support\Request;
 use YcOpen\CloudService\Cloud;
 use YcOpen\CloudService\Request\SystemUpdateRequest;
@@ -55,9 +57,9 @@ class UpdatedController extends BaseController
         if (!isset($data['system_version'])) {
             throw new Exception('获取本地版本错误');
         }
-        $this->system_version    = $data['system_version'];
-        $this->version_name      = $data['system_version_name'];
-        $this->versionData = [
+        $this->system_version = $data['system_version'];
+        $this->version_name   = $data['system_version_name'];
+        $this->versionData    = [
             'version_name' => '未知',
             'version' => 0,
             'client_version_name' => $this->version_name,
@@ -103,22 +105,35 @@ class UpdatedController extends BaseController
     private function checkUpdate(Request $request)
     {
         $funcName = $request->get('step', '');
-        $name     = $request->post('name', '');
         $version  = (int) $request->post('version', 0);
-        if (empty($name)) {
-            return $this->fail('应用名称参数错误');
-        }
         if (empty($version)) {
             return $this->fail('更新目标版本参数错误');
         }
         if (empty($funcName)) {
             return $this->fail('操作方法出错');
         }
+        # 暂停代码监听变动
+        $monitor_support_pause = method_exists(Monitor::class, 'pause');
+        if ($monitor_support_pause) {
+            Monitor::pause();
+        }
         try {
-            $class = new SystemUpdateService($this->versionData);
+            $class = new SystemUpdateService($request);
             return call_user_func([$class, $funcName]);
         } catch (\Throwable $e) {
+            try {
+                # 开始进行版本回滚
+                (new SystemRollbackService($request))->startRollback();
+            } catch (\Throwable $e) {
+                # 回滚失败，抛出异常
+                throw $e;
+            }
             return $this->fail($e->getMessage());
+        } finally {
+            # 恢复代码监听变动
+            if ($monitor_support_pause) {
+                Monitor::resume();
+            }
         }
     }
 
@@ -160,9 +175,9 @@ class UpdatedController extends BaseController
             $req = new SystemUpdateRequest;
             $req->detail();
             $req->version_name = $this->version_name;
-            $req->version = $this->system_version;
-            $cloud = new Cloud($req);
-            $data = $cloud->send();
+            $req->version      = $this->system_version;
+            $cloud             = new Cloud($req);
+            $data              = $cloud->send();
             return $this->successRes($data->toArray());
         } catch (\Throwable $th) {
             return $this->json($th->getMessage(), 666, $this->versionData);

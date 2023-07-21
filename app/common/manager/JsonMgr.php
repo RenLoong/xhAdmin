@@ -1,5 +1,7 @@
 <?php
-namespace app\common\utils;
+namespace app\common\manager;
+
+use app\common\utils\Json;
 
 class JsonMgr
 {

@@ -24,7 +24,6 @@ class FrameworkService
     {
         if (function_exists('posix_kill')) {
             try {
-                console_log("停止子进程---执行成功");
                 # 重启子进程
                 posix_kill(posix_getppid(), SIGUSR1);
                 return true;
@@ -33,7 +32,6 @@ class FrameworkService
             }
         } else {
             Timer::add(1, function () {
-                console_log("停止子进程---执行成功");
                 Worker::stopAll();
             });
         }
@@ -51,7 +49,6 @@ class FrameworkService
     {
         if (function_exists('posix_kill')) {
             try {
-                console_log("停止主进程---执行成功");
                 # 重启主进程
                 posix_kill(posix_getppid(), SIGINT);
                 return true;
@@ -60,7 +57,6 @@ class FrameworkService
             }
         } else {
             Timer::add(1, function () {
-                console_log("停止主进程---执行成功");
                 Worker::stopAll();
             });
         }

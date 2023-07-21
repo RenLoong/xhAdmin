@@ -5,6 +5,7 @@ namespace app\controller;
 use app\BaseController;
 use app\common\manager\SystemZipCmdMgr;
 use app\common\manager\ZipMgr;
+use app\common\service\SystemUpdateService;
 use support\Request;
 
 class IndexController extends BaseController
@@ -34,5 +35,27 @@ class IndexController extends BaseController
         
         // SystemZipCmdMgr::zipBuildCmd(base_path('runtime/test123.zip'), base_path('public'));
         return $this->fail('测试失败');
+    }
+
+    /**
+     * 更新测试
+     * @param \support\Request $request
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function checkUpdate(Request $request)
+    {
+        $funcName = $request->get('step', '');
+        $version  = (int) $request->get('version', 0);
+        if (empty($version)) {
+            return $this->fail('更新目标版本参数错误');
+        }
+        if (empty($funcName)) {
+            return $this->fail('操作方法出错');
+        }
+        $class = new SystemUpdateService($request);
+        return call_user_func([$class, $funcName]);
     }
 }
