@@ -2,12 +2,9 @@
 
 namespace app\store\controller;
 
-use app\admin\builder\FormBuilder;
-use app\admin\validate\StorePlatform;
+use app\common\builder\FormBuilder;
 use app\BaseController;
-use app\enum\PlatformTypes;
-use app\enum\StorePlatformStatus;
-use app\service\Upload;
+use app\common\service\UploadService;
 use app\store\validate\Store;
 use support\Request;
 
@@ -34,7 +31,7 @@ class StoreController extends BaseController
      */
     public function __construct()
     {
-        $this->model = new \app\store\model\Store;
+        $this->model = new \app\common\model\Store;
     }
 
     /**
@@ -61,7 +58,7 @@ class StoreController extends BaseController
             // 数据验证
             hpValidate(Store::class, $post, 'edit');
 
-            $post['logo'] = Upload::path($post['logo']);
+            $post['logo'] = UploadService::path($post['logo']);
             if (isset($post['password']) && empty($post['password'])) {
                 unset($post['password']);
             }

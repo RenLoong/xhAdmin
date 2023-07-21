@@ -4,11 +4,11 @@ namespace app\admin\controller;
 
 use app\common\builder\FormBuilder;
 use app\common\builder\ListBuilder;
-use app\admin\logic\ModulesLogic;
+use app\common\manager\ModulesMgr;
 use app\admin\validate\Modules;
 use app\BaseController;
-use app\exception\RedirectException;
-use app\utils\DbMgr;
+use app\common\exception\RedirectException;
+use app\common\manager\DbMgr;
 use Exception;
 use Illuminate\Database\Schema\Blueprint;
 use support\Request;
@@ -41,8 +41,8 @@ class ModulesController extends BaseController
                 'type' => 'primary',
             ])
             ->addRightButton('curd', 'CURD', [
-                'api' => 'admin/SystemCurd/index',
-                'path' => '/SystemCurd/index',
+                'api' => 'admin/Curd/index',
+                'path' => '/Curd/index',
             ], [], [
                 'type' => 'warning',
                 'link' => true
@@ -168,9 +168,9 @@ class ModulesController extends BaseController
                 return $this->fail('该数据表已存在');
             }
 
-            $columns = ModulesLogic::defaultColumns();
+            $columns = ModulesMgr::defaultColumns();
             DbMgr::schema()->create($table_name, function (Blueprint $table) use ($columns) {
-                $type_method_map = ModulesLogic::methodControlMap();
+                $type_method_map = ModulesMgr::methodControlMap();
                 foreach ($columns as $column) {
                     if (!isset($column['type'])) {
                         throw new Exception("请为{$column['field']}选择类型");
@@ -178,7 +178,7 @@ class ModulesController extends BaseController
                     if (!isset($type_method_map[$column['type']])) {
                         throw new Exception("不支持的类型{$column['type']}");
                     }
-                    ModulesLogic::createColumn($column, $table);
+                    ModulesMgr::createColumn($column, $table);
                 }
                 $table->charset   = 'utf8mb4';
                 $table->collation = 'utf8mb4_general_ci';
@@ -223,7 +223,7 @@ class ModulesController extends BaseController
         $prefix = config('database.connections.mysql.prefix', '');
         $tableName = str_replace($prefix, '', $prefixTableName);
         # 系统表禁止删除
-        if (in_array($tableName, ModulesLogic::dropTables())) {
+        if (in_array($tableName, ModulesMgr::dropTables())) {
             throw new RedirectException("{$prefixTableName}属于系统表，禁止编辑",'/modules/index');
         }
         if ($request->method() == 'PUT') {
@@ -288,7 +288,7 @@ class ModulesController extends BaseController
         $prefix = config('database.connections.mysql.prefix', '');
         $tableName = str_replace($prefix, '', $prefixTableName);
         # 系统表禁止删除
-        if (in_array($tableName, ModulesLogic::dropTables())) {
+        if (in_array($tableName, ModulesMgr::dropTables())) {
             return $this->fail("{$prefixTableName}属于系统表，禁止删除");
         }
         # 执行删除：控制器，模型，验证器

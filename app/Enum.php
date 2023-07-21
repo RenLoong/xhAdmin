@@ -2,7 +2,7 @@
 
 namespace app;
 
-use app\utils\EnumBaseic;
+use app\common\utils\EnumBaseic;
 use Exception;
 
 /**
@@ -14,21 +14,43 @@ use Exception;
 abstract class Enum extends EnumBaseic
 {
     /**
-     * 获取枚举值
-     * @param string $key
-     * @throws Exception
+     * 获取枚举文本
+     * @param string $dataValue
+     * @param string $default
      * @return mixed
+     * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-04-29
+     * @email 416716328@qq.com
      */
-    public static function getText(string $key)
+    public static function getText(string $dataValue,string $default = '')
     {
-        $data = self::parseData();
-        if (!isset($data[$key])) {
-            throw new Exception('获取枚举错误');
+        $data = self::toArray();
+        foreach ($data as $value) {
+            if ($value['value'] == $dataValue) {
+                return $value['text'];
+            }
         }
-        return $data[$key];
+        return $default;
+    }
+
+    /**
+     * 获取枚举值
+     * @param string $dataValue
+     * @param string $default
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function getValue(string $dataValue,string $default = '')
+    {
+        $data = self::toArray();
+        foreach ($data as $value) {
+            if ($value['value'] == $dataValue) {
+                return $value;
+            }
+        }
+        return $default;
     }
 
     /**
@@ -121,17 +143,5 @@ abstract class Enum extends EnumBaseic
             ];
         }
         return $list;
-    }
-
-    /**
-     * 获取原始数据
-     * @return array
-     * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-04-29
-     */
-    public static function getData(): array
-    {
-        return self::toArray();
     }
 }

@@ -2,8 +2,8 @@
 
 namespace app\admin\controller;
 
-use app\admin\logic\SystemUpdate;
-use app\admin\service\kfcloud\SystemInfo;
+use app\common\service\SystemUpdateService;
+use app\common\service\SystemInfoService;
 use app\BaseController;
 use Exception;
 use support\Request;
@@ -51,7 +51,7 @@ class UpdatedController extends BaseController
      */
     public function __construct()
     {
-        $data = SystemInfo::info();
+        $data = SystemInfoService::info();
         if (!isset($data['system_version'])) {
             throw new Exception('获取本地版本错误');
         }
@@ -115,7 +115,7 @@ class UpdatedController extends BaseController
             return $this->fail('操作方法出错');
         }
         try {
-            $class = new SystemUpdate($this->versionData);
+            $class = new SystemUpdateService($this->versionData);
             return call_user_func([$class, $funcName]);
         } catch (\Throwable $e) {
             return $this->fail($e->getMessage());

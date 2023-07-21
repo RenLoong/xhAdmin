@@ -2,7 +2,7 @@
 
 namespace app\store\model;
 
-use app\model\SystemUpload as ModelSystemUpload;
+use app\common\model\SystemUpload as ModelSystemUpload;
 
 class SystemUpload extends ModelSystemUpload
 {

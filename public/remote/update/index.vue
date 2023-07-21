@@ -104,7 +104,7 @@ export default {
             }
           }, 300);
           _this.$http
-            .usePost("admin/Index/updateCheck", data)
+            .usePost("admin/Updated/updateCheck", data)
             .then((res) => {
               _this.install.text = '等待服务重启...';
               _this.install.progress = 100;
@@ -147,7 +147,7 @@ export default {
     },
     initify() {
       const _this = this;
-      _this.$http.usePut("admin/Index/updateCheck").then((res) => {
+      _this.$http.usePut("admin/Updated/updateCheck").then((res) => {
         const { data } = res;
         _this.updated = data;
       });

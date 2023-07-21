@@ -66,7 +66,7 @@ export default {
                     name: 'update',
                     icon: 'RocketOutlined',
                     hanlder: () => {
-                        this.$routerApp.push('/Index/updateCheck')
+                        this.$routerApp.push('/Updated/updateCheck')
                     },
                 }
             ]
@@ -92,10 +92,10 @@ export default {
             const _this = this
             const currentRoute = _this.$routeApp.path
             // 已经在更新页面，不再重复请求
-            if (currentRoute === '/Index/updateCheck') {
+            if (currentRoute === '/Updated/updateCheck') {
                 return;
             }
-            _this.$http.useDelete('admin/Index/updateCheck').then((res) => {
+            _this.$http.useDelete('admin/Updated/updateCheck').then((res) => {
                 const { data } = res
                 // 无版本升级
                 if (data?.version <= data?.client_version) {

@@ -2,10 +2,10 @@
 
 namespace app\store\controller;
 
-use app\admin\service\kfcloud\SystemInfo;
-use app\store\model\Store;
+use app\common\service\SystemInfoService;
+use app\common\model\Store;
 use app\store\model\StoreMenus;
-use app\utils\Password;
+use app\common\utils\Password;
 use Exception;
 use support\Request;
 use app\admin\validate\SystemAdmin as ValidateSystemAdmin;
@@ -29,7 +29,7 @@ class PublicsController extends BaseController
     public function site()
     {
         $web_logo = getHpConfig('web_logo');
-        $systemInfo = SystemInfo::info();
+        $systemInfo = SystemInfoService::info();
         $empower_token = empowerFile('token');
         $private_key = empowerFile('private_key');
         $data = [
@@ -195,7 +195,18 @@ class PublicsController extends BaseController
             'icon',
             'show',
         ];
-        $list = StoreMenus::order($order)->field($field)->select()->toArray();
+        $list = StoreMenus::order($order)
+        ->field($field)
+        ->select()
+        ->each(function ($e) {
+            $e->show = $e->show === '20' ? '1' : '0';
+            if ($e->component === 'none/index') {
+                $e->component = '';
+            }
+            is_array($e->method) && $e->method = current($e->method);
+            return $e;
+        })
+        ->toArray();
         $data = [
             'active' => 'Index/index',
             'list' => $list

@@ -3,9 +3,9 @@
 namespace app\admin\controller;
 
 use app\common\builder\FormBuilder;
-use app\admin\model\SystemUpload;
+use app\common\model\SystemUpload;
 use app\BaseController;
-use app\service\Upload;
+use app\common\service\UploadService;
 use support\Request;
 
 /**
@@ -18,10 +18,10 @@ class SystemUploadController extends BaseController
 {
     // 执行驱动方法
     private $driverTabsName = [
-        'public' => '本地附件',
-        'oss' => '阿里云储存',
-        'qiniu' => '七牛云储存',
-        'cos' => '腾讯云储存',
+        'public'    => '本地附件',
+        'oss'       => '阿里云储存',
+        'qiniu'     => '七牛云储存',
+        'cos'       => '腾讯云储存',
     ];
 
     /**
@@ -38,7 +38,7 @@ class SystemUploadController extends BaseController
         $storage = isset($config['storage']) ? $config['storage'] : [];
         if ($request->method() === 'PUT') {
             $post       = $request->post();
-            $tpl        = app_path('/admin/tpl/upload.tpl');
+            $tpl        = app_path('/admin/template/upload.tpl');
             $tplContent = file_get_contents($tpl);
             $strTpl     = [
                 "{default}",
@@ -90,6 +90,9 @@ class SystemUploadController extends BaseController
         ]);
         $selectOptions = [];
         foreach ($storage as $driverName => $value) {
+            if (!isset($this->driverTabsName[$driverName])) {
+                continue;
+            }
             $selectOptions[] = [
                 'label' => $this->driverTabsName[$driverName],
                 'value' => $driverName
@@ -122,6 +125,9 @@ class SystemUploadController extends BaseController
             $children->getBuilder()->formRule(),
         );
         foreach ($storage as $driver => $driverConfig) {
+            if (!isset($this->driverTabsName[$driver])) {
+                continue;
+            }
             $children        = [];
             $childrenBuilder = new FormBuilder;
             foreach ($driverConfig as $fieldKey => $fieldValue) {
@@ -156,8 +162,7 @@ class SystemUploadController extends BaseController
         empty($orderBy) && $orderBy = ['update_at' => 'desc'];
         $where = array_merge($where, [
             ['store_id','=',null],
-            ['platform_id','=',null],
-            ['appid','=',null],
+            ['saas_appid','=',null],
             ['uid','=',null],
         ]);
         $data   = SystemUpload::with(['category'])
@@ -270,7 +275,7 @@ class SystemUploadController extends BaseController
         if (!$id) {
             return parent::fail('请选择需要删除的附件');
         }
-        if (!Upload::delete($id)) {
+        if (!UploadService::delete($id)) {
             return parent::fail('删除失败');
         }
         return parent::success('删除完成');
@@ -289,7 +294,7 @@ class SystemUploadController extends BaseController
     {
         $file = $request->file('file');
         $cid  = (int) $request->post('cid');
-        if (!$data = Upload::upload($file, $cid)) {
+        if (!$data = UploadService::upload($file, $cid)) {
             return parent::fail('上传失败');
         }
         return parent::successFul('上传成功', $data);

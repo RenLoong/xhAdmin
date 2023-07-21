@@ -3,7 +3,7 @@
 namespace app\common\model;
 
 use app\Model;
-use app\service\Upload;
+use app\common\service\UploadService;
 use think\model\concern\SoftDelete;
 
 class SystemUpload extends Model
@@ -41,7 +41,7 @@ class SystemUpload extends Model
      */
     protected function getUrlAttr($value, $data)
     {
-        return Upload::url((string) $data['path']);
+        return UploadService::url((string) $data['path']);
     }
 
     /**

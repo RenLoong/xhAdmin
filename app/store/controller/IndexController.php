@@ -3,9 +3,9 @@
 namespace app\store\controller;
 
 use app\BaseController;
-use app\enum\PlatformTypes;
-use app\manager\StorePlatforms;
-use app\store\model\Store;
+use app\common\enum\PlatformTypes;
+use app\common\manager\StorePlatforms;
+use app\common\model\Store;
 use app\model\Users;
 use support\Request;
 

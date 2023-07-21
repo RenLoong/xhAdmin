@@ -55,8 +55,6 @@
             "": "./",
             "app\\": "./app",
             "App\\": "./app",
-            "plugin\\": "./plugin",
-            "Plugin\\": "./plugin",
             "app\\View\\Components\\": "./app/view/components"
         },
         "files": [

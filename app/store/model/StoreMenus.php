@@ -10,7 +10,7 @@ namespace app\store\model;
  * @Email 416716328@qq.com
  * @DateTime 2023-03-12
  */
-class StoreMenus extends \app\model\StoreMenus
+class StoreMenus extends \app\common\model\StoreMenus
 {
     /**
      * 获取请求方法

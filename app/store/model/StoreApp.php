@@ -8,7 +8,7 @@ namespace app\store\model;
  * @Email 416716328@qq.com
  * @DateTime 2023-05-03
  */
-class StoreApp extends \app\model\StoreApp
+class StoreApp extends \app\common\model\StoreApp
 {
     // 定义全局查询范围
     protected $globalScope = ['store'];

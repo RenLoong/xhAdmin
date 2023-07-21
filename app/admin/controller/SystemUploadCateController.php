@@ -3,8 +3,8 @@
 namespace app\admin\controller;
 
 use app\common\builder\FormBuilder;
-use app\admin\model\SystemUpload;
-use app\admin\model\SystemUploadCate;
+use app\common\model\SystemUpload;
+use app\common\model\SystemUploadCate;
 use app\admin\validate\SystemUploadCate as ValidateSystemUploadCate;
 use app\BaseController;
 use support\Request;

@@ -32,7 +32,7 @@ class PluginCloudController extends BaseController
         $req = new UserRequest;
         $req->info();
         $cloud = new Cloud($req);
-        $data = $cloud->send();
+        $data  = $cloud->send();
         return $this->successRes($data->toArray());
     }
 
@@ -63,12 +63,12 @@ class PluginCloudController extends BaseController
         $req->login();
         $req->setParams($post, null);
         $cloud = new Cloud($req);
-        $data = $cloud->send();
-        $site = new SiteRequest;
+        $data  = $cloud->send();
+        $site  = new SiteRequest;
         $site->install();
         $site->domain = $post['host'];
-        $site->title = getHpConfig('web_name');
-        $cloud = new Cloud($site);
+        $site->title  = getHpConfig('web_name');
+        $cloud        = new Cloud($site);
         $cloud->send();
         return $this->successRes($data->toArray());
     }
@@ -86,11 +86,11 @@ class PluginCloudController extends BaseController
     public function bill(Request $request)
     {
         $params = $request->get();
-        $req = new UserRequest;
+        $req    = new UserRequest;
         $req->getUserBill();
         $req->setQuery($params, null);
         $cloud = new Cloud($req);
-        $data = $cloud->send();
+        $data  = $cloud->send();
         return $this->successRes($data->toArray());
     }
 
@@ -106,9 +106,9 @@ class PluginCloudController extends BaseController
     {
         $req = new CaptchaRequest;
         $req->captchaCode();
-        $req->bg='255,255,255';
-        $cloud = new Cloud($req);
-        $data = $cloud->send();
+        $req->bg = '255,255,255';
+        $cloud   = new Cloud($req);
+        $data    = $cloud->send();
         return $this->successRes($data->toArray());
     }
     /**
@@ -118,12 +118,12 @@ class PluginCloudController extends BaseController
      */
     public function getAvailableCoupon(Request $request)
     {
-        $G=$request->get();
-        $req=new CouponRequest;
+        $G   = $request->get();
+        $req = new CouponRequest;
         $req->getAvailableCoupon();
-        $req->setQuery($G,null);
+        $req->setQuery($G, null);
         $cloud = new Cloud($req);
-        $data = $cloud->send();
+        $data  = $cloud->send();
         return $this->successRes($data->toArray());
     }
     /**
@@ -133,12 +133,12 @@ class PluginCloudController extends BaseController
      */
     public function getCouponList(Request $request)
     {
-        $G=$request->get();
-        $req=new CouponRequest;
+        $G   = $request->get();
+        $req = new CouponRequest;
         $req->getCouponList();
-        $req->setQuery($G,null);
+        $req->setQuery($G, null);
         $cloud = new Cloud($req);
-        $data = $cloud->send();
+        $data  = $cloud->send();
         return $this->successRes($data->toArray());
     }
 }

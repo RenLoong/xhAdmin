@@ -19,7 +19,7 @@ use YcOpen\CloudService\Request\PluginRequest;
  * @Email 416716328@qq.com
  * @DateTime 2023-05-03
  */
-class PlatformAppController extends BaseController
+class StoreAppController extends BaseController
 {
     /**
      * 模型

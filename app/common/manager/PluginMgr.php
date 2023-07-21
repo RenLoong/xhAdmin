@@ -1,12 +1,12 @@
 <?php
-namespace app\common\service;
+namespace app\common\manager;
 
 use Exception;
 use YcOpen\CloudService\Cloud;
 use YcOpen\CloudService\Request;
 use ZipArchive;
 
-class PluginService
+class PluginMgr
 {
     /**
      * 回滚插件备份
@@ -87,34 +87,6 @@ class PluginService
     }
 
     /**
-     * 使用解压命令解压
-     * @param mixed $cmd
-     * @throws Exception
-     * @return void
-     * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-05-08
-     */
-    public static function unzipWithCmd($cmd)
-    {
-        $desc = [
-            0 => ["pipe", "r"],
-            1 => ["pipe", "w"],
-            2 => ["pipe", "w"],
-        ];
-        $handler = proc_open($cmd, $desc, $pipes);
-        if (!is_resource($handler)) {
-            throw new Exception("解压zip时出错:proc_open调用失败");
-        }
-        $err = fread($pipes[2], 1024);
-        fclose($pipes[2]);
-        proc_close($handler);
-        if ($err) {
-            throw new Exception("解压zip时出错:$err");
-        }
-    }
-
-    /**
      * 下载ZIP
      * @param mixed $key
      * @param mixed $file
@@ -131,68 +103,6 @@ class PluginService
         $req->setSaveFile($file);
         $cloud = new Cloud($req);
         $cloud->send();
-    }
-
-    /**
-     * 获取系统支持的解压命令
-     * @param $zip_file
-     * @param $extract_to
-     * @return mixed|string|null
-     */
-    public static function getUnzipCmd($zip_file, $extract_to)
-    {
-        if ($cmd = self::findCmd('unzip')) {
-            $cmd = "$cmd -o -qq $zip_file -d $extract_to";
-        } else if ($cmd = self::findCmd('7z')) {
-            $cmd = "$cmd x -bb0 -y $zip_file -o$extract_to";
-        } else if ($cmd = self::findCmd('7zz')) {
-            $cmd = "$cmd x -bb0 -y $zip_file -o$extract_to";
-        }
-        return $cmd;
-    }
-
-    /**
-     * 查找系统命令
-     * @param string $name
-     * @param string|null $default
-     * @param array $extraDirs
-     * @return mixed|string|null
-     */
-    public static function findCmd(string $name, string $default = null, array $extraDirs = [])
-    {
-        if (ini_get('open_basedir')) {
-            $searchPath = array_merge(explode(PATH_SEPARATOR, ini_get('open_basedir')), $extraDirs);
-            $dirs = [];
-            foreach ($searchPath as $path) {
-                if (@is_dir($path)) {
-                    $dirs[] = $path;
-                } else {
-                    if (basename($path) == $name && @is_executable($path)) {
-                        return $path;
-                    }
-                }
-            }
-        } else {
-            $dirs = array_merge(
-                explode(PATH_SEPARATOR, getenv('PATH') ?: getenv('Path')),
-                $extraDirs
-            );
-        }
-
-        $suffixes = [''];
-        if ('\\' === DIRECTORY_SEPARATOR) {
-            $pathExt = getenv('PATHEXT');
-            $suffixes = array_merge($pathExt ? explode(PATH_SEPARATOR, $pathExt) : ['.exe', '.bat', '.cmd', '.com'], $suffixes);
-        }
-        foreach ($suffixes as $suffix) {
-            foreach ($dirs as $dir) {
-                if (@is_file($file = $dir . DIRECTORY_SEPARATOR . $name . $suffix) && ('\\' === DIRECTORY_SEPARATOR || @is_executable($file))) {
-                    return $file;
-                }
-            }
-        }
-
-        return $default;
     }
 
     /**
@@ -246,14 +156,9 @@ class PluginService
     {
         clearstatcache();
         $installed = [];
-        $pluginRootPath   = base_path('/plugin');
-        if (!file_exists($pluginRootPath)) {
-            return $installed;
-        }
-        $plugin_names = scandir($pluginRootPath);
-        $plugin_names = array_diff($plugin_names, array('.', '..')) ?: [];
+        $plugin_names = array_diff(scandir(base_path('/plugin/')), array('.', '..')) ?: [];
         foreach ($plugin_names as $plugin_name) {
-            if (is_dir("{$pluginRootPath}/{$plugin_name}") && $version = self::getPluginVersion($plugin_name)) {
+            if (is_dir(base_path("/plugin/{$plugin_name}")) && $version = self::getPluginVersion($plugin_name)) {
                 $installed[$plugin_name] = $version;
             }
         }

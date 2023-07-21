@@ -4,13 +4,13 @@ namespace app\admin\controller;
 
 use app\common\builder\FormBuilder;
 use app\common\builder\ListBuilder;
-use app\admin\model\SystemConfig;
-use app\admin\model\SystemConfigGroup;
+use app\common\model\SystemConfig;
+use app\common\model\SystemConfigGroup;
 use app\admin\validate\SystemConfig as ValidateSystemConfig;
 use app\BaseController;
-use app\enum\ConfigGroupCol;
-use app\enum\FormType;
-use app\service\Upload;
+use app\common\enum\ConfigGroupCol;
+use app\common\enum\FormType;
+use app\common\service\UploadService;
 use FormBuilder\Factory\Elm;
 use support\Request;
 
@@ -42,17 +42,17 @@ class SystemConfigController extends BaseController
             ->addActionOptions('操作')
             ->pageConfig()
             ->addTopButton('add', '添加', [
-                'api'         => "admin/SystemConfig/add",
-                'path'        => '/SystemConfig/add',
+                'api' => "admin/SystemConfig/add",
+                'path' => '/SystemConfig/add',
                 'queryParams' => [
                     'cid' => $cid
                 ],
             ], [], [
-                    'type' => 'success',
-                ])
+                'type' => 'success',
+            ])
             ->addRightButton('edit', '修改', [
-                'api'         => 'admin/SystemConfig/edit',
-                'path'        => '/SystemConfig/edit',
+                'api' => 'admin/SystemConfig/edit',
+                'path' => '/SystemConfig/edit',
                 'queryParams' => [
                     'cid' => $cid
                 ],
@@ -62,19 +62,19 @@ class SystemConfigController extends BaseController
                 'link' => true
             ])
             ->addRightButton('del', '删除', [
-                'type'   => 'confirm',
-                'api'    => 'admin/SystemConfig/del',
+                'type' => 'confirm',
+                'api' => 'admin/SystemConfig/del',
                 'method' => 'delete',
             ], [
-                    'title'   => '温馨提示',
-                    'content' => '是否确认删除该数据',
-                ], [
-                    'type' => 'danger',
-                    'link' => true
-                ])
+                'title' => '温馨提示',
+                'content' => '是否确认删除该数据',
+            ], [
+                'type' => 'error',
+                'link' => true
+            ])
             ->addColumn('title', '配置名称')
             ->addColumn('name', '配置标识')
-            ->addColumn('type', '表单类型')
+            ->addColumn('component', '表单类型')
             ->addColumn('extra', '扩展数据')
             ->addColumn('placeholder', '配置描述')
             ->create();
@@ -124,7 +124,7 @@ class SystemConfigController extends BaseController
                 if (is_array($value) && $model['component'] == 'uploadify') {
                     $files = [];
                     foreach ($value as $k => $v) {
-                        $files[$k] = Upload::path($v);
+                        $files[$k] = UploadService::path($v);
                     }
                     $uploadPath   = implode(',', $files);
                     $model->value = $uploadPath;
@@ -197,7 +197,7 @@ class SystemConfigController extends BaseController
                 ],
             ])
             ->addRow('component', 'select', '表单类型', '', [
-                'col'     => [
+                'col' => [
                     'span' => 12
                 ],
                 'options' => $formType,
@@ -206,7 +206,7 @@ class SystemConfigController extends BaseController
                     [
                         'value' => 'uploadify',
                         'where' => '==',
-                        'rule'  => [
+                        'rule' => [
                             Elm::textarea('extra', '附件扩展')
                                 ->props([
                                     'placeholder' => '',
@@ -216,7 +216,7 @@ class SystemConfigController extends BaseController
                     [
                         'value' => ['radio', 'checkbox', 'select'],
                         'where' => 'in',
-                        'rule'  => [
+                        'rule' => [
                             Elm::textarea('extra', '扩展数据', '0,关闭|1,开启')
                                 ->props([
                                     'placeholder' => '数据示例：0,关闭|1,开启'
@@ -287,7 +287,7 @@ class SystemConfigController extends BaseController
                 ],
             ])
             ->addRow('component', 'select', '表单类型', '', [
-                'col'     => [
+                'col' => [
                     'span' => 12
                 ],
                 'options' => $formType,
@@ -296,7 +296,7 @@ class SystemConfigController extends BaseController
                     [
                         'value' => 'uploadify',
                         'where' => '==',
-                        'rule'  => [
+                        'rule' => [
                             Elm::textarea('extra', '附件扩展')
                                 ->props([
                                     'placeholder' => '',
@@ -306,7 +306,7 @@ class SystemConfigController extends BaseController
                     [
                         'value' => ['radio', 'checkbox', 'select'],
                         'where' => 'in',
-                        'rule'  => [
+                        'rule' => [
                             Elm::textarea('extra', '扩展数据', '0,关闭|1,开启')
                                 ->props([
                                     'placeholder' => '数据示例：0,关闭|1,开启'
@@ -340,7 +340,7 @@ class SystemConfigController extends BaseController
      */
     public function del(Request $request)
     {
-        $id = $request->get('id');
+        $id = $request->post('id');
         if (!SystemConfig::destroy($id)) {
             return parent::fail('删除失败');
         }
@@ -356,18 +356,18 @@ class SystemConfigController extends BaseController
      */
     private function getTabs(): array
     {
-        $list = SystemConfigGroup::order(['sort'=>'asc','id'=>'asc'])
-        ->distinct()
-        ->select()
-        ->toArray();
+        $list = SystemConfigGroup::order(['sort' => 'asc', 'id' => 'asc'])
+            ->distinct()
+            ->select()
+            ->toArray();
         $tabs = [];
         foreach ($list as $key => $value) {
             $tabs[$key]             = [
                 'title' => $value['title'],
-                'name'  => $value['name'],
-                'icon'  => $value['icon'],
+                'name' => $value['name'],
+                'icon' => $value['icon'],
             ];
-            $col                    = ConfigGroupCol::getText($value['layout_col']);
+            $col                    = ConfigGroupCol::getValue($value['layout_col']);
             $tabs[$key]['children'] = $this->getConfig($value['id'], (int) $col['col']);
         }
         $active         = 0;
@@ -401,7 +401,7 @@ class SystemConfigController extends BaseController
             // 设置扩展数据
             $extra = [
                 'info' => $value['placeholder'],
-                'col'  => [
+                'col' => [
                     'span' => $col
                 ],
             ];
@@ -418,8 +418,8 @@ class SystemConfigController extends BaseController
                 // 重设的模型数据
                 if ($configValue) {
                     $tempConfig  = array_filter(explode(',', $configValue));
-                    $configValue = Upload::urls($tempConfig);
-                }else{
+                    $configValue = UploadService::urls($tempConfig);
+                } else {
                     $configValue = [];
                 }
                 // 附件库
@@ -430,8 +430,7 @@ class SystemConfigController extends BaseController
                     $configValue,
                     $extra
                 );
-            }
-            else {
+            } else {
                 // 普通组件
                 $builder->addRow(
                     $value['name'],

@@ -4,11 +4,11 @@ namespace app\admin\controller;
 
 use app\common\builder\FormBuilder;
 use app\common\builder\ListBuilder;
-use app\admin\logic\SystemAdminRole;
 use app\admin\model\SystemAdmin;
+use app\admin\model\SystemAdminRole;
 use app\admin\validate\SystemAdmin as ValidateSystemAdmin;
 use app\BaseController;
-use app\enum\AdminStatus;
+use app\common\enum\StatusEnum;
 use support\Request;
 
 /**
@@ -146,11 +146,11 @@ class SystemAdminController extends BaseController
                 ],
                 'options'   => SystemAdminRole::getOptions($admin_id)
             ])
-            ->addRow('status', 'radio', '用户状态', '1', [
+            ->addRow('status', 'radio', '用户状态', '10', [
                 'col'       => [
                     'span'  => 12
                 ],
-                'options'   => AdminStatus::getOptions()
+                'options'   => StatusEnum::getOptions()
             ])
             ->addRow('username', 'input', '登录账号', '', [
                 'col'       => [
@@ -227,7 +227,7 @@ class SystemAdminController extends BaseController
                 'col'       => [
                     'span'  => 12
                 ],
-                'options'   => AdminStatus::getOptions()
+                'options'   => StatusEnum::getOptions()
             ])
             ->addRow('username', 'input', '登录账号', '', [
                 'col'       => [

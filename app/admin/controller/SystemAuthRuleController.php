@@ -4,15 +4,18 @@ namespace app\admin\controller;
 
 use app\common\builder\FormBuilder;
 use app\common\builder\ListBuilder;
-use app\admin\logic\AuthRule;
-use app\admin\model\SystemAuthRule;
+use app\common\enum\AuthRuleRuleTypeStyle;
+use app\common\enum\ShowStatus;
+use app\common\enum\ShowStatusStyle;
+use app\common\enum\YesNoEum;
+use app\common\enum\YesNoEumStyle;
+use app\common\service\AuthRuleService;
+use app\common\model\SystemAuthRule;
 use app\admin\validate\SystemAuthRule as ValidateSystemAuthRule;
 use app\BaseController;
-use app\enum\AuthRuleIsApi;
-use app\enum\AuthRuleMethods;
-use app\enum\AuthRuleRuleType;
-use app\enum\AuthRuleShow;
-use app\utils\Utils;
+use app\common\enum\AuthRuleMethods;
+use app\common\enum\AuthRuleRuleType;
+use app\common\service\FrameworkService;
 use support\Request;
 use FormBuilder\Factory\Elm;
 
@@ -75,56 +78,24 @@ class SystemAuthRuleController extends BaseController
                 'width'  => 100,
                 'params' => [
                     'type'    => 'tags',
-                    'options' => ['隐藏', '显示'],
-                    'style'   => [
-                        [
-                            'type' => 'error',
-                        ],
-                        [
-                            'type' => 'success',
-                        ],
-                    ],
+                    'options' => ShowStatus::dictOptions(),
+                    'style'   => ShowStatusStyle::parseAlias('type'),
                 ],
             ])
             ->addColumnEle('is_api', '是否接口', [
                 'width'  => 100,
                 'params' => [
                     'type'    => 'tags',
-                    'options' => ['否', '是'],
-                    'style'   => [
-                        [
-                            'type' => 'error',
-                        ],
-                        [
-                            'type' => 'success',
-                        ],
-                    ],
+                    'options' => YesNoEum::dictOptions(),
+                    'style'   => YesNoEumStyle::parseAlias('type'),
                 ],
             ])
             ->addColumnEle('component', '组件类型', [
                 'width'  => 120,
                 'params' => [
                     'type'    => 'tags',
-                    'options' => [
-                        ''             => '不使用组件',
-                        'form/index'   => '表单组件',
-                        'table/index'  => '表格组件',
-                        'remote/index' => '远程组件',
-                    ],
-                    'style'   => [
-                        ''             => [
-                            'type' => 'info'
-                        ],
-                        'form/index'   => [
-                            'type' => 'warning'
-                        ],
-                        'table/index'  => [
-                            'type' => 'success'
-                        ],
-                        'remote/index' => [
-                            'type' => 'error'
-                        ],
-                    ],
+                    'options' => AuthRuleRuleType::dictOptions(),
+                    'style'   => AuthRuleRuleTypeStyle::parseAlias('type'),
                 ],
             ])
             ->addColumn('method', '请求类型', [
@@ -188,7 +159,7 @@ class SystemAuthRuleController extends BaseController
                 return parent::fail('添加失败');
             }
             // 重启框架
-            Utils::reloadWebman();
+            FrameworkService::reloadSubprocess();
             return parent::success('添加成功');
         }
         $builder = new FormBuilder;
@@ -206,7 +177,7 @@ class SystemAuthRuleController extends BaseController
                         'checkStrictly' => true,
                     ],
                 ],
-                'options'     => AuthRule::getCascaderOptions(),
+                'options'     => AuthRuleService::getCascaderOptions(),
                 'placeholder' => '如不选择则是顶级菜单',
                 'col'         => [
                     'span' => 12
@@ -217,7 +188,7 @@ class SystemAuthRuleController extends BaseController
                     'span' => 12
                 ],
             ])
-            ->addRow('component', 'select', '菜单类型', '', [
+            ->addRow('component', 'select', '菜单类型', 'none/index', [
                 'options'   => AuthRuleRuleType::getOptions(),
                 'col'       => [
                     'span'  => 12
@@ -252,8 +223,8 @@ class SystemAuthRuleController extends BaseController
                     ],
                 ],
             ])
-            ->addRow('is_api', 'radio', '是否接口', '0', [
-                'options'       => AuthRuleIsApi::getOptions(),
+            ->addRow('is_api', 'radio', '是否接口', '10', [
+                'options'       => YesNoEum::getOptions(),
                 'col'           => [
                     'span'      => 12
                 ],
@@ -270,8 +241,8 @@ class SystemAuthRuleController extends BaseController
                     'span' => 12
                 ],
             ])
-            ->addRow('show', 'radio', '显示隐藏', '1', [
-                'options' => AuthRuleShow::getOptions(),
+            ->addRow('show', 'radio', '显示隐藏', '10', [
+                'options' => ShowStatus::getOptions(),
                 'col'     => [
                     'span' => 12
                 ],
@@ -338,7 +309,7 @@ class SystemAuthRuleController extends BaseController
                 return parent::fail('修改失败');
             }
             // 重启框架
-            Utils::reloadWebman();
+            FrameworkService::reloadSubprocess();
             return parent::success('修改成功');
         }
         $model->pid = [$model['pid']];
@@ -357,7 +328,7 @@ class SystemAuthRuleController extends BaseController
                         'checkStrictly' => true,
                     ],
                 ],
-                'options'     => AuthRule::getCascaderOptions(),
+                'options'     => AuthRuleService::getCascaderOptions(),
                 'placeholder' => '如不选择则是顶级菜单',
                 'col'         => [
                     'span' => 12
@@ -368,13 +339,13 @@ class SystemAuthRuleController extends BaseController
                     'span' => 12
                 ],
             ])
-            ->addRow('component', 'select', '菜单类型', '', [
-                'options' => AuthRuleRuleType::getOptions(),
-                'col'     => [
-                    'span' => 12
+            ->addRow('component', 'select', '菜单类型', 'none/index', [
+                'options'   => AuthRuleRuleType::getOptions(),
+                'col'       => [
+                    'span'  => 12
                 ],
                 // 使用联动组件
-                'control' => [
+                'control'   => [
                     [
                         'value' => 'remote/index',
                         'where' => '==',
@@ -389,7 +360,7 @@ class SystemAuthRuleController extends BaseController
                         ],
                     ],
                     [
-                        'value' => ['', 'table/index', 'form/index'],
+                        'value' => ['','table/index','form/index'],
                         'where' => 'in',
                         'rule'  => [
                             Elm::input('auth_params', '附带参数')
@@ -403,26 +374,26 @@ class SystemAuthRuleController extends BaseController
                     ],
                 ],
             ])
-            ->addRow('is_api', 'radio', '是否接口', '0', [
-                'options' => AuthRuleIsApi::getOptions(),
-                'col'     => [
-                    'span' => 12
+            ->addRow('is_api', 'radio', '是否接口', '10', [
+                'options'       => YesNoEum::getOptions(),
+                'col'           => [
+                    'span'      => 12
                 ],
             ])
             ->addRow('namespace', 'input', '命名空间', "\\app\\admin\\controller\\", [
-                'placeholder' => '示例：\\app\\admin\\controller\\',
-                'col'         => [
+                'placeholder'=> '示例：\\app\\admin\\controller\\',
+                'col' => [
                     'span' => 12
                 ],
             ])
             ->addRow('path', 'input', '权限路由', '', [
-                'placeholder' => '示例：控制器/方法',
-                'col'         => [
+                'placeholder'=>'示例：控制器/方法',
+                'col' => [
                     'span' => 12
                 ],
             ])
-            ->addRow('show', 'radio', '显示隐藏', '1', [
-                'options' => AuthRuleShow::getOptions(),
+            ->addRow('show', 'radio', '显示隐藏', '10', [
+                'options' => ShowStatus::getOptions(),
                 'col'     => [
                     'span' => 12
                 ],
@@ -473,7 +444,7 @@ class SystemAuthRuleController extends BaseController
             return parent::fail('删除失败');
         }
         // 重启框架
-        Utils::reloadWebman();
+        FrameworkService::reloadSubprocess();
         return parent::success('删除成功');
     }
 }

@@ -3,10 +3,8 @@
 namespace app\admin\controller;
 
 use app\common\builder\FormBuilder;
-use app\admin\logic\PluginLogic;
 use app\admin\model\Store;
-use app\admin\service\kfcloud\CloudService;
-use app\admin\service\kfcloud\SystemInfo;
+use app\common\service\SystemInfoService;
 use app\BaseController;
 use support\Request;
 use YcOpen\CloudService\Cloud;
@@ -64,7 +62,7 @@ class StoreAppController extends BaseController
             }
             return $this->success('授权成功');
         }
-        $systemInfo = SystemInfo::info();
+        $systemInfo = SystemInfoService::info();
         $query     = [
             'active'  => '2',
             'limit' => 1000,

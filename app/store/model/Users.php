@@ -2,9 +2,8 @@
 
 namespace app\store\model;
 
-use app\model\Store;
-use app\model\StoreApp;
-use app\model\StorePlatform;
+use app\common\model\Store;
+use app\common\model\StoreApp;
 
 /**
  * 用户管理
@@ -13,7 +12,7 @@ use app\model\StorePlatform;
  * @Email 416716328@qq.com
  * @DateTime 2023-03-12
  */
-class Users extends \app\model\Users
+class Users extends \app\common\model\Users
 {
     // 定义全局查询范围
     protected $globalScope = ['store'];
@@ -49,18 +48,6 @@ class Users extends \app\model\Users
     public function store()
     {
         return $this->hasOne(Store::class, 'id', 'store_id');
-    }
-
-    /**
-     * 关联平台
-     * @return \think\model\relation\HasOne
-     * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-05-20
-     */
-    public function platform()
-    {
-        return $this->hasOne(StorePlatform::class, 'id', 'platform_id');
     }
 
     /**

@@ -8,7 +8,7 @@ use app\BaseController;
 use support\Request;
 
 /**
- * 商户日志
+ * 租户日志
  *
  * @author 贵州猿创科技有限公司
  * @Email 416716328@qq.com

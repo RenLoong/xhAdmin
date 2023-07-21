@@ -2,8 +2,8 @@
 
 namespace app\admin\model;
 
-use app\enum\AuthRuleRuleType;
-use app\utils\DataMgr;
+use app\common\enum\AuthRuleRuleType;
+use app\common\utils\Data;
 
 /**
  * 租户菜单
@@ -12,7 +12,7 @@ use app\utils\DataMgr;
  * @Email 416716328@qq.com
  * @DateTime 2023-03-12
  */
-class StoreMenus extends \app\model\StoreMenus
+class StoreMenus extends \app\common\model\StoreMenus
 {
     /**
      * 获取cascader组件数据
@@ -26,7 +26,7 @@ class StoreMenus extends \app\model\StoreMenus
     {
         $orderBy = ['sort' => 'asc', 'id' => 'asc'];
         $list    = StoreMenus::order($orderBy)->select()->toArray();
-        $list    = DataMgr::channelLevel($list, 0, '', 'id', 'pid');
+        $list    = Data::channelLevel($list, 0, '', 'id', 'pid');
         $list    = self::getChildrenOptions($list);
         $list    = array_merge([
             [
@@ -51,8 +51,8 @@ class StoreMenus extends \app\model\StoreMenus
         $list = [];
         $i    = 0;
         foreach ($data as $value) {
-            $authRule          = AuthRuleRuleType::getText($value['component']);
-            $title             = "{$value['title']}-{$authRule['text']}";
+            $componentText     = AuthRuleRuleType::getText($value['component']);
+            $title             = "{$value['title']}-{$componentText}";
             $list[$i]['label'] = $title;
             $list[$i]['value'] = $value['id'];
             if ($value['children']) {

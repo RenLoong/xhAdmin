@@ -39,4 +39,29 @@ class SystemAdmin extends ModelSystemAdmin
     {
         return $value ? UploadService::url((string)$value) : '';
     }
+    
+    /**
+     * 获取管理员组件选项
+     *
+     * @Author 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-03-09
+     * @param  integer $admin_id
+     * @return array
+     */
+    public static function getOptions(int $admin_id): array
+    {
+        $where = [
+            ['pid', '=', $admin_id],
+        ];
+        $field = [
+            'id as value',
+            'username as label'
+        ];
+        $list = self::where($where)
+            ->field($field)
+            ->select()
+            ->toArray();
+        return $list;
+    }
 }

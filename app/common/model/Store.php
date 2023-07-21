@@ -2,10 +2,9 @@
 
 namespace app\common\model;
 
-use app\enum\PlatformTypes;
 use app\Model;
-use app\service\Upload;
-use app\utils\Password;
+use app\common\service\UploadService;
+use app\common\utils\Password;
 
 /**
  * 商户
@@ -52,6 +51,6 @@ class Store extends Model
      */
     protected function getLogoAttr($value)
     {
-        return $value ? Upload::url((string)$value) : '';
+        return $value ? UploadService::url((string)$value) : '';
     }
 }

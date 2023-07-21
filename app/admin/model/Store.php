@@ -2,8 +2,9 @@
 
 namespace app\admin\model;
 
-use app\enum\PlatformTypes;
-use app\model\Store as ModelStore;
+use app\common\enum\PlatformTypes;
+use app\common\model\Store as ModelStore;
+use app\common\model\StoreApp;
 
 /**
  * 商户
@@ -23,15 +24,15 @@ class Store extends ModelStore
     # 获取资产数量
     protected function getSurplusNumAttr($value, $data)
     {
-        $platforms = PlatformTypes::getData();
+        $platforms = PlatformTypes::toArray();
 
         $list = [];
         foreach ($platforms as $item) {
             $where = [
                 'store_id'          => $data['id'],
-                'platform_type'     => $item['value']
+                'platform'     => $item['value']
             ];
-            $created = StorePlatform::where($where)->count();
+            $created = StoreApp::where($where)->count();
 
             # 总数量
             $sum = $data[$item['value']] + $created;

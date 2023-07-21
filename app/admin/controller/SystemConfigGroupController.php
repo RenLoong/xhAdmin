@@ -4,7 +4,8 @@ namespace app\admin\controller;
 
 use app\common\builder\FormBuilder;
 use app\common\builder\ListBuilder;
-use app\admin\model\SystemConfigGroup;
+use app\common\model\SystemConfig;
+use app\common\model\SystemConfigGroup;
 use app\admin\validate\SystemConfigGroup as ValidateSystemConfigGroup;
 use app\BaseController;
 use support\Request;
@@ -65,7 +66,7 @@ class SystemConfigGroupController extends BaseController
                 'title'         => '温馨提示',
                 'content'       => '是否确认删除该数据',
             ], [
-                'type'          => 'danger',
+                'type'          => 'error',
                 'link'          => true
             ])
             ->addColumn('title', '名称')
@@ -211,7 +212,15 @@ class SystemConfigGroupController extends BaseController
     public function del(Request $request)
     {
         $id = $request->post('id');
-        if (!SystemConfigGroup::destroy($id)) {
+        $model = SystemConfigGroup::where(['id' => $id])->find();
+        if (!$model) {
+            return $this->fail('数据不存在');
+        }
+        $configModels = SystemConfig::where(['cid' => $id])->select();
+        foreach ($configModels as $configModel) {
+            $configModel->delete();
+        }
+        if (!$model->delete()) {
             return parent::fail('删除失败');
         }
         return parent::success('删除成功');

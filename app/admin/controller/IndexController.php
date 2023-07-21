@@ -3,10 +3,10 @@
 namespace app\admin\controller;
 
 use app\admin\logic\AppCoreLogic;
-use app\admin\model\StoreApp;
-use app\admin\service\kfcloud\SystemInfo;
+use app\common\model\StoreApp;
+use app\common\service\SystemInfoService;
 use app\BaseController;
-use app\enum\PlatformTypes;
+use app\common\enum\PlatformTypes;
 use support\Request;
 use YcOpen\CloudService\Cloud;
 use YcOpen\CloudService\Request\SystemUpdateRequest;
@@ -30,7 +30,7 @@ class IndexController extends BaseController
     public function consoleCount(Request $request)
     {
         // 获取系统信息
-        $teamInfo = SystemInfo::info();
+        $teamInfo = SystemInfoService::info();
         $inKeys = array_keys($teamInfo);
         $teamFields = [
             'about_name' => '研发企业',

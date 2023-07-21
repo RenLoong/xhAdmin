@@ -72,6 +72,7 @@ class AuthMgr
                 ->field(self::$visible)
                 ->select()
                 ->each(function ($e) {
+                    $e->show = $e->show === '20' ? '1' : '0';
                     is_array($e->method) && $e->method = current($e->method);
                     return $e;
                 })->toArray();
@@ -83,6 +84,7 @@ class AuthMgr
             $data = $model->field(self::$visible)
                 ->select()
                 ->each(function ($e) {
+                    $e->show = $e->show === '20' ? '1' : '0';
                     $e->method = current($e->method);
                     return $e;
                 })->toArray();

@@ -2,7 +2,7 @@
 
 namespace app\common\manager;
 
-use app\common\service\PluginService;
+use app\common\manager\PluginMgr;
 use Exception;
 use app\common\model\SystemAuthRule;
 use Webman\Route;
@@ -52,7 +52,7 @@ class RoutesMgr
      */
     private static function installPluginAdminView()
     {
-        $plugins = PluginService::getLocalPlugins();
+        $plugins = PluginMgr::getLocalPlugins();
         if (!$plugins) {
             return;
         }

@@ -10,7 +10,7 @@ class SystemConfig extends Validate
         'cid'               => 'require',
         'title'             => 'require',
         'name'              => 'require',
-        'type'              => 'require',
+        'component'         => 'require',
         'placeholder'       => 'require',
     ];
 
@@ -18,7 +18,7 @@ class SystemConfig extends Validate
         'cid.require'               => '异常错误，缺少分类ID',
         'title.require'             => '请输入配置项名称',
         'name.require'              => '请输入配置项标识',
-        'type.require'              => '请选择表单类型',
+        'component.require'         => '请选择表单类型',
         'placeholder.require'       => '请输入配置项描述',
     ];
 

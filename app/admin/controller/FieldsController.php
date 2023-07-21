@@ -4,11 +4,11 @@ namespace app\admin\controller;
 
 use app\common\builder\FormBuilder;
 use app\common\builder\ListBuilder;
-use app\admin\logic\ModulesLogic;
+use app\common\manager\ModulesMgr;
 use app\admin\validate\Fields;
 use app\BaseController;
-use app\exception\RedirectException;
-use app\utils\DbMgr;
+use app\common\exception\RedirectException;
+use app\common\manager\DbMgr;
 use Exception;
 use Illuminate\Database\Schema\Blueprint;
 use support\Request;
@@ -40,7 +40,7 @@ class FieldsController extends BaseController
         if (!DbMgr::hasTable($this->tableName)) {
             throw new Exception('该数据表不存在');
         }
-        if (in_array($this->tableName, ModulesLogic::dropTables())) {
+        if (in_array($this->tableName, ModulesMgr::dropTables())) {
             throw new RedirectException('系统表，禁止操作字段', '/Modules/index');
         }
     }
@@ -236,7 +236,7 @@ class FieldsController extends BaseController
                 'col' => [
                     'span' => 12
                 ],
-                'options' => ModulesLogic::getFieldTypeSelect()
+                'options' => ModulesMgr::getFieldTypeSelect()
             ])
             ->addRow('extra', 'textarea', '扩展数据', '', [
                 'col' => [

@@ -5,14 +5,12 @@ namespace app\admin\controller;
 use app\common\builder\FormBuilder;
 use app\common\builder\ListBuilder;
 use app\admin\model\Store;
-use app\admin\model\StoreApp;
-use app\admin\model\StorePlatform;
-use app\admin\model\Users;
+use app\common\model\StoreApp;
+use app\common\model\Users;
 use app\admin\validate\Store as ValidateStore;
 use app\BaseController;
-use app\enum\PlatformTypes;
-use app\model\StorePlatformConfig;
-use app\service\Upload;
+use app\common\enum\PlatformTypes;
+use app\common\service\UploadService;
 use Exception;
 use support\Request;
 use think\facade\Db;
@@ -53,7 +51,7 @@ class StoreController extends BaseController
      */
     public function indexGetTable(Request $request)
     {
-        $platformAssets = PlatformTypes::getData();
+        $platformAssets = PlatformTypes::toArray();
         foreach ($platformAssets as $key => $value) {
             $platformAssets[$key]['title'] = $value['text'];
             $platformAssets[$key]['field'] = $value['value'];
@@ -61,7 +59,7 @@ class StoreController extends BaseController
         $builder = new ListBuilder;
         $data    = $builder
             ->addActionOptions('操作', [
-                'width' => 130,
+                'width' => 100,
                 'params' => [
                     'group' => true
                 ]
@@ -117,10 +115,10 @@ class StoreController extends BaseController
                 'type' => 'primary',
                 'icon' => 'EditOutlined'
             ])
-            ->addRightButton('platforms', '平台管理', [
+            ->addRightButton('platforms', '应用管理', [
                 'type' => 'page',
-                'api' => 'admin/StorePlatform/index',
-                'path' => '/StorePlatform/index',
+                'api' => 'admin/StoreApp/index',
+                'path' => '/StoreApp/index',
             ], [], [
                 'type' => 'info',
                 'icon' => 'DesktopOutlined'
@@ -161,11 +159,11 @@ class StoreController extends BaseController
                     'api' => '/admin/Store/rowEdit',
                     'checked' => [
                         'text' => '正常',
-                        'value' => '1'
+                        'value' => '20'
                     ],
                     'unchecked' => [
                         'text' => '冻结',
-                        'value' => '0'
+                        'value' => '10'
                     ]
                 ],
             ])
@@ -228,7 +226,7 @@ class StoreController extends BaseController
             // 数据验证
             hpValidate($validate, $post, 'add');
 
-            $post['logo'] = Upload::path($post['logo']);
+            $post['logo'] = UploadService::path($post['logo']);
             $model        = $this->model;
             if (!$model->save($post)) {
                 return parent::fail('保存失败');
@@ -344,7 +342,7 @@ class StoreController extends BaseController
             // 数据验证
             hpValidate(ValidateStore::class, $post, 'edit');
 
-            $post['logo'] = Upload::path($post['logo']);
+            $post['logo'] = UploadService::path($post['logo']);
 
             if (!$model->save($post)) {
                 return parent::fail('保存失败');
@@ -510,28 +508,11 @@ class StoreController extends BaseController
             if (!$model) {
                 throw new Exception('该数据不存在');
             }
-            # 删除租户下平台
-            $where         = [
-                'store_id'  => $model->id
-            ];
-            $platforms = StorePlatform::where($where)->withTrashed()->select();
-            foreach ($platforms as $platformModel) {
-                if (!$platformModel->force()->delete()) {
-                    throw new Exception('删除租户平台失败');
-                }
-            }
             # 删除租户下的所有用户
             $users = Users::where($where)->select();
             foreach ($users as $userModel) {
                 if (!$userModel->delete()) {
                     throw new Exception('删除租户用户失败');
-                }
-            }
-            # 删除平台下配置
-            $configs = StorePlatformConfig::where($where)->withTrashed()->select();
-            foreach ($configs as $configModel) {
-                if (!$configModel->force()->delete()) {
-                    throw new Exception('删除租户配置失败');
                 }
             }
             # 删除平台下应用
@@ -579,7 +560,7 @@ class StoreController extends BaseController
         $session   = $request->session();
         $session->set('hp_store', $adminModel->toArray());
 
-        $url = "/store/#/Index/index?token={$sessionId}";
+        $url = "store/#/Index/index?token={$sessionId}";
         return $this->successRes(['url' => $url]);
     }
 }

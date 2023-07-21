@@ -50,10 +50,10 @@ abstract class EnumBaseic implements \JsonSerializable
     /**
      * @return mixed
      */
-    public function getValue()
-    {
-        return $this->value;
-    }
+    // public function getValue()
+    // {
+    //     return $this->value;
+    // }
 
     /**
      * Returns the enum key (i.e. the constant name).

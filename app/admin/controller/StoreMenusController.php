@@ -7,10 +7,13 @@ use app\common\builder\ListBuilder;
 use app\admin\model\StoreMenus;
 use app\admin\validate\SystemAuthRule as ValidateSystemAuthRule;
 use app\BaseController;
-use app\enum\AuthRuleIsApi;
-use app\enum\AuthRuleMethods;
-use app\enum\AuthRuleRuleType;
-use app\enum\AuthRuleShow;
+use app\common\enum\AuthRuleRuleTypeStyle;
+use app\common\enum\ShowStatusStyle;
+use app\common\enum\YesNoEum;
+use app\common\enum\AuthRuleMethods;
+use app\common\enum\AuthRuleRuleType;
+use app\common\enum\ShowStatus;
+use app\common\enum\YesNoEumStyle;
 use support\Request;
 use FormBuilder\Factory\Elm;
 
@@ -23,10 +26,24 @@ use FormBuilder\Factory\Elm;
  */
 class StoreMenusController extends BaseController
 {
+    /**
+     * 模型参数
+     * @var StoreMenus
+     * @author 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
     protected $model;
+
+    /**
+     * 构造函数
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
     public function __construct()
     {
         $this->model = new StoreMenus;
+        parent::__construct();
     }
 
     /**
@@ -79,56 +96,24 @@ class StoreMenusController extends BaseController
                 'width'  => 100,
                 'params' => [
                     'type'    => 'tags',
-                    'options' => ['隐藏', '显示'],
-                    'style'   => [
-                        [
-                            'type' => 'error',
-                        ],
-                        [
-                            'type' => 'success',
-                        ],
-                    ],
+                    'options' => ShowStatus::dictOptions(),
+                    'style'   => ShowStatusStyle::parseAlias('type'),
                 ],
             ])
             ->addColumnEle('is_api', '是否接口', [
                 'width'  => 100,
                 'params' => [
                     'type'    => 'tags',
-                    'options' => ['否', '是'],
-                    'style'   => [
-                        [
-                            'type' => 'error',
-                        ],
-                        [
-                            'type' => 'success',
-                        ],
-                    ],
+                    'options' => YesNoEum::dictOptions(),
+                    'style'   => YesNoEumStyle::parseAlias('type'),
                 ],
             ])
             ->addColumnEle('component', '组件类型', [
                 'width'  => 120,
                 'params' => [
                     'type'    => 'tags',
-                    'options' => [
-                        ''             => '不使用组件',
-                        'form/index'   => '表单组件',
-                        'table/index'  => '表格组件',
-                        'remote/index' => '远程组件',
-                    ],
-                    'style'   => [
-                        ''             => [
-                            'type' => 'info'
-                        ],
-                        'form/index'   => [
-                            'type' => 'warning'
-                        ],
-                        'table/index'  => [
-                            'type' => 'success'
-                        ],
-                        'remote/index' => [
-                            'type' => 'error'
-                        ],
-                    ],
+                    'options' => AuthRuleRuleType::dictOptions(),
+                    'style'   => AuthRuleRuleTypeStyle::parseAlias('type'),
                 ],
             ])
             ->addColumn('method', '请求类型', [
@@ -178,7 +163,7 @@ class StoreMenusController extends BaseController
                 if (!isset($post['namespace']) || !$post['namespace']) {
                     return parent::fail('请输入命名空间');
                 }
-                if (!isset($post['path']) || !$post['path'] && $post['is_api'] === '1') {
+                if (!isset($post['path']) || !$post['path'] && $post['is_api'] === '20') {
                     return parent::fail('请输入权限路由');
                 }
                 if (!isset($post['method']) || empty($post['method'])) {
@@ -255,7 +240,7 @@ class StoreMenusController extends BaseController
                                 ->col([
                                     'span' => 12
                                 ])
-                                ->options(AuthRuleIsApi::getOptions()),
+                                ->options(YesNoEum::getOptions()),
                             Elm::input('namespace', '命名空间', "\\app\\store\\controller\\")
                                 ->placeholder('示例：\\app\\store\\controller\\')
                                 ->col([
@@ -275,8 +260,8 @@ class StoreMenusController extends BaseController
                     ],
                 ],
             ])
-            ->addRow('show', 'radio', '显示隐藏', '1', [
-                'options' => AuthRuleShow::getOptions(),
+            ->addRow('show', 'radio', '显示隐藏', '20', [
+                'options' => ShowStatus::getOptions(),
                 'col'     => [
                     'span' => 12
                 ],
@@ -326,7 +311,7 @@ class StoreMenusController extends BaseController
                 if (!isset($post['namespace']) || !$post['namespace']) {
                     return parent::fail('请输入命名空间');
                 }
-                if (!isset($post['path']) || !$post['path'] && $post['is_api'] === '1') {
+                if (!isset($post['path']) || !$post['path'] && $post['is_api'] === '10') {
                     return parent::fail('请输入权限路由');
                 }
                 if (!isset($post['method']) || empty($post['method'])) {
@@ -401,7 +386,7 @@ class StoreMenusController extends BaseController
                                 ->col([
                                     'span' => 12
                                 ])
-                                ->options(AuthRuleIsApi::getOptions()),
+                                ->options(YesNoEum::getOptions()),
                             Elm::input('namespace', '命名空间', "\\app\\store\\controller\\")
                                 ->placeholder('示例：\\app\\store\\controller\\')
                                 ->col([
@@ -421,8 +406,8 @@ class StoreMenusController extends BaseController
                     ],
                 ],
             ])
-            ->addRow('show', 'radio', '显示隐藏', '1', [
-                'options' => AuthRuleShow::getOptions(),
+            ->addRow('show', 'radio', '显示隐藏', '20', [
+                'options' => ShowStatus::getOptions(),
                 'col'     => [
                     'span' => 12
                 ],
@@ -461,7 +446,7 @@ class StoreMenusController extends BaseController
         if (!$model) {
             return $this->fail('该数据不存在');
         }
-        if ($model->is_system === '1') {
+        if ($model->is_system === '20') {
             return $this->fail('系统级权限规则，禁止删除');
         }
         if (!$model->delete()) {

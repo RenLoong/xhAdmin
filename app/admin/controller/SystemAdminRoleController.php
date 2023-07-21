@@ -2,12 +2,13 @@
 
 namespace app\admin\controller;
 
+use app\admin\model\SystemAdmin;
 use app\common\builder\FormBuilder;
 use app\common\builder\ListBuilder;
-use app\admin\model\SystemAdminRole;
-use app\admin\model\SystemAuthRule;
+use app\common\model\SystemAdminRole;
+use app\common\model\SystemAuthRule;
 use app\BaseController;
-use app\utils\DataMgr;
+use app\common\utils\Data;
 use support\Request;
 
 /**
@@ -18,7 +19,6 @@ use support\Request;
  */
 class SystemAdminRoleController extends BaseController
 {
-
     /**
      * 表格
      * @param Request $request
@@ -61,7 +61,7 @@ class SystemAdminRoleController extends BaseController
                 'title'         => '温馨提示',
                 'content'       => '是否确认删除该数据',
             ], [
-                'type'          => 'danger',
+                'type'          => 'error',
                 'link'          => true
             ])
             ->addColumn('id', '序号', [
@@ -167,7 +167,17 @@ class SystemAdminRoleController extends BaseController
     public function del(Request $request)
     {
         $id = $request->post('id');
-        if (!SystemAdminRole::where(['id'=> $id])->delete()) {
+        $model = SystemAdminRole::where(['id' => $id])->find();
+        if (!$model) {
+            return parent::fail('数据不存在');
+        }
+        $adminModels = SystemAdmin::where(['role_id' => $id])->select();
+        if (!empty($adminModels)) {
+            foreach ($adminModels as $adminModel) {
+                $adminModel->delete();
+            }
+        }
+        if (!$model->delete()) {
             return parent::fail('删除失败');
         }
         return parent::success('删除成功');
@@ -216,7 +226,7 @@ class SystemAdminRoleController extends BaseController
         $rule = SystemAuthRule::order(['sort'=>'asc','id'=>'asc'])
         ->select()
         ->toArray();
-        $rule = DataMgr::channelLevel($rule, 0, '', 'id', 'pid');
+        $rule = Data::channelLevel($rule, 0, '', 'id', 'pid');
         // 拼接规则权限为视图所需要的数组
         $authRule = $this->getAuthRule($rule);
         // 获取默认规则

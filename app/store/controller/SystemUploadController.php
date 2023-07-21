@@ -2,10 +2,10 @@
 
 namespace app\store\controller;
 
-use app\admin\builder\FormBuilder;
+use app\common\builder\FormBuilder;
 use app\store\model\SystemUpload;
 use app\BaseController;
-use app\service\Upload;
+use app\common\service\UploadService;
 use support\Request;
 
 /**
@@ -140,7 +140,7 @@ class SystemUploadController extends BaseController
         if (!$id) {
             return parent::fail('请选择需要删除的附件');
         }
-        if (!Upload::delete($id)) {
+        if (!UploadService::delete($id)) {
             return parent::fail('删除失败');
         }
         return parent::success('删除完成');
@@ -160,7 +160,7 @@ class SystemUploadController extends BaseController
         $file = $request->file('file');
         $cid = (int)$request->post('cid');
         $store_id = hp_admin_id('hp_store');
-        $data = Upload::upload($file, $cid,['store_id'=> $store_id]);
+        $data = UploadService::upload($file, $cid,['store_id'=> $store_id]);
         if (!$data) {
             return $this->fail('上传失败');
         }

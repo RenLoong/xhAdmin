@@ -3,14 +3,13 @@
 namespace app\admin\controller;
 
 use app\common\builder\ListBuilder;
-use app\admin\logic\PluginLogic;
+use app\common\manager\PluginMgr;
 use app\admin\logic\PluginUpdate;
-use app\admin\service\kfcloud\SystemInfo;
+use app\common\service\SystemInfoService;
 use app\admin\utils\ComposerMgr;
 use app\BaseController;
-use app\enum\PluginType;
-use app\enum\PluginTypeStyle;
-use app\utils\Utils;
+use app\common\enum\PluginType;
+use app\common\enum\PluginTypeStyle;
 use process\Monitor;
 use support\Request;
 use YcOpen\CloudService\Cloud;
@@ -221,8 +220,8 @@ class PluginController extends BaseController
         $page   = (int) $request->get('page', 1);
         $active = $request->get('active', '0');
 
-        $installed  = PluginLogic::getLocalPlugins();
-        $systemInfo = SystemInfo::info();
+        $installed  = PluginMgr::getLocalPlugins();
+        $systemInfo = SystemInfoService::info();
         $query      = [
             'active' => $active,
             'page' => $page,
@@ -255,8 +254,8 @@ class PluginController extends BaseController
     {
         $name              = $request->get('name');
         $version           = $request->get('version');
-        $systemInfo        = SystemInfo::info();
-        $installed_version = PluginLogic::getPluginVersion($name);
+        $systemInfo        = SystemInfoService::info();
+        $installed_version = PluginMgr::getPluginVersion($name);
         $req               = new PluginRequest;
         $req->detail();
         $req->name          = $name;
@@ -282,8 +281,8 @@ class PluginController extends BaseController
         $version     = $request->post('version');
         $coupon_code = $request->post('coupon_code');
 
-        $systemInfo        = SystemInfo::info();
-        $installed_version = PluginLogic::getPluginVersion($name);
+        $systemInfo        = SystemInfoService::info();
+        $installed_version = PluginMgr::getPluginVersion($name);
         $req               = new PluginRequest;
         $req->buy();
         $req->name          = $name;
@@ -309,8 +308,8 @@ class PluginController extends BaseController
         $name    = $request->get('name');
         $version = $request->get('version');
 
-        $systemInfo        = SystemInfo::info();
-        $installed_version = PluginLogic::getPluginVersion($name);
+        $systemInfo        = SystemInfoService::info();
+        $installed_version = PluginMgr::getPluginVersion($name);
         $req               = new PluginRequest;
         $req->detail();
         $req->name          = $name;
@@ -320,7 +319,7 @@ class PluginController extends BaseController
         $cloud              = new Cloud($req);
         $data               = $cloud->send()->toArray();
 
-        $localVersion         = PluginLogic::getPluginVersion($name);
+        $localVersion         = PluginMgr::getPluginVersion($name);
         $data['localVersion'] = $localVersion;
         return $this->successRes($data);
     }
@@ -339,14 +338,14 @@ class PluginController extends BaseController
         $version = $request->post('version');
 
         # 检测应用是否已安装
-        $installed_version = PluginLogic::getPluginVersion($name);
+        $installed_version = PluginMgr::getPluginVersion($name);
         if ($installed_version > 1) {
             return $this->fail('该应用已安装');
         }
 
         // 获取插件信息
 
-        $systemInfo = SystemInfo::info();
+        $systemInfo = SystemInfoService::info();
         $req        = new PluginRequest;
         $req->detail();
         $req->name          = $name;
