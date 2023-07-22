@@ -4,9 +4,8 @@ namespace app\store\controller;
 
 use app\BaseController;
 use app\common\enum\PlatformTypes;
-use app\common\manager\StorePlatforms;
 use app\common\model\Store;
-use app\model\Users;
+use app\common\model\Users;
 use support\Request;
 
 /**
@@ -67,8 +66,7 @@ class IndexController extends BaseController
         $product = [];
 
         // 应用总数量
-        $platformTypes    = PlatformTypes::getData();
-        $platformApp      = StorePlatforms::surplusNum((int) hp_admin_id('hp_store'));
+        $platformTypes    = PlatformTypes::toArray();
         $platform_echarts = [];
         foreach ($platformTypes as $value) {
             # 查询条件
@@ -138,7 +136,6 @@ class IndexController extends BaseController
         $data = [
             'team' => $team,
             'product' => $product,
-            'platformApp' => $platformApp,
             'platform_echarts' => $platform_echarts
         ];
         return $this->successRes($data);

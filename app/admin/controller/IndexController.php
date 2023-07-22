@@ -49,7 +49,7 @@ class IndexController extends BaseController
         $product = [];
 
         // 应用总数量
-        $platformTypes = PlatformTypes::getData();
+        $platformTypes = PlatformTypes::toArray();
         $platformApp = [];
         $platform_echarts = [];
         foreach ($platformTypes as $value) {

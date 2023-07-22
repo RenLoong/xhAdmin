@@ -2,6 +2,7 @@
 namespace app\common\service;
 use app\common\manager\ZipMgr;
 use app\common\manager\JsonMgr;
+use app\common\utils\DirUtil;
 use Exception;
 use support\Request;
 use YcOpen\CloudService\Request as CloudRequest;
@@ -11,10 +12,10 @@ use YcOpen\CloudService\Request\SystemUpdateRequest;
 /**
  * 更新服务类
  * 更新步骤如下：
- * 1、备份代码
- * 2、备份数据库
- * 3、删除代码
- * 4、下载更新包
+ * 1、下载更新包
+ * 2、备份代码
+ * 3、备份数据库
+ * 4、删除代码
  * 5、解压更新包
  * 6、执行数据同步更新
  * 7、重启主进程服务
@@ -92,8 +93,7 @@ class SystemUpdateService
      * @email 416716328@qq.com
      */
     private $ignoreList = [
-        '.env',
-        'public',
+        'public/upload',
         'plugin',
         'runtime',
     ];
@@ -137,6 +137,39 @@ class SystemUpdateService
     }
 
     /**
+     * 下载更新包
+     * @return \support\Response
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function download()
+    {
+        # 获取更新目标版本
+        $version = (int) $this->request->get('version', 0);
+        if (!$version) {
+            throw new Exception('更新目标版本参数错误');
+        }
+        # 获取更新包下载地址
+        $req = new SystemUpdateRequest;
+        $req->getKey();
+        $req->target_version = $version;
+        $cloud = new Cloud($req);
+        $data = $cloud->send();
+        $downUrl = $data->url;
+        # 下载更新包
+        $req = new CloudRequest;
+        $req->setUrl($downUrl);
+        $req->setSaveFile($this->tempZipFilePath);
+        $cloud = new Cloud($req);
+        $cloud->send();
+        # 下载成功
+        return JsonMgr::successRes([
+            'next' => 'backCode'
+        ]);
+    }
+
+    /**
      * 备份代码
      * @return \support\Response
      * @author 贵州猿创科技有限公司
@@ -169,7 +202,7 @@ class SystemUpdateService
     public function backSql()
     {
         return JsonMgr::successRes([
-            'next' => 'download'
+            'next' => 'delCode'
         ]);
     }
 
@@ -188,46 +221,21 @@ class SystemUpdateService
                 'next' => 'unzip'
             ]);
         }
-        # 切换工作区
-        chdir($this->targetPath);
+        $targetPath       = $this->targetPath;
+        # 判断是否为斜杠结尾
+        if (substr($targetPath, -1) != '/') {
+            $targetPath .= '/';
+        }
+        # 组装需要忽略的文件路径
+        $ignore = [];
+        foreach ($this->ignoreList as $v) {
+            $ignore[] = $targetPath.$v;
+        }
         # 删除原始代码
-        shell_exec("rm -rf {$this->targetPath}/*");
+        DirUtil::delDir($this->targetPath, $ignore);
         # 删除成功
         return JsonMgr::successRes([
             'next' => 'unzip'
-        ]);
-    }
-
-    /**
-     * 下载更新包
-     * @return \support\Response
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
-     */
-    public function download()
-    {
-        # 获取更新目标版本
-        $version = (int) $this->request->get('version', 0);
-        if (!$version) {
-            throw new Exception('更新目标版本参数错误');
-        }
-        # 获取更新包下载地址
-        $req = new SystemUpdateRequest;
-        $req->getKey();
-        $req->target_version = $version;
-        $cloud = new Cloud($req);
-        $data = $cloud->send();
-        $downUrl = $data->url;
-        # 下载更新包
-        $req = new CloudRequest;
-        $req->setUrl($downUrl);
-        $req->setSaveFile($this->tempZipFilePath);
-        $cloud = new Cloud($req);
-        $cloud->send();
-        # 下载成功
-        return JsonMgr::successRes([
-            'next' => 'delplugin'
         ]);
     }
 
@@ -248,9 +256,11 @@ class SystemUpdateService
         ZipMgr::unzip($this->tempZipFilePath, $this->targetPath);
         # 解压覆盖文件
         ZipMgr::unzip($this->backCoverPath, $this->targetPath);
-        # 解压成功
+        # 解压成功，删除临时文件
+        unlink($this->tempZipFilePath);
+        # 返回成功
         return JsonMgr::successRes([
-            'next' => 'reload'
+            'next' => 'updateData'
         ]);
     }
 
@@ -286,7 +296,7 @@ class SystemUpdateService
         }
         # 更新成功
         return JsonMgr::successRes([
-            'next' => 'success'
+            'next' => 'reload'
         ]);
     }
 
@@ -301,6 +311,8 @@ class SystemUpdateService
     {
         # 重启主进程服务
         FrameworkService::reloadWebman();
+        # 延迟3秒，等待服务重启
+        sleep(3);
         # 重启成功
         return JsonMgr::successRes([
             'next' => 'ping'
@@ -316,8 +328,8 @@ class SystemUpdateService
      */
     public function ping()
     {
-        return JsonMgr::successRes([
-            'next' => 'updateData'
+        return JsonMgr::successFul('更新成功，即将跳转首页...', [
+            'next' => 'success'
         ]);
     }
 }

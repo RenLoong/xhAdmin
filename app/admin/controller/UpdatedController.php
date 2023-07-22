@@ -105,7 +105,7 @@ class UpdatedController extends BaseController
     private function checkUpdate(Request $request)
     {
         $funcName = $request->get('step', '');
-        $version  = (int) $request->post('version', 0);
+        $version  = (int) $request->get('version', 0);
         if (empty($version)) {
             return $this->fail('更新目标版本参数错误');
         }

@@ -1,58 +1,62 @@
 <template>
   <div class="update-container">
-    <div class="logo-container">
-      <img class="logo" src="/image/logo.png" />
-      <div class="logo-title">KFAdmin</div>
-      <div class="version">
-        当前版本：{{ updated.client_version_name }} （最新版：{{ updated.version_name }}）
+    <!-- 更新版本 -->
+    <div class="update-box" v-if="updated.update">
+      <div class="step-container">
+        <n-steps vertical :current="stepData.step" :status="stepData.status">
+          <n-step v-for="(item, index) in stepData.list" :key="index" :title="item.title" />
+        </n-steps>
       </div>
-    </div>
-    <div class="update-box" v-if="!install.status">
-      <n-form
-        labn-position="left"
-        class="form-container"
-        v-if="updated.version > updated.client_version"
-      >
-        <n-form-item :label="`${updated.title}，客户端版本号：${updated.client_version}，最新：${updated.version}`">
-          <n-input
-            type="textarea"
-            :value="updated.content"
-            :autosize="{ minRows: 6, maxRows: 10 }"
-            placeholder="无"
-            disabled
-          />
-        </n-form-item>
-        <n-form-item label="更新文件">
-          <n-input
-            type="textarea"
-            :value="updated.chanage_files"
-            :autosize="{ minRows: 6, maxRows: 10 }"
-            placeholder="无"
-            disabled
-          />
-        </n-form-item>
-        <div class="action-button">
-          <n-button type="success" @click="hanldUpdate">立即更新</n-button>
-          <n-button type="warning" @click="hanldCancel">忽略本次更新</n-button>
+      <div class="content-box">
+        <div class="logo-container">
+          <img class="logo" src="/image/logo.png" />
+          <div class="logo-title">KFAdmin</div>
+          <div class="version">
+            当前版本：{{ updated.client_version_name }} （最新版：{{ updated.version_name }}）
+          </div>
         </div>
-      </n-form>
-      <div class="empty-container" v-else>
-        <n-empty :show-description="false">
-          <template #icon>
-            <AppIcons icon="CheckCircleOutlined" :size="48" color="#18a058" />
-          </template>
-          <template #extra="">
-            <div class="mt-5">当前已经是最新版</div>
-          </template>
-        </n-empty>
+        <!-- 版本信息展示 -->
+        <div class="updated-content" v-if="stepData.step <= 0">
+          <div class="version-box">
+            <div class="title">版本更新内容</div>
+            <div class="version-content">
+              <pre class="version-pre">{{ updated.content }}</pre>
+            </div>
+          </div>
+          <div class="action-button">
+            <n-button type="success" @click="hanldUpdate">立即更新</n-button>
+            <n-button type="warning" v-if="install.ignore" @click="hanldCancel">
+              忽略本次更新
+            </n-button>
+          </div>
+        </div>
+        <!-- 更新中 -->
+        <div class="updated-ing" v-else>
+          <div class="loading">
+            <vxe-icon name="refresh" class="loading-icon" roll></vxe-icon>
+            <div>{{ stepData.stepText ? stepData.stepText : '出现异常错误' }}</div>
+            <div class="text-red">更新过程中，请勿刷新页面或离开当前页面...</div>
+          </div>
+        </div>
       </div>
     </div>
-    <!-- 更新状态 -->
-    <div class="loading-container" v-else>
-      <div class="loading-box">
-        <n-progress type="circle" :percentage="install.progress" />
-        <div>{{ install.text }}</div>
+    <!-- 无更新 -->
+    <div class="update-empty" v-else>
+      <div class="logo-container">
+        <img class="logo" src="/image/logo.png" />
+        <div class="logo-title">KFAdmin</div>
+        <div class="version">
+          当前版本：{{ updated.client_version_name }} （最新版：{{ updated.version_name }}）
+        </div>
       </div>
+      <n-empty :show-description="false">
+        <template #icon>
+          <AppIcons icon="CheckCircleOutlined" :size="48" color="#18a058" />
+        </template>
+        <template #extra="">
+          <div class="mt-5">当前已经是最新版</div>
+        </template>
+      </n-empty>
     </div>
   </div>
 </template>
@@ -61,12 +65,57 @@
 export default {
   data() {
     return {
+      stepData: {
+        status: 'process',
+        step: 0,
+        stepText: '',
+        list: [
+          {
+            title: '下载更新包',
+            step: 'download',
+          },
+          {
+            title: '备份代码',
+            step: 'backCode',
+          },
+          {
+            title: '备份数据库',
+            step: 'backSql',
+          },
+          {
+            title: '删除旧文件',
+            step: 'delCode',
+          },
+          {
+            title: '解压更新包',
+            step: 'unzip',
+          },
+          {
+            title: '更新同步',
+            step: 'updateData',
+          },
+          {
+            title: '重启服务',
+            step: 'reload',
+          },
+          {
+            title: '等待重启',
+            step: 'ping',
+          },
+          {
+            title: '更新成功',
+            step: 'success',
+          },
+        ],
+      },
       install: {
-        status: false,
-        progress: 0,
-        text:''
+        // 是否更新
+        status: true,
+        // 是否显示忽略更新按钮
+        ignore: false,
       },
       updated: {
+        update: true,
         title: "",
         version_name: "",
         version: "",
@@ -76,56 +125,64 @@ export default {
       },
     };
   },
-  mounted() {
-    this.initify();
+  created() {
+    this.getDetail();
   },
   methods: {
-    // 提交更新
+    hanldStepUpdate(step) {
+      const _this = this;
+      const version = _this.updated.version;
+      // 设置开始更新与文字
+      const item = _this.stepData.list.find(item => item.step === step);
+      _this.stepData.stepText = `正在${item.title}...`;
+      // 设置当前步骤
+      _this.stepData.step = _this.stepData.list.findIndex(item => item.step === step) + 1;
+      // 发送更新请求
+      _this.$http.usePost(`admin/Updated/updateCheck?step=${step}&version=${version}`).then((res) => {
+        if (res.data.next === 'success') {
+          _this.stepData.step = _this.stepData.list.findIndex(item => item.step === res.data.next) + 1;
+          _this.stepData.stepText = res.msg;
+          setTimeout(() => {
+            _this.$router.push({ path: '/Index/index' });
+          }, 1500);
+        } else {
+          setTimeout(() => {
+            _this.hanldStepUpdate(res.data.next);
+          }, 500);
+        }
+      }).catch((err) => {
+        if (err.response.status === 502) {
+          step = 'ping';
+          setTimeout(() => {
+            _this.hanldStepUpdate(step);
+          }, 1000)
+          return;
+        }
+        if (step === 'reload') {
+          step = 'ping';
+          setTimeout(() => {
+            _this.hanldStepUpdate(step);
+          }, 1000)
+        } else {
+          console.log('error', err);
+          _this.$useNotification?.error({
+            title: res?.msg ?? "获取失败",
+            duration: 1500,
+          });
+        }
+      });
+    },
     hanldUpdate() {
       const _this = this;
       _this.$useDialog.create({
         type: "warning",
         title: "温馨提示",
-        content: "是否确定更新框架系统？请自行备份数据库与代码文件",
+        content: "是否确定现在开始更新系统框架？",
         positiveText: "确定",
         negativeText: "取消",
         maskClosable: false,
         onPositiveClick() {
-          const data = {
-            version: _this.updated.version,
-          };
-          _this.install.status = true;
-          _this.install.text = '正在安装中...';
-          const setIntervalObj = setInterval(() => {
-            if (_this.install.progress < 100) {
-              const progress = Math.random();
-              const progress_num = _this.install.progress + progress;
-              _this.install.progress = parseFloat(progress_num.toFixed(2));
-            }
-          }, 300);
-          _this.$http
-            .usePost("admin/Updated/updateCheck", data)
-            .then((res) => {
-              _this.install.text = '等待服务重启...';
-              _this.install.progress = 100;
-              clearInterval(setIntervalObj);
-              setTimeout(() => {
-                window.location.reload();
-              }, 5000);
-              _this.$useNotification?.success({
-                title: res?.msg ?? "操作成功",
-                duration: 1500,
-              });
-            })
-            .catch((err) => {
-              clearInterval(setIntervalObj);
-              _this.install.status = false;
-              _this.install.progress = 0;
-              _this.$useNotification?.error({
-                title: err?.msg ?? "更新出错",
-                duration: 1500,
-              });
-            });
+          _this.hanldStepUpdate('download');
         },
       });
     },
@@ -145,70 +202,140 @@ export default {
         },
       });
     },
-    initify() {
+    getDetail() {
       const _this = this;
-      _this.$http.usePut("admin/Updated/updateCheck").then((res) => {
-        const { data } = res;
-        _this.updated = data;
-      });
+      _this.$http
+        .usePut("admin/Updated/updateCheck")
+        .then((res) => {
+          const { data } = res;
+          data.update = data.version > data.client_version;
+          _this.updated = data;
+          // 是否忽略更新
+          const ignore = parseInt(localStorage.getItem("system_updated"));
+          if (ignore !== this.updated.version) {
+            this.install.ignore = true;
+          }
+        })
     },
   },
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .update-container {
   background: #fff;
+  width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  overflow-y: auto;
-  overflow-x: hidden;
-  .logo-container {
-    text-align: center;
-    .logo {
-      width: 80px;
-      height: 80px;
-      margin: 0 auto;
-      border-radius: 10px;
-    }
-    .logo-title {
-      font-size: 20px;
-      font-weight: 700;
-      margin-top: 5px;
-    }
-  }
+
   .update-box {
-    width: 60%;
-    .empty-container {
-      margin-top: 100px;
+    display: flex;
+    height: 100%;
+    padding: 15px;
+
+    .step-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-right: 1px solid #e5e5e5;
+      padding: 0 30px;
     }
 
-    .title {
-      text-align: center;
-      font-size: 18px;
-      font-weight: 700;
-      margin-top: 20px;
-    }
+    .content-box {
+      flex: 1;
+      padding: 0 30px;
 
-    .form-container {
-      margin-top: 20px;
+      .updated-content {
 
-      .action-button {
+        .version-box {
+          border-top: 1px solid #e5e5e5;
+          margin-top: 20px;
+
+          .title {
+            font-size: 20px;
+            font-weight: 700;
+            padding: 10px 0;
+          }
+
+          .version-content {
+            height: 350px;
+            background: #f5f5f5;
+            border: 1px solid #e5e5e5;
+            padding: 5px;
+
+            .version-pre {
+              font-size: 13px;
+              color: #333;
+            }
+          }
+        }
+
+        .action-button {
+          display: flex;
+          gap: 30px;
+          align-items: center;
+          justify-content: center;
+          margin-top: 20px;
+        }
+      }
+
+      .updated-ing {
+        height: 550px;
         display: flex;
-        gap: 80px;
-        align-items: center;
         justify-content: center;
+        align-items: center;
+        border-top: 1px solid #e5e5e5;
+        margin-top: 20px;
+
+        .loading {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+          gap: 10px;
+
+          .loading-icon {
+            font-size: 22px;
+            margin-bottom: 10px;
+          }
+        }
       }
     }
   }
-  .loading-container {
-    margin-top: 30px;
-    .loading-box {
-      text-align: center;
-    }
+
+  .update-empty {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    justify-content: center;
+    align-items: center;
   }
+}
+
+.logo-container {
+  text-align: center;
+  margin-top: 30px;
+
+  .logo {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    border-radius: 10px;
+  }
+
+  .logo-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 5px;
+  }
+}
+
+.mt-5 {
+  margin-top: 5px;
+}
+
+.text-red {
+  color: red;
 }
 </style>

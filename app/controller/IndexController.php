@@ -47,15 +47,15 @@ class IndexController extends BaseController
      */
     public function checkUpdate(Request $request)
     {
-        $funcName = $request->get('step', '');
-        $version  = (int) $request->get('version', 0);
-        if (empty($version)) {
-            return $this->fail('更新目标版本参数错误');
-        }
-        if (empty($funcName)) {
-            return $this->fail('操作方法出错');
-        }
-        $class = new SystemUpdateService($request);
-        return call_user_func([$class, $funcName]);
+        // $funcName = $request->get('step', '');
+        // $version  = (int) $request->get('version', 0);
+        // if (empty($version)) {
+        //     return $this->fail('更新目标版本参数错误');
+        // }
+        // if (empty($funcName)) {
+        //     return $this->fail('操作方法出错');
+        // }
+        // $class = new SystemUpdateService($request);
+        // return call_user_func([$class, $funcName]);
     }
 }
