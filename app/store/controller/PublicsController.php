@@ -83,6 +83,10 @@ class PublicsController extends BaseController
                 'edit' => "{$this->moduleName}/SystemUploadCate/edit",
                 'del' => "{$this->moduleName}/SystemUploadCate/del",
             ],
+            // 主题配置（待扩展）
+            'theme'             => [
+                'layout'        => 'top',
+            ],
         ];
         return parent::successRes($data);
     }
@@ -208,7 +212,7 @@ class PublicsController extends BaseController
         })
         ->toArray();
         $data = [
-            'active' => 'Index/index',
+            'active' => '/Index/index',
             'list' => $list
         ];
         return parent::successRes($data);

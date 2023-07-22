@@ -51,13 +51,18 @@ export default {
     methods: {
         // 登录
         login() {
-            this.loading = true;
-            this.$http.usePost(this.moudelName + 'Publics/login', this.form).then(res => {
+            const _this = this;
+            _this.loading = true;
+            _this.$http.usePost(_this.moudelName + 'Publics/login', this.form).then(res => {
+                _this.$useNotification?.success({
+                    title: res?.msg ?? "获取失败",
+                    duration: 1500,
+                });
                 setTimeout(() => {
-                    this.$router.push('/Index/index?token=' + res.data.token);
+                    _this.$router.push('/Index/index?token=' + res.data.token);
                 }, 300);
             }).finally(() => {
-                this.loading = false;
+                _this.loading = false;
             })
         }
     }

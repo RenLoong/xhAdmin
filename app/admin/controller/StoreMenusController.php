@@ -14,6 +14,7 @@ use app\common\enum\AuthRuleMethods;
 use app\common\enum\AuthRuleRuleType;
 use app\common\enum\ShowStatus;
 use app\common\enum\YesNoEumStyle;
+use app\common\service\AuthRuleService;
 use support\Request;
 use FormBuilder\Factory\Elm;
 
@@ -194,7 +195,7 @@ class StoreMenusController extends BaseController
                         'checkStrictly' => true,
                     ],
                 ],
-                'options'     => StoreMenus::getCascaderOptions(),
+                'options'     => AuthRuleService::getCascaderOptions(),
                 'placeholder' => '如不选择则是顶级菜单',
                 'col'         => [
                     'span' => 12
@@ -205,13 +206,13 @@ class StoreMenusController extends BaseController
                     'span' => 12
                 ],
             ])
-            ->addRow('component', 'select', '菜单类型', '', [
-                'options' => AuthRuleRuleType::getOptions(),
-                'col'     => [
-                    'span' => 12
+            ->addRow('component', 'select', '菜单类型', 'none/index', [
+                'options'   => AuthRuleRuleType::getOptions(),
+                'col'       => [
+                    'span'  => 12
                 ],
                 // 使用联动组件
-                'control' => [
+                'control'   => [
                     [
                         'value' => 'remote/index',
                         'where' => '==',
@@ -222,7 +223,7 @@ class StoreMenusController extends BaseController
                                 ])
                                 ->col([
                                     'span' => 12
-                                ])
+                                ]),
                         ],
                     ],
                     [
@@ -236,32 +237,36 @@ class StoreMenusController extends BaseController
                                 ->col([
                                     'span' => 12
                                 ]),
-                            Elm::radio('is_api', '是否接口', '0')
-                                ->col([
-                                    'span' => 12
-                                ])
-                                ->options(YesNoEum::getOptions()),
-                            Elm::input('namespace', '命名空间', "\\app\\store\\controller\\")
-                                ->placeholder('示例：\\app\\store\\controller\\')
-                                ->col([
-                                    'span' => 12
-                                ]),
-                            Elm::input('path', '权限路由', "")
-                                ->placeholder('示例：控制器/方法')
-                                ->col([
-                                    'span' => 12
-                                ]),
-                            Elm::checkbox('method', '请求类型', ['GET'])
-                            ->options(AuthRuleMethods::getOptions())
-                                ->col([
-                                    'span' => 12
-                                ]),
                         ],
                     ],
                 ],
             ])
-            ->addRow('show', 'radio', '显示隐藏', '20', [
+            ->addRow('is_api', 'radio', '是否接口', '10', [
+                'options'       => YesNoEum::getOptions(),
+                'col'           => [
+                    'span'      => 12
+                ],
+            ])
+            ->addRow('namespace', 'input', '命名空间', "\\app\\store\\controller\\", [
+                'placeholder'=> '示例：\\app\\store\\controller\\',
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('path', 'input', '权限路由', '', [
+                'placeholder'=>'示例：控制器/方法',
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('show', 'radio', '显示隐藏', '10', [
                 'options' => ShowStatus::getOptions(),
+                'col'     => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('method', 'checkbox', '请求类型', ['GET'], [
+                'options' => AuthRuleMethods::getOptions(),
                 'col'     => [
                     'span' => 12
                 ],
@@ -340,7 +345,7 @@ class StoreMenusController extends BaseController
                         'checkStrictly' => true,
                     ],
                 ],
-                'options'     => StoreMenus::getCascaderOptions(),
+                'options'     => AuthRuleService::getCascaderOptions(),
                 'placeholder' => '如不选择则是顶级菜单',
                 'col'         => [
                     'span' => 12
@@ -351,13 +356,13 @@ class StoreMenusController extends BaseController
                     'span' => 12
                 ],
             ])
-            ->addRow('component', 'select', '菜单类型', '', [
-                'options' => AuthRuleRuleType::getOptions(),
-                'col'     => [
-                    'span' => 12
+            ->addRow('component', 'select', '菜单类型', 'none/index', [
+                'options'   => AuthRuleRuleType::getOptions(),
+                'col'       => [
+                    'span'  => 12
                 ],
                 // 使用联动组件
-                'control' => [
+                'control'   => [
                     [
                         'value' => 'remote/index',
                         'where' => '==',
@@ -368,11 +373,11 @@ class StoreMenusController extends BaseController
                                 ])
                                 ->col([
                                     'span' => 12
-                                ])
+                                ]),
                         ],
                     ],
                     [
-                        'value' => ['', 'table/index', 'form/index'],
+                        'value' => ['','table/index','form/index'],
                         'where' => 'in',
                         'rule'  => [
                             Elm::input('auth_params', '附带参数')
@@ -382,32 +387,36 @@ class StoreMenusController extends BaseController
                                 ->col([
                                     'span' => 12
                                 ]),
-                            Elm::radio('is_api', '是否接口', '0')
-                                ->col([
-                                    'span' => 12
-                                ])
-                                ->options(YesNoEum::getOptions()),
-                            Elm::input('namespace', '命名空间', "\\app\\store\\controller\\")
-                                ->placeholder('示例：\\app\\store\\controller\\')
-                                ->col([
-                                    'span' => 12
-                                ]),
-                            Elm::input('path', '权限路由', "")
-                                ->placeholder('示例：控制器/方法')
-                                ->col([
-                                    'span' => 12
-                                ]),
-                            Elm::checkbox('method', '请求类型', ['GET'])
-                                ->options(AuthRuleMethods::getOptions())
-                                ->col([
-                                    'span' => 12
-                                ]),
                         ],
                     ],
                 ],
             ])
-            ->addRow('show', 'radio', '显示隐藏', '20', [
+            ->addRow('is_api', 'radio', '是否接口', '10', [
+                'options'       => YesNoEum::getOptions(),
+                'col'           => [
+                    'span'      => 12
+                ],
+            ])
+            ->addRow('namespace', 'input', '命名空间', "\\app\\store\\controller\\", [
+                'placeholder'=> '示例：\\app\\store\\controller\\',
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('path', 'input', '权限路由', '', [
+                'placeholder'=>'示例：控制器/方法',
+                'col' => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('show', 'radio', '显示隐藏', '10', [
                 'options' => ShowStatus::getOptions(),
+                'col'     => [
+                    'span' => 12
+                ],
+            ])
+            ->addRow('method', 'checkbox', '请求类型', ['GET'], [
+                'options' => AuthRuleMethods::getOptions(),
                 'col'     => [
                     'span' => 12
                 ],
