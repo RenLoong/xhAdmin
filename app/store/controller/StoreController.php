@@ -70,7 +70,7 @@ class StoreController extends BaseController
         }
         $builder = new FormBuilder;
         $builder->setMethod('POST')
-        ->addRow('title', 'input', '租户名称', '', [
+        ->addRow('title', 'input', '用户名称', '', [
             'col' => [
                 'span' => 12
             ],
@@ -91,7 +91,7 @@ class StoreController extends BaseController
                 'span' => 12
             ],
         ])
-        ->addComponent('logo', 'uploadify', '租户图标', '', [
+        ->addComponent('logo', 'uploadify', '用户头像', '', [
             'props' => [
                 'type'   => 'image',
                 'format' => ['jpg', 'png', 'gif']

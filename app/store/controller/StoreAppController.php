@@ -2,9 +2,12 @@
 
 namespace app\store\controller;
 
-use app\admin\logic\PluginLogic;
-use app\admin\service\kfcloud\SystemInfo;
+use app\common\builder\FormBuilder;
+use app\common\enum\StatusEnum;
+use app\common\manager\StoreAppMgr;
+use app\common\service\SystemInfoService;
 use app\BaseController;
+use app\common\manager\PluginMgr;
 use app\store\validate\StoreApp;
 use Exception;
 use support\Log;
@@ -48,14 +51,21 @@ class StoreAppController extends BaseController
      */
     public function index(Request $request)
     {
-        $model = $this->model;
-        $platform_id = $request->get('id');
-        $where = [
-            ['platform_id', '=', $platform_id],
+        $store_id     = hp_admin_id('hp_store');
+        $platformType = $request->get('platform', '');
+        $model        = $this->model;
+        $where        = [
+            ['store_id','=', $store_id]
         ];
+        if ($platformType) {
+            $where[] = ['platform', '=', $platformType];
+        }
         $data = $model->where($where)
             ->order(['id' => 'desc'])
             ->select()
+            ->each(function ($item) {
+                return $item;
+            })
             ->toArray();
         return parent::successRes($data);
     }
@@ -68,23 +78,28 @@ class StoreAppController extends BaseController
      * @Email 416716328@qq.com
      * @DateTime 2023-05-11
      */
-    public function add(Request $request)
+    public function create(Request $request)
     {
+        $platform = $request->get('platform', '');
         if ($request->method() === 'POST') {
-            $post = $request->post();
-            $post['store_id'] = hp_admin_id('hp_store');
+            $post                   = $request->post();
+            $post['store_id']       = hp_admin_id('hp_store');
+            $post['platform']       = $platform;
+            $post['status']         = '20';
 
             hpValidate(StoreApp::class, $post, 'add');
 
             Db::startTrans();
             try {
+                # 创建项目
                 $model = $this->model;
                 $model->save($post);
-                // 执行应用插件方法
-                $class = "\\plugin\\{$model->name}\\api\\Created";
+                # 创建项目配置
+                # 执行项目插件方法
+                $class = "\\plugin\\{$model['name']}\\api\\Created";
                 if (method_exists($class, 'createAdmin')) {
                     $post['id'] = $model->id;
-                    $logicCls = new $class;
+                    $logicCls   = new $class;
                     $logicCls->createAdmin($post);
                 }
                 Db::commit();
@@ -94,7 +109,32 @@ class StoreAppController extends BaseController
                 return $this->fail($e->getMessage());
             }
         }
-        return $this->fail('请求类型错误');
+        $platforms = $this->plugins($request);
+        $platformList = [];
+        foreach ($platforms as $value) {
+            $item           = [
+                'label'     => $value['title'],
+                'value'     => $value['name'],
+            ];
+            $platformList[] = $item;
+        }
+        $builder = new FormBuilder;
+        $builder->setMethod('POST')
+            ->addRow('title', 'input', '项目名称', '', [
+                'col' => 12,
+            ])
+            ->addRow('name', 'select', '所属应用', '', [
+                'col' => 12,
+                'options' => $platformList
+            ])
+            ->addComponent('logo', 'uploadify', '项目图标', '', [
+                'props' => [
+                    'type' => 'image',
+                    'format' => ['jpg', 'jpeg', 'png']
+                ],
+            ]);
+        $data = $builder->create();
+        return parent::successRes($data);
     }
 
     /**
@@ -107,16 +147,16 @@ class StoreAppController extends BaseController
      */
     public function edit(Request $request)
     {
-        $app_id = $request->get('app_id');
-        $model = $this->model;
-        $where = [
+        $app_id = $request->get('id','');
+        $model  = $this->model;
+        $where  = [
             ['id', '=', $app_id],
         ];
-        $model = $model->where($where)->find();
+        $model  = $model->where($where)->find();
         if (!$model) {
             return $this->fail('该应用不存在');
         }
-        if ($request->method() === 'POST') {
+        if ($request->method() === 'PUT') {
             $post = $request->post();
 
             hpValidate(StoreApp::class, $post, 'edit');
@@ -128,7 +168,7 @@ class StoreAppController extends BaseController
                 $class = "\\plugin\\{$model->name}\\api\\Created";
                 if (method_exists($class, 'createAdmin')) {
                     $post['id'] = $model->id;
-                    $logicCls = new $class;
+                    $logicCls   = new $class;
                     $logicCls->createAdmin($post);
                 }
                 Db::commit();
@@ -138,46 +178,86 @@ class StoreAppController extends BaseController
                 return $this->fail($e->getMessage());
             }
         }
-        $data = $model->toArray();
+        $formData = $model->toArray();
         // 执行应用插件方法
         $class = "\\plugin\\{$model->name}\\api\\Created";
         if (method_exists($class, 'read')) {
             $post['id'] = $model->id;
-            $logicCls = new $class;
+            $logicCls   = new $class;
             try {
                 $userData = $logicCls->read($model->id);
-                isset($userData['username']) && $data['username'] = $userData['username'];
+                isset($userData['username']) && $formData['username'] = $userData['username'];
             } catch (\Throwable $e) {
                 Log::error("获取管理员数据出错：{$e->getMessage()}");
             }
         }
-        return $this->successRes($data);
+        $builder = new FormBuilder;
+        $builder->setMethod('POST')
+            ->addRow('title', 'input', '项目名称', '', [
+                'col' => 6,
+            ])
+            ->addRow('status', 'radio', '项目状态', '10', [
+                'col'       => 6,
+                'options'   => StatusEnum::getOptions()
+            ])
+            ->addComponent('name', 'info', '绑定应用', '', [
+                'col' => 6,
+            ])
+            ->addComponent('platform', 'info', '项目类型', '', [
+                'col' => 6,
+            ])
+            ->addComponent('logo', 'uploadify', '项目图标', '', [
+                'props' => [
+                    'type' => 'image',
+                    'format' => ['jpg', 'jpeg', 'png']
+                ],
+            ]);
+        $builder->setFormData($formData);
+        $data = $builder->create();
+        return parent::successRes($data);
+    }
+
+    /**
+     * 删除项目
+     * @param \support\Request $request
+     * @return \support\Response
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public function del(Request $request)
+    {
+        $store_id = hp_admin_id('hp_store');
+        $app_id = $request->post('id','');
+        StoreAppMgr::del([
+            'id'            => $app_id,
+            'store_id'      => $store_id
+        ]);
+        return $this->success('操作成功');
     }
 
     /**
      * 获取已安装插件列表
-     * @param Request $request
-     * @return \support\Response
+     * @param \support\Request $request
+     * @return mixed
+     * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-05-11
      */
-    public function plugins(Request $request)
+    private function plugins(Request $request)
     {
-        $installed = PluginLogic::getLocalPlugins();
-        $systemInfo = SystemInfo::info();
-        $query = [
-            'active' => '2',
-            'limit' => 1000,
-            'plugins' => $installed,
-            'saas_version' => $systemInfo['system_version']
+        $installed  = PluginMgr::getLocalPlugins();
+        $systemInfo = SystemInfoService::info();
+        $query      = [
+            'active'        => '2',
+            'limit'         => 1000,
+            'plugins'       => $installed,
+            'saas_version'  => $systemInfo['system_version']
         ];
-        $req = new PluginRequest;
+        $req        = new PluginRequest;
         $req->list();
         $req->setQuery($query, null);
-        $cloud = new Cloud($req);
+        $cloud   = new Cloud($req);
         $plugins = $cloud->send();
-        return $this->successRes($plugins->data);
+        return $plugins->data;
     }
 
     /**
@@ -191,13 +271,13 @@ class StoreAppController extends BaseController
     public function status(Request $request)
     {
         $platform_id = $request->post('platform_id');
-        $app_id = $request->post('app_id');
-        $model = $this->model;
-        $where = [
+        $app_id      = $request->post('app_id');
+        $model       = $this->model;
+        $where       = [
             'platform_id' => $platform_id,
             'id' => $app_id
         ];
-        $model = $model->where($where)->find();
+        $model       = $model->where($where)->find();
         if (!$model) {
             return $this->fail('该应用不存在');
         }
@@ -219,7 +299,7 @@ class StoreAppController extends BaseController
     public function login(Request $request)
     {
         $app_id = $request->post('app_id');
-        $model = $this->model;
+        $model  = $this->model;
 
         $where = [
             'id' => $app_id

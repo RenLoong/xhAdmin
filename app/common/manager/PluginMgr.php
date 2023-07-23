@@ -133,16 +133,17 @@ class PluginMgr
      */
     public static function getPluginVersionData($name)
     {
+        $version = [
+            'version'           => 1,
+            'version_name'      => '1.0.0'
+        ];
         $json = base_path("/plugin/{$name}/version.json");
         if (!is_file($json)) {
-            return [
-                'version' => 1,
-                'version_name' => '1.0.0'
-            ];
+            return $version;
         }
         $config = json_decode(file_get_contents($json), true);
         # 返回数据
-        return $config ? $config : ['version' => 1, 'version_name' => '1.0.0'];
+        return $config ? $config : $version;
     }
 
     /**
@@ -158,7 +159,7 @@ class PluginMgr
         $installed = [];
         $plugin_names = array_diff(scandir(base_path('/plugin/')), array('.', '..')) ?: [];
         foreach ($plugin_names as $plugin_name) {
-            if (is_dir(base_path("/plugin/{$plugin_name}")) && $version = self::getPluginVersion($plugin_name)) {
+            if (is_dir(base_path("/plugin/{$plugin_name}")) && $version = self::getPluginVersion($plugin_name) > 1) {
                 $installed[$plugin_name] = $version;
             }
         }

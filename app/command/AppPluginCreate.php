@@ -251,8 +251,8 @@ class AppPluginCreate extends Command
     {
         $data = <<<EOF
         {
-            "version" : 1,
-            "version_name" : "1.0.0"
+            "version"           => 1,
+            "version_name"      => "1.0.0"
         }
         EOF;
         file_put_contents($base_path . '/version.json', $data);

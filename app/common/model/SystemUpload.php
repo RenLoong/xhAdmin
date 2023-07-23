@@ -4,12 +4,9 @@ namespace app\common\model;
 
 use app\Model;
 use app\common\service\UploadService;
-use think\model\concern\SoftDelete;
 
 class SystemUpload extends Model
 {
-    # 软删除
-    use SoftDelete;
     protected $deleteTime = 'delete_time';
 
     # 模型输出字段

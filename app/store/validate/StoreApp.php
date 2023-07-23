@@ -9,7 +9,7 @@ class StoreApp extends Validate
 {
     protected $rule =   [
         'store_id'          => 'require',
-        'platform_id'       => 'require',
+        'platform'          => 'require',
         'title'             => 'require|verifyTitle',
         'name'              => 'require',
         'logo'              => 'require',
@@ -17,8 +17,8 @@ class StoreApp extends Validate
 
     protected $message  =   [
         'store_id.require'          => '缺少租户参数',
-        'platform_id.require'       => '缺少平台参数',
-        'title.require'             => '请输入应用名称',
+        'platform.require'          => '缺少项目平台类型',
+        'title.require'             => '请输入项目名称',
         'name.require'              => '请选择应用插件',
         'logo.require'              => '请上传应用图标',
     ];
@@ -57,8 +57,10 @@ class StoreApp extends Validate
      */
     protected function verifyTitle($value)
     {
+        $store_id = hp_admin_id('hp_store');
         $where = [
-            'title'  => $value
+            'store_id'      => $store_id,
+            'title'         => $value
         ];
         if (ModelStoreApp::where($where)->count()) {
             return '该应用已添加';

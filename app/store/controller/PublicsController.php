@@ -166,10 +166,13 @@ class PublicsController extends BaseController
         }
         $storeModel = $model->toArray();
         $data = [
-            'id' => $storeModel['id'],
-            'nickname' => $storeModel['contact'],
-            'headimg' => $storeModel['logo'],
-            'plugins' => $storeModel['plugins_name'],
+            'id'                => $storeModel['id'],
+            'nickname'          => $storeModel['contact'],
+            'headimg'           => $storeModel['logo'],
+            'plugins'           => $storeModel['plugins_name'],
+            'level'             => [
+                'title'         => '有效期:2023-08-23'
+            ],
         ];
         return parent::successRes($data);
     }

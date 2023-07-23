@@ -195,7 +195,7 @@ class StoreMenusController extends BaseController
                         'checkStrictly' => true,
                     ],
                 ],
-                'options'     => AuthRuleService::getCascaderOptions(),
+                'options'     => StoreMenus::getCascaderOptions(),
                 'placeholder' => '如不选择则是顶级菜单',
                 'col'         => [
                     'span' => 12
@@ -345,7 +345,7 @@ class StoreMenusController extends BaseController
                         'checkStrictly' => true,
                     ],
                 ],
-                'options'     => AuthRuleService::getCascaderOptions(),
+                'options'     => StoreMenus::getCascaderOptions(),
                 'placeholder' => '如不选择则是顶级菜单',
                 'col'         => [
                     'span' => 12

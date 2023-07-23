@@ -117,10 +117,12 @@ export default {
         this.initify()
     },
     methods: {
+        // 跳转版本升级页面
         toUpdated(path){
             this.updateInfo.status = false
             this.$routerApp.push(path)
         },
+        // 检测版本升级并弹窗
         checking() {
             const _this = this
             const currentRoute = _this.$routeApp.path

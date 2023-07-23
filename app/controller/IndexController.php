@@ -10,8 +10,20 @@ use support\Request;
 
 class IndexController extends BaseController
 {
+    /**
+     * 默认访问
+     * @param \support\Request $request
+     * @return \support\Response
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
     public function index(Request $request)
     {
+        // 检测是否安装
+        if (!file_exists(base_path('/.env'))) {
+            return redirect('/install/');
+        }
+        return redirect('/store/');
     }
 
     /**

@@ -2,79 +2,33 @@
     <div class="app-container">
         <!-- 平台应用 -->
         <div class="platform-count">
-            <n-grid :cols="5" :x-gap="24" :y-gap="12" class="num-container">
-                <n-grid-item class="item wechat">
+            <div class="platform-title">
+                <div class="title-box">
+                    <AppIcons icon="FundOutlined" :size="18" />
+                    <span class="title">项目数据统计</span>
+                </div>
+                <div class="tools-box">
+                    <AppIcons icon="BulbOutlined" :size="16" />
+                    <span class="tips">点击一下看板创建对应的项目</span>
+                </div>
+            </div>
+            <n-grid :cols="6" :x-gap="24" :y-gap="12" class="num-container">
+                <n-grid-item class="item" v-for="(item, index) in platformApp" :key="index" @click="hanldCreated(item.key)">
                     <div class="logo-container">
-                        <img src="/image/new_wechat.png" class="logo" alt="">
+                        <img :src="item.logo" class="logo" alt="">
                     </div>
                     <div class="content">
                         <n-statistic tabular-nums>
                             <template #label>
                                 <div class="count-label">
-                                    可创建微信公众号
+                                    可创建{{ item.label }}
                                 </div>
                             </template>
-                            <n-number-animation show-separator :from="0" :to="platformApp.wechat" />
-                        </n-statistic>
-                    </div>
-                </n-grid-item>
-                <n-grid-item class="item mini-wechat">
-                    <div class="logo-container">
-                        <img src="/image/new_wx_mini.png" class="logo" alt="">
-                    </div>
-                    <div class="content">
-                        <n-statistic tabular-nums>
-                            <template #label>
-                                <div class="count-label">
-                                    可创建微信小程序
-                                </div>
-                            </template>
-                            <n-number-animation show-separator :from="0" :to="platformApp.mini_wechat" />
-                        </n-statistic>
-                    </div>
-                </n-grid-item>
-                <n-grid-item class="item douyin">
-                    <div class="logo-container">
-                        <img src="/image/douyin.png" class="logo" alt="">
-                    </div>
-                    <div class="content">
-                        <n-statistic tabular-nums>
-                            <template #label>
-                                <div class="count-label">
-                                    可创建抖音小程序
-                                </div>
-                            </template>
-                            <n-number-animation show-separator :from="0" :to="platformApp.douyin" />
-                        </n-statistic>
-                    </div>
-                </n-grid-item>
-                <n-grid-item class="item h5">
-                    <div class="logo-container">
-                        <img src="/image/h5.png" class="logo" alt="">
-                    </div>
-                    <div class="content">
-                        <n-statistic tabular-nums>
-                            <template #label>
-                                <div class="count-label">
-                                    可创建网页应用
-                                </div>
-                            </template>
-                            <n-number-animation show-separator :from="0" :to="platformApp.h5" />
-                        </n-statistic>
-                    </div>
-                </n-grid-item>
-                <n-grid-item class="item other">
-                    <div class="logo-container">
-                        <img src="/image/other.png" class="logo" alt="">
-                    </div>
-                    <div class="content">
-                        <n-statistic tabular-nums>
-                            <template #label>
-                                <div class="count-label">
-                                    可创建其他应用
-                                </div>
-                            </template>
-                            <n-number-animation show-separator :from="0" :to="platformApp.other" />
+                            <div class="data-number">
+                                <n-number-animation show-separator :from="0" :to="item.created" />
+                                <div class="separator">/</div>
+                                <n-number-animation show-separator :from="0" :to="item.num" />
+                            </div>
                         </n-statistic>
                     </div>
                 </n-grid-item>
@@ -84,31 +38,32 @@
         <div class="projects-list">
             <div class="project-tools-box">
                 <div class="project-title">
-                    <div class="item buttons">
-                        <AppIcons icon="CodeSandboxOutlined" :size="16" />
-                        <span class="title">项目管理</span>
-                    </div>
-                    <div class="item">
-                        <n-select :options="platforms" />
-                    </div>
+                    <AppIcons icon="CodeSandboxOutlined" :size="16" />
+                    <span class="title">项目看板</span>
                 </div>
                 <div class="project-tools">
-                    <button class="action-btn">
+                    <!-- <button class="action-btn create-project">
                         <AppIcons icon="PlusOutlined" :size="16" />
                         <span class="title">创建项目</span>
-                    </button>
+                    </button> -->
+                    <n-dropdown trigger="hover" :options="platforms" @select="handleSelectPlatform">
+                        <button class="action-btn all-project">
+                            <AppIcons icon="CaretDownOutlined" :size="16" />
+                            <span class="title">{{ selectPlatform }}</span>
+                        </button>
+                    </n-dropdown>
                 </div>
             </div>
-            <div class="project-content">
-                <div class="item" v-for="(item, index) in 20" :key="index">
+            <div class="project-content" v-if="projects.list.length">
+                <div class="item" v-for="(item, index) in projects.list" :key="index">
                     <div class="project-info">
-                        <n-image src="http://demo.kfadmin.net/image/logo.png" width="150" height="150" class="logo" />
-                        <img src="/image/other.png" class="platform-type" alt="" />
-                        <div class="title">标题标题标题标题标题标题标题</div>
+                        <n-image :src="item.logo" width="150" height="150" class="logo" />
+                        <img :src="item.logo" class="platform-type" alt="" />
+                        <div class="title">{{ item.title }}</div>
                         <div class="tools">
                             <n-tooltip trigger="hover" placement="right">
                                 <template #trigger>
-                                    <div @click="hanldAdmin(item)">
+                                    <div class="action-item" @click="hanldAdmin(item)">
                                         <AppIcons icon="PartitionOutlined" :size="20" color="#888" />
                                     </div>
                                 </template>
@@ -116,15 +71,15 @@
                             </n-tooltip>
                             <n-tooltip trigger="hover" placement="right">
                                 <template #trigger>
-                                    <div @click="copyAppsUrl(item)">
+                                    <div class="action-item" @click="copyAppsUrl(item)">
                                         <AppIcons icon="LinkOutlined" :size="20" color="#888" />
                                     </div>
                                 </template>
-                                复制应用连接
+                                复制项目连接
                             </n-tooltip>
                             <n-tooltip trigger="hover" placement="right">
                                 <template #trigger>
-                                    <div @click="hanldEdit(item)">
+                                    <div class="action-item" @click="hanldOepn('/StoreApp/edit', item)">
                                         <AppIcons icon="EditOutlined" :size="20" color="#888" />
                                     </div>
                                 </template>
@@ -132,15 +87,28 @@
                             </n-tooltip>
                             <n-tooltip trigger="hover" placement="right">
                                 <template #trigger>
-                                    <div @click="hanldStop(item)">
+                                    <div class="action-item" @click="hanldOepn('/StoreApp/config', item)">
                                         <AppIcons icon="SettingOutlined" :size="20" color="#888" />
                                     </div>
                                 </template>
-                                停止或启用
+                                项目设置
+                            </n-tooltip>
+                            <n-tooltip trigger="hover" placement="right">
+                                <template #trigger>
+                                    <div class="action-item" @click="hanldDel(item)">
+                                        <AppIcons icon="DeleteOutlined" :size="20" color="#888" />
+                                    </div>
+                                </template>
+                                删除项目
                             </n-tooltip>
                         </div>
                     </div>
                 </div>
+            </div>
+            <!-- 数据为空 -->
+            <div class="result-empty" v-else>
+                <n-result status="404" description="当前没有更多的项目">
+                </n-result>
             </div>
         </div>
     </div>
@@ -150,50 +118,110 @@
 export default {
     data() {
         return {
-            platformApp: {
-                wechat: 0,
-                mini_wechat: 0,
-                douyin: 0,
-                h5: 0,
-                other: 0,
-            },
+            platformApp: [],
             platforms: [
                 {
                     label: '全部项目',
-                    value: ''
-                },
-                {
-                    label: '微信公众号',
-                    value: 'wechat'
-                },
-                {
-                    label: '微信小程序',
-                    value: 'wechat_mini'
-                },
-                {
-                    label: '抖音小程序',
-                    value: 'douyin'
-                },
-                {
-                    label: '网页应用',
-                    value: 'h5'
-                },
-                {
-                    label: '其他应用',
-                    value: 'other'
+                    key: ''
                 },
             ],
+            projects: {
+                platformActive: '',
+                list: [],
+            },
         };
     },
-    created() {
-        this.initify();
+    async created() {
+        const _this = this;
+        await _this.getCount();
+        await _this.getList();
+    },
+    computed: {
+        selectPlatform() {
+            const { platformActive } = this.projects;
+            const platform = this.platforms[platformActive];
+            return platform ? platform.label : '全部项目';
+        },
     },
     methods: {
-        initify() {
+        // 执行删除项目
+        actionDelProject(e) {
             const _this = this;
-            _this.$http.useGet('store/Index/consoleCount').then((res) => {
+            const { id } = e;
+            _this.$http.useDelete('store/StoreApp/del', { id }).then((res) => {
+                _this.platformActive = ''
+                _this.getList();
+                _this.$useNotification?.success({
+                    title: res?.msg ?? "操作成功",
+                    duration: 1500,
+                });
+            })
+        },
+        // 删除项目
+        hanldDel(e) {
+            const _this = this;
+            _this.$useDialog.create({
+                type: "warning",
+                title: "温馨提示",
+                content: "是否确定删除该项目？",
+                positiveText: "确定",
+                negativeText: "取消",
+                maskClosable: false,
+                onPositiveClick() {
+                    _this.actionDelProject(e);
+                },
+            });
+        },
+        // 跳转项目后台
+        hanldAdmin(e) { },
+        // 复制项目连接
+        copyAppsUrl(e) { },
+        // 跳转页面
+        hanldOepn(path, item) {
+            this.$routerApp.push({
+                path: path,
+                query: {
+                    id: item?.id,
+                    isBack: 1
+                }
+            });
+        },
+        // 跳转创建平台
+        hanldCreated(platform) {
+            this.$routerApp.push({
+                path: '/StoreApp/create',
+                query: {
+                    platform: platform,
+                    isBack: 1
+                }
+            });
+        },
+        // 选择平台
+        handleSelectPlatform(e) {
+            const platformIndex = this.platforms.findIndex((item) => item.key === e);
+            this.projects.platformActive = platformIndex;
+            this.getList();
+        },
+        // 获取项目列表
+        getList() {
+            const _this = this;
+            const platform = _this.platforms[_this.projects.platformActive];
+            const params = {
+                platform: platform?.key,
+            }
+            _this.$http.useGet('store/StoreApp/index', params).then((res) => {
                 const { data } = res;
-                _this.platformApp = data.platformApp
+                _this.projects.list = data;
+            })
+        },
+        // 获取数据统计
+        getCount() {
+            const _this = this;
+            _this.$http.useGet('store/Index/countData').then((res) => {
+                const { data } = res;
+                const { platformApp } = data;
+                _this.platformApp = platformApp
+                _this.platforms.push(...platformApp);
             })
         },
     },
@@ -207,16 +235,52 @@ export default {
     flex-direction: column;
 
     .platform-count {
-        height: 18%;
+        height: 22%;
+
+        .platform-title {
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            user-select: none;
+
+            .title-box {
+                font-weight: 700;
+                font-size: 16px;
+                display: flex;
+                align-items: center;
+
+                .title {
+                    padding-left: 5px;
+                }
+            }
+
+            .tools-box {
+                font-size: 12px;
+                color: #888;
+                display: flex;
+                align-items: center;
+
+                .tips {
+                    padding-left: 5px;
+                }
+            }
+        }
 
         .num-container {
             .item {
-                margin-top: 20px;
+                margin-top: 10px;
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 border-radius: 5px;
                 background: #fff;
+                cursor: pointer;
+
+                &:hover {
+                    background: #ffffff91;
+                }
 
                 .logo-container {
                     width: 120px;
@@ -244,6 +308,17 @@ export default {
                         user-select: none;
                     }
 
+                    .data-number {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        user-select: none;
+
+                        .separator {
+                            padding: 0 5px;
+                        }
+                    }
+
                     .n-statistic-value {
                         width: 150px;
                         text-align: center;
@@ -258,7 +333,7 @@ export default {
     }
 
     .projects-list {
-        height: 82%;
+        height: 78%;
         background: #fff;
         display: flex;
         flex-direction: column;
@@ -266,34 +341,29 @@ export default {
         .project-tools-box {
             padding: 10px 20px;
             display: flex;
+            justify-content: space-between;
             border-bottom: 1px solid #e5e5e5;
 
             .project-title {
-                width: 50%;
-                .buttons {
-                    display: flex;
-                    align-items: center;
+                display: flex;
+                align-items: center;
 
-                    .title {
-                        font-size: 16px;
-                        font-weight: 700;
-                        padding-left: 2px;
-                    }
+                .title {
+                    font-size: 16px;
+                    font-weight: 700;
+                    padding-left: 2px;
                 }
             }
 
             .project-tools {
-                width: 50%;
                 display: flex;
                 align-items: center;
                 justify-content: flex-end;
-                gap: 10px;
+                gap: 20px;
 
                 .action-btn {
                     padding: 4px 10px;
                     border-radius: 5px;
-                    border: 1px solid #722ED1;
-                    color: #722ED1;
                     background: #fff;
                     cursor: pointer;
                     transition: all .3s;
@@ -307,18 +377,42 @@ export default {
 
                     &:hover {
                         color: #fff;
+                    }
+                }
+
+                .all-project {
+                    border: 1px solid #F53F3F;
+                    color: #F53F3F;
+
+                    &:hover {
+                        background: #F53F3F;
+                    }
+                }
+
+                .create-project {
+                    border: 1px solid #722ED1;
+                    color: #722ED1;
+
+                    &:hover {
                         background: #722ED1;
                     }
                 }
             }
         }
 
+        .result-empty {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+        }
+
         .project-content {
             height: 100%;
             display: flex;
             flex-wrap: wrap;
-            gap: 30px 10px;
-            padding: 10px;
+            gap: 0 10px;
+            padding: 30px 10px;
             overflow-y: auto;
             overflow-x: hidden;
 
@@ -380,6 +474,12 @@ export default {
                         padding: 0 8px;
                         user-select: none;
                         cursor: pointer;
+
+                        .action-item {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                        }
                     }
 
                 }
