@@ -83,14 +83,13 @@ class BtController
                 if (!$site || !$database) {
                     return Json::fail('安装数据失败');
                 }
-                $date = date('Y-m-d H:i:s');
                 try {
                     # 写入站点名称
-                    $sql = "INSERT INTO `{$database['prefix']}system_config` VALUES (1,'{$date}', '{$date}', 1, '站点名称', 'web_name', '{$site['web_name']}', 'input', '', '请输入站点名称', 0);";
+                    $sql = "INSERT INTO `{$database['prefix']}system_config` VALUES (1, '2023-07-06 11:01:59', '2023-07-20 11:32:50', 1, '站点名称', 'web_name', '{$site['web_name']}', 'input', '', '请输入站点名称', 0, NULL, NULL, '20');";
                     # 执行SQL
                     Db::exceSQL($sql);
                     # 写入站点域名
-                    $sql = "INSERT INTO `{$database['prefix']}system_config` VALUES (2,'{$date}', '{$date}', 1, '站点域名', 'web_url', '{$site['web_url']}', 'input', '', '请输入站点域名', 0);";
+                    $sql = "INSERT INTO `{$database['prefix']}system_config` VALUES (2, '2023-07-06 11:01:59', '2023-07-06 11:01:59', 1, '站点域名', 'web_url', '{$site['web_url']}', 'input', '', '请输入站点域名', 0, NULL, NULL, '20');";
                     # 执行SQL
                     Db::exceSQL($sql);
                     # 获取管理员参数
@@ -98,7 +97,7 @@ class BtController
                     $password = isset($site['password']) ? $site['password'] : '';
                     # 写入管理员信息
                     $password = Password::passwordHash($password);
-                    $sql      = "INSERT INTO `{$database['prefix']}system_admin` VALUES (1,'{$date}', '{$date}', 1, 0, '{$username}', '{$password}', '1', '系统管理员', '', '{$date}', NULL, '', '0');";
+                    $sql      = "INSERT INTO `{$database['prefix']}system_admin` VALUES (1,'2023-07-06 11:01:59', '2023-07-06 11:01:59', 1, 0, '{$username}', '{$password}', '1', '系统管理员', '', NULL, NULL, '', '20');";
                     # 执行SQL
                     Db::exceSQL($sql);
                     # 安装完成
