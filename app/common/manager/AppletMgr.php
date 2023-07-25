@@ -122,12 +122,6 @@ class AppletMgr
         if (empty($config)) {
             throw new Exception('请先配置系统');
         }
-        if (empty($config['web_name'])) {
-            throw new Exception('请填写网站名称');
-        }
-        if (empty($config['web_url'])) {
-            throw new Exception('请填写网站域名');
-        }
         if (empty($config['applet_appid'])) {
             throw new Exception('请填写APPID');
         }
@@ -137,14 +131,20 @@ class AppletMgr
         if (empty($config['applet_privatekey'])) {
             throw new Exception('请填写privatekey');
         }
-        $siteRoot = "{$config['web_url']}/app/{$model['name']}/api/";
+        if (empty($model['title'])) {
+            throw new Exception('请填写网站名称');
+        }
+        if (empty($model['url'])) {
+            throw new Exception('请填写网站域名');
+        }
+        $siteRoot = "{$model['url']}/app/{$model['name']}/api/";
         $query    = [
             'appid' => $config['applet_appid'],
             'name' => $model['name'],
             'preview_desc' => '',
             'type' => 'wxmp',
             'siteinfo' => [
-                'name' => $config['web_name'],
+                'name' => $model['title'],
                 'siteroot' => $siteRoot,
                 'app_id' => $model['id'],
                 'wx_appid' => $config['applet_appid'],

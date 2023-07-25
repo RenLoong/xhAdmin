@@ -175,13 +175,6 @@ class StoreAppController extends BaseController
                 'format' => ['jpg', 'jpeg', 'png']
             ],
         ]);
-        // $builder->addComponent('logo1', 'wangeditor', '项目图标', '', [
-        //     'col' => 24,
-        //     'props' => [
-        //         'type' => 'image',
-        //         'format' => ['jpg', 'jpeg', 'png']
-        //     ],
-        // ]);
         $data = $builder->create();
         return parent::successRes($data);
     }
