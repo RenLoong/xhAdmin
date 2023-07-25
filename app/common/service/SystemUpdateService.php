@@ -260,6 +260,8 @@ class SystemUpdateService
             ZipMgr::unzip($this->backCoverPath, $this->targetPath);
             # 解压成功，删除临时文件
             unlink($this->tempZipFilePath);
+            
+            throw new RollBackException('刻意抛出异常，执行回滚');
             # 返回成功
             return JsonMgr::successRes([
                 'next' => 'updateData'

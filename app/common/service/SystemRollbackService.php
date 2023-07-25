@@ -1,5 +1,6 @@
 <?php
 namespace app\common\service;
+use app\common\manager\ZipMgr;
 use support\Request;
 
 /**
@@ -31,6 +32,10 @@ class SystemRollbackService extends SystemUpdateService
      */
     public function startRollback()
     {
-        console('开始进行核心框架代码回滚');
+        p($this->backupPath);
+        # 解压备份压缩包
+        // ZipMgr::unzip($this->backupPath, $this->targetPath);
+        # 解压覆盖压缩包
+        // ZipMgr::unzip($this->backCoverPath, $this->targetPath);
     }
 }
