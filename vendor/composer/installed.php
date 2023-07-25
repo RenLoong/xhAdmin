@@ -3,7 +3,7 @@
         'name' => 'ycopen/kfadmin',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'd64297b4f4b843ca7f5e864e243f3738ccbc0f7e',
+        'reference' => 'c700ccf342660d061a4318c234aa707941b5914b',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -616,8 +616,8 @@
         'psr/log-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0.0 || 2.0.0 || 3.0.0',
-                1 => '1.0|2.0|3.0',
+                0 => '1.0|2.0|3.0',
+                1 => '1.0.0 || 2.0.0 || 3.0.0',
             ),
         ),
         'psr/simple-cache' => array(
@@ -960,9 +960,9 @@
             'dev_requirement' => false,
         ),
         'workerman/workerman' => array(
-            'pretty_version' => 'v4.1.10',
-            'version' => '4.1.10.0',
-            'reference' => 'e967b79f95b9251a72acb971be05623ec1a51e83',
+            'pretty_version' => 'v4.1.11',
+            'version' => '4.1.11.0',
+            'reference' => '54aaf7f2a161f24f3339a722e0d3224ede466516',
             'type' => 'library',
             'install_path' => __DIR__ . '/../workerman/workerman',
             'aliases' => array(),
@@ -1005,9 +1005,9 @@
             'dev_requirement' => false,
         ),
         'yc-open/midjourney' => array(
-            'pretty_version' => '0.1.5',
-            'version' => '0.1.5.0',
-            'reference' => '84f26520b877de8f889b67b2f73ca2167fdf8f10',
+            'pretty_version' => '1.0.0',
+            'version' => '1.0.0.0',
+            'reference' => '81034e450ccef6c9a43a081aeaf6f71ac5738a4f',
             'type' => 'library',
             'install_path' => __DIR__ . '/../yc-open/midjourney',
             'aliases' => array(),
@@ -1016,7 +1016,7 @@
         'ycopen/kfadmin' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'd64297b4f4b843ca7f5e864e243f3738ccbc0f7e',
+            'reference' => 'c700ccf342660d061a4318c234aa707941b5914b',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

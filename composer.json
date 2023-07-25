@@ -46,6 +46,7 @@
         "symfony/var-dumper": "^6.0",
         "doctrine/dbal": "^3.6",
         "yc-open/cloud-service": "^1.1",
+        "yc-open/midjourney": "^1.0.0",
         "webman/redis-queue": "^1.2",
         "workerman/crontab": "^1.0",
         "zoujingli/wechat-developer": "^1.2",
@@ -54,7 +55,6 @@
         "orhanerday/open-ai": "^4.7",
         "phpoffice/phpspreadsheet": "^1.28",
         "flc/dysms": "^1.0",
-        "yc-open/midjourney": "^0.1.5",
         "yansongda/pay": "^2.10"
     },
     "suggest": {

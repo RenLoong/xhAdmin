@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d217d09bf9fcc868a91a6ed987be45e1",
+    "content-hash": "7bcf45b1d48fe9848b4ca057c9129aa3",
     "packages": [
         {
             "name": "adbario/php-dot-notation",
@@ -6974,16 +6974,16 @@
         },
         {
             "name": "workerman/workerman",
-            "version": "v4.1.10",
+            "version": "v4.1.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/walkor/workerman.git",
-                "reference": "e967b79f95b9251a72acb971be05623ec1a51e83"
+                "reference": "54aaf7f2a161f24f3339a722e0d3224ede466516"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/walkor/workerman/zipball/e967b79f95b9251a72acb971be05623ec1a51e83",
-                "reference": "e967b79f95b9251a72acb971be05623ec1a51e83",
+                "url": "https://api.github.com/repos/walkor/workerman/zipball/54aaf7f2a161f24f3339a722e0d3224ede466516",
+                "reference": "54aaf7f2a161f24f3339a722e0d3224ede466516",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -7039,7 +7039,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2023-05-01T02:12:20+00:00"
+            "time": "2023-07-19T11:53:24+00:00"
         },
         {
             "name": "xaboy/form-builder",
@@ -7280,11 +7280,23 @@
         },
         {
             "name": "yc-open/midjourney",
-            "version": "0.1.5",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
-                "url": "https://gitee.com/yc_open/midjourney.git",
-                "reference": "84f26520b877de8f889b67b2f73ca2167fdf8f10"
+                "url": "https://github.com/xbai8/midjourney.git",
+                "reference": "81034e450ccef6c9a43a081aeaf6f71ac5738a4f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/xbai8/midjourney/zipball/81034e450ccef6c9a43a081aeaf6f71ac5738a4f",
+                "reference": "81034e450ccef6c9a43a081aeaf6f71ac5738a4f",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
             },
             "require": {
                 "guzzlehttp/guzzle": "^7.7",
@@ -7309,7 +7321,11 @@
                     "email": "cy958416459@qq.com"
                 }
             ],
-            "time": "2023-06-14T08:37:50+00:00"
+            "support": {
+                "issues": "https://github.com/xbai8/midjourney/issues",
+                "source": "https://github.com/xbai8/midjourney/tree/1.0.0"
+            },
+            "time": "2023-07-25T08:18:59+00:00"
         },
         {
             "name": "yzh52521/easyhttp",
