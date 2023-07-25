@@ -1,9 +1,10 @@
-DROP TABLE IF EXISTS `php_system_admin_log`;
-CREATE TABLE `php_system_admin_log`  (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+DROP TABLE IF EXISTS `yc_system_admin_log`;
+
+CREATE TABLE `yc_system_admin_log`  (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `create_at` datetime NULL DEFAULT NULL,
-  `admin_id` int(11) NULL DEFAULT NULL COMMENT '管理员',
-  `role_id` int(11) NULL DEFAULT NULL COMMENT '管理员角色',
+  `admin_id` int NULL DEFAULT NULL COMMENT '管理员',
+  `role_id` int NULL DEFAULT NULL COMMENT '管理员角色',
   `action_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '本次操作菜单名称',
   `action_ip` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '登录IP',
   `city_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '城市名',

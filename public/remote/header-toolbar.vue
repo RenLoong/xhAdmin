@@ -11,10 +11,10 @@
                     <div class="updated-content-box">
                         <div class="version-box">
                             <div class="updated-version-title">
-                                当前：{{ updateInfo.detail.client_version_name }}（{{updateInfo.detail.client_version}}）
+                                当前：{{ updateInfo.detail.client_version_name }}（{{ updateInfo.detail.client_version }}）
                             </div>
                             <div class="updated-version-title">
-                                下个版本：{{ updateInfo.detail.version_name }}（{{updateInfo.detail.version}}）
+                                下个版本：{{ updateInfo.detail.version_name }}（{{ updateInfo.detail.version }}）
                             </div>
                         </div>
                         <pre class="updated-content">{{ updateInfo.detail.content }}</pre>
@@ -64,7 +64,7 @@ export default {
                     title: '打开用户端',
                     name: 'home',
                     icon: 'HomeOutlined',
-                    hanlder() {
+                    hanlder: () => {
                         window.open('/')
                     },
                 },
@@ -72,7 +72,7 @@ export default {
                     title: '全屏缩放',
                     name: 'zoom',
                     icon: 'ExpandOutlined',
-                    hanlder() {
+                    hanlder: () => {
                         const element = document.documentElement
                         // 如果是全屏状态
                         if (this.fullscreen) {
@@ -114,7 +114,7 @@ export default {
                     title: '在线升级',
                     name: 'update',
                     icon: 'RocketOutlined',
-                    hanlder() {
+                    hanlder: () => {
                         this.$routerApp.push('/Updated/updateCheck')
                     },
                 }
@@ -126,7 +126,7 @@ export default {
     },
     methods: {
         // 跳转版本升级页面
-        toUpdated(path){
+        toUpdated(path) {
             this.updateInfo.status = false
             this.$routerApp.push(path)
         },

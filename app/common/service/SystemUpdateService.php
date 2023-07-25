@@ -1,5 +1,6 @@
 <?php
 namespace app\common\service;
+use app\common\exception\RollBackException;
 use app\common\manager\ZipMgr;
 use app\common\manager\JsonMgr;
 use app\common\utils\DirUtil;
@@ -248,20 +249,25 @@ class SystemUpdateService
      */
     public function unzip()
     {
-        # 检测目标路径不存在则创建
-        if (!is_dir($this->targetPath)) {
-            mkdir($this->targetPath, 0755, true);
+        try {
+            # 检测目标路径不存在则创建
+            if (!is_dir($this->targetPath)) {
+                mkdir($this->targetPath, 0755, true);
+            }
+            # 解压更新包
+            ZipMgr::unzip($this->tempZipFilePath, $this->targetPath);
+            # 解压覆盖文件
+            ZipMgr::unzip($this->backCoverPath, $this->targetPath);
+            # 解压成功，删除临时文件
+            unlink($this->tempZipFilePath);
+            # 返回成功
+            return JsonMgr::successRes([
+                'next' => 'updateData'
+            ]);
+        } catch (\Throwable $e) {
+            # 报错异常，执行回滚
+            throw new RollBackException($e->getMessage());
         }
-        # 解压更新包
-        ZipMgr::unzip($this->tempZipFilePath, $this->targetPath);
-        # 解压覆盖文件
-        ZipMgr::unzip($this->backCoverPath, $this->targetPath);
-        # 解压成功，删除临时文件
-        unlink($this->tempZipFilePath);
-        # 返回成功
-        return JsonMgr::successRes([
-            'next' => 'updateData'
-        ]);
     }
 
     /**
@@ -273,31 +279,35 @@ class SystemUpdateService
      */
     public function updateData()
     {
-        # 更新服务类
-        $class = "app\\common\\service\\UpdateService";
-        if (class_exists($class)) {
-            # 执行更新前置
-            $context       = [];
-            if (method_exists($class, 'beforeUpdate')) {
-                $context = call_user_func(
-                    [$class, 'beforeUpdate'],
-                    $this->clientVersion,
-                    $this->request
-                );
+        try {
+            # 更新服务类
+            $class = "app\\common\\service\\UpdateService";
+            if (class_exists($class)) {
+                # 执行更新前置
+                $context       = [];
+                if (method_exists($class, 'beforeUpdate')) {
+                    $context = call_user_func(
+                        [$class, 'beforeUpdate'],
+                        $this->clientVersion,
+                        $this->request
+                    );
+                }
+                # 执行update更新
+                if (method_exists($class, 'update')) {
+                    call_user_func(
+                        [$class, 'update'],
+                        $this->clientVersion,
+                        $context
+                    );
+                }
             }
-            # 执行update更新
-            if (method_exists($class, 'update')) {
-                call_user_func(
-                    [$class, 'update'],
-                    $this->clientVersion,
-                    $context
-                );
-            }
+            # 更新成功
+            return JsonMgr::successRes([
+                'next' => 'reload'
+            ]);
+        } catch (\Throwable $e) {
+            throw new RollBackException($e->getMessage());
         }
-        # 更新成功
-        return JsonMgr::successRes([
-            'next' => 'reload'
-        ]);
     }
 
     /**

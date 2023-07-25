@@ -31,5 +31,6 @@ class SystemRollbackService extends SystemUpdateService
      */
     public function startRollback()
     {
+        console('开始进行核心框架代码回滚');
     }
 }

@@ -10,10 +10,10 @@ use Workerman\Timer;
 use Workerman\Worker;
 
 /**
- * 应用更新管理器
+ * 应用安装管理器
  * @author 贵州猿创科技有限公司
  * @copyright (c) 贵州猿创科技有限公司
  */
-class PluginUpdateMgr
+class PluginInstallMgr
 {
 }

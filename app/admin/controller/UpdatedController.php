@@ -2,6 +2,7 @@
 
 namespace app\admin\controller;
 
+use app\common\exception\RollBackException;
 use app\common\service\SystemRollbackService;
 use app\common\service\SystemUpdateService;
 use app\common\service\SystemInfoService;
@@ -97,10 +98,9 @@ class UpdatedController extends BaseController
     /**
      * 处理更新
      * @param \support\Request $request
-     * @return \support\Response
+     * @return mixed
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
      */
     private function checkUpdate(Request $request)
     {
@@ -120,14 +120,10 @@ class UpdatedController extends BaseController
         try {
             $class = new SystemUpdateService($request);
             return call_user_func([$class, $funcName]);
+        } catch (RollBackException $e) {
+            # 开始进行版本回滚
+            (new SystemRollbackService($request))->startRollback();
         } catch (\Throwable $e) {
-            try {
-                # 开始进行版本回滚
-                (new SystemRollbackService($request))->startRollback();
-            } catch (\Throwable $e) {
-                # 回滚失败，抛出异常
-                throw $e;
-            }
             return $this->fail($e->getMessage());
         } finally {
             # 恢复代码监听变动

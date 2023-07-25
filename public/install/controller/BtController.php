@@ -1,6 +1,6 @@
 <?php
 
-use app\utils\Password;
+use app\common\utils\Password;
 use YcOpen\CloudService\Cloud;
 use YcOpen\CloudService\Request\SystemUpdateRequest;
 
@@ -67,7 +67,7 @@ class BtController
                     # 执行SQL
                     Db::exceSQL($sql);
                     # 获取安装名称
-                    $installName = str_replace(['.sql', 'php_'], '', $sqlItem['filename']);
+                    $installName = str_replace(['.sql', 'php_','yc_'], '', $sqlItem['filename']);
                     # 返回成功
                     return Json::json("安装 【{$installName}】 数据表成功", 200, [
                         'next' => 'structure',

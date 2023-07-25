@@ -103,7 +103,7 @@
                                         <AppIcons icon="EditOutlined" :size="20" color="#666" />
                                     </div>
                                 </template>
-                                修改应用
+                                修改项目
                             </n-tooltip>
                             <n-tooltip trigger="hover" placement="right">
                                 <template #trigger>

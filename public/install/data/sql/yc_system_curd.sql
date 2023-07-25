@@ -1,6 +1,7 @@
-DROP TABLE IF EXISTS `php_system_curd`;
-CREATE TABLE `php_system_curd`  (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
+DROP TABLE IF EXISTS `yc_system_curd`;
+
+CREATE TABLE `yc_system_curd`  (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
   `create_at` datetime NULL DEFAULT NULL COMMENT '创建时间',
   `update_at` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `table_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '数据表名称',
@@ -13,4 +14,4 @@ CREATE TABLE `php_system_curd`  (
   `form_edit` enum('10','20') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '10' COMMENT '修改表单显示：10不显示，20显示',
   `is_del` enum('10','20') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '10' COMMENT '是否支持删除：10不支持，20支持',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-curd记录' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-curd记录' ROW_FORMAT = DYNAMIC;

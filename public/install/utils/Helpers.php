@@ -1,10 +1,7 @@
 <?php
 
-use app\admin\service\kfcloud\CloudService;
-use app\admin\service\kfcloud\SystemInfo;
 use YcOpen\CloudService\Cloud;
 use YcOpen\CloudService\Request\SiteRequest;
-use YcOpen\CloudService\Request\SystemUpdateRequest;
 
 class Helpers
 {
@@ -106,7 +103,11 @@ class Helpers
         // 替换SQL模板文件内容
         $_sql = file_get_contents($sqlPath);
         // 替换前缀
-        $_sql = str_replace("php_", $prefix, $_sql);
+        $prefixs = [
+            'php_',
+            'yc_'
+        ];
+        $_sql = str_replace($prefixs, $prefix, $_sql);
         return $_sql;
     }
 }

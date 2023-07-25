@@ -1,6 +1,6 @@
 <?php
-use Illuminate\Database\Capsule\Manager as Capsule;
 
+use Illuminate\Database\Capsule\Manager as Capsule;
 
 /**
  * @title 数据库管理服务
