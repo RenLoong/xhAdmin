@@ -18,7 +18,6 @@ CREATE TABLE `yc_system_config`  (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-配置项' ROW_FORMAT = DYNAMIC;
 
-INSERT INTO `yc_system_config` VALUES (2, '2023-07-06 11:01:59', '2023-07-06 11:01:59', 1, '站点域名', 'web_url', 'http://saas.nat.renloong.com', 'input', '', '请输入站点域名', 0, NULL, NULL, '20');
 INSERT INTO `yc_system_config` VALUES (3, '2023-03-12 14:06:09', '2023-05-03 16:44:15', 1, '后台图标', 'admin_logo', '', 'uploadify', '', '请上传后台图标', 0, NULL, NULL, '20');
 INSERT INTO `yc_system_config` VALUES (4, '2023-03-12 14:06:09', '2023-05-03 16:44:15', 2, '租户版权', 'store_copyright_name', '', 'input', '贵州猿创科技有限公司', '展示在租户统计页面的版权名称', 0, NULL, NULL, '20');
 INSERT INTO `yc_system_config` VALUES (5, '2023-03-12 14:06:09', '2023-05-03 16:44:15', 2, '系统教程', 'store_copyright_tutorial', '', 'textarea', '使用文档|http://www.kfadmin.net/#/document在线社区|http://www.kfadmin.net/#/document微信群|http://www.kfadmin.net/#/document', '一行一个信息，示例：名称|网址', 0, NULL, NULL, '20');

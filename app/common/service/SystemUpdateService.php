@@ -34,7 +34,7 @@ class SystemUpdateService
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    private $request = null;
+    protected $request = null;
 
     /**
      * 本地版本名称
@@ -42,7 +42,7 @@ class SystemUpdateService
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    private $clientVersionName = '';
+    protected $clientVersionName = '';
 
     /**
      * 本地版本号
@@ -50,7 +50,7 @@ class SystemUpdateService
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    private $clientVersion = 0;
+    protected $clientVersion = 0;
 
     /**
      * 临时ZIP文件路径
@@ -58,7 +58,7 @@ class SystemUpdateService
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    private $tempZipFilePath = null;
+    protected $tempZipFilePath = null;
 
     /**
      * 备份源代码路径
@@ -66,7 +66,7 @@ class SystemUpdateService
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    private $backupPath = null;
+    protected $backupPath = null;
 
      /**
       * 备份覆盖代码路径
@@ -75,7 +75,7 @@ class SystemUpdateService
       * @email 416716328@qq.com
       */
 
-    private $backCoverPath = null;
+      protected $backCoverPath = null;
 
     /**
      * 解压的目标路径
@@ -83,7 +83,7 @@ class SystemUpdateService
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    private $targetPath = null;
+    protected $targetPath = null;
 
     
     /**
@@ -93,7 +93,7 @@ class SystemUpdateService
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    private $ignoreList = [
+    protected $ignoreList = [
         'public/upload',
         'plugin',
         'runtime',
@@ -105,7 +105,7 @@ class SystemUpdateService
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    private $backCoverList = [
+    protected $backCoverList = [
         '.env',
         'config/plugin',
         'config/redis.php',
@@ -260,8 +260,6 @@ class SystemUpdateService
             ZipMgr::unzip($this->backCoverPath, $this->targetPath);
             # 解压成功，删除临时文件
             unlink($this->tempZipFilePath);
-            
-            throw new RollBackException('刻意抛出异常，执行回滚');
             # 返回成功
             return JsonMgr::successRes([
                 'next' => 'updateData'
@@ -283,22 +281,18 @@ class SystemUpdateService
     {
         try {
             # 更新服务类
-            $class = "app\\common\\service\\UpdateService";
+            $class = "app\\common\\service\\UpdateDataService";
             if (class_exists($class)) {
+                $updateServiceCls = new $class($this->request,$this->clientVersion);
                 # 执行更新前置
                 $context       = [];
                 if (method_exists($class, 'beforeUpdate')) {
-                    $context = call_user_func(
-                        [$class, 'beforeUpdate'],
-                        $this->clientVersion,
-                        $this->request
-                    );
+                    $context = call_user_func([$updateServiceCls, 'beforeUpdate']);
                 }
                 # 执行update更新
                 if (method_exists($class, 'update')) {
                     call_user_func(
-                        [$class, 'update'],
-                        $this->clientVersion,
+                        [$updateServiceCls, 'update'],
                         $context
                     );
                 }

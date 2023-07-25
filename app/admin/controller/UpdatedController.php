@@ -122,7 +122,7 @@ class UpdatedController extends BaseController
             return call_user_func([$class, $funcName]);
         } catch (RollBackException $e) {
             # 开始进行版本回滚
-            (new SystemRollbackService($request))->startRollback();
+            return (new SystemRollbackService($request))->startRollback();
         } catch (\Throwable $e) {
             return $this->fail($e->getMessage());
         } finally {

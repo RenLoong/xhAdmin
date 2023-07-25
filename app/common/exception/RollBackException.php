@@ -3,6 +3,7 @@
 namespace app\common\exception;
 
 use Exception;
+use support\Log;
 
 /**
  * 回滚专用异常类
@@ -20,6 +21,8 @@ class RollBackException extends Exception
      */
     public function __construct(string $message,mixed $code = 404)
     {
+        $content = "{$message}，line：{$this->getLine()}，file：{$this->getFile()}";
+        Log::info($content);
         parent::__construct($message, $code);
     }
 }
