@@ -16,7 +16,6 @@ use support\Request;
  */
 class IndexController extends BaseController
 {
-
     /**
      * 首页数据统计
      * @param Request $request

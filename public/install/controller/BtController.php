@@ -31,15 +31,15 @@ class BtController
     public function install()
     {
         # 获取数据
-        $step = isset($_GET['step']) ? $_GET['step'] : '';
+        $step  = isset($_GET['step']) ? $_GET['step'] : '';
         $total = isset($_GET['total']) ? intval($_GET['total']) : 0;
-        $post = $_POST;
+        $post  = $_POST;
         # 宝塔相关数据
         if (!isset($post['btData']))
             return Json::fail('缺少宝塔面板数据');
-        $btData = isset($post['btData']) ? $post['btData'] : null;
-        $panel_ssl = isset($btData['panel_ssl']) ? (bool) $btData['panel_ssl'] : false;
-        $panelLogic = new BtPanelLogic($btData['panel_port'], $btData['panel_key'], $panel_ssl);
+        $btData      = isset($post['btData']) ? $post['btData'] : null;
+        $panel_ssl   = isset($btData['panel_ssl']) ? (bool) $btData['panel_ssl'] : false;
+        $panelLogic  = new BtPanelLogic($btData['panel_port'], $btData['panel_key'], $panel_ssl);
         $server_name = str_replace('.', '_', basename(ROOT_PATH));
         # 执行安装步骤
         switch ($step) {
@@ -98,7 +98,7 @@ class BtController
                     $password = isset($site['password']) ? $site['password'] : '';
                     # 写入管理员信息
                     $password = Password::passwordHash($password);
-                    $sql = "INSERT INTO `{$database['prefix']}system_admin` VALUES (1,'{$date}', '{$date}', 1, 0, '{$username}', '{$password}', '1', '系统管理员', '', '{$date}', NULL, '', '0');";
+                    $sql      = "INSERT INTO `{$database['prefix']}system_admin` VALUES (1,'{$date}', '{$date}', 1, 0, '{$username}', '{$password}', '1', '系统管理员', '', '{$date}', NULL, '', '0');";
                     # 执行SQL
                     Db::exceSQL($sql);
                     # 安装完成
@@ -134,12 +134,12 @@ class BtController
                 $req->version = 1;
                 $req->version_name = '1.0.0';
                 $cloud = new Cloud($req);
-                $data=$cloud->send();
-                $versionJson=json_encode([
-                    'version'=>$data->version,
-                    'version_name'=>$data->version_name
-                ],JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);
-                file_put_contents(ROOT_PATH.'/version.json',$versionJson);
+                $data = $cloud->send();
+                $versionJson = json_encode([
+                    'version' => $data->version,
+                    'version_name' => $data->version_name
+                ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                file_put_contents(ROOT_PATH . '/version.json', $versionJson);
                 return Json::json(
                     '全部安装完成，即将跳转...',
                     200
@@ -174,11 +174,11 @@ class BtController
             return Json::fail('缺少云服务信息');
         if (!isset($post['site']))
             return Json::fail('缺少站点信息');
-        $btData = isset($post['btData']) ? $post['btData'] : null;
+        $btData     = isset($post['btData']) ? $post['btData'] : null;
         $serverData = isset($post['serverData']) ? $post['serverData'] : null;
-        $databased = isset($post['database']) ? $post['database'] : null;
-        $cloud = isset($post['cloud']) ? $post['cloud'] : null;
-        $site = isset($post['site']) ? $post['site'] : null;
+        $databased  = isset($post['database']) ? $post['database'] : null;
+        $cloud      = isset($post['cloud']) ? $post['cloud'] : null;
+        $site       = isset($post['site']) ? $post['site'] : null;
         # 数据库验证
         try {
             # 验证数据库版本

@@ -126,6 +126,25 @@ abstract class Enum extends EnumBaseic
     }
 
     /**
+     * 获取字典内数据
+     * @param string $name
+     * @param mixed $default
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public static function getDictValues(string $name,$default = [])
+    {
+        $data = self::toArray();
+        foreach ($data as $value) {
+            if ($value['value'] == $name) {
+                return $value;
+            }
+        }
+        return $default;
+    }
+
+    /**
      * 获取元素所需数据
      * @return array
      * @copyright 贵州猿创科技有限公司

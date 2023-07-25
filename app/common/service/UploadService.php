@@ -220,8 +220,7 @@ class UploadService
         $where['filename'] = $fiel_name;
         $where['adapter'] = $result->adapter;
         isset($dataId['store_id']) && $where['store_id'] = $dataId['store_id'];
-        isset($dataId['platform_id']) && $where['platform_id'] = $dataId['platform_id'];
-        isset($dataId['appid']) && $where['appid'] = $dataId['appid'];
+        isset($dataId['saas_appid']) && $where['saas_appid'] = $dataId['saas_appid'];
         isset($dataId['uid']) && $where['uid'] = $dataId['uid'];
 
         # 查询数据
@@ -241,8 +240,7 @@ class UploadService
 
         # 组装入库数据
         isset($dataId['store_id']) && $data['store_id'] = $dataId['store_id'];
-        isset($dataId['platform_id']) && $data['platform_id'] = $dataId['platform_id'];
-        isset($dataId['appid']) && $data['appid'] = $dataId['appid'];
+        isset($dataId['saas_appid']) && $data['saas_appid'] = $dataId['saas_appid'];
         isset($dataId['uid']) && $data['uid'] = $dataId['uid'];
 
         # 数据入库

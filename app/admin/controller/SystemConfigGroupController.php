@@ -91,7 +91,13 @@ class SystemConfigGroupController extends BaseController
      */
     public function index(Request $request)
     {
-        $data = SystemConfigGroup::order(['sort'=>'asc','id'=>'asc'])
+        $where = [
+            'store_id'    => null,
+            'saas_appid'    => null,
+            'show'          => '20',
+        ];
+        $data = SystemConfigGroup::where($where)
+        ->order(['sort'=>'asc','id'=>'asc'])
         ->select()
         ->toArray();
         return parent::successRes($data);

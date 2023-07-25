@@ -8,7 +8,7 @@
                     <span class="title">项目数据统计</span>
                 </div>
                 <div class="tools-box">
-                    <AppIcons icon="BulbOutlined" :size="16" />
+                    <AppIcons icon="QuestionCircleOutlined" :size="16" />
                     <span class="tips">点击一下看板创建对应的项目</span>
                 </div>
             </div>
@@ -21,7 +21,7 @@
                         <n-statistic tabular-nums>
                             <template #label>
                                 <div class="count-label">
-                                    可创建{{ item.label }}
+                                    {{ item.label }}
                                 </div>
                             </template>
                             <div class="data-number">
@@ -58,13 +58,33 @@
                 <div class="item" v-for="(item, index) in projects.list" :key="index">
                     <div class="project-info">
                         <n-image :src="item.logo" width="150" height="150" class="logo" />
-                        <img :src="item.logo" class="platform-type" alt="" />
+                        <img :src="item.platformLogo" class="platform-type" alt="" />
                         <div class="title">{{ item.title }}</div>
-                        <div class="tools">
+                        <div class="help-tools" v-if="item.isSetting || appletType.includes(item.platform)">
+                            <div class="help-box">
+                                <n-tooltip trigger="hover" placement="top" v-if="item.isSetting">
+                                    <template #trigger>
+                                        <div class="item" @click="hanldOepn('/StoreApp/config', item)">
+                                            <AppIcons icon="SettingOutlined" :size="19" />
+                                        </div>
+                                    </template>
+                                    项目设置
+                                </n-tooltip>
+                                <n-tooltip trigger="hover" placement="top" v-if="appletType.includes(item.platform)">
+                                    <template #trigger>
+                                        <div class="item" @click="hanldOepn('/StoreApp/applet', item)">
+                                            <AppIcons icon="CloudUploadOutlined" :size="19" />
+                                        </div>
+                                    </template>
+                                    小程序配置
+                                </n-tooltip>
+                            </div>
+                        </div>
+                        <div class="admin-tools">
                             <n-tooltip trigger="hover" placement="right">
                                 <template #trigger>
                                     <div class="action-item" @click="hanldAdmin(item)">
-                                        <AppIcons icon="PartitionOutlined" :size="20" color="#888" />
+                                        <AppIcons icon="PartitionOutlined" :size="20" color="#666" />
                                     </div>
                                 </template>
                                 登录管理
@@ -72,7 +92,7 @@
                             <n-tooltip trigger="hover" placement="right">
                                 <template #trigger>
                                     <div class="action-item" @click="copyAppsUrl(item)">
-                                        <AppIcons icon="LinkOutlined" :size="20" color="#888" />
+                                        <AppIcons icon="LinkOutlined" :size="20" color="#666" />
                                     </div>
                                 </template>
                                 复制项目连接
@@ -80,23 +100,15 @@
                             <n-tooltip trigger="hover" placement="right">
                                 <template #trigger>
                                     <div class="action-item" @click="hanldOepn('/StoreApp/edit', item)">
-                                        <AppIcons icon="EditOutlined" :size="20" color="#888" />
+                                        <AppIcons icon="EditOutlined" :size="20" color="#666" />
                                     </div>
                                 </template>
                                 修改应用
                             </n-tooltip>
                             <n-tooltip trigger="hover" placement="right">
                                 <template #trigger>
-                                    <div class="action-item" @click="hanldOepn('/StoreApp/config', item)">
-                                        <AppIcons icon="SettingOutlined" :size="20" color="#888" />
-                                    </div>
-                                </template>
-                                项目设置
-                            </n-tooltip>
-                            <n-tooltip trigger="hover" placement="right">
-                                <template #trigger>
                                     <div class="action-item" @click="hanldDel(item)">
-                                        <AppIcons icon="DeleteOutlined" :size="20" color="#888" />
+                                        <AppIcons icon="DeleteOutlined" :size="20" color="#666" />
                                     </div>
                                 </template>
                                 删除项目
@@ -125,6 +137,11 @@ export default {
                     key: ''
                 },
             ],
+            // 支持小程序工具栏显示
+            appletType:[
+                'mini_wechat',
+                'douyin'
+            ],
             projects: {
                 platformActive: '',
                 list: [],
@@ -150,6 +167,7 @@ export default {
             const { id } = e;
             _this.$http.useDelete('store/StoreApp/del', { id }).then((res) => {
                 _this.platformActive = ''
+                _this.getCount();
                 _this.getList();
                 _this.$useNotification?.success({
                     title: res?.msg ?? "操作成功",
@@ -173,9 +191,53 @@ export default {
             });
         },
         // 跳转项目后台
-        hanldAdmin(e) { },
+        hanldAdmin(e) {
+            const _this = this;
+            const params = {
+                appid_id: e.id,
+            }
+            _this.$http.usePost('store/StoreApp/login', params).then((res) => {
+                if (res.code === 200) {
+                    const { data } = res;
+                    if (data?.url) {
+                        window.open(data?.url)
+                    } else {
+                        _this.$useNotification?.error({
+                            title: '登录项目管理失败',
+                            duration: 1500,
+                        });
+                    }
+                } else {
+                    _this.$useNotification?.error({
+                        title: res?.msg ?? '获取数据失败',
+                        duration: 1500,
+                    });
+                }
+            })
+        },
         // 复制项目连接
-        copyAppsUrl(e) { },
+        copyAppsUrl(e) {
+            const copyText = `http://${window.location.host}/app/${e.name}/#/?appid=${e.id}`;
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(copyText).then(_ => {
+                    this.$useNotification?.success({
+                        title: '已复制',
+                        duration: 1500,
+                    });
+                })
+            } else {
+                let input = document.createElement('input');
+                input.value = copyText;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('Copy');
+                input.remove();
+                this.$useNotification?.success({
+                    title: '已复制',
+                    duration: 1500,
+                });
+            }
+        },
         // 跳转页面
         hanldOepn(path, item) {
             this.$routerApp.push({
@@ -258,7 +320,7 @@ export default {
 
             .tools-box {
                 font-size: 12px;
-                color: #888;
+                color: #FF7D00;
                 display: flex;
                 align-items: center;
 
@@ -411,7 +473,7 @@ export default {
             height: 100%;
             display: flex;
             flex-wrap: wrap;
-            gap: 0 10px;
+            gap: 0 45px;
             padding: 30px 10px;
             overflow-y: auto;
             overflow-x: hidden;
@@ -439,31 +501,50 @@ export default {
                     }
 
                     .platform-type {
-                        width: 20px;
-                        height: 20px;
+                        width: 26px;
+                        height: 26px;
                         position: absolute;
-                        top: 3px;
-                        left: 3px;
+                        top: 5px;
+                        left: 5px;
                     }
 
                     .title {
-                        position: absolute;
-                        left: 0;
-                        bottom: 0;
                         width: 100%;
-                        padding: 3px 5px;
-                        background: rgba(0, 0, 0, .5);
-                        color: #fff;
+                        padding: 3px 0;
                         font-size: 14px;
-                        font-weight: 700;
-                        text-align: center;
                         border-radius: 0 0 5px 5px;
                         overflow: hidden;
                         text-overflow: ellipsis;
                         white-space: nowrap;
+                        color:#666;
                     }
 
-                    .tools {
+                    .help-tools {
+                        position: absolute;
+                        left: 0;
+                        bottom: 0;
+                        right: 0;
+                        user-select: none;
+                        cursor: pointer;
+                        background: rgba(#000000, .4);
+                        border-bottom-left-radius: 5px;
+                        border-bottom-right-radius: 5px;
+                        // display: none;
+
+                        .help-box {
+                            display: flex;
+                            justify-content: space-between;
+                            padding: 4px 5px;
+
+                            .item {
+                                .n-icon {
+                                    color: #fff;
+                                }
+                            }
+                        }
+                    }
+
+                    .admin-tools {
                         position: absolute;
                         top: 0;
                         right: -35px;
@@ -479,6 +560,12 @@ export default {
                             display: flex;
                             justify-content: center;
                             align-items: center;
+                        }
+                    }
+
+                    &:hover {
+                        .help-tools {
+                            display: block;
                         }
                     }
 

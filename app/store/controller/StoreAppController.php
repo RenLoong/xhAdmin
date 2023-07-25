@@ -3,8 +3,14 @@
 namespace app\store\controller;
 
 use app\common\builder\FormBuilder;
+use app\common\enum\AppletMiniSettins;
+use app\common\enum\AppletPlatform;
+use app\common\enum\PlatformTypes;
 use app\common\enum\StatusEnum;
+use app\common\exception\RedirectException;
+use app\common\manager\AppletMgr;
 use app\common\manager\StoreAppMgr;
+use app\common\manager\SystemConfigMgr;
 use app\common\service\SystemInfoService;
 use app\BaseController;
 use app\common\manager\PluginMgr;
@@ -26,7 +32,7 @@ class StoreAppController extends BaseController
 {
     /**
      * 模型
-     * @var \app\admin\model\StorePlatform
+     * @var \app\common\model\StoreApp
      */
     public $model;
 
@@ -55,15 +61,29 @@ class StoreAppController extends BaseController
         $platformType = $request->get('platform', '');
         $model        = $this->model;
         $where        = [
-            ['store_id','=', $store_id]
+            ['store_id', '=', $store_id]
         ];
         if ($platformType) {
             $where[] = ['platform', '=', $platformType];
         }
-        $data = $model->where($where)
+        $web_url = getHpConfig('web_url');
+        $data    = $model->where($where)
             ->order(['id' => 'desc'])
             ->select()
-            ->each(function ($item) {
+            ->each(function ($item) use ($web_url) {
+                # 是否有配置文件
+                $setting     = false;
+                $settingPath = base_path("plugin/{$item['name']}/config/settings.php");
+                $settings = config("plugin.{$item['name']}.settings");
+                if (file_exists($settingPath) && !empty($settings)) {
+                    $setting = true;
+                }
+                $item->isSetting = $setting;
+                # 应用类型
+                $platform           = PlatformTypes::getValue($item['platform']);
+                $icon               = empty($platform['icon']) ? '' : "{$web_url}{$platform['icon']}";
+                $item->platformLogo = $icon;
+                # 返回数据
                 return $item;
             })
             ->toArray();
@@ -82,10 +102,10 @@ class StoreAppController extends BaseController
     {
         $platform = $request->get('platform', '');
         if ($request->method() === 'POST') {
-            $post                   = $request->post();
-            $post['store_id']       = hp_admin_id('hp_store');
-            $post['platform']       = $platform;
-            $post['status']         = '20';
+            $post             = $request->post();
+            $post['store_id'] = hp_admin_id('hp_store');
+            $post['platform'] = $platform;
+            $post['status']   = '20';
 
             hpValidate(StoreApp::class, $post, 'add');
 
@@ -94,7 +114,18 @@ class StoreAppController extends BaseController
                 # 创建项目
                 $model = $this->model;
                 $model->save($post);
-                # 创建项目配置
+                # 根据配置文件创建项目配置
+                $settings = config("plugin.{$post['name']}.settings");
+                if (!empty($settings)) {
+                    $systemConfig = new SystemConfigMgr($request, $model);
+                    $systemConfig->ActionSettings($settings);
+                }
+                # 根据项目平台类型-创建小程序默认配置
+                if (in_array($post['platform'], array_keys(AppletPlatform::dictOptions()))) {
+                    $baseicMini   = AppletMiniSettins::toArray();
+                    $systemConfig = new SystemConfigMgr($request, $model);
+                    $systemConfig->ActionSettings($baseicMini);
+                }
                 # 执行项目插件方法
                 $class = "\\plugin\\{$model['name']}\\api\\Created";
                 if (method_exists($class, 'createAdmin')) {
@@ -109,30 +140,48 @@ class StoreAppController extends BaseController
                 return $this->fail($e->getMessage());
             }
         }
-        $platforms = $this->plugins($request);
+        $platforms    = $this->plugins($request);
         $platformList = [];
         foreach ($platforms as $value) {
             $item           = [
-                'label'     => $value['title'],
-                'value'     => $value['name'],
+                'label' => $value['title'],
+                'value' => $value['name'],
             ];
             $platformList[] = $item;
         }
         $builder = new FormBuilder;
-        $builder->setMethod('POST')
-            ->addRow('title', 'input', '项目名称', '', [
-                'col' => 12,
-            ])
-            ->addRow('name', 'select', '所属应用', '', [
-                'col' => 12,
-                'options' => $platformList
-            ])
-            ->addComponent('logo', 'uploadify', '项目图标', '', [
-                'props' => [
-                    'type' => 'image',
-                    'format' => ['jpg', 'jpeg', 'png']
-                ],
-            ]);
+        $builder->setMethod('POST');
+        $builder->addRow('title', 'input', '项目名称', '', [
+            'col' => 12,
+        ]);
+        $builder->addRow('url', 'input', '项目域名', '', [
+            'col' => 12,
+            'placeholder' => '不带结尾的网址域名，示例：http://www.kfadmin.com',
+        ]);
+        $builder->addRow('username', 'input', '超管账号', '', [
+            'col' => 12,
+        ]);
+        $builder->addRow('password', 'input', '登录密码', '', [
+            'col' => 12,
+        ]);
+        $builder->addRow('name', 'select', '所属应用', '', [
+            'col' => 12,
+            'options' => $platformList
+        ]);
+        $builder->addComponent('logo', 'uploadify', '项目图标', '', [
+            'col' => 12,
+            'props' => [
+                'type' => 'image',
+                'format' => ['jpg', 'jpeg', 'png']
+            ],
+        ]);
+        // $builder->addComponent('logo1', 'wangeditor', '项目图标', '', [
+        //     'col' => 24,
+        //     'props' => [
+        //         'type' => 'image',
+        //         'format' => ['jpg', 'jpeg', 'png']
+        //     ],
+        // ]);
         $data = $builder->create();
         return parent::successRes($data);
     }
@@ -147,22 +196,25 @@ class StoreAppController extends BaseController
      */
     public function edit(Request $request)
     {
-        $app_id = $request->get('id','');
-        $model  = $this->model;
-        $where  = [
+        $store_id = hp_admin_id('hp_store');
+        $app_id   = $request->get('id', '');
+        $model    = $this->model;
+        $where    = [
             ['id', '=', $app_id],
         ];
-        $model  = $model->where($where)->find();
+        $model    = $model->where($where)->find();
         if (!$model) {
             return $this->fail('该应用不存在');
         }
         if ($request->method() === 'PUT') {
-            $post = $request->post();
+            $post             = $request->post();
+            $post['store_id'] = $store_id;
 
             hpValidate(StoreApp::class, $post, 'edit');
 
             Db::startTrans();
             try {
+                # 修改项目
                 $model->save($post);
                 // 执行应用插件方法
                 $class = "\\plugin\\{$model->name}\\api\\Created";
@@ -192,25 +244,36 @@ class StoreAppController extends BaseController
             }
         }
         $builder = new FormBuilder;
-        $builder->setMethod('POST')
+        $builder->setMethod('PUT')
             ->addRow('title', 'input', '项目名称', '', [
-                'col' => 6,
+                'col' => 12,
             ])
-            ->addRow('status', 'radio', '项目状态', '10', [
-                'col'       => 6,
-                'options'   => StatusEnum::getOptions()
+            ->addRow('url', 'input', '项目域名', '', [
+                'col' => 12,
+                'placeholder' => '不带结尾的网址域名，示例：http://www.kfadmin.com',
             ])
             ->addComponent('name', 'info', '绑定应用', '', [
-                'col' => 6,
+                'col' => 12,
             ])
             ->addComponent('platform', 'info', '项目类型', '', [
-                'col' => 6,
+                'col' => 12,
+            ])
+            ->addRow('username', 'input', '超管账号', '', [
+                'col' => 12,
+            ])
+            ->addRow('password', 'input', '登录密码', '', [
+                'col' => 12,
             ])
             ->addComponent('logo', 'uploadify', '项目图标', '', [
+                'col' => 12,
                 'props' => [
                     'type' => 'image',
                     'format' => ['jpg', 'jpeg', 'png']
                 ],
+            ])
+            ->addRow('status', 'radio', '项目状态', '10', [
+                'col' => 6,
+                'options' => StatusEnum::getOptions()
             ]);
         $builder->setFormData($formData);
         $data = $builder->create();
@@ -227,12 +290,82 @@ class StoreAppController extends BaseController
     public function del(Request $request)
     {
         $store_id = hp_admin_id('hp_store');
-        $app_id = $request->post('id','');
+        $app_id   = $request->post('id', '');
         StoreAppMgr::del([
-            'id'            => $app_id,
-            'store_id'      => $store_id
+            'id' => $app_id,
+            'store_id' => $store_id
         ]);
         return $this->success('操作成功');
+    }
+
+    /**
+     * 项目配置
+     * @param \support\Request $request
+     * @return \support\Response
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public function config(Request $request)
+    {
+        $app_id = $request->get('id', '');
+        $model  = $this->model;
+        $where  = [
+            ['id', '=', $app_id],
+        ];
+        $model  = $model->where($where)->find();
+        if (!$model) {
+            return $this->fail('项目数据错误');
+        }
+        $pluginPath = base_path("plugin/{$model->name}");
+        if (!is_dir($pluginPath)) {
+            throw new RedirectException('该项目应用不存在', "/#/Index/index");
+        }
+        $settingPath = "{$pluginPath}/config/settings.php";
+        if (!file_exists($settingPath)) {
+            throw new RedirectException('该应用插件没有系统配置文件', "/#/Index/index");
+        }
+        $systemConfig = new SystemConfigMgr($request, $model);
+        $methodFun    = 'list';
+        if ($request->method() === 'PUT') {
+            $methodFun = 'saveData';
+        }
+        return call_user_func([$systemConfig, $methodFun]);
+    }
+
+    /**
+     * 小程序配置与发布
+     * @param \support\Request $request
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public function applet(Request $request)
+    {
+        $app_id = $request->get('id', '');
+        $model  = $this->model;
+        $where  = [
+            ['id', '=', $app_id],
+        ];
+        $model  = $model->where($where)->find();
+        if (!$model) {
+            throw new RedirectException('项目数据错误', "/#/Index/index");
+        }
+        $methodFun = 'detail';
+        switch ($request->method()) {
+            # 小程序发布
+            case 'POST':
+                $methodFun = 'publish';
+                break;
+            # 小程序配置
+            case 'PUT':
+                $methodFun = 'config';
+                break;
+        }
+        $class = new AppletMgr($request, $model);
+        if (!method_exists($class, $methodFun)) {
+            throw new RedirectException("未实现项目方法---{$methodFun}", "/#/Index/index");
+        }
+        return call_user_func([$class, $methodFun]);
     }
 
     /**
@@ -247,10 +380,10 @@ class StoreAppController extends BaseController
         $installed  = PluginMgr::getLocalPlugins();
         $systemInfo = SystemInfoService::info();
         $query      = [
-            'active'        => '2',
-            'limit'         => 1000,
-            'plugins'       => $installed,
-            'saas_version'  => $systemInfo['system_version']
+            'active' => '2',
+            'limit' => 1000,
+            'plugins' => $installed,
+            'saas_version' => $systemInfo['system_version']
         ];
         $req        = new PluginRequest;
         $req->list();
@@ -261,35 +394,7 @@ class StoreAppController extends BaseController
     }
 
     /**
-     * 设置状态
-     * @param Request $request
-     * @return \support\Response
-     * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-05-12
-     */
-    public function status(Request $request)
-    {
-        $platform_id = $request->post('platform_id');
-        $app_id      = $request->post('app_id');
-        $model       = $this->model;
-        $where       = [
-            'platform_id' => $platform_id,
-            'id' => $app_id
-        ];
-        $model       = $model->where($where)->find();
-        if (!$model) {
-            return $this->fail('该应用不存在');
-        }
-        $model->status = $model->status === '1' ? '0' : '1';
-        if (!$model->save()) {
-            return $this->fail('设置状态失败');
-        }
-        return $this->success('设置状态成功');
-    }
-
-    /**
-     * 登录应用
+     * 登录项目数据管理
      * @param Request $request
      * @return \support\Response
      * @copyright 贵州猿创科技有限公司
@@ -298,7 +403,7 @@ class StoreAppController extends BaseController
      */
     public function login(Request $request)
     {
-        $app_id = $request->post('app_id');
+        $app_id = $request->post('appid_id', '');
         $model  = $this->model;
 
         $where = [
@@ -308,10 +413,11 @@ class StoreAppController extends BaseController
         if (!$model) {
             return $this->fail('找不到该应用');
         }
+        # 检测项目最低支持版本
         try {
             $class = "\\plugin\\{$model->name}\\api\\Login";
             if (!method_exists($class, 'login')) {
-                throw new Exception('找不到该应用插件登录方法');
+                throw new Exception("该应用插件 [{$model['name']}] 未实现登录方法");
             }
             $logicCls = new $class;
             $response = $logicCls->login($request, (int) $model->id);

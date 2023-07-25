@@ -61,10 +61,18 @@ export default {
             // 工具栏
             toolbar: [
                 {
+                    title: '打开用户端',
+                    name: 'home',
+                    icon: 'HomeOutlined',
+                    hanlder() {
+                        window.open('/')
+                    },
+                },
+                {
                     title: '全屏缩放',
                     name: 'zoom',
                     icon: 'ExpandOutlined',
-                    hanlder: () => {
+                    hanlder() {
                         const element = document.documentElement
                         // 如果是全屏状态
                         if (this.fullscreen) {
@@ -106,7 +114,7 @@ export default {
                     title: '在线升级',
                     name: 'update',
                     icon: 'RocketOutlined',
-                    hanlder: () => {
+                    hanlder() {
                         this.$routerApp.push('/Updated/updateCheck')
                     },
                 }

@@ -1,9 +1,9 @@
 <?php
 
-namespace app\middleware;
+namespace app\common\middleware;
 
 use app\common\exception\ErrorException;
-use app\manager\StoreApp;
+use app\common\manager\StoreAppMgr;
 use Webman\MiddlewareInterface;
 use Webman\Http\Response;
 use Webman\Http\Request;
@@ -45,11 +45,10 @@ class PluginsMiddleware implements MiddlewareInterface
             return $response;
         }
         # 应用ID
-        $appid = $request->header('Appid','');
+        $appid = $request->header('appid','');
         if (empty($appid)) {
-            $appid = $request->input('Appid','');
+            $appid = $request->input('appid','');
         }
-        
         /**
          * 实例响应结果
          * @var Response $response
@@ -59,17 +58,21 @@ class PluginsMiddleware implements MiddlewareInterface
         }
         try {
             # 获取应用信息
-            $appModel = StoreApp::detail($appid);
+            $where = [
+                'id'        => $appid,
+            ];
+            $appModel = StoreAppMgr::detail($where);
         } catch (\Throwable $e) {
             throw new ErrorException($e->getMessage());
         }
         # 验证是否被冻结
-        if ($appModel['status'] != '1') {
+        if ($appModel['status'] != '20') {
             throw new ErrorException('该应用已被冻结');
         }
         # 验证应用授权是否已过期
         # 验证代理是否已过期
         # 验证项目是否已过期
+        # 验证应用对SAAS支持的最低版本
 
         # 返回结果集
         return $response;

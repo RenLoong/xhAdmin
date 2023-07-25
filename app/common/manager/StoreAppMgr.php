@@ -54,16 +54,18 @@ class StoreAppMgr
         if (empty($where['store_id'])) {
             throw new Exception('参数错误--[租户ID]');
         }
+        $whereOther['saas_appid']   = $where['id'];
+        $whereOther['store_id']     = $where['store_id'];
         Db::startTrans();
         try {
             # 获取项目
             $model = self::model($where);
             # 删除项目配置
-            SystemConfig::where($where)->delete();
-            SystemConfigGroup::where($where)->delete();
+            SystemConfig::where($whereOther)->delete();
+            SystemConfigGroup::where($whereOther)->delete();
             # 删除项目附件
-            SystemUpload::where($where)->delete();
-            SystemUploadCate::where($where)->delete();
+            SystemUpload::where($whereOther)->delete();
+            SystemUploadCate::where($whereOther)->delete();
             # 删除项目
             if (!$model->delete()) {
                 throw new Exception('删除失败');

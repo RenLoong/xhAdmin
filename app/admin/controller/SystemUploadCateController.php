@@ -44,8 +44,7 @@ class SystemUploadCateController extends BaseController
     {
         $where = [
             'store_id'      => null,
-            'platform_id'   => null,
-            'appid'         => null,
+            'saas_appid'    => null,
             'uid'           => null,
         ];
         $data = SystemUploadCate::where($where)

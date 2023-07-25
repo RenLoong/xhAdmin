@@ -93,7 +93,9 @@ class SystemConfigController extends BaseController
     {
         $cid   = $request->get('cid');
         $where = [
-            ['cid', '=', $cid],
+            'cid'           => $cid,
+            'store_id'      => null,
+            'saas_appid'    => null,
         ];
         $data  = SystemConfig::where($where)->paginate()->toArray();
         return parent::successRes($data);

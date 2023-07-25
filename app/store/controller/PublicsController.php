@@ -59,13 +59,13 @@ class PublicsController extends BaseController
                 "user_edit" => "{$this->moduleName}/Store/edit",
             ],
             # 自定义登录页（配合remote_url使用）
-            'login_url' => '/storeLogin',
+            'login_url' => '/store/login',
             // 远程组件
             'remote_url' => [
                 [
                     'title' => '用户登录',
-                    'path' => '/storeLogin',
-                    'remote' => 'remote/storeLogin'
+                    'path' => '/store/login',
+                    'remote' => 'remote/store/login'
                 ],
             ],
             // 附件库API
@@ -170,8 +170,8 @@ class PublicsController extends BaseController
             'nickname'          => $storeModel['contact'],
             'headimg'           => $storeModel['logo'],
             'plugins'           => $storeModel['plugins_name'],
-            'level'             => [
-                'title'         => '有效期:2023-08-23'
+            'role'              => [
+                'title'         => '到期：2023-08-23'
             ],
         ];
         return parent::successRes($data);

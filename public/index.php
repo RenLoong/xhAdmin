@@ -32,7 +32,6 @@ try {
             $desc = <<<str
             <div>恭喜您，安装成功</div>
             <div>【警告】请输入php webman start启动框架</div>
-            <div>守护进程模式使用-d参数启动</div>
             <div>然后再选择以下方式进行访问</div>
             str;
         }

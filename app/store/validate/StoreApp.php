@@ -11,6 +11,7 @@ class StoreApp extends Validate
         'store_id'          => 'require',
         'platform'          => 'require',
         'title'             => 'require|verifyTitle',
+        'url'               => 'require',
         'name'              => 'require',
         'logo'              => 'require',
     ];
@@ -19,6 +20,7 @@ class StoreApp extends Validate
         'store_id.require'          => '缺少租户参数',
         'platform.require'          => '缺少项目平台类型',
         'title.require'             => '请输入项目名称',
+        'url.require'               => '请输入项目域名',
         'name.require'              => '请选择应用插件',
         'logo.require'              => '请上传应用图标',
     ];
@@ -28,8 +30,9 @@ class StoreApp extends Validate
         return $this
             ->only([
                 'store_id',
-                'platform_id',
+                'platform',
                 'title',
+                'url',
                 'name',
                 'logo',
             ]);
@@ -39,8 +42,9 @@ class StoreApp extends Validate
         return $this
             ->only([
                 'store_id',
-                'platform_id',
+                'platform',
                 'title',
+                'url',
                 'name',
                 'logo',
             ])
