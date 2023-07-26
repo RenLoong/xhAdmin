@@ -91,7 +91,7 @@ export default {
             step: 'unzip',
           },
           {
-            title: '更新同步',
+            title: '更新数据',
             step: 'updateData',
           },
           {

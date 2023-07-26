@@ -5,9 +5,9 @@
                 <n-step v-for="(item, index) in stepData.list" :key="index" :title="item.title" />
             </n-steps>
         </div>
-        <div class="content-container">
-            <img src="/image/logo.png" class="logo" alt="">
-            <div class="title">KFAdmin</div>
+        <div class="content-container" v-if="pageData">
+            <img :src="pageData.logo" class="logo" alt="">
+            <div class="title">{{ pageData.title }} {{ pageData.version_name }}</div>
             <div class="loading">
                 <vxe-icon name="refresh" class="loading-icon" roll></vxe-icon>
                 <div>{{ stepData.stepText ? `正在${stepData.stepText}...` : '出现异常错误' }}</div>
@@ -34,16 +34,16 @@ export default {
                 status: 'process',
                 list: [
                     {
+                        step: 'download',
+                        title: '下载更新包',
+                    },
+                    {
                         step: 'backcode',
                         title: '备份代码',
                     },
-                    // {
-                    //     step: 'backsql',
-                    //     title: '备份数据库',
-                    // },
                     {
-                        step: 'download',
-                        title: '下载更新包',
+                        step: 'backsql',
+                        title: '备份数据库',
                     },
                     {
                         step: 'delplugin',
@@ -66,11 +66,12 @@ export default {
                         title: '更新数据同步',
                     },
                 ],
-            }
+            },
+            pageData: null
         }
     },
     created() {
-        this.exceStep('backcode');
+        this.detail();
     },
     methods: {
         exceStep(step) {
@@ -83,6 +84,8 @@ export default {
             _this.stepData.step = _this.stepData.list.findIndex(item => item.step === step) + 1;
             _this.$http.usePost(`admin/Plugin/update?step=${step}`, queryParams).then((res) => {
                 if (res.data.next === 'success') {
+                    const stepIndex = _this.stepData.list.findIndex(item => item.step === res.data.next) + 1;
+                    _this.stepData.step = stepIndex
                     setTimeout(() => {
                         _this.$emit("update:closeWin");
                     }, 2000);
@@ -95,7 +98,7 @@ export default {
                     _this.exceStep(res.data.next);
                 }
             }).catch((err) => {
-                if (err.response.status === 502) {
+                if (err?.response?.status === 502) {
                     step = 'ping';
                     setTimeout(() => {
                         _this.exceStep(step);
@@ -115,9 +118,41 @@ export default {
                     _this.$useNotification?.error({
                         title: res?.msg ?? "获取失败",
                         duration: 1500,
+                        onPositiveClick() {
+                            _this.$emit("update:closeWin");
+                        },
                     });
                 }
             })
+        },
+        detail() {
+            const _this = this;
+            const queryParams = {
+                ...this.ajaxParams,
+            };
+            _this.$http
+                .useGet("admin/Plugin/detail", queryParams)
+                .then((res) => {
+                    if (res.code === 200) {
+                        _this.pageData = res?.data ?? {};
+                        _this.exceStep('download')
+                    } else {
+                        _this.$useNotification?.error({
+                            title: res?.msg ?? "获取失败",
+                            duration: 1500,
+                            onAfterLeave: () => {
+                                _this.$emit("update:closeWin");
+                            }
+                        });
+                    }
+                })
+                .catch((err) => {
+                    if (err?.code == 11000) {
+                        _this.openWin("remote/cloud/login");
+                    } else {
+                        _this.$emit("update:closeWin");
+                    }
+                });
         }
     },
 };

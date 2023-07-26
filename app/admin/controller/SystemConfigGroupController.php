@@ -115,7 +115,7 @@ class SystemConfigGroupController extends BaseController
     {
         if ($request->method() == 'POST') {
             $post = $request->post();
-
+            $post['show'] = '20';
             // 数据验证
             hpValidate(ValidateSystemConfigGroup::class,$post,'add');
 

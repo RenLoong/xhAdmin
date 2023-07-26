@@ -199,6 +199,14 @@ class StoreAppController extends BaseController
         if (!$model) {
             return $this->fail('该应用不存在');
         }
+        # 检测应用对SAAS版本支持
+        try {
+            if (!PluginMgr::checkPluginSaasVersion($model['name'])) {
+                throw new RedirectException('请先更新应用', "/#/Index/index");
+            }
+        } catch (\Throwable $e) {
+            throw new RedirectException($e->getMessage(), "/#/Index/index");
+        }
         if ($request->method() === 'PUT') {
             $post             = $request->post();
             $post['store_id'] = $store_id;
@@ -317,6 +325,14 @@ class StoreAppController extends BaseController
         if (!file_exists($settingPath)) {
             throw new RedirectException('该应用插件没有系统配置文件', "/#/Index/index");
         }
+        # 检测应用对SAAS版本支持
+        try {
+            if (!PluginMgr::checkPluginSaasVersion($model['name'])) {
+                throw new RedirectException('请先更新应用', "/#/Index/index");
+            }
+        } catch (\Throwable $e) {
+            throw new RedirectException($e->getMessage(), "/#/Index/index");
+        }
         $systemConfig = new SystemConfigMgr($request, $model);
         $methodFun    = 'list';
         if ($request->method() === 'PUT') {
@@ -342,6 +358,14 @@ class StoreAppController extends BaseController
         $model  = $model->where($where)->find();
         if (!$model) {
             throw new RedirectException('项目数据错误', "/#/Index/index");
+        }
+        # 检测应用对SAAS版本支持
+        try {
+            if (!PluginMgr::checkPluginSaasVersion($model['name'])) {
+                throw new RedirectException('请先更新应用', "/#/Index/index");
+            }
+        } catch (\Throwable $e) {
+            throw new RedirectException($e->getMessage(), "/#/Index/index");
         }
         $methodFun = 'detail';
         switch ($request->method()) {
@@ -406,7 +430,14 @@ class StoreAppController extends BaseController
         if (!$model) {
             return $this->fail('找不到该应用');
         }
-        # 检测项目最低支持版本
+        # 检测应用是否存在
+        if (!is_dir(base_path("plugin/{$model->name}"))) {
+            return $this->fail('该项目绑定应用不存在');
+        }
+        # 检测应用对SAAS版本支持
+        if (!PluginMgr::checkPluginSaasVersion($model['name'])) {
+            throw new RedirectException('请先更新应用', "/#/Index/index");
+        }
         try {
             $class = "\\plugin\\{$model->name}\\api\\Login";
             if (!method_exists($class, 'login')) {

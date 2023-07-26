@@ -3,10 +3,15 @@
 namespace app\common\middleware;
 
 use app\common\exception\ErrorException;
+use app\common\manager\PluginMgr;
 use app\common\manager\StoreAppMgr;
+use app\common\service\SystemInfoService;
+use support\Cache;
 use Webman\MiddlewareInterface;
 use Webman\Http\Response;
 use Webman\Http\Request;
+use YcOpen\CloudService\Cloud;
+use YcOpen\CloudService\Request\PluginRequest;
 
 /**
  * 应用插件中间件
@@ -72,7 +77,6 @@ class PluginsMiddleware implements MiddlewareInterface
         # 验证应用授权是否已过期
         # 验证代理是否已过期
         # 验证项目是否已过期
-        # 验证应用对SAAS支持的最低版本
 
         # 返回结果集
         return $response;

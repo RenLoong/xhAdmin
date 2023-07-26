@@ -3,13 +3,16 @@
 namespace app\admin\controller;
 
 use app\common\builder\ListBuilder;
+use app\common\manager\PluginInstallMgr;
 use app\common\manager\PluginMgr;
-use app\admin\logic\PluginUpdate;
+use app\common\manager\PluginUpdateMgr;
+use app\common\service\FrameworkService;
 use app\common\service\SystemInfoService;
 use app\admin\utils\ComposerMgr;
 use app\BaseController;
 use app\common\enum\PluginType;
 use app\common\enum\PluginTypeStyle;
+use app\common\utils\DirUtil;
 use process\Monitor;
 use support\Request;
 use YcOpen\CloudService\Cloud;
@@ -334,111 +337,34 @@ class PluginController extends BaseController
      */
     public function install(Request $request)
     {
-        $name    = $request->post('name');
-        $version = $request->post('version');
-
-        # 检测应用是否已安装
-        $installed_version = PluginMgr::getPluginVersion($name);
-        if ($installed_version > 1) {
-            return $this->fail('该应用已安装');
+        $funcName = $request->get('step', '');
+        $name     = $request->post('name', '');
+        $version  = (int) $request->post('version', 0);
+        if (empty($name)) {
+            return $this->fail('应用名称参数错误');
         }
-
-        // 获取插件信息
-
-        $systemInfo = SystemInfoService::info();
-        $req        = new PluginRequest;
-        $req->detail();
-        $req->name          = $name;
-        $req->version       = $version;
-        $req->saas_version  = $systemInfo['system_version'];
-        $req->local_version = $installed_version;
-        $cloud              = new Cloud($req);
-        $data               = $cloud->send();
-        // 获取下载文件url
-        $req = new PluginRequest;
-        $req->getKey();
-        $req->name          = $name;
-        $req->version       = $version;
-        $req->saas_version  = $systemInfo['system_version'];
-        $req->local_version = $installed_version;
-        $cloud              = new Cloud($req);
-        $data               = $cloud->send();
-        // 下载zip文件
-        $request = new \YcOpen\CloudService\Request();
-        # 通过获取下载密钥接口获得
-        $request->setUrl($data->url);
-        # 保存文件到指定路径
-
-        $base_path  = base_path("/plugin/{$name}");
-        $zip_file   = "{$base_path}.zip";
-        $extract_to = base_path('/plugin/');
-        $request->setSaveFile($zip_file);
-        $cloud  = new Cloud($request);
-        $status = $cloud->send();
-        if (!$status) {
-            return $this->fail('安装包下载失败');
+        if (empty($version)) {
+            return $this->fail('目标版本参数错误');
         }
-        console_log("{$name}应用插件文件下载完成");
-        // 效验系统函数
-        $has_zip_archive = class_exists(ZipArchive::class, false);
-        if (!$has_zip_archive) {
-            $cmd = PluginLogic::getUnzipCmd($zip_file, $extract_to);
-            if (!$cmd) {
-                return $this->fail('请给php安装zip模块或者给系统安装unzip命令');
-            }
-            if (!function_exists('proc_open')) {
-                return $this->fail('请解除proc_open函数的禁用或者给php安装zip模块');
-            }
+        if (empty($funcName)) {
+            return $this->fail('操作方法出错');
         }
-        if (!function_exists('shell_exec')) {
-            return $this->fail('请开启shell_exec函数');
-        }
-
+        # 暂停代码监听变动
         $monitor_support_pause = method_exists(Monitor::class, 'pause');
         if ($monitor_support_pause) {
             Monitor::pause();
         }
         try {
-            # 解压zip到plugin目录
-            if ($has_zip_archive) {
-                $zip = new ZipArchive;
-                $zip->open($zip_file, ZIPARCHIVE::CHECKCONS);
-            }
-            $install_class = "\\plugin\\{$name}\\api\\Install";
-            if (!empty($zip)) {
-                $zip->extractTo(base_path('/plugin/'));
-                unset($zip);
-            } else {
-                PluginLogic::unzipWithCmd($cmd);
-            }
-            # 检测composer
-            ComposerMgr::composerMergePlugin($name);
-            # 删除压缩包
-            unlink($zip_file);
-            # 执行install安装
-            if (class_exists($install_class) && method_exists($install_class, 'install')) {
-                call_user_func([$install_class, 'install'], $version);
-            }
-            # 输出安装完成
-            console_log("{$name} --- 安装完成");
+            $class = new PluginInstallMgr($request, $name, $version);
+            return call_user_func([$class, $funcName]);
         } catch (\Throwable $e) {
-            # 安装失败，删除安装目录
-            $plugin_dir = base_path("/plugin/{$name}");
-            if (is_dir($plugin_dir)) {
-                chdir($plugin_dir);
-                shell_exec("rm -rf {$plugin_dir}");
-            }
-            return $this->failFul($e->getMessage(), $e->getCode());
+            return $this->fail($e->getMessage());
         } finally {
+            # 恢复代码监听变动
             if ($monitor_support_pause) {
                 Monitor::resume();
             }
         }
-        // 停止框架
-        Utils::reloadWebman();
-
-        // 执行返回
-        return $this->success('安装成功');
     }
 
     /**
@@ -458,16 +384,26 @@ class PluginController extends BaseController
             return $this->fail('应用名称参数错误');
         }
         if (empty($version)) {
-            return $this->fail('更新目标版本参数错误');
+            return $this->fail('目标版本参数错误');
         }
         if (empty($funcName)) {
             return $this->fail('操作方法出错');
         }
+        # 暂停代码监听变动
+        $monitor_support_pause = method_exists(Monitor::class, 'pause');
+        if ($monitor_support_pause) {
+            Monitor::pause();
+        }
         try {
-            $class = new PluginUpdate($name, $version);
+            $class = new PluginUpdateMgr($request,$name, $version);
             return call_user_func([$class, $funcName]);
         } catch (\Throwable $e) {
             return $this->fail($e->getMessage());
+        }finally{
+            # 恢复代码监听变动
+            if ($monitor_support_pause) {
+                Monitor::resume();
+            }
         }
     }
 
@@ -486,7 +422,6 @@ class PluginController extends BaseController
         if (!$name || !preg_match('/^[a-zA-Z0-9_]+$/', $name)) {
             return $this->fail('参数错误');
         }
-
         # 获得插件路径
         clearstatcache();
         $path = get_realpath(base_path("/plugin/{$name}"));
@@ -501,24 +436,24 @@ class PluginController extends BaseController
         # 删除目录
         clearstatcache();
         if (is_dir($path)) {
+            # 暂停代码监听变动
             $monitor_support_pause = method_exists(Monitor::class, 'pause');
             if ($monitor_support_pause) {
                 Monitor::pause();
             }
             try {
-                PluginLogic::rmDir($path);
+                # 删除目录
+                DirUtil::delDir($path);
             } finally {
+                # 恢复代码监听变动
                 if ($monitor_support_pause) {
                     Monitor::resume();
                 }
             }
         }
-        # 检测composer
-        ComposerMgr::composerMergePlugin($name);
         clearstatcache();
-
         # 重启主进程
-        Utils::reloadWebman();
+        FrameworkService::reloadWebman();
         # 返回操作结果
         return $this->success('卸载成功');
     }

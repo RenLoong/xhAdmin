@@ -93,9 +93,9 @@ class SystemConfigController extends BaseController
     {
         $cid   = $request->get('cid');
         $where = [
-            'cid'           => $cid,
-            'store_id'      => null,
-            'saas_appid'    => null,
+            'cid' => $cid,
+            'store_id' => null,
+            'saas_appid' => null,
         ];
         $data  = SystemConfig::where($where)->paginate()->toArray();
         return parent::successRes($data);
@@ -171,6 +171,7 @@ class SystemConfigController extends BaseController
         if ($request->method() == 'POST') {
             $post        = $request->post();
             $post['cid'] = $cid;
+            $post['show'] = '20';
             // 数据验证
             hpValidate(ValidateSystemConfig::class, $post, 'add');
             $model = new SystemConfig;
@@ -358,11 +359,17 @@ class SystemConfigController extends BaseController
      */
     private function getTabs(): array
     {
-        $list = SystemConfigGroup::order(['sort' => 'asc', 'id' => 'asc'])
+        $where = [
+            'store_id'      => null,
+            'saas_appid'    => null,
+            'show'          => '20'
+        ];
+        $list  = SystemConfigGroup::where($where)
+            ->order(['sort' => 'asc', 'id' => 'asc'])
             ->distinct()
             ->select()
             ->toArray();
-        $tabs = [];
+        $tabs  = [];
         foreach ($list as $key => $value) {
             $tabs[$key]             = [
                 'title' => $value['title'],
@@ -389,8 +396,13 @@ class SystemConfigController extends BaseController
      */
     private function getConfig(int $cid, int $col): array
     {
-        $map['cid'] = $cid;
-        $list       = SystemConfig::where($map)->select()->toArray();
+        $where      = [
+            'store_id'      => null,
+            'saas_appid'    => null,
+            'cid'           => $cid,
+            'show'          => '20'
+        ];
+        $list       = SystemConfig::where($where)->select()->toArray();
         $config     = [];
         $builder    = new FormBuilder;
         foreach ($list as $value) {

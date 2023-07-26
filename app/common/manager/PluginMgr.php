@@ -1,10 +1,46 @@
 <?php
 namespace app\common\manager;
 
+use app\common\service\SystemInfoService;
 use Exception;
+use YcOpen\CloudService\Cloud;
+use YcOpen\CloudService\Request\PluginRequest;
 
 class PluginMgr
 {
+    /**
+     * 检测应用对SAAS版本支持
+     * @param string $name
+     * @return bool
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public static function checkPluginSaasVersion(string $name)
+    {
+        # 获取应用信息
+        $systemInfo = SystemInfoService::info();
+        # 获取本地应用版本
+        $installedVersion = self::getPluginVersion($name);
+        # 获取云端应用详情
+        $req = new PluginRequest;
+        $req->detail();
+        $req->name = $name;
+        $req->version = $installedVersion;
+        $req->saas_version = $systemInfo['system_version'];
+        $req->local_version = $installedVersion;
+        $cloud = new Cloud($req);
+        $data = $cloud->send()->toArray();
+        $pluginDetail       = empty($data) ? [] : $data;
+        if (empty($pluginDetail)) {
+            throw new Exception('云端应用数据错误');
+        }
+        $pluginSaasVersion = $pluginDetail['saas_version'];
+        if ($systemInfo['system_version'] > $pluginSaasVersion) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * 获取本地插件版本
      * @param mixed $name

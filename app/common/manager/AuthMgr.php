@@ -75,7 +75,8 @@ class AuthMgr
                     $e->show = $e->show === '20' ? '1' : '0';
                     is_array($e->method) && $e->method = current($e->method);
                     return $e;
-                })->toArray();
+                })
+                ->toArray();
             // 两次排序
             $data = list_sort_by($data, 'id', 'asc');
             $data = list_sort_by($data, 'sort', 'asc');
@@ -87,7 +88,8 @@ class AuthMgr
                     $e->show = $e->show === '20' ? '1' : '0';
                     $e->method = current($e->method);
                     return $e;
-                })->toArray();
+                })
+                ->toArray();
         }
 
         // 返回数据

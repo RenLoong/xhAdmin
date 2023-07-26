@@ -176,49 +176,6 @@ final class DirUtil
 
     /**
      * 删除目录及文件，支持多层删除目录
-     * @param mixed $dirName 目录名
-     * @param mixed $ignoreFiles 忽略文件或目录，多个|隔开
-     * @return bool
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
-     */
-    static public function del2($dirName, $ignoreFiles = '')
-    {
-        # 检测忽略是否字符串
-        if (is_string($ignoreFiles)) {
-            $ignoreFiles = explode('|', $ignoreFiles);
-        }
-        if (!is_array($ignoreFiles)) {
-            throw new Exception('忽略文件参数错误');
-        }
-        if (is_file($dirName) && file_exists($dirName)) {
-            if (!in_array($dirName, $ignoreFiles)) {
-                unlink($dirName);
-            }
-            return true;
-        }
-        $dirPath = self::dirPath($dirName);
-        if (!is_dir($dirPath))
-            return true;
-        foreach (glob($dirPath . "*") as $v) {
-            # 忽略文件
-            if (in_array($v, $ignoreFiles)) {
-                continue;
-            }
-            if (is_dir($v)) {
-                # 继续递归目录
-                self::del($v, $ignoreFiles);
-            } else {
-                # 删除文件
-                unlink($v);
-            }
-        }
-        return @rmdir($dirName);
-    }
-
-    /**
-     * 删除目录及文件，支持多层删除目录
      * @param mixed $dir 需要删除的目录
      * @param mixed $ignorePatterns 需要忽略的文件或目录
      * @throws \Exception

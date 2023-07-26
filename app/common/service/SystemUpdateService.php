@@ -18,7 +18,7 @@ use YcOpen\CloudService\Request\SystemUpdateRequest;
  * 3、备份数据库
  * 4、删除代码
  * 5、解压更新包
- * 6、执行数据同步更新
+ * 6、执行数据同步更新（引入最新的更新类）
  * 7、重启主进程服务
  * 8、等待服务重启
  * 9、更新成功
@@ -280,6 +280,13 @@ class SystemUpdateService
     public function updateData()
     {
         try {
+            # 获取更新类
+            $updateDataPath = app_path('common/service/UpdateDataService.php');
+            if (!file_exists($updateDataPath)) {
+                throw new Exception('更新类不存在');
+            }
+            # 重新引入更新类，确保是最新更新类
+            require_once $updateDataPath;
             # 更新服务类
             $class = "app\\common\\service\\UpdateDataService";
             if (class_exists($class)) {

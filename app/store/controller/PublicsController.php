@@ -164,14 +164,15 @@ class PublicsController extends BaseController
         if (!$model) {
             return $this->failFul('该用户不存在',12000);
         }
-        $storeModel = $model->toArray();
+        $storeData = $model->toArray();
+        $expireDate = date('Y-m-d',strtotime($storeData['expire_time']));
         $data = [
-            'id'                => $storeModel['id'],
-            'nickname'          => $storeModel['contact'],
-            'headimg'           => $storeModel['logo'],
-            'plugins'           => $storeModel['plugins_name'],
+            'id'                => $storeData['id'],
+            'nickname'          => $storeData['contact'],
+            'headimg'           => $storeData['logo'],
+            'plugins'           => $storeData['plugins_name'],
             'role'              => [
-                'title'         => '到期：2023-08-23'
+                'title'         => "到期：{$expireDate}"
             ],
             'menus'             => $this->getMenus()
         ];
