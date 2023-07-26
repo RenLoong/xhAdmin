@@ -173,18 +173,18 @@ class PublicsController extends BaseController
             'role'              => [
                 'title'         => '到期：2023-08-23'
             ],
+            'menus'             => $this->getMenus()
         ];
         return parent::successRes($data);
     }
 
     /**
      * 获取菜单数据
-     * @return \support\Response
+     * @return array
+     * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-04-29
      */
-    public function menus()
+    private function getMenus()
     {
         $order = [
             'sort' => 'asc',
@@ -218,7 +218,7 @@ class PublicsController extends BaseController
             'active' => '/Index/index',
             'list' => $list
         ];
-        return parent::successRes($data);
+        return $data;
     }
 
     /**
