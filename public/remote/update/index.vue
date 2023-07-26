@@ -20,10 +20,10 @@
           <div class="version-box">
             <div class="title">版本更新内容</div>
             <div class="version-content">
-              <pre class="version-pre">{{ updated.content }}</pre>
+              <pre class="version-pre">{{ updated?.content }}</pre>
             </div>
           </div>
-          <div class="action-button">
+          <div class="action-button" v-if="updated?.version_name">
             <n-button type="success" @click="hanldUpdate">立即更新</n-button>
             <n-button type="warning" v-if="install.ignore" @click="hanldCancel">
               忽略本次更新

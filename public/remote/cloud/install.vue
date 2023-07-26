@@ -31,11 +31,11 @@
           <td>应用售价</td>
           <td>
             <span class="money" v-if="discount > 0 && discount < 1">￥{{ (findData.money * discount).toFixed(2) }}</span>
-            <span class="money" v-else>￥{{ findData.money }}</span>
+            <span class="money" v-else>￥{{ findData.money ?? 0 }}</span>
           </td>
           <td>云平台余额</td>
           <td>
-            <span class="money">￥{{ user.money }}</span>
+            <span class="money">￥{{ user.money ?? 0 }}</span>
           </td>
         </tr>
       </tbody>
@@ -100,7 +100,9 @@ export default {
         progress: 0,
       },
       host: window.location.host,
-      user: {},
+      user: {
+        money: 0
+      },
       discount: 0,
       Coupon: [],
       form: {
@@ -116,6 +118,7 @@ export default {
         platform: "",
         plugin_type: "",
         coupon_code: "",
+        money: 0,
         author: {
           title: "",
         },
@@ -123,7 +126,7 @@ export default {
     };
   },
   created() {
-    this.initify();
+    this.getUser();
   },
   methods: {
     // 发送购买请求
@@ -233,16 +236,13 @@ export default {
         .then((e) => {
           const { data } = e;
           _this.user = data;
+          _this.getDetail();
         })
         .catch((err) => {
           if (err?.code == 11000) {
             _this.$emit("openWin", "remote/cloud/login");
           }
         });
-    },
-    initify() {
-      this.getUser();
-      this.getDetail();
     },
   },
 };
