@@ -164,32 +164,32 @@ class PublicsController extends BaseController
             return $this->failFul('该用户不存在',12000);
         }
         $data       = $adminModel->toArray();
+        $data['menus'] = $this->getMenus();
         return parent::successRes($data);
     }
 
     /**
      * 获取菜单数据
-     * @return \support\Response
+     * @return array
+     * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-04-29
      */
-    public function menus()
+    private function getMenus()
     {
         $admin_id = hp_admin_id('hp_admin');
         if (!$admin_id) {
-            return $this->failFul('登录超时，请重新登录',12000);
+            throw new Exception('登录超时，请重新登录',12000);
         }
         $where = [
             'id' => $admin_id
         ];
         $adminModel = SystemAdmin::where($where)->find();
         if (!$adminModel) {
-            return $this->failFul('该用户不存在',12000);
+            throw new Exception('该用户不存在',12000);
         }
         $admin      = $adminModel->toArray();
         $data       = AuthMgr::run($admin);
-        return parent::successRes($data);
+        return $data;
     }
 
     /**
