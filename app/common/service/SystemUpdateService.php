@@ -124,12 +124,17 @@ class SystemUpdateService
         $this->request = $Request;
         # 下载框架更新包临时地址
         $this->tempZipFilePath = runtime_path("/core/kfadmin.zip");
-        # 解压至目标地址
-        // $this->targetPath = base_path();
-        $this->targetPath = runtime_path('temp');
-        # 备份当前版本代码地址值
+        # 解压至目标地址(根据环境变量设置)
+        if (!env('APP_DEBUG',true)) {
+            # 生产环境
+            $this->targetPath = base_path();
+        } else {
+            # 开发环境
+            $this->targetPath = runtime_path('temp');
+        }
+        # 备份当前版本代码地址
         $this->backupPath = runtime_path("/core/backup.zip");
-        # 备份覆盖代码地址值
+        # 备份覆盖代码地址
         $this->backCoverPath = runtime_path("/core/cover.zip");
         # 本地版本信息
         $clientSystemVersion     = SystemInfoService::info();

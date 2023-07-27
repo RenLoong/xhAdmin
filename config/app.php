@@ -3,7 +3,7 @@
 use support\Request;
 
 return [
-    'debug' => env('APP_DEBUG'),
+    'debug' => env('APP_DEBUG', false),
     'error_reporting' => E_ALL,
     'default_timezone' => env('DEFAULT_TIMEZONE'),
     'request_class' => Request::class,
