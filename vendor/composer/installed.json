@@ -1956,8 +1956,8 @@
         },
         {
             "name": "illuminate/bus",
-            "version": "v9.52.10",
-            "version_normalized": "9.52.10.0",
+            "version": "v9.52.11",
+            "version_normalized": "9.52.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/bus.git",
@@ -2018,8 +2018,8 @@
         },
         {
             "name": "illuminate/collections",
-            "version": "v9.52.10",
-            "version_normalized": "9.52.10.0",
+            "version": "v9.52.12",
+            "version_normalized": "9.52.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/collections.git",
@@ -2082,8 +2082,8 @@
         },
         {
             "name": "illuminate/conditionable",
-            "version": "v9.52.10",
-            "version_normalized": "9.52.10.0",
+            "version": "v9.52.12",
+            "version_normalized": "9.52.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/conditionable.git",
@@ -2137,8 +2137,8 @@
         },
         {
             "name": "illuminate/container",
-            "version": "v9.52.10",
-            "version_normalized": "9.52.10.0",
+            "version": "v9.52.11",
+            "version_normalized": "9.52.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/container.git",
@@ -2197,8 +2197,8 @@
         },
         {
             "name": "illuminate/contracts",
-            "version": "v9.52.10",
-            "version_normalized": "9.52.10.0",
+            "version": "v9.52.11",
+            "version_normalized": "9.52.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/contracts.git",
@@ -2254,8 +2254,8 @@
         },
         {
             "name": "illuminate/database",
-            "version": "v9.52.10",
-            "version_normalized": "9.52.10.0",
+            "version": "v9.52.12",
+            "version_normalized": "9.52.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/database.git",
@@ -2333,8 +2333,8 @@
         },
         {
             "name": "illuminate/events",
-            "version": "v9.52.10",
-            "version_normalized": "9.52.10.0",
+            "version": "v9.52.12",
+            "version_normalized": "9.52.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/events.git",
@@ -2397,8 +2397,8 @@
         },
         {
             "name": "illuminate/macroable",
-            "version": "v9.52.10",
-            "version_normalized": "9.52.10.0",
+            "version": "v9.52.11",
+            "version_normalized": "9.52.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/macroable.git",
@@ -2452,8 +2452,8 @@
         },
         {
             "name": "illuminate/pagination",
-            "version": "v9.52.10",
-            "version_normalized": "9.52.10.0",
+            "version": "v9.52.11",
+            "version_normalized": "9.52.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/pagination.git",
@@ -2511,8 +2511,8 @@
         },
         {
             "name": "illuminate/pipeline",
-            "version": "v9.52.10",
-            "version_normalized": "9.52.10.0",
+            "version": "v9.52.12",
+            "version_normalized": "9.52.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/pipeline.git",
@@ -2568,8 +2568,8 @@
         },
         {
             "name": "illuminate/redis",
-            "version": "v9.52.10",
-            "version_normalized": "9.52.10.0",
+            "version": "v9.52.12",
+            "version_normalized": "9.52.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/redis.git",
@@ -2631,8 +2631,8 @@
         },
         {
             "name": "illuminate/support",
-            "version": "v9.52.10",
-            "version_normalized": "9.52.10.0",
+            "version": "v9.52.11",
+            "version_normalized": "9.52.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/support.git",
@@ -6897,17 +6897,17 @@
         },
         {
             "name": "webman/console",
-            "version": "v1.2.36",
-            "version_normalized": "1.2.36.0",
+            "version": "v1.2.37",
+            "version_normalized": "1.2.37.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webman-php/console.git",
-                "reference": "82c75368feab013200048cc1f87a6d376a4ca59d"
+                "reference": "c94d7f351ac09435825e1f84a67413cf5caa1a2a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webman-php/console/zipball/82c75368feab013200048cc1f87a6d376a4ca59d",
-                "reference": "82c75368feab013200048cc1f87a6d376a4ca59d",
+                "url": "https://api.github.com/repos/webman-php/console/zipball/c94d7f351ac09435825e1f84a67413cf5caa1a2a",
+                "reference": "c94d7f351ac09435825e1f84a67413cf5caa1a2a",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -6923,7 +6923,7 @@
             "require-dev": {
                 "workerman/webman": "^1.0"
             },
-            "time": "2023-07-03T10:48:08+00:00",
+            "time": "2023-07-26T06:31:50+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -7530,17 +7530,17 @@
         },
         {
             "name": "yc-open/cloud-service",
-            "version": "1.1.6",
-            "version_normalized": "1.1.6.0",
+            "version": "1.1.8",
+            "version_normalized": "1.1.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/uRenlong/kfadmin-cloud.git",
-                "reference": "dd538fef16e838b025415cf8a21b060dc715016d"
+                "reference": "4bb7177994120d0614bc07988decea561de8b773"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/uRenlong/kfadmin-cloud/zipball/dd538fef16e838b025415cf8a21b060dc715016d",
-                "reference": "dd538fef16e838b025415cf8a21b060dc715016d",
+                "url": "https://api.github.com/repos/uRenlong/kfadmin-cloud/zipball/4bb7177994120d0614bc07988decea561de8b773",
+                "reference": "4bb7177994120d0614bc07988decea561de8b773",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -7554,7 +7554,7 @@
                 "php": "^8.0",
                 "vlucas/phpdotenv": "^5.4"
             },
-            "time": "2023-07-12T14:19:45+00:00",
+            "time": "2023-07-27T03:24:08+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -7577,7 +7577,7 @@
             ],
             "support": {
                 "issues": "https://github.com/uRenlong/kfadmin-cloud/issues",
-                "source": "https://github.com/uRenlong/kfadmin-cloud/tree/1.1.6"
+                "source": "https://github.com/uRenlong/kfadmin-cloud/tree/1.1.8"
             },
             "install-path": "../yc-open/cloud-service"
         },

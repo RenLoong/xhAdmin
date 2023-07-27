@@ -13,18 +13,23 @@ class PluginRequest extends Request
 {
     /**
      * 获取插件列表
+     * @param mixed $query
      * @return PluginRequest
      */
-    public function list()
+    public function list(mixed $query=null)
     {
         $this->setUrl('Plugin/list');
+        if($query){
+            $this->setQuery($query);
+        }
         return $this;
     }
     /**
      * 获取插件详情
+     * @param mixed $query
      * @return PluginRequest
      */
-    public function detail()
+    public function detail(mixed $query=null)
     {
         $this->setUrl('Plugin/detail');
         $validator=new Validator;
@@ -32,13 +37,17 @@ class PluginRequest extends Request
             'name'=>'required'
         ]);
         $this->validator=$validator;
+        if($query){
+            $this->setQuery($query);
+        }
         return $this;
     }
     /**
      * 购买插件
+     * @param mixed $query
      * @return PluginRequest
      */
-    public function buy()
+    public function buy(mixed $query=null)
     {
         $this->setUrl('Plugin/buy');
         $validator=new Validator;
@@ -46,13 +55,17 @@ class PluginRequest extends Request
             'name'=>'required'
         ]);
         $this->validator=$validator;
+        if($query){
+            $this->setQuery($query);
+        }
         return $this;
     }
     /**
      * 获取插件密钥
+     * @param mixed $query
      * @return PluginRequest
      */
-    public function getKey()
+    public function getKey(mixed $query=null)
     {
         $this->setUrl('Plugin/getKey');
         $validator=new Validator;
@@ -63,6 +76,9 @@ class PluginRequest extends Request
             'local_version'=>'required'
         ]);
         $this->validator=$validator;
+        if($query){
+            $this->setQuery($query);
+        }
         return $this;
     }
 }

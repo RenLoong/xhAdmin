@@ -13,12 +13,11 @@ class MiniprojectRequest extends Request
 {
     public $nodeBaseURL='http://miniproject-upload.kfadmin.net/';
     /**
-     * 上传小程序或者密钥
-     * action proejct：小程序包，privatekey：上传密钥
-     * file 文件
+     * 上传小程序或者密钥文件
+     * @param mixed $params
      * @return MiniprojectRequest
      */
-    public function upload()
+    public function upload(mixed $params=null)
     {
         $this->setUrl('Miniproject/upload');
         $this->setMethod('POST');
@@ -28,6 +27,9 @@ class MiniprojectRequest extends Request
             'file'=>'required',
         ]);
         $this->validator=$validator;
+        if($params){
+            $this->setParams($params);
+        }
         return $this;
     }
     /**
@@ -37,9 +39,10 @@ class MiniprojectRequest extends Request
      * version 版本号
      * desc 描述
      * type wxmp:小程序平台
+     * @param mixed $params
      * @return MiniprojectRequest
      */
-    public function createProejct()
+    public function createProejct(mixed $params=null)
     {
         $this->setUrl('Miniproject/createProejct');
         $this->setMethod('POST');
@@ -52,6 +55,9 @@ class MiniprojectRequest extends Request
             'type'=>'required',
         ]);
         $this->validator=$validator;
+        if($params){
+            $this->setParams($params);
+        }
         return $this;
     }
     /**
@@ -59,9 +65,10 @@ class MiniprojectRequest extends Request
      * appid 小程序appid
      * privatekey 密钥文件路径
      * type wxmp:小程序平台
+     * @param mixed $params
      * @return MiniprojectRequest
      */
-    public function setConfig()
+    public function setConfig(mixed $params=null)
     {
         $this->setUrl('Miniproject/setConfig');
         $this->setMethod('POST');
@@ -72,6 +79,9 @@ class MiniprojectRequest extends Request
             'type'=>'required'
         ]);
         $this->validator=$validator;
+        if($params){
+            $this->setParams($params);
+        }
         return $this;
     }
     /**
@@ -80,9 +90,10 @@ class MiniprojectRequest extends Request
      * name 应用标识
      * preview_desc 小程序预览描述，不传则不生成预览二维码
      * type wxmp:小程序平台
+     * @param mixed $params
      * @return MiniprojectRequest
      */
-    public function getUploadToken()
+    public function getUploadToken(mixed $params=null)
     {
         $this->setUrl('Miniproject/getUploadToken');
         $this->setMethod('POST');
@@ -93,14 +104,18 @@ class MiniprojectRequest extends Request
             'type'=>'required'
         ]);
         $this->validator=$validator;
+        if($params){
+            $this->setParams($params);
+        }
         return $this;
     }
     /**
      * 上传小程序包
      * token 上传token
+     * @param mixed $query
      * @return MiniprojectRequest
      */
-    public function miniprojectUpload()
+    public function miniprojectUpload(mixed $query=null)
     {
         $base_url=getenv('YC_NODE_SERVICE_BASE_URL');
         if(!$base_url){
@@ -114,14 +129,18 @@ class MiniprojectRequest extends Request
             'token'=>'required'
         ]);
         $this->validator=$validator;
+        if($query){
+            $this->setQuery($query);
+        }
         return $this;
     }
     /**
      * 预览小程序包
      * token 上传token
+     * @param mixed $query
      * @return MiniprojectRequest
      */
-    public function miniprojectPreview()
+    public function miniprojectPreview(mixed $query=null)
     {
         $base_url=getenv('YC_NODE_SERVICE_BASE_URL');
         if(!$base_url){
@@ -135,15 +154,19 @@ class MiniprojectRequest extends Request
             'token'=>'required'
         ]);
         $this->validator=$validator;
+        if($query){
+            $this->setQuery($query);
+        }
         return $this;
     }
     /**
      * 预览小程序包二维码
      * appid 小程序appid
      * name 应用标识
+     * @param mixed $query
      * @return string
      */
-    public function miniprojectPreviewQrcode()
+    public function miniprojectPreviewQrcode(mixed $query=null)
     {
         $base_url=getenv('YC_NODE_SERVICE_BASE_URL');
         if(!$base_url){
@@ -157,6 +180,9 @@ class MiniprojectRequest extends Request
             'name'=>'required',
         ]);
         $this->validator=$validator;
+        if($query){
+            $this->setQuery($query);
+        }
         return $base_url.'preview/index?'.http_build_query($this->query);
         // return $this;
     }

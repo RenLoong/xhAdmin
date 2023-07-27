@@ -12,9 +12,10 @@ class SiteRequest extends Request
 {
     /**
      * 提交网站信息
+     * @param mixed $params
      * @return SiteRequest
      */
-    public function install()
+    public function install(mixed $params=null)
     {
         $this->setMethod('POST');
         $this->setUrl('Site/install');
@@ -24,6 +25,9 @@ class SiteRequest extends Request
             'title'=>'required'
         ]);
         $this->validator=$validator;
+        if($params){
+            $this->setParams($params);
+        }
         return $this;
     }
     /**

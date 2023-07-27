@@ -13,9 +13,10 @@ class SystemUpdateRequest extends Request
 {
     /**
      * 验证是否需要更新
+     * @param mixed $query
      * @return SystemUpdateRequest
      */
-    public function verify()
+    public function verify(mixed $query=null)
     {
         $this->setUrl('SystemUpdate/verify');
         $validator=new Validator;
@@ -24,13 +25,17 @@ class SystemUpdateRequest extends Request
             'version'=>'required'
         ]);
         $this->validator=$validator;
+        if($query){
+            $this->setQuery($query);
+        }
         return $this;
     }
     /**
      * 获取插件详情
+     * @param mixed $query
      * @return SystemUpdateRequest
      */
-    public function detail()
+    public function detail(mixed $query=null)
     {
         $this->setUrl('SystemUpdate/detail');
         $validator=new Validator;
@@ -39,13 +44,17 @@ class SystemUpdateRequest extends Request
             'version'=>'required'
         ]);
         $this->validator=$validator;
+        if($query){
+            $this->setQuery($query);
+        }
         return $this;
     }
     /**
      * 获取插件密钥
+     * @param mixed $query
      * @return SystemUpdateRequest
      */
-    public function getKey()
+    public function getKey(mixed $query=null)
     {
         $this->setUrl('SystemUpdate/getKey');
         $validator=new Validator;
@@ -53,6 +62,9 @@ class SystemUpdateRequest extends Request
             'target_version'=>'required'
         ]);
         $this->validator=$validator;
+        if($query){
+            $this->setQuery($query);
+        }
         return $this;
     }
 }

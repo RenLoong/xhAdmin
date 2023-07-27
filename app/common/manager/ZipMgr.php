@@ -32,7 +32,7 @@ class ZipMgr
             SystemZipCmdMgr::zipBuild($zipFilePath, $extractTo,$ignoreFiles);
         } else {
             # 使用ZipArchive扩展打包
-            console_log("开始使用ZipArchive扩展打包");
+            (new PhpZipArchiveMgr)->build($zipFilePath, $extractTo, $ignoreFiles);
         }
     }
 
@@ -62,8 +62,8 @@ class ZipMgr
             # 开始执行系统打包
             SystemZipCmdMgr::zipBuildFiles($zipFilePath, $extractTo,$files);
         } else {
-            # 使用ZipArchive扩展打包
-            console_log("开始使用ZipArchive扩展打包");
+            # 使用内置PHP扩展ZipArchive扩展打包
+            (new PhpZipArchiveMgr)->buildFiles($zipFilePath, $extractTo, $files);
         }
     }
     
@@ -97,8 +97,8 @@ class ZipMgr
             # 开始执行系统打包
             SystemZipCmdMgr::unzipWith($zipFilePath, $extractTo);
         } else {
-            # 使用ZipArchive扩展解压
-            console_log("开始使用ZipArchive扩展解压");
+            # 使用内置PHP扩展ZipArchive扩展解压
+            (new PhpZipArchiveMgr)->unzip($zipFilePath, $extractTo);
         }
     }
 }

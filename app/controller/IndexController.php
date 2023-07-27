@@ -3,6 +3,7 @@
 namespace app\controller;
 
 use app\BaseController;
+use app\common\manager\PhpZipArchiveMgr;
 use app\common\manager\SystemZipCmdMgr;
 use app\common\manager\ZipMgr;
 use app\common\service\SystemUpdateService;
@@ -36,6 +37,16 @@ class IndexController extends BaseController
      */
     public function test(Request $request)
     {
+
+        # 测试PHP内置解压管理器
+        (new PhpZipArchiveMgr)->unzip(base_path('test123.zip'),base_path('/test123'));
+        # 测试PHP内置打包管理器
+        // (new PhpZipArchiveMgr)->buildFiles(base_path('test123.zip'),public_path(), [
+        //     'remote',
+        //     '404.html',
+        //     'index.php'
+        // ]);
+
         # 测试打包
         // ZipMgr::build(base_path('test123.zip'), base_path('public'),[
         //     '404.html',

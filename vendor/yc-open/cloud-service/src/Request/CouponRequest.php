@@ -13,9 +13,10 @@ class CouponRequest extends Request
 {
     /**
      * 获取可用优惠券
+     * @param mixed $query
      * @return CouponRequest
      */
-    public function getAvailableCoupon()
+    public function getAvailableCoupon(mixed $query=null)
     {
         $this->setUrl('Coupon/getAvailableCoupon');
         $validator=new Validator;
@@ -23,11 +24,22 @@ class CouponRequest extends Request
             'type'=>'required'
         ]);
         $this->validator=$validator;
+        if($query){
+            $this->setQuery($query);
+        }
         return $this;
     }
-    public function getCouponList()
+    /**
+     * 获取优惠券列表
+     * @param mixed $query
+     * @return CouponRequest
+     */
+    public function getCouponList(mixed $query=null)
     {
         $this->setUrl('Coupon/getCouponList');
+        if($query){
+            $this->setQuery($query);
+        }
         return $this;
     }
 }

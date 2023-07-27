@@ -15,9 +15,10 @@ class LoginRequest extends Request
 {
     /**
      * 登录接口
+     * @param mixed $params
      * @return LoginRequest
      */
-    public function login()
+    public function login(mixed $params=null)
     {
         $this->setMethod('POST');
         $this->setUrl('Login/login');
@@ -28,6 +29,9 @@ class LoginRequest extends Request
             'scode'=>'required'
         ]);
         $this->validator=$validator;
+        if($params){
+            $this->setParams($params);
+        }
         return $this;
     }
     /**
@@ -36,7 +40,6 @@ class LoginRequest extends Request
      */
     public function outLogin()
     {
-        p('outLogin');
         Redis::del('yc-cloud-service-token');
     }
     /**
