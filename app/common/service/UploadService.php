@@ -91,8 +91,8 @@ class UploadService
         # 上传目录
         $uploadDir = dirname($path);
         # 检测目录不存在则创建
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0775, true);
+        if (!is_dir(public_path($uploadDir))) {
+            mkdir(public_path($uploadDir), 0775, true);
         }
         # 上传附件
         $result   = (new Storage)->path($path)->upload($file, false);

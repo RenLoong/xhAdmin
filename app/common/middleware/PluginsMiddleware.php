@@ -3,15 +3,10 @@
 namespace app\common\middleware;
 
 use app\common\exception\ErrorException;
-use app\common\manager\PluginMgr;
 use app\common\manager\StoreAppMgr;
-use app\common\service\SystemInfoService;
-use support\Cache;
 use Webman\MiddlewareInterface;
 use Webman\Http\Response;
 use Webman\Http\Request;
-use YcOpen\CloudService\Cloud;
-use YcOpen\CloudService\Request\PluginRequest;
 
 /**
  * 应用插件中间件
