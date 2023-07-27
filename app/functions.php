@@ -48,13 +48,13 @@ function hpValidate($validate, array $data, string $scene = ''): bool
 /**
  * 读取配置项
  * @param mixed $key 系统KEY
- * @param mixed $name 分组标识
+ * @param mixed $group_name 分组标识
  * @param mixed $appid 应用项目ID
  * @return string|array
  * @author 贵州猿创科技有限公司
  * @copyright 贵州猿创科技有限公司
  */
-function getHpConfig($key = '', $name = '', $appid = 0): string|array
+function getHpConfig($key = '', $group_name = '', $appid = 0): string|array
 {
     $model = new \app\common\model\SystemConfig;
     $where   = [
@@ -68,8 +68,8 @@ function getHpConfig($key = '', $name = '', $appid = 0): string|array
             $where['saas_appid'] = $appModel['saas_appid'];
         }
     }
-    if ($name) {
-        $where['name'] = $name;
+    if ($group_name) {
+        $where['group_name'] = $group_name;
     }
     $orderBy = [
         'sort'      => 'asc',
@@ -79,7 +79,7 @@ function getHpConfig($key = '', $name = '', $appid = 0): string|array
         if (is_array($key)) {
             $where['name'] = ['in',$key];
         } else {
-            $where['name'] = $name;
+            $where['name'] = $key;
         }
         $model = $model->where($where)->order($orderBy)
             ->select();

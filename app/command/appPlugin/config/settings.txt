@@ -1,0 +1,40 @@
+<?php
+
+return [
+    /*
+    # 配置项分组
+    'group'                 => [
+        [
+            # 分组标识
+            'name'          => 'system_name',
+            # 分组名称
+            'title'         => '分组名称',
+            # 布局模式：10单列，20双列并排，30四列并排
+            'layout_col'    => '10',
+            # 分组排序
+            'sort'          => 100,
+        ],
+    ],
+    # 配置项
+    'configs'               => [
+        [
+            # 配置项标识(可通过getHpconfig进行读取)
+            'name'          => 'web_name',
+            # 关联分组
+            'group_name'    => 'system_name',
+            # 配置项名称
+            'title'         => '网站名称',
+            # 配置项排序
+            'sort'          => 100,
+            # 表单组件(参考common/enum/FormType.php)
+            'component'     => 'input',
+            # 配置项是否显示
+            'show'          => '20',
+            # 表单底部描述
+            'placeholder'   => '123',
+            # 数据默认值
+            'value'         => '',
+        ],
+    ],
+    */
+];

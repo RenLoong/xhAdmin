@@ -105,10 +105,10 @@ class AppPluginCreate extends Command
     private static function createStoreApp(string $name)
     {
         $model = new StoreApp;
-        $model->store_id = 0;
-        $model->platform_id = 0;
+        $model->store_id = 1;
         $model->title = '开发者测试平台';
         $model->name = $name;
+        $model->status = '20';
         if (!$model->save()) {
             console_log("创建 {$name} 开发者测试平台失败...");
             return;
@@ -152,6 +152,23 @@ class AppPluginCreate extends Command
         $this->createRemoteFiles("$base_path/plugin/$pluginName/public/remote", $pluginName);
         # 创建初始版本文件
         $this->CreateVersionFiles("$base_path/plugin/$pluginName", $pluginName);
+        # 创建系统设置文件
+        $this->CreateSettingsFiles("$base_path/plugin/$pluginName/config/settings.php", $pluginName);
+    }
+
+    /**
+     * 创建系统设置文件
+     * @param mixed $settingsPath
+     * @param mixed $pluginName
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    private function CreateSettingsFiles($settingsPath, $pluginName)
+    {
+        # 复制系统设置文件
+        copy(app_path('/command/appPlugin/config/settings.txt'), $settingsPath);
+        console_log("创建系统设置文件成功 {$settingsPath}");
     }
 
     /**
