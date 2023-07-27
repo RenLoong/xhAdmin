@@ -1,5 +1,6 @@
 <?php
 
+use app\common\manager\StoreAppMgr;
 use app\common\service\UploadService;
 
 /**
@@ -39,65 +40,75 @@ function hpValidate($validate, array $data, string $scene = ''): bool
     }
     $result = $class->check($data);
     if (!$result) {
-        throw new Exception((string)$class->getError());
+        throw new Exception((string) $class->getError());
     }
     return true;
 }
 
 /**
  * 读取配置项
- *
- * @Author 贵州猿创科技有限公司
- * @Email 416716328@qq.com
- * @DateTime 2023-03-12
- * @param  string       $key
- * @param  integer      $cid
+ * @param mixed $key 系统KEY
+ * @param mixed $name 分组标识
+ * @param mixed $appid 应用项目ID
  * @return string|array
+ * @author 贵州猿创科技有限公司
+ * @copyright 贵州猿创科技有限公司
  */
-function getHpConfig($key = '', $cid = 0): string|array
+function getHpConfig($key = '', $name = '', $appid = 0): string|array
 {
     $model = new \app\common\model\SystemConfig;
-    $map = [];
-    if ($cid) {
-        $map['cid'] = $cid;
-    }
-    $data = [];
-    if ($key) {
-        $data = '';
-        $map['name'] = $key;
-        $info = $model->where($map)->find();
-        if ($info) {
-            if ($info['component'] == 'uploadify') {
-                $files = explode(',', $info['value']);
-                $list = [];
-                foreach ($files as $k => $v) {
-                    $list[$k] = UploadService::url((string) $v);
-                }
-                $data = $list;
-            } else {
-                $data = $info['value'];
-            }
-        } else {
-            $data = [];
+    $map   = [];
+    if ($appid) {
+        $appModel = StoreAppMgr::detail(['id' => $appid]);
+        if ($appModel) {
+            $map[] = ['store_id', '=', $appModel['store_id']];
+            $map[] = ['saas_appid', '=', $appModel['id']];
         }
+    }
+    if ($name) {
+        $categoryModel = new \app\common\model\SystemConfigGroup;
+        $where         = [
+            'name' => $name,
+        ];
+        if ($appid) {
+            $where['saas_appid'] = $appid;
+        } else {
+            $where['saas_appid'] = '';
+        }
+        $detail = $categoryModel->where($where)->find();
+        $map[]  = ['cid', '=', $detail['id']];
+    }
+    if ($key) {
+        if (is_array($key)) {
+            $map[] = ['name', 'in', $key];
+        } else {
+            $map[] = ['name', '=', $key];
+        }
+        $model = $model->where($map)->order(['sort' => 'asc', 'id' => 'asc'])
+            ->select();
     } else {
-        $list = $model
+        $model = $model
             ->where($map)
             ->order(['sort' => 'asc', 'id' => 'asc'])
             ->select();
-        foreach ($list as $key => $value) {
-            if ($value['component'] == 'uploadify') {
-                $files = explode(',', $value['value']);
-                $list = [];
-                foreach ($files as $k => $v) {
-                    $list[$k] = UploadService::url((string) $v);
-                }
-                $data = $list;
-            } else {
-                // 其他选项
-                $data[$value['name']] = $value['value'];
+    }
+    $list = $model->toArray();
+    $data = [];
+    foreach ($list as $key => $value) {
+        if ($value['component'] == 'uploadify') {
+            $files = explode(',', $value['value']);
+            $_list = [];
+            foreach ($files as $k => $v) {
+                $_list[$k] = UploadService::url((string) $v);
             }
+            $data[$value['name']] = $_list;
+        } else {
+            // 其他选项
+            $data[$value['name']] = $value['value'];
         }
+    }
+    if ($key && !is_array($key)) {
+        return $data[$key] ?? '';
     }
     return $data;
 }
@@ -116,14 +127,14 @@ function friend_date(int $time)
     if (!$time)
         return false;
     $fdate = '';
-    $d = time() - intval($time);
-    $ld = $time - mktime(0, 0, 0, 0, 0, date('Y')); //得出年
-    $md = $time - mktime(0, 0, 0, date('m'), 0, date('Y')); //得出月
-    $byd = $time - mktime(0, 0, 0, date('m'), date('d') - 2, date('Y')); //前天
-    $yd = $time - mktime(0, 0, 0, date('m'), date('d') - 1, date('Y')); //昨天
-    $dd = $time - mktime(0, 0, 0, date('m'), date('d'), date('Y')); //今天
-    $td = $time - mktime(0, 0, 0, date('m'), date('d') + 1, date('Y')); //明天
-    $atd = $time - mktime(0, 0, 0, date('m'), date('d') + 2, date('Y')); //后天
+    $d     = time() - intval($time);
+    $ld    = $time - mktime(0, 0, 0, 0, 0, date('Y')); //得出年
+    $md    = $time - mktime(0, 0, 0, date('m'), 0, date('Y')); //得出月
+    $byd   = $time - mktime(0, 0, 0, date('m'), date('d') - 2, date('Y')); //前天
+    $yd    = $time - mktime(0, 0, 0, date('m'), date('d') - 1, date('Y')); //昨天
+    $dd    = $time - mktime(0, 0, 0, date('m'), date('d'), date('Y')); //今天
+    $td    = $time - mktime(0, 0, 0, date('m'), date('d') + 1, date('Y')); //明天
+    $atd   = $time - mktime(0, 0, 0, date('m'), date('d') + 2, date('Y')); //后天
     if ($d == 0) {
         $fdate = '刚刚';
     } else {
@@ -271,7 +282,7 @@ function hp_admin_id(string $key)
  * @Email 416716328@qq.com
  * @DateTime 2023-05-03
  */
-function hp_admin(string $key,$fields = null)
+function hp_admin(string $key, $fields = null)
 {
     if (!$admin = session($key)) {
         return '';
@@ -356,7 +367,7 @@ function _array_merge(array $oldArr, array $newArr): array
  */
 function uriPush(string $uri, array $data): string
 {
-    $url = parse_url($uri);
+    $url    = parse_url($uri);
     $params = http_build_query($data);
     if (isset($url['query'])) {
         $uri = "{$uri}&{$params}";
@@ -375,7 +386,7 @@ function uriPush(string $uri, array $data): string
  * @Email 416716328@qq.com
  * @DateTime 2023-04-29
  */
-function p($str, string $remarks = '日志：',bool $type = false)
+function p($str, string $remarks = '日志：', bool $type = false)
 {
     if (config('app.debug')) {
         $currentDate = date('Y-m-d');
@@ -383,7 +394,7 @@ function p($str, string $remarks = '日志：',bool $type = false)
         echo PHP_EOL;
         if ($type) {
             var_dump($str);
-        }else{
+        } else {
             print_r($str);
         }
         echo PHP_EOL;
@@ -409,7 +420,7 @@ function console_log(string $message)
  * @param string $default
  * @return mixed
  */
-function empowerFile(string $fileName,$default = '')
+function empowerFile(string $fileName, $default = '')
 {
     $path = base_path("/{$fileName}.pem");
     if (!file_exists($path)) {
