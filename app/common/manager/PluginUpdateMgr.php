@@ -157,12 +157,22 @@ class PluginUpdateMgr
      */
     public function delplugin()
     {
-        # 删除应用
-        DirUtil::delDir($this->pluginPath);
-        # 删除成功
-        return JsonMgr::successFul('删除应用', [
-            'next' => 'unzip',
-        ]);
+        try {
+            # 删除应用
+            DirUtil::delDir($this->pluginPath);
+            # 删除成功
+            return JsonMgr::successFul('删除应用', [
+                'next' => 'unzip',
+            ]);
+        } catch (\Throwable $e) {
+            # 执行回滚
+            try {
+                $this->rollback();
+            } catch (\Throwable $e) {
+                return JsonMgr::fail("解压安装包失败，回滚失败：{$e->getMessage()}");
+            }
+            return JsonMgr::fail($e->getMessage());
+        }
     }
 
     /**
@@ -173,12 +183,22 @@ class PluginUpdateMgr
      */
     public function unzip()
     {
-        # 解压安装包
-        ZipMgr::unzip($this->zipFile, $this->pluginPath);
-        # 解压成功
-        return JsonMgr::successFul('解压安装包', [
-            'next' => 'updateData',
-        ]);
+        try {
+            # 解压安装包
+            ZipMgr::unzip($this->zipFile, $this->pluginPath);
+            # 解压成功
+            return JsonMgr::successFul('解压安装包', [
+                'next' => 'updateData',
+            ]);
+        } catch (\Throwable $e) {
+            # 执行回滚
+            try {
+                $this->rollback();
+            } catch (\Throwable $e) {
+                return JsonMgr::fail("解压安装包失败，回滚失败：{$e->getMessage()}");
+            }
+            return JsonMgr::fail($e->getMessage());
+        }
     }
 
     /**
@@ -221,26 +241,10 @@ class PluginUpdateMgr
             try {
                 $this->rollback();
             } catch (\Throwable $e) {
-                return JsonMgr::fail("更新失败，回滚失败：{$e->getMessage()}");
+                return JsonMgr::fail("更新数据失败，回滚失败：{$e->getMessage()}");
             }
             return JsonMgr::fail($e->getMessage());
         }
-    }
-
-    /**
-     * 更新失败，回滚代码
-     * @return void
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     */
-    private function rollback()
-    {
-        # 删除代码
-        DirUtil::delDir($this->pluginPath);
-        # 解压备份包
-        ZipMgr::unzip($this->backPluginPath, $this->pluginPath);
-        # 删除备份包
-        file_exists($this->backPluginPath) && unlink($this->backPluginPath);
     }
 
     /**
@@ -285,5 +289,21 @@ class PluginUpdateMgr
         return JsonMgr::successFul('安装成功', [
             'next' => '',
         ]);
+    }
+
+    /**
+     * 更新失败，回滚代码
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    private function rollback()
+    {
+        # 删除代码
+        DirUtil::delDir($this->pluginPath);
+        # 解压备份包
+        ZipMgr::unzip($this->backPluginPath, $this->pluginPath);
+        # 删除备份包
+        file_exists($this->backPluginPath) && unlink($this->backPluginPath);
     }
 }

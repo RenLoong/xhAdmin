@@ -81,14 +81,16 @@ class PluginInstallMgr
         }
         # 获取应用信息
         $systemInfo = SystemInfoService::info();
-        $req = new PluginRequest;
-        $req->detail();
-        $req->name = $this->name;
-        $req->version = $this->version;
-        $req->saas_version = $systemInfo['system_version'];
-        $req->local_version = $installed_version;
-        $cloud = new Cloud($req);
-        $data = $cloud->send();
+        $req = \YcOpen\CloudService\Request::Plugin()
+        ->detail()
+        ->setQuery([
+            'name' => $this->name,
+            'version' => $this->version,
+            'saas_version' => $systemInfo['system_version'],
+            'local_version' => $installed_version,
+        ])
+        ->cloud()
+        ->send();
         // 获取下载KEY
         $req = new PluginRequest;
         $req->getKey();
