@@ -377,10 +377,10 @@ class SystemConfigController extends BaseController
                 'icon' => $value['icon'],
             ];
             $col                    = ConfigGroupCol::getValue($value['layout_col']);
-            $tabs[$key]['children'] = $this->getConfig($value['id'], (int) $col['col']);
+            $tabs[$key]['children'] = $this->getConfig($value['name'], (int) $col['col']);
         }
         $active         = 0;
-        $data['active'] = $list[$active]['name'];
+        $data['active'] = isset($list[$active]['name']) ? $list[$active]['name'] : '';
         $data['tabs']   = $tabs;
         return $data;
     }
