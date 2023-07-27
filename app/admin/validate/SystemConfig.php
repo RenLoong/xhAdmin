@@ -7,7 +7,7 @@ use yzh52521\validate\Validate;
 class SystemConfig extends Validate
 {
     protected $rule =   [
-        'cid'               => 'require',
+        'group_name'        => 'require',
         'title'             => 'require',
         'name'              => 'require',
         'component'         => 'require',
@@ -15,7 +15,7 @@ class SystemConfig extends Validate
     ];
 
     protected $message  =   [
-        'cid.require'               => '异常错误，缺少分类ID',
+        'group_name.require'        => '缺少参数 - [分组标识]',
         'title.require'             => '请输入配置项名称',
         'name.require'              => '请输入配置项标识',
         'component.require'         => '请选择表单类型',

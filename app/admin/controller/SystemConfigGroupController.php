@@ -44,7 +44,7 @@ class SystemConfigGroupController extends BaseController
                 'path'          => '/SystemConfig/index',
                 'isBack'        => true,
                 'aliasParams'   => [
-                    'id'        => 'cid'
+                    'name'      => 'group_name'
                 ],
             ], [], [
                 'link'          => true,
@@ -222,7 +222,7 @@ class SystemConfigGroupController extends BaseController
         if (!$model) {
             return $this->fail('数据不存在');
         }
-        $configModels = SystemConfig::where(['cid' => $id])->select();
+        $configModels = SystemConfig::where(['group_name' => $model['name']])->select();
         foreach ($configModels as $configModel) {
             $configModel->delete();
         }

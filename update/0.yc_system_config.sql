@@ -4,7 +4,7 @@ CREATE TABLE `yc_system_config`  (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '序号',
   `create_at` datetime NULL DEFAULT NULL COMMENT '创建时间',
   `update_at` datetime NULL DEFAULT NULL COMMENT '更新时间',
-  `cid` int NULL DEFAULT NULL COMMENT '配置分组（外键）',
+  `group_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '配置分组（外键）',
   `title` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '标题名称',
   `name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '字段名称',
   `value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '数据值',

@@ -90,8 +90,8 @@ class UpdateDataService extends SystemUpdateService
                 # 执行SQL
                 $pdo->exec($sql);
                 # 执行成功后删除文件
-                // $filePath = base_path("/update/{$value['file']}");
-                // file_exists($filePath) && unlink($filePath);
+                $filePath = base_path("/update/{$value['file']}");
+                file_exists($filePath) && unlink($filePath);
             }
         } catch (\Throwable $e) {
             Log::error("执行SAAS系统 - 更新SQL错误：{$e->getMessage()}");

@@ -36,7 +36,7 @@ class SystemConfigController extends BaseController
      */
     public function indexGetTable(Request $request)
     {
-        $cid     = $request->get('cid');
+        $group_name     = $request->get('group_name','');
         $builder = new ListBuilder;
         $data    = $builder
             ->addActionOptions('操作')
@@ -45,7 +45,7 @@ class SystemConfigController extends BaseController
                 'api' => "admin/SystemConfig/add",
                 'path' => '/SystemConfig/add',
                 'queryParams' => [
-                    'cid' => $cid
+                    'group_name' => $group_name
                 ],
             ], [], [
                 'type' => 'success',
@@ -54,7 +54,7 @@ class SystemConfigController extends BaseController
                 'api' => 'admin/SystemConfig/edit',
                 'path' => '/SystemConfig/edit',
                 'queryParams' => [
-                    'cid' => $cid
+                    'group_name' => $group_name
                 ],
             ], [
             ], [
@@ -91,9 +91,9 @@ class SystemConfigController extends BaseController
      */
     public function index(Request $request)
     {
-        $cid   = $request->get('cid');
+        $group_name   = $request->get('group_name','');
         $where = [
-            'cid' => $cid,
+            'group_name' => $group_name,
             'store_id' => null,
             'saas_appid' => null,
         ];
@@ -167,10 +167,10 @@ class SystemConfigController extends BaseController
      */
     public function add(Request $request)
     {
-        $cid = $request->get('cid');
+        $group_name = $request->get('group_name','');
         if ($request->method() == 'POST') {
             $post        = $request->post();
-            $post['cid'] = $cid;
+            $post['group_name'] = $group_name;
             $post['show'] = '20';
             // 数据验证
             hpValidate(ValidateSystemConfig::class, $post, 'add');
@@ -387,19 +387,19 @@ class SystemConfigController extends BaseController
 
     /**
      * 获取系统配置
-     * @param int $cid
+     * @param int $group_name
      * @param int $col
      * @return array
      * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
      * @DateTime 2023-04-29
      */
-    private function getConfig(int $cid, int $col): array
+    private function getConfig(string $group_name, int $col): array
     {
         $where      = [
             'store_id'      => null,
             'saas_appid'    => null,
-            'cid'           => $cid,
+            'group_name'    => $group_name,
             'show'          => '20'
         ];
         $list       = SystemConfig::where($where)->select()->toArray();

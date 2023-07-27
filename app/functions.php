@@ -57,39 +57,36 @@ function hpValidate($validate, array $data, string $scene = ''): bool
 function getHpConfig($key = '', $name = '', $appid = 0): string|array
 {
     $model = new \app\common\model\SystemConfig;
-    $map   = [];
+    $where   = [
+        'store_id'      => '',
+        'saas_appid'    => '',
+    ];
     if ($appid) {
         $appModel = StoreAppMgr::detail(['id' => $appid]);
         if ($appModel) {
-            $map[] = ['store_id', '=', $appModel['store_id']];
-            $map[] = ['saas_appid', '=', $appModel['id']];
+            $where['store_id'] = $appModel['store_id'];
+            $where['saas_appid'] = $appModel['saas_appid'];
         }
     }
     if ($name) {
-        $categoryModel = new \app\common\model\SystemConfigGroup;
-        $where         = [
-            'name' => $name,
-        ];
-        if ($appid) {
-            $where['saas_appid'] = $appid;
-        } else {
-            $where['saas_appid'] = '';
-        }
-        $detail = $categoryModel->where($where)->find();
-        $map[]  = ['cid', '=', $detail['id']];
+        $where['name'] = $name;
     }
+    $orderBy = [
+        'sort'      => 'asc',
+        'id'        => 'asc'
+    ];
     if ($key) {
         if (is_array($key)) {
-            $map[] = ['name', 'in', $key];
+            $where['name'] = ['in',$key];
         } else {
-            $map[] = ['name', '=', $key];
+            $where['name'] = $name;
         }
-        $model = $model->where($map)->order(['sort' => 'asc', 'id' => 'asc'])
+        $model = $model->where($where)->order($orderBy)
             ->select();
     } else {
         $model = $model
-            ->where($map)
-            ->order(['sort' => 'asc', 'id' => 'asc'])
+            ->where($where)
+            ->order($orderBy)
             ->select();
     }
     $list = $model->toArray();
@@ -115,12 +112,10 @@ function getHpConfig($key = '', $name = '', $appid = 0): string|array
 
 /**
  * 友好时间显示
- *
- * @Author 贵州猿创科技有限公司
- * @Email 416716328@qq.com
- * @DateTime 2023-03-12
- * @param  integer $time
- * @return void
+ * @param int $time
+ * @return bool|string
+ * @author 贵州猿创科技有限公司
+ * @copyright 贵州猿创科技有限公司
  */
 function friend_date(int $time)
 {
@@ -178,14 +173,12 @@ function friend_date(int $time)
 }
 /**
  * 生成6位随机数
- *
- * @Author 贵州猿创科技有限公司
- * @Email 416716328@qq.com
- * @DateTime 2023-03-12
- * @param  integer $len
- * @return integer
+ * @param int $len
+ * @return string
+ * @author 贵州猿创科技有限公司
+ * @copyright 贵州猿创科技有限公司
  */
-function get_random(int $len = 6): int
+function get_random(int $len = 6)
 {
     $unique_no = substr(base_convert(md5(uniqid(md5(microtime(true)), true)), 16, 10), 0, $len);
     return $unique_no;

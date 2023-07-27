@@ -83,11 +83,100 @@ class StoreAppController extends BaseController
                 $platform           = PlatformTypes::getValue($item['platform']);
                 $icon               = empty($platform['icon']) ? '' : "{$web_url}{$platform['icon']}";
                 $item->platformLogo = $icon;
+                # 检测是否有旧版本系统配置
+                $item->async_data = false;
+                # 检测是否有旧版本配置数据
+                $where               = [
+                    'store_id' => $item['store_id'],
+                    'platform_id' => $item['platform_id'],
+                ];
+                $platformConfigCount = 0;
+                try {
+                    $platformConfigCount = Db::name('store_platform_config')
+                        ->where($where)
+                        ->count();
+                } catch (\Throwable $e) {
+                }
+                if (isset($item['platform_id']) && $platformConfigCount) {
+                    $item->async_data = true;
+                }
                 # 返回数据
                 return $item;
             })
             ->toArray();
         return parent::successRes($data);
+    }
+
+    /**
+     * 同步旧版本配置数据
+     * @param \support\Request $request
+     * @return \support\Response
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public function asyncData(Request $request)
+    {
+        $appid    = $request->post('id', '');
+        $appModel = StoreAppMgr::model(['id' => $appid]);
+        if (empty($appModel)) {
+            return $this->fail('找不到该应用');
+        }
+        if (empty($appModel['platform_id'])) {
+            return $this->fail('该应用没有旧版本配置数据');
+        }
+        # 获取配置文件默认数据
+        $settings = config("plugin.{$appModel['name']}.settings");
+        if (empty($settings)) {
+            return $this->fail('该应用项目没有配置文件');
+        }
+        # 配置项字典键名称
+        $configNames = array_filter(array_column($settings['configs'], 'name'));
+        # 读取旧版本配置数据
+        $where          = [
+            'store_id' => $appModel['store_id'],
+            'platform_id' => $appModel['platform_id'],
+        ];
+        $platformConfig = Db::name('store_platform_config')->where($where)->select();
+        if (empty($platformConfig)) {
+            return $this->fail('该应用没有旧版本配置数据');
+        }
+        # 处理旧版本配置数据
+        foreach ($platformConfig as $value) {
+            if (!in_array($value['config_field'], $configNames)) {
+                throw new Exception("配置文件中不存在该配置项：{$value['config_field']}");
+            }
+            $settings['configs'] = array_map(function ($item) use ($value) {
+                if ($item['name'] === $value['config_field']) {
+                    $item['value'] = $value['config_value'];
+                }
+                return $item;
+            }, $settings['configs']);
+        }
+        Db::startTrans();
+        try {
+            if (!empty($settings)) {
+                $systemConfig = new SystemConfigMgr($request, $appModel);
+                $systemConfig->ActionSettings($settings,false);
+            }
+            # 根据项目平台类型-创建小程序默认配置
+            if (in_array($appModel['platform'], array_keys(AppletPlatform::dictOptions()))) {
+                $baseicMini   = AppletMiniSettins::toArray();
+                $systemConfig = new SystemConfigMgr($request, $appModel);
+                $systemConfig->ActionSettings($baseicMini);
+            }
+            # 删除旧版本配置
+            $where = [
+                'store_id' => $appModel['store_id'],
+                'platform_id' => $appModel['platform_id'],
+            ];
+            Db::name('store_platform_config')->where($where)->delete();
+            # 提交事务
+            Db::commit();
+        } catch (\Throwable $e) {
+            Db::rollback();
+            return $this->fail($e->getMessage());
+        }
+        return $this->success('旧版本配置数据同步成功');
     }
 
     /**

@@ -4,7 +4,7 @@ CREATE TABLE `yc_system_config`  (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '序号',
   `create_at` datetime NULL DEFAULT NULL COMMENT '创建时间',
   `update_at` datetime NULL DEFAULT NULL COMMENT '更新时间',
-  `cid` int NULL DEFAULT NULL COMMENT '配置分组（外键）',
+  `group_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '分组标识（外键）',
   `title` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '标题名称',
   `name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '字段名称',
   `value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '数据值',
@@ -18,7 +18,7 @@ CREATE TABLE `yc_system_config`  (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-配置项' ROW_FORMAT = DYNAMIC;
 
-INSERT INTO `yc_system_config` VALUES (3, '2023-03-12 14:06:09', '2023-05-03 16:44:15', 1, '后台图标', 'admin_logo', '', 'uploadify', '', '请上传后台图标', 0, NULL, NULL, '20');
-INSERT INTO `yc_system_config` VALUES (4, '2023-03-12 14:06:09', '2023-05-03 16:44:15', 2, '租户版权', 'store_copyright_name', '', 'input', '贵州猿创科技有限公司', '展示在租户统计页面的版权名称', 0, NULL, NULL, '20');
-INSERT INTO `yc_system_config` VALUES (5, '2023-03-12 14:06:09', '2023-05-03 16:44:15', 2, '系统教程', 'store_copyright_tutorial', '', 'textarea', '使用文档|http://www.kfadmin.net/#/document在线社区|http://www.kfadmin.net/#/document微信群|http://www.kfadmin.net/#/document', '一行一个信息，示例：名称|网址', 0, NULL, NULL, '20');
-INSERT INTO `yc_system_config` VALUES (6, '2023-03-12 14:06:09', '2023-05-03 16:44:15', 2, '专属客服', 'store_copyright_service', '18786709420（微信同号）', 'input', '', '客服展示信息', 0, NULL, NULL, '20');
+INSERT INTO `yc_system_config` VALUES (3, '2023-03-12 14:06:09', '2023-05-03 16:44:15', 'system_config', '后台图标', 'admin_logo', '', 'uploadify', '', '请上传后台图标', 0, NULL, NULL, '20');
+INSERT INTO `yc_system_config` VALUES (4, '2023-03-12 14:06:09', '2023-05-03 16:44:15', 'copyright_config', '租户版权', 'store_copyright_name', '', 'input', '贵州猿创科技有限公司', '展示在租户统计页面的版权名称', 0, NULL, NULL, '20');
+INSERT INTO `yc_system_config` VALUES (5, '2023-03-12 14:06:09', '2023-05-03 16:44:15', 'copyright_config', '系统教程', 'store_copyright_tutorial', '', 'textarea', '使用文档|http://www.kfadmin.net/#/document在线社区|http://www.kfadmin.net/#/document微信群|http://www.kfadmin.net/#/document', '一行一个信息，示例：名称|网址', 0, NULL, NULL, '20');
+INSERT INTO `yc_system_config` VALUES (6, '2023-03-12 14:06:09', '2023-05-03 16:44:15', 'copyright_config', '专属客服', 'store_copyright_service', '18786709420（微信同号）', 'input', '', '客服展示信息', 0, NULL, NULL, '20');

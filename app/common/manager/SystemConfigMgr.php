@@ -64,28 +64,34 @@ class SystemConfigMgr
      */
     public function ActionSettings(array $data,bool $isKeyword = true)
     {
-        $category = empty($data['category']) ? [] : $data['category'];
+        $group = empty($data['group']) ? [] : $data['group'];
         $configs = empty($data['configs']) ? [] : $data['configs'];
-        if (empty($category)) {
+        if (empty($group)) {
             throw new Exception('分组数据格式错误');
         }
         if (empty($configs)) {
             throw new Exception('配置项数据格式错误');
         }
         # 验证配置项分组
-        $cateNames = array_column($category,'name');
-        foreach ($category as $value){
+        $cateNames = array_column($group,'name');
+        foreach ($group as $value){
             if (empty($value['title'])) {
                 throw new Exception('分组标题不能为空');
             }
             if (empty($value['name'])) {
                 throw new Exception('分组标识不能为空');
             }
+            if (!isset($value['sort'])) {
+                throw new Exception('分组排序不能为空');
+            }
             if (!is_numeric($value['sort'])) {
                 throw new Exception('分组排序必须为数字');
             }
             if (empty($value['layout_col'])) {
                 throw new Exception('分组布局不能为空');
+            }
+            if (!in_array($value['layout_col'], array_keys(ConfigGroupCol::dictOptions()))) {
+                throw new Exception('分组布局不正确');
             }
             # 验证是否存在分组
             $where = [
@@ -111,7 +117,7 @@ class SystemConfigMgr
             'web_url',
         ];
         foreach ($configs as $value) {
-            if (empty($value['cate_name'])) {
+            if (empty($value['group_name'])) {
                 throw new Exception('配置项 - [分组标识不能为空]');
             }
             if (empty($value['title'])) {
@@ -120,17 +126,32 @@ class SystemConfigMgr
             if (empty($value['name'])) {
                 throw new Exception('配置项 - [分组标识不能为空]');
             }
-            if (empty($value['type'])) {
+            if (empty($value['component'])) {
                 throw new Exception('配置项 - [组件不能为空]');
             }
-            if (!in_array($value['type'], $formDict)) {
-                throw new Exception('配置项 - [组件类型不正确]');
+            if (!in_array($value['component'], $formDict)) {
+                throw new Exception('配置项 - [组件不正确]');
             }
-            if (!in_array($value['cate_name'], $cateNames)) {
+            if (!in_array($value['group_name'], $cateNames)) {
                 throw new Exception('配置项 - [关联分组不正确]');
             }
             if (in_array($value['name'], $configNames) && $isKeyword) {
                 throw new Exception("配置项名称不能使用 - [{$value['name']}]");
+            }
+            if (empty($value['sort'])) {
+                throw new Exception('配置项 - [排序不能为空]');
+            }
+            if (!is_numeric($value['sort'])) {
+                throw new Exception('配置项 - [排序必须为数字]');
+            }
+            if (empty($value['show'])) {
+                throw new Exception('配置项 - [隐藏/显示 - 不正确]');
+            }
+            if (empty($value['placeholder'])) {
+                throw new Exception('配置项 - [placeholder不能为空]');
+            }
+            if (!isset($value['value'])) {
+                throw new Exception('配置项 - [缺少默认数据字段]');
             }
             # 验证是否存在配置项
             $where = [
@@ -145,7 +166,7 @@ class SystemConfigMgr
             }
             # 查询关联分组
             $where = [
-                'name' => $value['cate_name'],
+                'name' => $value['group_name'],
                 'store_id' => $this->model['store_id'],
                 'saas_appid' => $this->model['id'],
             ];
@@ -155,7 +176,7 @@ class SystemConfigMgr
             }
             # 保存配置项
             unset($value['cate_name']);
-            $value['cid']           = $cateModel['id'];
+            $value['group_name']    = $cateModel['name'];
             $value['store_id']      = $this->model['store_id'];
             $value['saas_appid']    = $this->model['id'];
             $model = new SystemConfig;
@@ -284,7 +305,7 @@ class SystemConfigMgr
     {
         $model   = $this->model;
         $where   = [
-            'cid'           => $data['id'],
+            'group_name'    => $data['name'],
             'saas_appid'    => $model['id'],
             'store_id'      => $model['store_id'],
             'show'          => '20'

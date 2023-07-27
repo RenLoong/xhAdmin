@@ -14,7 +14,8 @@ CREATE TABLE `yc_system_config_group`  (
   `saas_appid` int NULL DEFAULT NULL COMMENT '平台ID',
   `show` enum('10','20') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '20' COMMENT '是否显示',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-配置分组' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-配置分组' ROW_FORMAT = DYNAMIC;
 
 INSERT INTO `yc_system_config_group` VALUES (1, '2023-03-12 13:59:18', '2023-04-21 16:54:45', '系统设置', 'system_config', 'AntDesignOutlined', 0, '10', '10', NULL, NULL, '20');
+INSERT INTO `yc_system_config_group` VALUES (2, '2023-03-12 13:59:18', '2023-04-21 16:54:45', '版权设置', 'copyright_config', 'AntDesignOutlined', 0, '10', '10', NULL, NULL, '20');
 
