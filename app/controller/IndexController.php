@@ -7,7 +7,9 @@ use app\common\manager\PhpZipArchiveMgr;
 use app\common\manager\SystemZipCmdMgr;
 use app\common\manager\ZipMgr;
 use app\common\service\SystemUpdateService;
+use app\common\service\UpdateDataService;
 use support\Request;
+use think\facade\Db;
 
 class IndexController extends BaseController
 {
@@ -37,9 +39,13 @@ class IndexController extends BaseController
      */
     public function test(Request $request)
     {
-
+        # 测试框架升级
+        $updateService = new UpdateDataService($request,1000);
+        $data = $updateService->beforeUpdate();
+        $updateService->update($data);
+        
         # 测试PHP内置解压管理器
-        (new PhpZipArchiveMgr)->unzip(base_path('test123.zip'),base_path('/test123'));
+        // (new PhpZipArchiveMgr)->unzip(base_path('test123.zip'),base_path('/test123'));
         # 测试PHP内置打包管理器
         // (new PhpZipArchiveMgr)->buildFiles(base_path('test123.zip'),public_path(), [
         //     'remote',

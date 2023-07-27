@@ -8,8 +8,6 @@ use Exception;
 use support\Request;
 use YcOpen\CloudService\Cloud;
 use YcOpen\CloudService\Request\PluginRequest;
-use Workerman\Timer;
-use Workerman\Worker;
 
 /**
  * 应用安装管理器

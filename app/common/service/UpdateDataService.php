@@ -44,32 +44,24 @@ class UpdateDataService extends SystemUpdateService
             return [];
         }
         # 获取sql文件
-        $sqlFiles = scandir($sqlDir);
+        $sqlFiles = array_values(array_diff(scandir($sqlDir), ['.', '..']));
         $extension = '.sql';
         $data      = [];
         foreach ($sqlFiles as $file) {
-            if (strpos($file, $extension) !== false) {
-                $data[] = $file;
+            if (!strpos($file, $extension)) {
+                continue;
             }
-        }
-        if (empty($data)) {
-            return [];
-        }
-        $dataList = [
-            'files'     => [],
-            'sql'       => [],
-        ];
-        foreach ($data as $value) {
-            $item = file_get_contents("{$sqlDir}/{$value}");
-            if (!empty($item)) {
-                $keyName = str_replace('.sql','',$value);
-                $dataList['files'][] = $keyName;
-                $item = DbMgr::removeComments($item);
-                $item = DbMgr::splitSqlFile($item,';');
-                $dataList['sql'] = array_merge($dataList['sql'],$item);
+            $sqlContent = file_get_contents("{$sqlDir}/{$file}");
+            if (empty($sqlContent) && file_exists("{$sqlDir}/{$file}")) {
+                unlink("{$sqlDir}/{$file}");
+                continue;
             }
+            $data[] = [
+                'file' => $file,
+                'sql'  => $sqlContent,
+            ];
         }
-        return $dataList;
+        return $data;
     }
 
     /**
@@ -81,31 +73,28 @@ class UpdateDataService extends SystemUpdateService
      */
     public function update($data)
     {
-        if (empty($data['files']) || empty($data['sql'])) {
-            return;
-        }
-        $prefix = config('database.connections.mysql.prefix');
-        $str    = ['`php_', '`yc_'];
-        foreach ($data['sql'] as $sql) {
-            # 替换为真实SQL
-            $sql = str_replace($str, "`{$prefix}", $sql);
-            try {
-                DbMgr::instance()->statement($sql);
-            } catch (\Throwable $e) {
-                Log::error("执行更新SQL错误：{$e->getMessage()}");
-                continue;
+        $prefix     = config('database.connections.mysql.prefix');
+        $prefixs    = ['`php_', '`yc_'];
+        try {
+            # 连接原生PDO
+            $pdo = DbMgr::instance()->getPdo();
+            foreach ($data as $value) {
+                if (empty($value['file'])) {
+                    continue;
+                }
+                if (empty($value['sql'])) {
+                    continue;
+                }
+                # 替换前缀
+                $sql = str_replace($prefixs, "`{$prefix}", $value['sql']);
+                # 执行SQL
+                $pdo->exec($sql);
+                # 执行成功后删除文件
+                // $filePath = base_path("/update/{$value['file']}");
+                // file_exists($filePath) && unlink($filePath);
             }
-        }
-        # 清空目录
-        foreach ($data['files'] as $file) {
-            $filePath = base_path("/update/{$file}.sql");
-            if (file_exists($filePath)) {
-                unlink($filePath);
-            }
-        }
-        $updateDir = base_path('/update');
-        if (is_dir($updateDir)) {
-            rmdir($updateDir);
+        } catch (\Throwable $e) {
+            Log::error("执行SAAS系统 - 更新SQL错误：{$e->getMessage()}");
         }
     }
 }
