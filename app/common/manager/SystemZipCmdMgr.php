@@ -38,7 +38,7 @@ class SystemZipCmdMgr
         $err = fread($pipes[2], 1024);
         fclose($pipes[2]);
         proc_close($handler);
-        if ($err) {
+        if (!file_exists($extractTo)) {
             throw new Exception("解压zip时出错:$err");
         }
     }

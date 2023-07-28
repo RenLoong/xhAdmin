@@ -5,6 +5,7 @@ use app\common\manager\ZipMgr;
 use app\common\manager\JsonMgr;
 use app\common\utils\DirUtil;
 use Exception;
+use support\Log;
 use support\Request;
 use YcOpen\CloudService\Request as CloudRequest;
 use YcOpen\CloudService\Cloud;
@@ -135,6 +136,9 @@ class SystemUpdateService
         }
         # 解压至临时目标地址
         $this->targetPath = runtime_path('temp');
+        if (!is_dir($this->targetPath)) {
+            mkdir($this->targetPath, 0755, true);
+        }
         # 解压至目标地址(根据环境变量设置)
         if (!config('app.debug',true)) {
             # 生产环境
@@ -265,6 +269,8 @@ class SystemUpdateService
                 'next' => 'updateData'
             ]);
         } catch (\Throwable $e) {
+            # 日志记录
+            Log::error("删除目录出错：{$e->getMessage()}，line：{$e->getLine()}，file：{$e->getFile()}");
             # 报错异常，执行回滚
             throw new RollBackException("解压出错：{$e->getMessage()}");
         }

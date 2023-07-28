@@ -5,6 +5,7 @@ namespace app\common\utils;
 use Exception;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use support\Log;
 
 /**
  * 目录操作类
@@ -269,25 +270,34 @@ final class DirUtil
      */
     public static function delDir($dir, $ignorePatterns = [])
     {
-        if (!is_dir($dir)) {
-            throw new Exception('该目录不存在');
-        }
-        $files = glob("{$dir}/{,.}*", GLOB_BRACE | GLOB_NOSORT);
-        $files = array_filter($files, function ($file) {
-            return !in_array(basename($file), ['.', '..']);
-        });
-        foreach ($files as $pathName) {
-            if (!in_array(rtrim($pathName, '/'), $ignorePatterns)) {
-                if (is_dir($pathName)) {
-                    self::delDir($pathName, $ignorePatterns);
-                    # 判断是否为空目录，删除空目录
-                    if (self::isDirEmpty($pathName)) {
-                        rmdir($pathName);
+        try {
+            if (!is_dir($dir)) {
+                throw new Exception('该目录不存在');
+            }
+            $files = glob("{$dir}/{,.}*", GLOB_BRACE | GLOB_NOSORT);
+            $files = array_filter($files, function ($file) {
+                return !in_array(basename($file), ['.', '..']);
+            });
+            foreach ($files as $pathName) {
+                if (!in_array(rtrim($pathName, '/'), $ignorePatterns)) {
+                    if (is_dir($pathName)) {
+                        self::delDir($pathName, $ignorePatterns);
+                        # 判断是否为空目录，删除空目录
+                        if (self::isDirEmpty($pathName)) {
+                            @rmdir($pathName);
+                        }
+                    } else if (file_exists($pathName)) {
+                        @unlink($pathName);
                     }
-                } else if (file_exists($pathName)) {
-                    unlink($pathName);
                 }
             }
+            # 判断是否为空目录，删除空目录
+            if (self::isDirEmpty($dir)) {
+                @rmdir($dir);
+            }
+        } catch (\Throwable $e) {
+            Log::error("删除目录出错：{$e->getMessage()}，line：{$e->getLine()}，file：{$e->getFile()}");
+            throw $e;
         }
     }
 
@@ -303,6 +313,6 @@ final class DirUtil
     {
         if (!is_readable($dir))
             return null;
-        return (count(glob("$dir/*")) === 0);
+        return (count(glob("$dir/*", GLOB_BRACE | GLOB_NOSORT)) === 0);
     }
 }

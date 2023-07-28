@@ -15,6 +15,7 @@ class PluginMgr
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      */
+
     public static function checkPluginSaasVersion(string $name)
     {
         # 获取应用信息
@@ -34,7 +35,7 @@ class PluginMgr
         if (empty($pluginDetail)) {
             throw new Exception('云端应用数据错误');
         }
-        $pluginSaasVersion = $pluginDetail['saas_version'];
+        $pluginSaasVersion = $pluginDetail['local_find']['saas_version'];
         if ($systemInfo['system_version'] > $pluginSaasVersion) {
             return false;
         }
@@ -51,6 +52,9 @@ class PluginMgr
      */
     public static function getPluginVersion($name)
     {
+        if (!is_dir(base_path("/plugin/{$name}"))) {
+            return 1;
+        }
         $json = base_path("/plugin/{$name}/version.json");
         if (!is_file($json)) {
             return 1;
@@ -73,6 +77,9 @@ class PluginMgr
             'version'           => 1,
             'version_name'      => '1.0.0'
         ];
+        if (!is_dir(base_path("/plugin/{$name}"))) {
+            return $version;
+        }
         $json = base_path("/plugin/{$name}/version.json");
         if (!is_file($json)) {
             return $version;
@@ -91,11 +98,14 @@ class PluginMgr
      */
     public static function getLocalPlugins(): array
     {
+        if (!is_dir(base_path('/plugin/'))) {
+            return [];
+        }
         clearstatcache();
         $installed = [];
         $plugin_names = array_diff(scandir(base_path('/plugin/')), array('.', '..')) ?: [];
         foreach ($plugin_names as $plugin_name) {
-            if (is_dir(base_path("/plugin/{$plugin_name}")) && $version = self::getPluginVersion($plugin_name) > 1) {
+            if (is_dir(base_path("/plugin/{$plugin_name}")) && $version = self::getPluginVersion($plugin_name)) {
                 $installed[$plugin_name] = $version;
             }
         }
