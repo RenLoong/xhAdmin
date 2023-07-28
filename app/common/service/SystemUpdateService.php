@@ -259,7 +259,7 @@ class SystemUpdateService
             # 解压覆盖文件
             ZipMgr::unzip($this->backCoverPath, $this->targetPath);
             # 删除根目录原始代码
-            DirUtil::delDir($this->rootPath, $ignore);
+            // DirUtil::delDir($this->rootPath, $ignore);
             # 复制解压后的文件至目标路径
             DirUtil::copyDir($this->targetPath, $this->rootPath);
             # 解压成功，删除临时文件
