@@ -28,9 +28,11 @@ class ZipMgr
             if (!function_exists('proc_open')) {
                 throw new Exception('请解除proc_open函数的禁用');
             }
+            p('使用系统命令-执行系统打包目录下所有文件');
             # 开始执行系统打包
             SystemZipCmdMgr::zipBuild($zipFilePath, $extractTo,$ignoreFiles);
         } else {
+            p('使用PHP内置扩展-执行系统打包目录下所有文件');
             # 使用ZipArchive扩展打包
             (new PhpZipArchiveMgr)->build($zipFilePath, $extractTo, $ignoreFiles);
         }
@@ -59,9 +61,11 @@ class ZipMgr
             if (!function_exists('proc_open')) {
                 throw new Exception('请解除proc_open函数的禁用');
             }
+            p('使用系统命令-执行系统打包目录下指定文件');
             # 开始执行系统打包
             SystemZipCmdMgr::zipBuildFiles($zipFilePath, $extractTo,$files);
         } else {
+            p('使用PHP内置扩展-执行系统打包目录下指定文件');
             # 使用内置PHP扩展ZipArchive扩展打包
             (new PhpZipArchiveMgr)->buildFiles($zipFilePath, $extractTo, $files);
         }
@@ -94,9 +98,11 @@ class ZipMgr
             if (!function_exists('proc_open')) {
                 throw new Exception('请解除proc_open函数的禁用');
             }
+            p('使用系统命令-执行压缩包解压');
             # 开始执行系统打包
             SystemZipCmdMgr::unzipWith($zipFilePath, $extractTo);
         } else {
+            p('使用PHP内置扩展-执行压缩包解压');
             # 使用内置PHP扩展ZipArchive扩展解压
             (new PhpZipArchiveMgr)->unzip($zipFilePath, $extractTo);
         }
