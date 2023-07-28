@@ -58,8 +58,8 @@ function getHpConfig($key = '', $group_name = '', $appid = 0): string|array
 {
     $model = new \app\common\model\SystemConfig;
     $where   = [
-        'store_id'      => '',
-        'saas_appid'    => '',
+        'store_id'      => null,
+        'saas_appid'    => null,
     ];
     if ($appid) {
         $appModel = StoreAppMgr::detail(['id' => $appid]);
@@ -89,9 +89,8 @@ function getHpConfig($key = '', $group_name = '', $appid = 0): string|array
             ->order($orderBy)
             ->select();
     }
-    $list = $model->toArray();
     $data = [];
-    foreach ($list as $key => $value) {
+    foreach ($model as $value) {
         if ($value['component'] == 'uploadify') {
             $files = explode(',', $value['value']);
             $_list = [];

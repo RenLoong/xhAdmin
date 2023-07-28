@@ -115,7 +115,9 @@ class SystemConfigController extends BaseController
             $post = request()->post();
             foreach ($post as $name => $value) {
                 $where = [
-                    'name' => $name
+                    'name'          => $name,
+                    'store_id'      => null,
+                    'saas_appid'    => null,
                 ];
                 $model = SystemConfig::where($where)->find();
                 if (!$model) {

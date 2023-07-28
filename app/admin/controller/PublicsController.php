@@ -32,7 +32,7 @@ class PublicsController extends BaseController
         $empower_token = empowerFile('token');
         $private_key = empowerFile('private_key');
         $moduleName = getModule('admin');
-        $web_logo = getHpConfig('web_logo');
+        $web_logo = getHpConfig('admin_logo');
         $data       = [
             'web_name'          => getHpConfig('web_name'),
             'web_title'         => '登录',

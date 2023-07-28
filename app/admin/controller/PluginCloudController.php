@@ -70,7 +70,7 @@ class PluginCloudController extends BaseController
         $site->title  = getHpConfig('web_name');
         $cloud        = new Cloud($site);
         $cloud->send();
-        return $this->successRes($data->toArray());
+        return $this->successFul('登录成功', $data->toArray());
     }
 
 
