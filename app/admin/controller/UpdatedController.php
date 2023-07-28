@@ -9,6 +9,7 @@ use app\common\service\SystemInfoService;
 use app\BaseController;
 use Exception;
 use process\Monitor;
+use support\Log;
 use support\Request;
 use YcOpen\CloudService\Cloud;
 use YcOpen\CloudService\Request\SystemUpdateRequest;
@@ -121,6 +122,8 @@ class UpdatedController extends BaseController
             $class = new SystemUpdateService($request);
             return call_user_func([$class, $funcName]);
         } catch (RollBackException $e) {
+            # 日志记录
+            Log::error("{$e->getMessage()}，Line:{$e->getLine()}，File:{$e->getFile()}");
             # 开始进行版本回滚
             return (new SystemRollbackService($request))->startRollback();
         } catch (\Throwable $e) {

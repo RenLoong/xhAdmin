@@ -129,6 +129,10 @@ class SystemUpdateService
         $this->request = $Request;
         # 下载框架更新包临时地址
         $this->tempZipFilePath = runtime_path("/core/kfadmin-update.zip");
+        # 检测核心目录不存在则创建
+        if (!is_dir(dirname($this->tempZipFilePath))) {
+            mkdir(dirname($this->tempZipFilePath), 0755, true);
+        }
         # 解压至临时目标地址
         $this->targetPath = runtime_path('temp');
         # 解压至目标地址(根据环境变量设置)
@@ -138,6 +142,9 @@ class SystemUpdateService
         } else {
             # 开发环境
             $this->rootPath = runtime_path('web');
+            if (!is_dir($this->rootPath)) {
+                mkdir($this->rootPath, 0755, true);
+            }
         }
         # 备份当前版本代码地址
         $this->backupPath = runtime_path("/core/backup.zip");
