@@ -125,7 +125,7 @@ class SystemUpdateService
         # 下载框架更新包临时地址
         $this->tempZipFilePath = runtime_path("/core/kfadmin.zip");
         # 解压至目标地址(根据环境变量设置)
-        if (!env('APP_DEBUG',true)) {
+        if (!config('app.debug',true)) {
             # 生产环境
             $this->targetPath = base_path();
         } else {
