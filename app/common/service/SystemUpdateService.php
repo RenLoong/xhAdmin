@@ -123,7 +123,7 @@ class SystemUpdateService
         # 设置请求实体
         $this->request = $Request;
         # 下载框架更新包临时地址
-        $this->tempZipFilePath = runtime_path("/core/kfadmin.zip");
+        $this->tempZipFilePath = runtime_path("/core/kfadmin-update.zip");
         # 解压至目标地址(根据环境变量设置)
         if (!config('app.debug',true)) {
             # 生产环境
@@ -208,7 +208,7 @@ class SystemUpdateService
     public function backSql()
     {
         return JsonMgr::successRes([
-            'next' => 'delCode'
+            'next' => 'unzip'
         ]);
     }
 
@@ -219,52 +219,31 @@ class SystemUpdateService
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public function delCode()
-    {
-        # 检测目标路径不存在则继续下一步
-        if (!is_dir($this->targetPath)) {
-            return JsonMgr::successRes([
-                'next' => 'unzip'
-            ]);
-        }
-        $targetPath       = $this->targetPath;
-        # 判断是否为斜杠结尾
-        if (substr($targetPath, -1) != '/') {
-            $targetPath .= '/';
-        }
-        # 组装需要忽略的文件路径
-        $ignore = [];
-        foreach ($this->ignoreList as $v) {
-            $ignore[] = $targetPath.$v;
-        }
-        # 删除原始代码
-        DirUtil::delDir($this->targetPath, $ignore);
-        # 删除成功
-        return JsonMgr::successRes([
-            'next' => 'unzip'
-        ]);
-    }
-
-    /**
-     * 解压更新包
-     * @return \support\Response
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
-     */
     public function unzip()
     {
         try {
-            # 检测目标路径不存在则创建
+            # 检测目标路径不存在则继续下一步
             if (!is_dir($this->targetPath)) {
-                mkdir($this->targetPath, 0755, true);
+                throw new Exception('目标路径不存在');
             }
+            $targetPath       = $this->targetPath;
+            # 判断是否为斜杠结尾
+            if (substr($targetPath, -1) != '/') {
+                $targetPath .= '/';
+            }
+            # 组装需要忽略的文件路径
+            $ignore = [];
+            foreach ($this->ignoreList as $v) {
+                $ignore[] = $targetPath.$v;
+            }
+            # 删除原始代码
+            DirUtil::delDir($this->targetPath, $ignore);
             # 解压更新包
             ZipMgr::unzip($this->tempZipFilePath, $this->targetPath);
             # 解压覆盖文件
             ZipMgr::unzip($this->backCoverPath, $this->targetPath);
             # 解压成功，删除临时文件
-            unlink($this->tempZipFilePath);
+            file_exists($this->tempZipFilePath) && unlink($this->tempZipFilePath);
             # 返回成功
             return JsonMgr::successRes([
                 'next' => 'updateData'
