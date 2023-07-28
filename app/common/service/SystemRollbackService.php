@@ -34,14 +34,12 @@ class SystemRollbackService extends SystemUpdateService
     public function startRollback()
     {
         # 删除代码文件
-        DirUtil::delDir($this->targetPath);
+        // DirUtil::delDir($this->targetPath);
         # 解压备份压缩包
         ZipMgr::unzip($this->backupPath, $this->targetPath);
         # 解压覆盖压缩包
         ZipMgr::unzip($this->backCoverPath, $this->targetPath);
         # 回滚完成
-        return JsonMgr::json('更新失败，已回滚至上个版本',302,[
-            'url'       => '/'
-        ]);
+        return JsonMgr::fail('更新失败，已回滚至上个版本');
     }
 }
