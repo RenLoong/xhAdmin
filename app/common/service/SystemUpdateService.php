@@ -16,12 +16,11 @@ use YcOpen\CloudService\Request\SystemUpdateRequest;
  * 1、下载更新包
  * 2、备份代码
  * 3、备份数据库
- * 4、删除代码
- * 5、解压更新包
- * 6、执行数据同步更新（引入最新的更新类）
- * 7、重启主进程服务
- * 8、等待服务重启
- * 9、更新成功
+ * 4、解压更新包-删除代码-复制已解压文件至目标路径
+ * 5、执行数据同步更新（引入最新的更新类）
+ * 6、重启主进程服务
+ * 7、等待服务重启
+ * 8、更新成功
  * @author 贵州猿创科技有限公司
  * @copyright 贵州猿创科技有限公司
  * @email 416716328@qq.com
@@ -85,6 +84,12 @@ class SystemUpdateService
      */
     protected $targetPath = null;
 
+    /**
+     * 根目录路径
+     * @var string
+     */
+    protected $rootPath = null;
+
     
     /**
      * 打包时忽略文件或目录列表
@@ -124,13 +129,15 @@ class SystemUpdateService
         $this->request = $Request;
         # 下载框架更新包临时地址
         $this->tempZipFilePath = runtime_path("/core/kfadmin-update.zip");
+        # 解压至临时目标地址
+        $this->targetPath = runtime_path('temp');
         # 解压至目标地址(根据环境变量设置)
         if (!config('app.debug',true)) {
             # 生产环境
-            $this->targetPath = base_path();
+            $this->rootPath = base_path();
         } else {
             # 开发环境
-            $this->targetPath = runtime_path('temp');
+            $this->rootPath = runtime_path('web');
         }
         # 备份当前版本代码地址
         $this->backupPath = runtime_path("/core/backup.zip");
@@ -236,12 +243,14 @@ class SystemUpdateService
             foreach ($this->ignoreList as $v) {
                 $ignore[] = $targetPath.$v;
             }
-            # 删除原始代码
-            DirUtil::delDir($this->targetPath, $ignore);
             # 解压更新包
             ZipMgr::unzip($this->tempZipFilePath, $this->targetPath);
             # 解压覆盖文件
             ZipMgr::unzip($this->backCoverPath, $this->targetPath);
+            # 删除根目录原始代码
+            DirUtil::delDir($this->rootPath, $ignore);
+            # 复制解压后的文件至目标路径
+            DirUtil::copyDir($this->targetPath, $this->rootPath);
             # 解压成功，删除临时文件
             file_exists($this->tempZipFilePath) && unlink($this->tempZipFilePath);
             # 返回成功
@@ -250,7 +259,7 @@ class SystemUpdateService
             ]);
         } catch (\Throwable $e) {
             # 报错异常，执行回滚
-            throw new RollBackException($e->getMessage());
+            throw new RollBackException("解压出错：{$e->getMessage()}");
         }
     }
 
@@ -293,7 +302,10 @@ class SystemUpdateService
                 'next' => 'reload'
             ]);
         } catch (\Throwable $e) {
-            throw new RollBackException($e->getMessage());
+            # 报错异常仍然继续下一步
+            return JsonMgr::successRes([
+                'next' => 'reload'
+            ]);
         }
     }
 

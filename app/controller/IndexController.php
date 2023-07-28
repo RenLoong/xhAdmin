@@ -8,6 +8,7 @@ use app\common\manager\SystemZipCmdMgr;
 use app\common\manager\ZipMgr;
 use app\common\service\SystemUpdateService;
 use app\common\service\UpdateDataService;
+use app\common\utils\DirUtil;
 use support\Request;
 use think\facade\Db;
 
@@ -39,6 +40,12 @@ class IndexController extends BaseController
      */
     public function test(Request $request)
     {
+        # 测试复制目录
+        // $dir = base_path();
+        // $dir = public_path();
+        // $target = base_path('test123');
+        // DirUtil::copyDir($dir, $target);
+
         # 测试框架升级
         // $updateService = new UpdateDataService($request,1000);
         // $data = $updateService->beforeUpdate();

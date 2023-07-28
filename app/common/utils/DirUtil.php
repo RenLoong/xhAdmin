@@ -52,7 +52,7 @@ final class DirUtil
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    static public function tree(string $dirName = null, $exts = '', $son = 0, $list = array())
+    static public function tree2(string $dirName = null, $exts = '', $son = 0, $list = array())
     {
 
         if (is_null($dirName))
@@ -67,7 +67,7 @@ final class DirUtil
                     'type' => filetype($v),
                     'filename' => basename($v),
                     'path' => $path,
-                    'spath' => ltrim(str_replace(dirname($_SERVER['SCRIPT_FILENAME']), '', $path), '/'),
+                    // 'spath' => ltrim(str_replace(dirname($_SERVER['SCRIPT_FILENAME']), '', $path), '/'),
                     'filemtime' => filemtime($v),
                     'fileatime' => fileatime($v),
                     'size' => is_file($v) ? filesize($v) : self::get_dir_size($v),
@@ -75,6 +75,89 @@ final class DirUtil
                     'isread' => is_readable($v) ? 1 : 0,
                     'data' => $son && is_dir($v) ? self::tree($v, $exts, $son = 1, $list) : []
                 ];
+            }
+        }
+        return $list;
+    }
+
+    /**
+     * 复制目录下所有文件至目标文件夹下
+     * @param string $dirPath
+     * @param string $targetPath
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public static function copyDir(string $dirPath, string $targetPath)
+    {
+        $data = self::tree($dirPath, true);
+        if (!is_dir($targetPath)) {
+            mkdir($targetPath, 0777, true);
+        }
+        # 开始复制文件及目录
+        self::copyFile($data, $targetPath);
+    }
+
+    /**
+     * 递归复制文件
+     * @param array $data
+     * @param string $targetPath
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    private static function copyFile(array $data, string $targetPath)
+    {
+        foreach ($data as $value) {
+            if (empty($value['sitePath'])) {
+                continue;
+            }
+            $path = $targetPath . DIRECTORY_SEPARATOR . $value['sitePath'];
+            if (is_dir($value['path']) && !is_dir($path) && !file_exists($path)) {
+                mkdir($path, 0777, true);
+            }
+            if (is_file($value['path'])) {
+                copy($value['path'], $path);
+            }
+            # 继续复制子目录与文件
+            if (!empty($value['children'])) {
+                self::copyFile($value['children'], $targetPath);
+            }
+        }
+    }
+
+    /**
+     * 获取目录树
+     * @param string $dirPath
+     * @param bool $son
+     * @param mixed $exts
+     * @param string $parent
+     * @return array
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public static function tree(string $dirPath, bool $son = false, $exts = '', string $parent = '')
+    {
+        if (is_array($exts)) {
+            $exts = implode(",", $exts);
+        }
+        $list = [];
+        if (is_dir($dirPath)) {
+            $dirs = array_diff(scandir($dirPath), ['.', '..']);
+            foreach ($dirs as $file) {
+                # 检查文件扩展名
+                if ($exts && !preg_match("/\.($exts)/i", $file)) {
+                    continue;
+                }
+                $filePath = $dirPath . DIRECTORY_SEPARATOR . $file;
+                $sitePath = $parent ? $parent . DIRECTORY_SEPARATOR . $file : $parent . $file;
+                $item     = [
+                    'file' => $file,
+                    'path' => $filePath,
+                    "sitePath" => $sitePath,
+                    'children' => $son && is_dir($filePath) ? self::tree($filePath, $son, $exts, $sitePath) : [],
+                ];
+                array_push($list, $item);
             }
         }
         return $list;

@@ -82,10 +82,6 @@ export default {
             title: '备份数据库',
             step: 'backSql',
           },
-          // {
-          //   title: '删除旧文件',
-          //   step: 'delCode',
-          // },
           {
             title: '解压更新包',
             step: 'unzip',

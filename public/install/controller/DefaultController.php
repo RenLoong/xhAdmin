@@ -12,8 +12,8 @@ class DefaultController
         // 检测是否安装
         if (file_exists(ROOT_PATH . '/.env')) {
             exit(Json::successRes([
-                'install'   => 'ok',
-                'desc'      => '恭喜您，安装成功'
+                'install' => 'ok',
+                'desc' => '恭喜您，安装成功'
             ]));
         }
     }
@@ -38,7 +38,7 @@ class DefaultController
     public function agreement()
     {
         $content = file_get_contents(KF_INSTALL_PATH . '/data/agreement.txt');
-        $data = [
+        $data    = [
             'text' => $content
         ];
         return Json::successRes($data);
@@ -55,7 +55,7 @@ class DefaultController
     public function environment()
     {
         $data = [
-            'fun'   => $this->getVerifyFun(),
+            'fun' => $this->getVerifyFun(),
             'extra' => $this->getVerifyExtra(),
             'dirData' => $this->getDirData()
         ];
@@ -143,22 +143,22 @@ class DefaultController
             switch ($value['type']) {
                 case 'extra':
                     $data[$key]['status'] = extension_loaded($value['name']) ? true : false;
-                    $data[$key]['value']  = extension_loaded($value['name']) ? 'OK' : 'Fail';
+                    $data[$key]['value'] = extension_loaded($value['name']) ? 'OK' : 'Fail';
                     break;
                 case 'class':
                     $data[$key]['status'] = class_exists($value['name']) ? true : false;
-                    $data[$key]['value']  = class_exists($value['name']) ? 'OK' : 'Fail';
+                    $data[$key]['value'] = class_exists($value['name']) ? 'OK' : 'Fail';
                     break;
                 case 'function':
                     $data[$key]['status'] = function_exists($value['name']) ? true : false;
-                    $data[$key]['value']  = function_exists($value['name']) ? 'OK' : 'Fail';
+                    $data[$key]['value'] = function_exists($value['name']) ? 'OK' : 'Fail';
                     break;
                 case 'version':
                     if ($value['name'] === 'php') {
-                        $max = (bool)version_compare(PHP_VERSION, $value['min'], '>=');
-                        $min = (bool)version_compare(PHP_VERSION, $value['max'], '<');
+                        $max                  = (bool) version_compare(PHP_VERSION, $value['min'], '>=');
+                        $min                  = (bool) version_compare(PHP_VERSION, $value['max'], '<');
                         $data[$key]['status'] = $max && $min;
-                        $data[$key]['value']  = $data[$key]['status'] ? 'OK' : "{{$value['name']}}必须是 >={$value['version']}以及<{$value['max']}";
+                        $data[$key]['value']  = $value['status'] ? 'OK' : "{$value['name']}必须是 >= {$value['min']} < {$value['max']}";
                     }
                     break;
             }

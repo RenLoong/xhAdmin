@@ -85,11 +85,11 @@ class BtController
                 }
                 try {
                     # 写入站点名称
-                    $sql = "INSERT INTO `{$database['prefix']}system_config` VALUES (1, '2023-07-06 11:01:59', '2023-07-20 11:32:50', 1, '站点名称', 'web_name', '{$site['web_name']}', 'input', '', '请输入站点名称', 0, NULL, NULL, '20');";
+                    $sql = "INSERT INTO `{$database['prefix']}system_config` VALUES (1, '2023-07-06 11:01:59', '2023-07-20 11:32:50', 'system_config', '站点名称', 'web_name', '{$site['web_name']}', 'input', '', '请输入站点名称', 0, NULL, NULL, '20');";
                     # 执行SQL
                     Db::exceSQL($sql);
                     # 写入站点域名
-                    $sql = "INSERT INTO `{$database['prefix']}system_config` VALUES (2, '2023-07-06 11:01:59', '2023-07-06 11:01:59', 1, '站点域名', 'web_url', '{$site['web_url']}', 'input', '', '请输入站点域名', 0, NULL, NULL, '20');";
+                    $sql = "INSERT INTO `{$database['prefix']}system_config` VALUES (2, '2023-07-06 11:01:59', '2023-07-06 11:01:59', 'system_config', '站点域名', 'web_url', '{$site['web_url']}', 'input', '', '请输入站点域名', 0, NULL, NULL, '20');";
                     # 执行SQL
                     Db::exceSQL($sql);
                     # 获取管理员参数
