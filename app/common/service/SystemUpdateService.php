@@ -255,13 +255,13 @@ class SystemUpdateService
                 $ignore[] = $targetPath.$v;
             }
             # 解压更新包
-            ZipMgr::unzip($this->tempZipFilePath, $this->targetPath);
+            ZipMgr::unzip($this->tempZipFilePath, $this->rootPath);
             # 解压覆盖文件
-            ZipMgr::unzip($this->backCoverPath, $this->targetPath);
+            ZipMgr::unzip($this->backCoverPath, $this->rootPath);
             # 删除根目录原始代码
             // DirUtil::delDir($this->rootPath, $ignore);
             # 复制解压后的文件至目标路径
-            DirUtil::copyDir($this->targetPath, $this->rootPath);
+            // DirUtil::copyDir($this->targetPath, $this->rootPath);
             # 解压成功，删除临时文件
             file_exists($this->tempZipFilePath) && unlink($this->tempZipFilePath);
             # 返回成功
