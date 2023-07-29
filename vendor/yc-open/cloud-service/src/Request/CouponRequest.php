@@ -1,4 +1,5 @@
 <?php
+
 namespace YcOpen\CloudService\Request;
 
 use YcOpen\CloudService\Request;
@@ -16,15 +17,15 @@ class CouponRequest extends Request
      * @param mixed $query
      * @return CouponRequest
      */
-    public function getAvailableCoupon(mixed $query=null)
+    public function getAvailableCoupon(mixed $query = null)
     {
         $this->setUrl('Coupon/getAvailableCoupon');
-        $validator=new Validator;
+        $validator = new Validator;
         $validator->rules([
-            'type'=>'required'
+            'type' => 'required'
         ]);
-        $this->validator=$validator;
-        if($query){
+        $this->validator = $validator;
+        if ($query) {
             $this->setQuery($query);
         }
         return $this;
@@ -34,10 +35,10 @@ class CouponRequest extends Request
      * @param mixed $query
      * @return CouponRequest
      */
-    public function getCouponList(mixed $query=null)
+    public function getCouponList(mixed $query = null)
     {
         $this->setUrl('Coupon/getCouponList');
-        if($query){
+        if ($query) {
             $this->setQuery($query);
         }
         return $this;

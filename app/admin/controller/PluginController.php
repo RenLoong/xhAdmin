@@ -16,6 +16,7 @@ use app\common\utils\DirUtil;
 use process\Monitor;
 use support\Request;
 use YcOpen\CloudService\Cloud;
+use YcOpen\CloudService\Request as CloudServiceRequest;
 use YcOpen\CloudService\Request\PluginRequest;
 use ZipArchive;
 
@@ -85,7 +86,7 @@ class PluginController extends BaseController
                     'api' => 'admin/Plugin/update',
                     'path' => 'remote/cloud/update',
                     'params' => [
-                        'field' => 'is_update',
+                        'field' => 'updateed',
                         'value' => 'update',
                     ],
                     'aliasParams' => [
@@ -161,19 +162,19 @@ class PluginController extends BaseController
                     ],
                     [
                         'label' => '未安装',
-                        'value' => '1',
+                        'value' => '10',
                     ],
                     [
                         'label' => '已安装',
-                        'value' => '2',
+                        'value' => '20',
                     ],
                 ]
             ])
             ->addColumn('title', '名称')
-            ->addColumn('version_name', '版本', [
+            ->addColumn('version_name', '最新版本', [
                 'width' => 100
             ])
-            ->addColumn('dev.title', '开发者')
+            ->addColumn('team_title', '开发者')
             ->addColumnEle('money', '价格', [
                 'width' => 150,
                 'params' => [
@@ -231,11 +232,8 @@ class PluginController extends BaseController
             'plugins' => $installed,
             'saas_version' => $systemInfo['system_version']
         ];
-        $req        = new PluginRequest;
-        $req->list();
-        $req->setQuery($query, null);
-        $cloud = new Cloud($req);
-        $data  = $cloud->send()->toArray();
+        $res = CloudServiceRequest::Plugin(CloudServiceRequest::API_VERSION_V2)->list($query)->response();
+        $data = $res->toArray();
         foreach ($data['data'] as $key => $value) {
             $data['data'][$key]['min_version'] = "无";
             if ($value['saas_version']) {
@@ -313,17 +311,11 @@ class PluginController extends BaseController
 
         $systemInfo        = SystemInfoService::info();
         $installed_version = PluginMgr::getPluginVersion($name);
-        $req               = new PluginRequest;
-        $req->detail();
-        $req->name          = $name;
-        $req->version       = $version;
-        $req->saas_version  = $systemInfo['system_version'];
-        $req->local_version = $installed_version;
-        $cloud              = new Cloud($req);
-        $data               = $cloud->send()->toArray();
-
-        $localVersion         = PluginMgr::getPluginVersion($name);
-        $data['localVersion'] = $localVersion;
+        $res = CloudServiceRequest::Plugin(CloudServiceRequest::API_VERSION_V2)
+            ->detail(['name' => $name, 'version' => $version, 'saas_version' => $systemInfo['system_version'], 'local_version' => $installed_version])
+            ->response();
+        $data               = $res->toArray();
+        $data['localVersion'] = $installed_version;
         return $this->successRes($data);
     }
 
@@ -395,11 +387,11 @@ class PluginController extends BaseController
             Monitor::pause();
         }
         try {
-            $class = new PluginUpdateMgr($request,$name, $version);
+            $class = new PluginUpdateMgr($request, $name, $version);
             return call_user_func([$class, $funcName]);
         } catch (\Throwable $e) {
             return $this->fail($e->getMessage());
-        }finally{
+        } finally {
             # 恢复代码监听变动
             if ($monitor_support_pause) {
                 Monitor::resume();

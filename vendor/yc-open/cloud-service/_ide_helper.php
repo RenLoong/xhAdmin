@@ -85,5 +85,4 @@ namespace YcOpen\CloudService {
             return $instance;
         }
     }
-   
 }

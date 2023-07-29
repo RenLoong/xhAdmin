@@ -1,7 +1,9 @@
 <?php
+
 namespace YcOpen\CloudService\Request;
 
 use YcOpen\CloudService\Request;
+
 /**
  * 验证码相关接口
  * Class CaptchaRequest
@@ -14,10 +16,10 @@ class CaptchaRequest extends Request
      * @param mixed $query
      * @return CaptchaRequest
      */
-    public function captchaCode(mixed $query=null)
+    public function captchaCode(mixed $query = null)
     {
         $this->setUrl('Captcha/captchaCode');
-        if($query){
+        if ($query) {
             $this->setQuery($query);
         }
         return $this;

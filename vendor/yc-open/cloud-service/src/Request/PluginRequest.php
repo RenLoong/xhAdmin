@@ -1,4 +1,5 @@
 <?php
+
 namespace YcOpen\CloudService\Request;
 
 use YcOpen\CloudService\Request;
@@ -16,10 +17,10 @@ class PluginRequest extends Request
      * @param mixed $query
      * @return PluginRequest
      */
-    public function list(mixed $query=null)
+    public function list(mixed $query = null)
     {
         $this->setUrl('Plugin/list');
-        if($query){
+        if ($query) {
             $this->setQuery($query);
         }
         return $this;
@@ -29,15 +30,15 @@ class PluginRequest extends Request
      * @param mixed $query
      * @return PluginRequest
      */
-    public function detail(mixed $query=null)
+    public function detail(mixed $query = null)
     {
         $this->setUrl('Plugin/detail');
-        $validator=new Validator;
+        $validator = new Validator;
         $validator->rules([
-            'name'=>'required'
+            'name' => 'required'
         ]);
-        $this->validator=$validator;
-        if($query){
+        $this->validator = $validator;
+        if ($query) {
             $this->setQuery($query);
         }
         return $this;
@@ -47,15 +48,15 @@ class PluginRequest extends Request
      * @param mixed $query
      * @return PluginRequest
      */
-    public function buy(mixed $query=null)
+    public function buy(mixed $query = null)
     {
         $this->setUrl('Plugin/buy');
-        $validator=new Validator;
+        $validator = new Validator;
         $validator->rules([
-            'name'=>'required'
+            'name' => 'required'
         ]);
-        $this->validator=$validator;
-        if($query){
+        $this->validator = $validator;
+        if ($query) {
             $this->setQuery($query);
         }
         return $this;
@@ -65,18 +66,18 @@ class PluginRequest extends Request
      * @param mixed $query
      * @return PluginRequest
      */
-    public function getKey(mixed $query=null)
+    public function getKey(mixed $query = null)
     {
         $this->setUrl('Plugin/getKey');
-        $validator=new Validator;
+        $validator = new Validator;
         $validator->rules([
-            'name'=>'required',
-            'version'=>'required',
-            'saas_version'=>'required',
-            'local_version'=>'required'
+            'name' => 'required',
+            'version' => 'required',
+            'saas_version' => 'required',
+            'local_version' => 'required'
         ]);
-        $this->validator=$validator;
-        if($query){
+        $this->validator = $validator;
+        if ($query) {
             $this->setQuery($query);
         }
         return $this;

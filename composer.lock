@@ -7230,23 +7230,17 @@
         },
         {
             "name": "yc-open/cloud-service",
-            "version": "1.1.8",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/uRenlong/kfadmin-cloud.git",
-                "reference": "4bb7177994120d0614bc07988decea561de8b773"
+                "reference": "f93400ae0093c5197dde1e09085f053648d0ad3a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/uRenlong/kfadmin-cloud/zipball/4bb7177994120d0614bc07988decea561de8b773",
-                "reference": "4bb7177994120d0614bc07988decea561de8b773",
-                "shasum": "",
-                "mirrors": [
-                    {
-                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
-                        "preferred": true
-                    }
-                ]
+                "url": "https://api.github.com/repos/uRenlong/kfadmin-cloud/zipball/f93400ae0093c5197dde1e09085f053648d0ad3a",
+                "reference": "f93400ae0093c5197dde1e09085f053648d0ad3a",
+                "shasum": ""
             },
             "require": {
                 "guzzlehttp/guzzle": "^7.7",
@@ -7274,9 +7268,9 @@
             ],
             "support": {
                 "issues": "https://github.com/uRenlong/kfadmin-cloud/issues",
-                "source": "https://github.com/uRenlong/kfadmin-cloud/tree/1.1.8"
+                "source": "https://github.com/uRenlong/kfadmin-cloud/tree/1.2.0"
             },
-            "time": "2023-07-27T03:24:08+00:00"
+            "time": "2023-07-29T09:48:56+00:00"
         },
         {
             "name": "yc-open/midjourney",

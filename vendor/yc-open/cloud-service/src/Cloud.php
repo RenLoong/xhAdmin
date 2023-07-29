@@ -1,4 +1,5 @@
 <?php
+
 namespace YcOpen\CloudService;
 
 use YcOpen\CloudService\Response\ResponseCode;
@@ -10,7 +11,7 @@ class Cloud
     protected $data;
     public function __construct(Request $request)
     {
-        $this->request=$request;
+        $this->request = $request;
     }
     public function __call($name, $arguments)
     {
@@ -24,18 +25,24 @@ class Cloud
      */
     public function send()
     {
-        $response=$this->request->Builder();
-        if($this->request->isDownFile()){
+        $response = $this->request->Builder();
+        if ($this->request->isDownFile()) {
             return $this->request->download();
         }
-        $this->content=$response->getBody()->getContents();
-        if($this->request->isException()){
-            if($response->getStatusCode()!=200){
+        $this->content = $response->getBody()->getContents();
+        if ($this->request->isException()) {
+            if ($response->getStatusCode() != 200) {
                 throw new Exception\HttpException($this->content, $response->getStatusCode());
             }
-            $this->data=json_decode($this->content,true);
-            if(isset($this->data['code'])&&$this->data['code']!=ResponseCode::SUCCESS){
+            $this->data = json_decode($this->content, true);
+            if (!isset($this->data['code'])) {
                 throw new Exception\HttpResponseException($this->content);
+            }
+            if ($this->data['code'] === ResponseCode::LOGIN) {
+                // Request::Login()->outLogin();
+                throw new Exception\HttpResponseException($this->content);
+            } elseif ($this->data['code'] !== ResponseCode::SUCCESS) {
+                throw new Exception\HttpResponseException($this->data);
             }
             return $this->request->setResponse($this->data['data']);
         }
