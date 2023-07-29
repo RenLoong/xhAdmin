@@ -240,20 +240,6 @@ class SystemUpdateService
     public function unzip()
     {
         try {
-            # 检测目标路径不存在则继续下一步
-            if (!is_dir($this->targetPath)) {
-                throw new Exception('目标路径不存在');
-            }
-            $targetPath       = $this->targetPath;
-            # 判断是否为斜杠结尾
-            if (substr($targetPath, -1) != '/') {
-                $targetPath .= '/';
-            }
-            # 组装需要忽略的文件路径
-            $ignore = [];
-            foreach ($this->ignoreList as $v) {
-                $ignore[] = $targetPath.$v;
-            }
             # 解压更新包
             ZipMgr::unzip($this->tempZipFilePath, $this->rootPath);
             # 解压覆盖文件
@@ -270,7 +256,7 @@ class SystemUpdateService
             ]);
         } catch (\Throwable $e) {
             # 日志记录
-            Log::error("删除目录出错：{$e->getMessage()}，line：{$e->getLine()}，file：{$e->getFile()}");
+            Log::error("更新出错：{$e->getMessage()}，line：{$e->getLine()}，file：{$e->getFile()}");
             # 报错异常，执行回滚
             throw new RollBackException("解压出错：{$e->getMessage()}");
         }

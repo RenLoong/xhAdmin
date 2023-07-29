@@ -135,16 +135,14 @@ export default {
       _this.stepData.step = _this.stepData.list.findIndex(item => item.step === step) + 1;
       // 发送更新请求
       _this.$http.usePost(`admin/Updated/updateCheck?step=${step}&version=${version}`).then((res) => {
-        if (res.data.next === 'success') {
+        if (res?.data?.next === 'success') {
           _this.stepData.step = _this.stepData.list.findIndex(item => item.step === res.data.next) + 1;
           _this.stepData.stepText = res.msg;
           setTimeout(() => {
             _this.$router.push({ path: '/Index/index' });
           }, 1500);
-        } else {
-          setTimeout(() => {
-            _this.hanldStepUpdate(res.data.next);
-          }, 500);
+        } else if (res?.data?.next) {
+          _this.hanldStepUpdate(res.data.next);
         }
       }).catch((err) => {
         if (err.response.status === 502) {
