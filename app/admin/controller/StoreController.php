@@ -222,6 +222,7 @@ class StoreController extends BaseController
         $validate = ValidateStore::class;
         if ($request->method() == 'POST') {
             $post = $request->post();
+            $post['status'] = '20';
 
             // 数据验证
             hpValidate($validate, $post, 'add');

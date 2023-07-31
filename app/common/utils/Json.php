@@ -89,10 +89,9 @@ trait Json
      * 返回失败消息并重定向
      * @param mixed $msg
      * @param mixed $url
-     * @return void
+     * @return mixed
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
      */
     public static function failRedirect(mixed $msg,mixed $url)
     {

@@ -229,7 +229,11 @@ class StoreAppController extends BaseController
                 return $this->fail($e->getMessage());
             }
         }
-        $platforms    = $this->plugins($request);
+        try {
+            $platforms    = $this->plugins($request);
+        } catch (\Throwable $e) {
+            return $this->failRedirect($e->getMessage(),'/#/Index/index');
+        }
         $platformList = [];
         foreach ($platforms as $value) {
             $item           = [
