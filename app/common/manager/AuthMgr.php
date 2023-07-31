@@ -66,31 +66,18 @@ class AuthMgr
         $rule = $roleModel->rule;
         // 默认查询全部权限
         $model = SystemAuthRule::order(['sort' => 'asc', 'id' => 'asc']);
-        if ($roleModel->is_system != '1') {
+        if ($roleModel->is_system != '20') {
             // 普通级部门（查询已授权规则）
-            $data = $model->whereIn('path', $rule)
-                ->field(self::$visible)
-                ->select()
-                ->each(function ($e) {
-                    $e->show = $e->show === '20' ? '1' : '0';
-                    is_array($e->method) && $e->method = current($e->method);
-                    return $e;
-                })
-                ->toArray();
-            // 两次排序
-            $data = list_sort_by($data, 'id', 'asc');
-            $data = list_sort_by($data, 'sort', 'asc');
-        } else {
-            // 系统级部门（查询全部规则返回）
-            $data = $model->field(self::$visible)
-                ->select()
-                ->each(function ($e) {
-                    $e->show = $e->show === '20' ? '1' : '0';
-                    $e->method = current($e->method);
-                    return $e;
-                })
-                ->toArray();
+            $model->whereIn('path', $rule);
         }
+        $data = $model->field(self::$visible)
+            ->select()
+            ->each(function ($e) {
+                $e->show   = $e->show === '20' ? '1' : '0';
+                $e->method = current($e->method);
+                return $e;
+            })
+            ->toArray();
 
         // 返回数据
         return $data;

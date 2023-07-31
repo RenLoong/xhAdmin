@@ -2,7 +2,7 @@
 
 namespace app\admin\middleware;
 
-use app\admin\utils\VueRoutesMgr;
+use app\common\manager\AuthMgr;
 use Webman\MiddlewareInterface;
 use Webman\Http\Response;
 use Webman\Http\Request;
@@ -86,7 +86,7 @@ class AuthMiddleware implements MiddlewareInterface
             return true;
         }
         // 获取角色规则
-        $rule = VueRoutesMgr::getAdminRoleColumn($admin);
+        $rule = AuthMgr::getAdminRoleColumn($admin);
         // 检测是否有操作权限
         $ctrlName = str_replace('Controller', '', basename(str_replace('\\', '/', $control)));
         $path = "{$ctrlName}/{$action}";

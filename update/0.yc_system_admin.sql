@@ -9,6 +9,8 @@ BEGIN
 	IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'yc_system_admin' AND column_name = 'status')
 	THEN
 		ALTER TABLE `yc_system_admin` MODIFY COLUMN `status` enum('10','20') NULL COMMENT '用户状态：10禁用，20启用' AFTER `password`;
+		UPDATE `yc_system_admin` SET `status` = '20' WHERE `status` = '10';
+		UPDATE `yc_system_admin` SET `status` = '10' WHERE `status` = '';
 	END IF;
 END;
 
