@@ -1,4 +1,5 @@
 <?php
+
 namespace YcOpen\CloudService\Request;
 
 use YcOpen\CloudService\DataModel;
@@ -18,18 +19,18 @@ class LoginRequest extends Request
      * @param mixed $params
      * @return LoginRequest
      */
-    public function login(mixed $params=null)
+    public function login(mixed $params = null)
     {
         $this->setMethod('POST');
         $this->setUrl('Login/login');
-        $validator=new Validator;
+        $validator = new Validator;
         $validator->rules([
-            'username'=>'required',
-            'password'=>'required',
-            'scode'=>'required'
+            'username' => 'required',
+            'password' => 'required',
+            'scode' => 'required'
         ]);
-        $this->validator=$validator;
-        if($params){
+        $this->validator = $validator;
+        if ($params) {
             $this->setParams($params);
         }
         return $this;
@@ -46,10 +47,10 @@ class LoginRequest extends Request
      * 设置响应数据模型
      * @return DataModel
      */
-    public function setResponse(mixed $data):DataModel
+    public function setResponse(mixed $data): DataModel
     {
         # 将data中token写入Redis
-        Redis::set('yc-cloud-service-token',$data['token']);
+        Redis::set('yc-cloud-service-token', $data['token']);
         return new DataModel($data);
     }
 }

@@ -7,6 +7,7 @@ use app\common\manager\JsonMgr;
 use Exception;
 use support\Request;
 use YcOpen\CloudService\Cloud;
+use YcOpen\CloudService\Request as CloudServiceRequest;
 use YcOpen\CloudService\Request\PluginRequest;
 
 /**
@@ -77,35 +78,20 @@ class PluginInstallMgr
         if ($installed_version > 1) {
             throw new Exception('该应用已安装');
         }
-        # 获取应用信息
+        # 获取下载KEY
         $systemInfo = SystemInfoService::info();
-        $req = \YcOpen\CloudService\Request::Plugin()
-        ->detail()
-        ->setQuery([
+        $res=CloudServiceRequest::Plugin(CloudServiceRequest::API_VERSION_V2)->getKey()->setQuery([
             'name' => $this->name,
             'version' => $this->version,
             'saas_version' => $systemInfo['system_version'],
             'local_version' => $installed_version,
-        ])
-        ->cloud()
-        ->send();
-        // 获取下载KEY
-        $req = new PluginRequest;
-        $req->getKey();
-        $req->name = $this->name;
-        $req->version = $this->version;
-        $req->saas_version = $systemInfo['system_version'];
-        $req->local_version = $installed_version;
-        $cloud = new Cloud($req);
-        $data = $cloud->send();
-        // 开始下载压缩包
-        $request = new \YcOpen\CloudService\Request();
+        ])->response();
+        # 开始下载压缩包
+        $request = new CloudServiceRequest();
         # 通过获取下载密钥接口获得
-        $request->setUrl($data->url);
+        $request->setUrl($res->url);
         # 保存文件到指定路径
-        $request->setSaveFile($this->zipFile);
-        $cloud = new Cloud($request);
-        $status = $cloud->send();
+        $status = $request->setSaveFile($this->zipFile)->cloud()->send();
         if (!$status) {
             throw new Exception('安装包下载失败');
         }

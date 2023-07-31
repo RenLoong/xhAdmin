@@ -1,4 +1,5 @@
 <?php
+
 namespace YcOpen\CloudService\Request;
 
 use YcOpen\CloudService\DataModel;
@@ -15,17 +16,17 @@ class SiteRequest extends Request
      * @param mixed $params
      * @return SiteRequest
      */
-    public function install(mixed $params=null)
+    public function install(mixed $params = null)
     {
         $this->setMethod('POST');
         $this->setUrl('Site/install');
-        $validator=new Validator;
+        $validator = new Validator;
         $validator->rules([
-            'domain'=>'required',
-            'title'=>'required'
+            'domain' => 'required',
+            'title' => 'required'
         ]);
-        $this->validator=$validator;
-        if($params){
+        $this->validator = $validator;
+        if ($params) {
             $this->setParams($params);
         }
         return $this;
@@ -34,10 +35,10 @@ class SiteRequest extends Request
      * 设置响应数据模型
      * @return DataModel
      */
-    public function setResponse(mixed $data):DataModel
+    public function setResponse(mixed $data): DataModel
     {
         # 将data写入网站根目录下的ycOpen.json文件
-        file_put_contents($this->siteinfo_file,json_encode($data,JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
+        file_put_contents($this->siteinfo_file, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return new DataModel($data);
     }
 }

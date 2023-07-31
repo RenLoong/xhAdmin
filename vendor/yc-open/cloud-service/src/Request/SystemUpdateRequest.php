@@ -1,4 +1,5 @@
 <?php
+
 namespace YcOpen\CloudService\Request;
 
 use YcOpen\CloudService\Request;
@@ -16,16 +17,16 @@ class SystemUpdateRequest extends Request
      * @param mixed $query
      * @return SystemUpdateRequest
      */
-    public function verify(mixed $query=null)
+    public function verify(mixed $query = null)
     {
         $this->setUrl('SystemUpdate/verify');
-        $validator=new Validator;
+        $validator = new Validator;
         $validator->rules([
-            'version_name'=>'required',
-            'version'=>'required'
+            'version_name' => 'required',
+            'version' => 'required'
         ]);
-        $this->validator=$validator;
-        if($query){
+        $this->validator = $validator;
+        if ($query) {
             $this->setQuery($query);
         }
         return $this;
@@ -35,16 +36,16 @@ class SystemUpdateRequest extends Request
      * @param mixed $query
      * @return SystemUpdateRequest
      */
-    public function detail(mixed $query=null)
+    public function detail(mixed $query = null)
     {
         $this->setUrl('SystemUpdate/detail');
-        $validator=new Validator;
+        $validator = new Validator;
         $validator->rules([
-            'version_name'=>'required',
-            'version'=>'required'
+            'version_name' => 'required',
+            'version' => 'required'
         ]);
-        $this->validator=$validator;
-        if($query){
+        $this->validator = $validator;
+        if ($query) {
             $this->setQuery($query);
         }
         return $this;
@@ -54,15 +55,15 @@ class SystemUpdateRequest extends Request
      * @param mixed $query
      * @return SystemUpdateRequest
      */
-    public function getKey(mixed $query=null)
+    public function getKey(mixed $query = null)
     {
         $this->setUrl('SystemUpdate/getKey');
-        $validator=new Validator;
+        $validator = new Validator;
         $validator->rules([
-            'target_version'=>'required'
+            'target_version' => 'required'
         ]);
-        $this->validator=$validator;
-        if($query){
+        $this->validator = $validator;
+        if ($query) {
             $this->setQuery($query);
         }
         return $this;

@@ -1,4 +1,5 @@
 <?php
+
 namespace YcOpen\CloudService;
 
 use GuzzleHttp\Client;
@@ -6,7 +7,9 @@ use Psr\Http\Message\ResponseInterface;
 
 class Request
 {
+    const API_VERSION_V2 = 'v2/';
     protected $baseUrl = 'https://cloud.kfadmin.net/';
+    protected $version = '';
     protected $siteinfo_file;
     protected $url;
     protected $params = [];
@@ -18,10 +21,10 @@ class Request
     protected $file;
     protected $isDownFile = false;
     protected $timeout = 60;
-    public function __construct()
+    public function __construct(string $version = null)
     {
         $this->siteinfo_file = base_path('/config/site.json');
-        if(!file_exists($this->siteinfo_file)){
+        if (!file_exists($this->siteinfo_file)) {
             $this->siteinfo_file = base_path('/site.json');
         }
         if (!is_dir(dirname($this->siteinfo_file))) {
@@ -39,6 +42,7 @@ class Request
         if ($baseUrl) {
             $this->baseUrl = $baseUrl;
         }
+        $this->setVersion($version);
     }
     /**
      * 发送请求
@@ -86,6 +90,29 @@ class Request
     public function setUrl(string $url)
     {
         $this->url = $url;
+        return $this;
+    }
+    /**
+     * 设置接口版本
+     * @param string $version
+     * @return Request
+     */
+    public function setVersion(string $version = null)
+    {
+        if (!$version) {
+            return $this;
+        }
+        $this->version = $version;
+        $this->baseUrl = $this->baseUrl . $this->version;
+        return $this;
+    }
+    /**
+     * 设置接口版本为v2
+     * @return Request
+     */
+    public function v2()
+    {
+        $this->setVersion(self::API_VERSION_V2);
         return $this;
     }
     /**
@@ -145,7 +172,7 @@ class Request
      * @param mixed $value
      * @return Request
      */
-    public function setParams(mixed $key, mixed $value=null)
+    public function setParams(mixed $key, mixed $value = null)
     {
         if (is_string($key)) {
             $this->params[$key] = $value;
@@ -162,7 +189,7 @@ class Request
      * @param mixed $value
      * @return Request
      */
-    public function setQuery(mixed $key, mixed $value=null)
+    public function setQuery(mixed $key, mixed $value = null)
     {
         if (is_string($key)) {
             $this->query[$key] = $value;
@@ -337,10 +364,10 @@ class Request
      */
     public static function __callStatic($name, $arguments)
     {
-        $name=ucfirst($name);
-        $class=__NAMESPACE__.'\\Request\\'.$name.'Request';
+        $name = ucfirst($name);
+        $class = __NAMESPACE__ . '\\Request\\' . $name . 'Request';
         if (!class_exists($class)) {
-            throw new \Exception($name.'：请求类不存在');
+            throw new \Exception($name . '：请求类不存在');
         }
         return new $class(...$arguments);
     }
