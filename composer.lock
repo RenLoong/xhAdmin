@@ -7230,16 +7230,16 @@
         },
         {
             "name": "yc-open/cloud-service",
-            "version": "1.2.0",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/uRenlong/kfadmin-cloud.git",
-                "reference": "f93400ae0093c5197dde1e09085f053648d0ad3a"
+                "reference": "ad515efd834b7c85f8f9f6ff49b41013f9738bc1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/uRenlong/kfadmin-cloud/zipball/f93400ae0093c5197dde1e09085f053648d0ad3a",
-                "reference": "f93400ae0093c5197dde1e09085f053648d0ad3a",
+                "url": "https://api.github.com/repos/uRenlong/kfadmin-cloud/zipball/ad515efd834b7c85f8f9f6ff49b41013f9738bc1",
+                "reference": "ad515efd834b7c85f8f9f6ff49b41013f9738bc1",
                 "shasum": ""
             },
             "require": {
@@ -7268,9 +7268,9 @@
             ],
             "support": {
                 "issues": "https://github.com/uRenlong/kfadmin-cloud/issues",
-                "source": "https://github.com/uRenlong/kfadmin-cloud/tree/1.2.0"
+                "source": "https://github.com/uRenlong/kfadmin-cloud/tree/1.2.1"
             },
-            "time": "2023-07-29T09:48:56+00:00"
+            "time": "2023-07-31T08:59:05+00:00"
         },
         {
             "name": "yc-open/midjourney",

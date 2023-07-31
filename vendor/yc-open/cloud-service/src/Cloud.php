@@ -39,10 +39,10 @@ class Cloud
                 throw new Exception\HttpResponseException($this->content);
             }
             if ($this->data['code'] === ResponseCode::LOGIN) {
-                // Request::Login()->outLogin();
+                Request::Login()->outLogin();
                 throw new Exception\HttpResponseException($this->content);
             } elseif ($this->data['code'] !== ResponseCode::SUCCESS) {
-                throw new Exception\HttpResponseException($this->data);
+                throw new Exception\HttpResponseException($this->content);
             }
             return $this->request->setResponse($this->data['data']);
         }
