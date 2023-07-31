@@ -76,13 +76,17 @@ class AuthMiddleware implements MiddlewareInterface
             $msg = '请先登录';
             return false;
         }
-
         // 不需要鉴权
         if (in_array($action, $noNeedAuth)) {
             return true;
         }
+        if (empty($admin['role']['is_system'])) {
+            $code = 404;
+            $msg = '操作权限错误';
+            return false;
+        }
         // 系统级部门，不需要鉴权
-        if ($admin['role']['is_system'] == '1') {
+        if ($admin['role']['is_system'] === '20') {
             return true;
         }
         // 获取角色规则
