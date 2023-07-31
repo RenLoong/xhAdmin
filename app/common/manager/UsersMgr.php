@@ -1,5 +1,5 @@
 <?php
-namespace app\manager;
+namespace app\common\manager;
 
 use app\common\manager\StoreAppMgr;
 use app\common\utils\Password;
