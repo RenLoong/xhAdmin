@@ -31,23 +31,24 @@ class PluginsMiddleware implements MiddlewareInterface
         $pluginName = $request->plugin;
         # 后台地址
         $appAdminPath = "/app/{$pluginName}/admin";
-        # 响应结果集
-        $response = $next($request);
-        if ($request->path() === $appAdminPath) {
-            return $response;
-        }
+        // p($request->);
         # 静态文件
         $staticFile = str_replace($appAdminPath, '', $request->path());
+        $staticFile = str_replace('/app/' . $pluginName, '', $request->path());
         # 视图静态资源
-        $viewFilePath = base_path("/view/{$staticFile}");
+        $viewFilePath = base_path("/view{$staticFile}");
         # 判断是否存在
         if (file_exists($viewFilePath)) {
-            return $response;
+            return $next($request);
+        }
+        $path = $request->path();
+        if (in_array($path, ["/app/{$pluginName}", "/app/{$pluginName}/", $appAdminPath, $appAdminPath . '/'])) {
+            return $next($request);
         }
         # 应用ID
-        $appid = $request->header('appid','');
+        $appid = $request->header('appid', '');
         if (empty($appid)) {
-            $appid = $request->input('appid','');
+            $appid = $request->input('appid', '');
         }
         /**
          * 实例响应结果
@@ -74,6 +75,6 @@ class PluginsMiddleware implements MiddlewareInterface
         # 验证项目是否已过期
 
         # 返回结果集
-        return $response;
+        return $next($request);
     }
 }
