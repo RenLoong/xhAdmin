@@ -44,4 +44,11 @@ return [
         'status' => false,
         'value'  => 'fail'
     ],
+    [
+        'title'  => 'ZipArchive',
+        'name'   => 'ZipArchive',
+        'type'   => 'class',
+        'status' => false,
+        'value'  => 'fail'
+    ],
 ];

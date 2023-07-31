@@ -1,3 +1,5 @@
+DROP PROCEDURE IF EXISTS users_saas_appid;
+
 CREATE PROCEDURE users_saas_appid()
 BEGIN
 	IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'yc_users' AND column_name = 'saas_appid')
@@ -11,5 +13,3 @@ BEGIN
 END;
 
 CALL users_saas_appid();
-
-DROP PROCEDURE IF EXISTS users_saas_appid;

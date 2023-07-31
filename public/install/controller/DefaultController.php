@@ -158,7 +158,7 @@ class DefaultController
                         $max                  = (bool) version_compare(PHP_VERSION, $value['min'], '>=');
                         $min                  = (bool) version_compare(PHP_VERSION, $value['max'], '<');
                         $data[$key]['status'] = $max && $min;
-                        $data[$key]['value']  = $value['status'] ? 'OK' : "{$value['name']}必须是 >= {$value['min']} < {$value['max']}";
+                        $data[$key]['value']  = $data[$key]['status'] ? 'OK' : "{$value['name']}必须是 >= {$value['min']} < {$value['max']}";
                     }
                     break;
             }

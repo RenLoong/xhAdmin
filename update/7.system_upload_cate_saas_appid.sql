@@ -1,3 +1,5 @@
+DROP PROCEDURE IF EXISTS system_upload_cate_saas_appid;
+
 CREATE PROCEDURE system_upload_cate_saas_appid()
 BEGIN
 	IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'yc_system_upload_cate' AND column_name = 'store_id')
@@ -11,5 +13,3 @@ BEGIN
 END;
 
 CALL system_upload_cate_saas_appid();
-
-DROP PROCEDURE IF EXISTS system_upload_cate_saas_appid;

@@ -1,3 +1,5 @@
+DROP PROCEDURE IF EXISTS change_store_app_status;
+
 CREATE PROCEDURE change_store_app_status()
 BEGIN
 	IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'yc_store_app' AND column_name = 'status')
@@ -13,5 +15,3 @@ BEGIN
 END;
 
 CALL change_store_app_status();
-
-DROP PROCEDURE IF EXISTS change_store_app_status;

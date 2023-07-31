@@ -1,3 +1,5 @@
+DROP PROCEDURE IF EXISTS users_store_id;
+
 CREATE PROCEDURE users_store_id()
 BEGIN
 	IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'yc_users' AND column_name = 'store_id')
@@ -11,5 +13,3 @@ BEGIN
 END;
 
 CALL users_store_id();
-
-DROP PROCEDURE IF EXISTS users_store_id;

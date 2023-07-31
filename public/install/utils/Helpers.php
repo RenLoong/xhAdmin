@@ -46,7 +46,6 @@ class Helpers
         $envConfig = file_get_contents($envTplPath);
 
         // 云服务
-
         $req = new SiteRequest;
         $req->install();
         $req->title = $site['web_name'];
