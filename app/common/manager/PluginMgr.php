@@ -35,11 +35,7 @@ class PluginMgr
         if (empty($pluginDetail)) {
             throw new Exception('云端应用数据错误');
         }
-        $pluginSaasVersion = $pluginDetail['local_find']['saas_version'];
-        if ($systemInfo['system_version'] > $pluginSaasVersion) {
-            return false;
-        }
-        return true;
+        return $systemInfo['system_version'] >= $pluginDetail['local_find']['saas_version'];
     }
 
     /**
