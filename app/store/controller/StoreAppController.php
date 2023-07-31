@@ -207,7 +207,7 @@ class StoreAppController extends BaseController
                 $settings = config("plugin.{$post['name']}.settings");
                 if (!empty($settings)) {
                     $systemConfig = new SystemConfigMgr($request, $model);
-                    $systemConfig->ActionSettings($settings);
+                    $systemConfig->ActionSettings($settings,false);
                 }
                 # 根据项目平台类型-创建小程序默认配置
                 if (in_array($post['platform'], array_keys(AppletPlatform::dictOptions()))) {
