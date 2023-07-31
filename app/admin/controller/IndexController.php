@@ -54,45 +54,18 @@ class IndexController extends BaseController
         $platform_echarts = [];
         foreach ($platformTypes as $value) {
             $where = [
-                ['platform.platform_type', '=', $value['value']],
+                ['platform', '=', $value['value']],
             ];
-            $count = StoreApp::where($where)
-                ->alias('app')
-                ->join('store_platform platform', 'platform.id=app.platform_id')
-                ->count();
+            $count = StoreApp::where($where)->count();
             $platformApp[$value['value']] = $count;
 
             // 查询图表数据
-            $today = StoreApp::where($where)
-                ->alias('app')
-                ->join('store_platform platform', 'platform.id=app.platform_id')
-                ->whereDay('app.create_at')
-                ->count();
-            $week = StoreApp::where($where)
-                ->alias('app')
-                ->join('store_platform platform', 'platform.id=app.platform_id')
-                ->whereWeek('app.create_at')
-                ->count();
-            $moon = StoreApp::where($where)
-                ->alias('app')
-                ->join('store_platform platform', 'platform.id=app.platform_id')
-                ->whereMonth('app.create_at')
-                ->count();
-            $quarter = StoreApp::where($where)
-                ->alias('app')
-                ->join('store_platform platform', 'platform.id=app.platform_id')
-                ->whereTime('app.create_at', '-3 month')
-                ->count();
-            $half_year = StoreApp::where($where)
-                ->alias('app')
-                ->join('store_platform platform', 'platform.id=app.platform_id')
-                ->whereTime('app.create_at', '-6 month')
-                ->count();
-            $year = StoreApp::where($where)
-                ->alias('app')
-                ->join('store_platform platform', 'platform.id=app.platform_id')
-                ->whereYear('app.create_at')
-                ->count();
+            $today = StoreApp::where($where)->whereDay('create_at')->count();
+            $week = StoreApp::where($where)->whereWeek('create_at')->count();
+            $moon = StoreApp::where($where)->whereMonth('create_at')->count();
+            $quarter = StoreApp::where($where)->whereTime('create_at', '-3 month')->count();
+            $half_year = StoreApp::where($where)->whereTime('create_at', '-6 month')->count();
+            $year = StoreApp::where($where)->whereYear('create_at')->count();
             // 组装图表数据
             $platform_echarts[] = [
                 'name' => $value['text'],
