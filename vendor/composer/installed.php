@@ -3,7 +3,7 @@
         'name' => 'ycopen/kfadmin',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '375d4ed4e93c315e69e5ecbbc3f6f6912bae0e08',
+        'reference' => 'a4bcf0a4cdb59a8796cb991526003b75e789d848',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -1016,7 +1016,7 @@
         'ycopen/kfadmin' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '375d4ed4e93c315e69e5ecbbc3f6f6912bae0e08',
+            'reference' => 'a4bcf0a4cdb59a8796cb991526003b75e789d848',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

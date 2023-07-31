@@ -125,8 +125,8 @@ class PluginUpdateMgr
     public function backCode()
     {
         try {
-            # 执行备份应用
-            ZipMgr::build($this->name, $this->backPluginPath);
+            # 执行备份应
+            ZipMgr::build($this->backPluginPath, $this->pluginPath);
             # 备份成功
             return JsonMgr::successFul('备份成功', [
                 'next' => 'backSql'

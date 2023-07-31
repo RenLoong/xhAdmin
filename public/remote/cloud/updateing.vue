@@ -38,11 +38,11 @@ export default {
                         title: '下载更新包',
                     },
                     {
-                        step: 'backcode',
+                        step: 'backCode',
                         title: '备份代码',
                     },
                     {
-                        step: 'backsql',
+                        step: 'backSql',
                         title: '备份数据库',
                     },
                     {
