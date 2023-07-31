@@ -116,7 +116,7 @@ export default {
                         _this.$emit("update:closeWin");
                     }, 2000);
                     _this.$useNotification?.error({
-                        title: res?.msg ?? "获取失败",
+                        title: err?.msg ?? "获取失败",
                         duration: 1500,
                         onPositiveClick() {
                             _this.$emit("update:closeWin");
