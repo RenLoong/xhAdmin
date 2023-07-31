@@ -44,3 +44,20 @@ BEGIN
 END;
 
 CALL system_config_show();
+
+
+DROP PROCEDURE IF EXISTS system_config_group_name;
+
+CREATE PROCEDURE system_config_group_name()
+BEGIN
+	IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'yc_system_config' AND column_name = 'cid')
+	THEN
+		ALTER TABLE `yc_system_config` ADD COLUMN `group_name` varchar(50) NULL COMMENT '分组标识（外键）' AFTER `show`;
+	END IF;
+	IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'yc_system_config' AND column_name = 'cid')
+	THEN
+		ALTER TABLE `yc_system_config` CHANGE COLUMN `cid` `group_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '分组标识（外键）' AFTER `show`;
+	END IF;
+END;
+
+CALL system_config_group_name();
