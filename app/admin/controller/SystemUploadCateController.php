@@ -138,7 +138,7 @@ class SystemUploadCateController extends BaseController
         if (!$model) {
             return parent::fail('该附件分类不存在');
         }
-        if ($model->is_system === '1') {
+        if ($model->is_system === '20') {
             return parent::fail('系统分类，禁止删除');
         }
         if (SystemUpload::where('cid',$id)->count()) {
