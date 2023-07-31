@@ -26,6 +26,8 @@ BEGIN
 	IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'yc_system_admin' AND column_name = 'is_system')
 	THEN
 		ALTER TABLE `yc_system_admin` MODIFY COLUMN `is_system` enum('10','20') NULL COMMENT '是否系统：10否，20是' AFTER `headimg`;
+		UPDATE `yc_system_admin` SET `is_system` = '20' WHERE `is_system` = '10';
+		UPDATE `yc_system_admin` SET `is_system` = '10' WHERE `is_system` = '';
 	END IF;
 END;
 
