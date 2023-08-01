@@ -542,6 +542,9 @@ export default {
                         text-overflow: ellipsis;
                         white-space: nowrap;
                         color:#666;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
                     }
                     .async-data{
                         display: flex;

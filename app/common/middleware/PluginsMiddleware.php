@@ -4,6 +4,7 @@ namespace app\common\middleware;
 
 use app\common\exception\ErrorException;
 use app\common\manager\StoreAppMgr;
+use app\common\model\Store;
 use Webman\MiddlewareInterface;
 use Webman\Http\Response;
 use Webman\Http\Request;
@@ -72,17 +73,29 @@ class PluginsMiddleware implements MiddlewareInterface
                 'id'        => $appid,
             ];
             $appModel = StoreAppMgr::detail($where);
+            $where    = [
+                'id'        => $appModel['store_id']
+            ];
+            $store    = Store::where($where)->find();
+            if (!$store) {
+                throw new ErrorException('用户信息错误');
+            }
         } catch (\Throwable $e) {
             throw new ErrorException($e->getMessage());
         }
         # 验证是否被冻结
-        if ($appModel['status'] != '20') {
-            throw new ErrorException('该应用已被冻结');
+        if ($appModel['status'] === '10') {
+            throw new ErrorException('该项目已被冻结');
         }
         # 验证应用授权是否已过期
+        # 验证代理状态
+        if ($store['status'] === '10') {
+            throw new ErrorException('该代理已被冻结');
+        }
         # 验证代理是否已过期
-        # 验证项目是否已过期
-
+        if (time() > strtotime($store['expire_time'])) {
+            throw new ErrorException('该代理已过期，请联系管理员');
+        }
         # 返回结果集
         return $next($request);
     }

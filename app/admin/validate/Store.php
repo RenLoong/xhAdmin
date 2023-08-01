@@ -10,7 +10,7 @@ class Store extends Validate
     protected $rule =   [
         'username'          => 'require|mobile|verifyUsername',
         'password'          => 'require',
-        'title'             => 'require|verifyTitle',
+        'title'             => 'require',
         'expire_time'       => 'require',
         'contact'           => 'require',
         'mobile'            => 'require|mobile',
@@ -134,25 +134,6 @@ class Store extends Validate
         ];
         if (ModelStore::where($where)->count()) {
             return '该账号已存在';
-        }
-        return true;
-    }
-
-    /**
-     * 验证租户名称
-     * @param mixed $value
-     * @return bool|string
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
-     */
-    protected function verifyTitle($value)
-    {
-        $where = [
-            'title'  => $value
-        ];
-        if (ModelStore::where($where)->count()) {
-            return '该租户名称已存在';
         }
         return true;
     }

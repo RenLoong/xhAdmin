@@ -117,8 +117,8 @@ class StoreController extends BaseController
             ])
             ->addRightButton('projects', '项目管理', [
                 'type' => 'page',
-                'api' => 'admin/StoreApp/index',
-                'path' => '/StoreApp/index',
+                'api' => 'admin/StoreProject/index',
+                'path' => '/StoreProject/index',
             ], [], [
                 'type' => 'info',
                 'icon' => 'DesktopOutlined'
@@ -343,8 +343,11 @@ class StoreController extends BaseController
             // 数据验证
             hpValidate(ValidateStore::class, $post, 'edit');
 
+            # 验证是否空密码
+            if (empty($post['password']) && isset($post['password'])) {
+                unset($post['password']);
+            }
             $post['logo'] = UploadService::path($post['logo']);
-
             if (!$model->save($post)) {
                 return parent::fail('保存失败');
             }

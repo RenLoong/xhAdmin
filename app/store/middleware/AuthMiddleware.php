@@ -66,11 +66,24 @@ class AuthMiddleware implements MiddlewareInterface
             return true;
         }
         // 获取登录信息
-        $admin = hp_admin_id('hp_store');
-        if (!$admin) {
-            // 10000 未登录固定的返回码
+        $user = hp_admin('hp_store');
+        if (!$user) {
+            // 12000 未登录固定的返回码
             $code = 12000;
             $msg = '请先登录租户';
+            return false;
+        }
+        # 验证代理状态
+        if ($user['status'] === '10') {
+            $code = 12000;
+            $msg = '该代理已被禁用，请联系管理员';
+            return false;
+        }
+        # 验证代理是否过期
+        $expire_time = strtotime($user['expire_time']);
+        if (time() > $expire_time) {
+            $code = 12000;
+            $msg = '该代理已过期，请联系管理员';
             return false;
         }
         return true;

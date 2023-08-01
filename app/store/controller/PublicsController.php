@@ -120,15 +120,12 @@ class PublicsController extends BaseController
             return $this->fail('登录密码错误');
         }
         // 判断状态
-        if ($adminModel->status === '0') {
+        if ($adminModel->status === '10') {
             return $this->fail('该用户已被冻结');
         }
         // 判断是否受限过期租户
-        if ($adminModel->expire_time) {
-            $expire_time = strtotime($adminModel->expire_time);
-            if (time() > $expire_time) {
-                return $this->fail('该用户使用权益已过期');
-            }
+        if (time() > strtotime($adminModel['expire_time'])) {
+            return $this->fail('该用户使用权益已过期');
         }
         $session = $request->session();
         $session->set('hp_store', $adminModel->toArray());
