@@ -31,10 +31,9 @@ class PluginsMiddleware implements MiddlewareInterface
         $pluginName = $request->plugin;
         # 后台地址
         $appAdminPath = "/app/{$pluginName}/admin";
-        // p($request->);
         # 静态文件
         $staticFile = str_replace($appAdminPath, '', $request->path());
-        $staticFile = str_replace('/app/' . $pluginName, '', $request->path());
+        $staticFile = str_replace('/app/' . $pluginName, '', $staticFile);
         # 视图静态资源
         $viewFilePath = base_path("/view{$staticFile}");
         # 判断是否存在
