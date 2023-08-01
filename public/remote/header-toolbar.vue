@@ -233,7 +233,7 @@ export default {
                 color: #555;
                 display: block;
                 width: 100%;
-                white-space: normal;
+                white-space: pre-wrap;
                 word-break: break-word;
             }
         }
