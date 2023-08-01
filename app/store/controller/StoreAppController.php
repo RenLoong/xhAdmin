@@ -413,7 +413,7 @@ class StoreAppController extends BaseController
         }
         $pluginPath = base_path("plugin/{$model->name}");
         if (!is_dir($pluginPath)) {
-            throw new RedirectException('该项目应用不存在', "/#/Index/index");
+            throw new RedirectException('该项目绑定应用已卸载', "/#/Index/index");
         }
         $settingPath = "{$pluginPath}/config/settings.php";
         if (!file_exists($settingPath)) {
@@ -530,7 +530,7 @@ class StoreAppController extends BaseController
         }
         # 检测应用是否存在
         if (!is_dir(base_path("plugin/{$model->name}"))) {
-            return $this->fail('该项目绑定应用不存在');
+            return $this->fail('该项目绑定应用已卸载');
         }
         # 检测应用对SAAS版本支持
         if (!PluginMgr::checkPluginSaasVersion($model['name'])) {
