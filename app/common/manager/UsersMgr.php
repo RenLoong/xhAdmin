@@ -101,6 +101,15 @@ class UsersMgr
         if (!$app) {
             throw new Exception('该应用不存在');
         }
+        $where = [
+            'store_id'      => $app['store_id'],
+            'saas_appid'    => $app['id'],
+            'username'      => $data['username'],
+        ];
+        $userModel = Users::where($where)->find();
+        if ($userModel) {
+            return $userModel;
+        }
         $data['store_id'] = $app['store_id'];
         $model            = new Users;
         if (!$model->save($data)) {
