@@ -11,7 +11,7 @@ class StoreApp extends Validate
         'store_id'          => 'require',
         'platform'          => 'require',
         'title'             => 'require|verifyTitle',
-        'url'               => 'require',
+        'url'               => 'require|url',
         'name'              => 'require',
         'logo'              => 'require',
     ];
@@ -21,6 +21,7 @@ class StoreApp extends Validate
         'platform.require'          => '缺少项目平台类型',
         'title.require'             => '请输入项目名称',
         'url.require'               => '请输入项目域名',
+        'url.url'                   => '请输入正确的域名',
         'name.require'              => '请选择应用插件',
         'logo.require'              => '请上传应用图标',
     ];

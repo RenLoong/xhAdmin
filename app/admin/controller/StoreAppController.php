@@ -8,8 +8,6 @@ use app\common\manager\StoreAppMgr;
 use app\common\service\SystemInfoService;
 use app\BaseController;
 use support\Request;
-use YcOpen\CloudService\Cloud;
-use YcOpen\CloudService\Request\PluginRequest;
 
 /**
  * 租户授权应用

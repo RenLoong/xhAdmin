@@ -16,13 +16,12 @@ use support\Request;
 use think\facade\Db;
 
 /**
- * 租户管理
- *
+ * 租户项目管理
  * @author 贵州猿创科技有限公司
- * @Email 416716328@qq.com
- * @DateTime 2023-03-12
+ * @copyright 贵州猿创科技有限公司
+ * @email 416716328@qq.com
  */
-class StoreController extends BaseController
+class StorePlatformController extends BaseController
 {
     /**
      * 模型

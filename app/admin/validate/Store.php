@@ -15,39 +15,44 @@ class Store extends Validate
         'contact'           => 'require',
         'mobile'            => 'require|mobile',
         'logo'              => 'require',
-        'wechat'            => 'require',
-        'mini_wechat'       => 'require',
-        'douyin'            => 'require',
-        'h5'                => 'require',
-        'app'               => 'require',
-        'other'             => 'require',
+        'wechat'            => 'require|number',
+        'mini_wechat'       => 'require|number',
+        'douyin'            => 'require|number',
+        'h5'                => 'require|number',
+        'app'               => 'require|number',
+        'other'             => 'require|number',
     ];
 
     protected $message  =   [
-        'username.require'  => '请输入租户账号',
-        'username.mobile'   => '租户账号必须是手机号',
-        'password.require'  => '请输入租户密码',
-        'title.require'         => '请输入租户名称',
-        'expire_time.require'   => '请选择租户过期时间',
-        'contact.require'   => '请输入联系人姓名',
-        'mobile.require'    => '请输入联系手机',
-        'mobile.mobile'     => '请输入正确的联系手机',
-        'logo.require'      => '请上传租户图标',
-        'wechat.require'      => '请输入公众号数量',
-        'mini_wechat.require'      => '请输入微信小程序数量',
-        'douyin.require'      => '请输入抖音小程序数量',
-        'h5.require'      => '请输入网页应用数量',
-        'app.require'      => '请输入APP数量',
-        'other.require'      => '请输入其他应用数量',
+        'username.require'          => '请输入租户账号',
+        'username.mobile'           => '租户账号必须是手机号',
+        'password.require'          => '请输入租户密码',
+        'title.require'             => '请输入租户名称',
+        'expire_time.require'       => '请选择租户过期时间',
+        'contact.require'           => '请输入联系人姓名',
+        'mobile.require'            => '请输入联系手机',
+        'mobile.mobile'             => '请输入正确的联系手机',
+        'logo.require'              => '请上传租户图标',
+        'wechat.require'            => '请输入公众号数量',
+        'wechat.number'             => '公众号数量必须是数字',
+        'mini_wechat.require'       => '请输入微信小程序数量',
+        'mini_wechat.number'        => '微信小程序必须是数字',
+        'douyin.require'            => '请输入抖音小程序数量',
+        'douyin.number'             => '抖音小程序必须是数字',
+        'h5.require'                => '请输入网页应用数量',
+        'h5.number'                 => '网页应用必须是数字',
+        'app.require'               => '请输入APP数量',
+        'app.number'                => 'APP必须是数字',
+        'other.require'             => '请输入其他应用数量',
+        'other.number'              => '其他应用必须是数字',
     ];
 
     /**
      * 登录场景
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-11
-     * @return void
+     * @return Store
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
     public function sceneLogin()
     {
@@ -61,11 +66,10 @@ class Store extends Validate
 
     /**
      * 添加场景验证
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-11
-     * @return void
+     * @return Store
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
     public function sceneAdd()
     {
@@ -89,11 +93,10 @@ class Store extends Validate
 
     /**
      * 修改场景
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-11
-     * @return void
+     * @return Store
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
     public function sceneEdit()
     {
@@ -118,12 +121,11 @@ class Store extends Validate
 
     /**
      * 验证租户账号
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-11
-     * @param  type $value
-     * @return void
+     * @param mixed $value
+     * @return bool|string
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
     protected function verifyUsername($value)
     {
@@ -138,12 +140,11 @@ class Store extends Validate
 
     /**
      * 验证租户名称
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-12
-     * @param  type $value
-     * @return void
+     * @param mixed $value
+     * @return bool|string
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
     protected function verifyTitle($value)
     {
