@@ -13,7 +13,7 @@
                             <div class="updated-version-title">
                                 当前：{{ updateInfo.detail.client_version_name }}（{{ updateInfo.detail.client_version }}）
                             </div>
-                            <div class="updated-version-title">
+                            <div class="updated-version-title next-version">
                                 下个版本：{{ updateInfo.detail.version_name }}（{{ updateInfo.detail.version }}）
                             </div>
                         </div>
@@ -186,7 +186,7 @@ export default {
     align-items: center;
 
     .updated-box {
-        width: 350px;
+        width: 400px;
         display: flex;
         flex-direction: column;
         background: #fff;
@@ -210,7 +210,9 @@ export default {
             border-top: 1px solid #e5e5e5;
             border-bottom: 1px solid #e5e5e5;
             padding: 0 15px;
-            height: 200px;
+            height: 280px;
+            overflow-y: auto;
+            overflow-x: hidden;
 
             .version-box {
                 display: flex;
@@ -218,11 +220,21 @@ export default {
                 color: #333;
                 font-size: 12px;
                 padding: 5px 0;
+
+                .updated-version-title {}
+
+                .next-version {
+                    color: #ff5900;
+                }
             }
 
             .updated-content {
                 font-size: 12px;
                 color: #555;
+                display: block;
+                width: 100%;
+                white-space: normal;
+                word-break: break-word;
             }
         }
 

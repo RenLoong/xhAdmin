@@ -19,7 +19,7 @@
         <div class="updated-content" v-if="stepData.step <= 0">
           <div class="version-box">
             <div class="title">
-              <div>版本更新内容</div>
+              <div class="version-title">版本更新内容</div>
               <div class="version-new">{{ updated.version_name }} ({{ updated.version }})</div>
             </div>
             <div class="version-content">
@@ -248,13 +248,22 @@ export default {
           margin-top: 20px;
 
           .title {
-            font-size: 20px;
-            font-weight: 700;
             padding: 10px 0;
             display: flex;
             align-items: center;
-            .version-new{
+
+            .version-title {
+              font-weight: 700;
+              font-size: 20px;
+            }
+
+            .version-new {
               padding-left: 15px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: #ff5900;
+              font-size: 18px;
             }
           }
 
@@ -263,10 +272,16 @@ export default {
             background: #f5f5f5;
             border: 1px solid #e5e5e5;
             padding: 5px;
+            overflow-y: auto;
+            overflow-x: hidden;
 
             .version-pre {
+              display: block;
+              width: 100%;
               font-size: 13px;
-              color: #333;
+              color: #555;
+              white-space: normal;
+              word-break: break-word;
             }
           }
         }
