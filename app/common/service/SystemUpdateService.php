@@ -231,7 +231,7 @@ class SystemUpdateService
     }
 
     /**
-     * 删除代码
+     * 解压更新包
      * @return \support\Response
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
