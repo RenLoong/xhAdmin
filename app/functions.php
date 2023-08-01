@@ -62,7 +62,7 @@ function getHpConfig($key = '', $group_name = '', $appid = 0): string|array
         $appModel = StoreAppMgr::detail(['id' => $appid]);
         if ($appModel) {
             $where[] = ['store_id', '=', $appModel['store_id']];
-            $where[] = ['saas_appid', '=', $appModel['saas_appid']];
+            $where[] = ['saas_appid', '=', $appModel['id']];
         }
     }
     if (empty($where)) {
