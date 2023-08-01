@@ -44,6 +44,21 @@ class PluginsMiddleware implements MiddlewareInterface
         if (in_array($path, ["/app/{$pluginName}", "/app/{$pluginName}/", $appAdminPath, $appAdminPath . '/'])) {
             return $next($request);
         }
+        // 获得请求路径
+        $control = $request->controller;
+        $action = $request->action;
+        // 无控制器地址
+        if (!$control) {
+            throw new ErrorException('控制器错误');
+        }
+        // 获取控制器鉴权信息
+        $class = new \ReflectionClass($control);
+        $properties = $class->getDefaultProperties();
+        $noIdentifyApp = $properties['noIdentifyApp'] ?? [];
+        // 不需要鉴权项目
+        if (in_array($action, $noIdentifyApp)) {
+            return $next($request);
+        }
         # 应用ID
         $appid = $request->header('appid', '');
         if (empty($appid)) {
