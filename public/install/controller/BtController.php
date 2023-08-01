@@ -138,7 +138,7 @@ class BtController
                     'version' => $data->version,
                     'version_name' => $data->version_name
                 ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-                file_put_contents(ROOT_PATH . '/version.json', $versionJson);
+                file_put_contents(ROOT_PATH . '/config/version.json', $versionJson);
                 return Json::json(
                     '全部安装完成，即将跳转...',
                     200

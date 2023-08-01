@@ -1,6 +1,12 @@
 <?php
 return [
     [
+        'name'   => '/config',
+        'dir'    => ROOT_PATH.'/config',
+        'status' => false,
+        'value'  => 'fail'
+    ],
+    [
         'name'   => '/runtime',
         'dir'    => ROOT_PATH.'/runtime',
         'status' => false,
