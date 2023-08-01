@@ -1,7 +1,7 @@
 <template>
   <div class="update-container">
     <!-- 更新版本 -->
-    <div class="update-box" v-if="updated.update">
+    <div class="update-box" v-if="updated.update && updated.version">
       <div class="step-container">
         <n-steps vertical :current="stepData.step" :status="stepData.status">
           <n-step v-for="(item, index) in stepData.list" :key="index" :title="item.title" />
@@ -12,13 +12,16 @@
           <img class="logo" src="/image/logo.png" />
           <div class="logo-title">KFAdmin</div>
           <div class="version">
-            当前版本：{{ updated.client_version_name }} （最新版：{{ updated.version_name }}）
+            <div>当前版本：{{ updated.client_version_name }} ({{ updated.client_version }})</div>
           </div>
         </div>
         <!-- 版本信息展示 -->
         <div class="updated-content" v-if="stepData.step <= 0">
           <div class="version-box">
-            <div class="title">版本更新内容</div>
+            <div class="title">
+              <div>版本更新内容</div>
+              <div class="version-new">{{ updated.version_name }} ({{ updated.version }})</div>
+            </div>
             <div class="version-content">
               <pre class="version-pre">{{ updated?.content }}</pre>
             </div>
@@ -46,7 +49,7 @@
         <img class="logo" src="/image/logo.png" />
         <div class="logo-title">KFAdmin</div>
         <div class="version">
-          当前版本：{{ updated.client_version_name }} （最新版：{{ updated.version_name }}）
+          当前版本：{{ updated.client_version_name }}({{ updated.client_version }})
         </div>
       </div>
       <n-empty :show-description="false">
@@ -248,6 +251,11 @@ export default {
             font-size: 20px;
             font-weight: 700;
             padding: 10px 0;
+            display: flex;
+            align-items: center;
+            .version-new{
+              padding-left: 15px;
+            }
           }
 
           .version-content {
