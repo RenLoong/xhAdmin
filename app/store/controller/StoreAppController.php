@@ -143,15 +143,14 @@ class StoreAppController extends BaseController
         }
         # 处理旧版本配置数据
         foreach ($platformConfig as $value) {
-            if (!in_array($value['config_field'], $configNames)) {
-                throw new Exception("配置文件中不存在该配置项：{$value['config_field']}");
+            if (in_array($value['config_field'], $configNames)) {
+                $settings['configs'] = array_map(function ($item) use ($value) {
+                    if ($item['name'] === $value['config_field']) {
+                        $item['value'] = $value['config_value'];
+                    }
+                    return $item;
+                }, $settings['configs']);
             }
-            $settings['configs'] = array_map(function ($item) use ($value) {
-                if ($item['name'] === $value['config_field']) {
-                    $item['value'] = $value['config_value'];
-                }
-                return $item;
-            }, $settings['configs']);
         }
         Db::startTrans();
         try {
@@ -478,35 +477,6 @@ class StoreAppController extends BaseController
             throw new RedirectException("未实现项目方法---{$methodFun}", "/#/Index/index");
         }
         return call_user_func([$class, $methodFun]);
-    }
-
-    /**
-     * 获取已授权应用列表
-     * @param \support\Request $request
-     * @return mixed
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     */
-    private function plugins(array $plugin_names,$platform = '')
-    {
-        $installed = PluginMgr::getLocalPlugins();
-        $systemInfo = SystemInfoService::info();
-        $query = [
-            'active' => '20',
-            'limit' => 1000,
-            'plugins' => $installed,
-            'saas_version' => $systemInfo['system_version']
-        ];
-        $res = \YcOpen\CloudService\Request::Plugin()->list($query)->v2()->response();
-        $list=$res->data;
-        $data = [];
-        foreach ($list as $key => $item) {
-            if (!in_array($platform,$item['platform']) || !in_array($item['name'],$plugin_names)) {
-                continue;
-            }
-            $data[] = $item;
-        }
-        return $data;
     }
 
     /**
