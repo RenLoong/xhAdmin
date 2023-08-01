@@ -16,7 +16,9 @@ use app\common\utils\Password;
 class Store extends Model
 {
     // 设置JSON字段转换
-    protected $json = ['plugins_name'];
+    protected $json = [
+        'plugins_name'
+    ];
     // 设置JSON数据返回数组
     protected $jsonAssoc = true;
 

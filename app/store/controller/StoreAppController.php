@@ -57,22 +57,22 @@ class StoreAppController extends BaseController
      */
     public function index(Request $request)
     {
-        $store_id     = hp_admin_id('hp_store');
+        $store_id = hp_admin_id('hp_store');
         $platformType = $request->get('platform', '');
-        $model        = $this->model;
-        $where        = [
+        $model = $this->model;
+        $where = [
             ['store_id', '=', $store_id]
         ];
         if ($platformType) {
             $where[] = ['platform', '=', $platformType];
         }
         $web_url = getHpConfig('web_url');
-        $data    = $model->where($where)
+        $data = $model->where($where)
             ->order(['id' => 'desc'])
             ->select()
             ->each(function ($item) use ($web_url) {
                 # 是否有配置文件
-                $setting     = false;
+                $setting = false;
                 $settingPath = base_path("plugin/{$item['name']}/config/settings.php");
                 $settings = config("plugin.{$item['name']}.settings");
                 if (file_exists($settingPath) && !empty($settings)) {
@@ -80,13 +80,13 @@ class StoreAppController extends BaseController
                 }
                 $item->isSetting = $setting;
                 # 应用类型
-                $platform           = PlatformTypes::getValue($item['platform']);
-                $icon               = empty($platform['icon']) ? '' : "{$web_url}{$platform['icon']}";
+                $platform = PlatformTypes::getValue($item['platform']);
+                $icon = empty($platform['icon']) ? '' : "{$web_url}{$platform['icon']}";
                 $item->platformLogo = $icon;
                 # 检测是否有旧版本系统配置
                 $item->async_data = false;
                 # 检测是否有旧版本配置数据
-                $where               = [
+                $where = [
                     'store_id' => $item['store_id'],
                     'platform_id' => $item['platform_id'],
                 ];
@@ -116,7 +116,7 @@ class StoreAppController extends BaseController
      */
     public function asyncData(Request $request)
     {
-        $appid    = $request->post('id', '');
+        $appid = $request->post('id', '');
         $appModel = StoreAppMgr::model(['id' => $appid]);
         if (empty($appModel)) {
             return $this->fail('找不到该应用');
@@ -132,7 +132,7 @@ class StoreAppController extends BaseController
         # 配置项字典键名称
         $configNames = array_filter(array_column($settings['configs'], 'name'));
         # 读取旧版本配置数据
-        $where          = [
+        $where = [
             'store_id' => $appModel['store_id'],
             'platform_id' => $appModel['platform_id'],
         ];
@@ -156,11 +156,11 @@ class StoreAppController extends BaseController
         try {
             if (!empty($settings)) {
                 $systemConfig = new SystemConfigMgr($request, $appModel);
-                $systemConfig->ActionSettings($settings,false);
+                $systemConfig->ActionSettings($settings, false);
             }
             # 根据项目平台类型-创建小程序默认配置
             if (in_array($appModel['platform'], array_keys(AppletPlatform::dictOptions()))) {
-                $baseicMini   = AppletMiniSettins::toArray();
+                $baseicMini = AppletMiniSettins::toArray();
                 $systemConfig = new SystemConfigMgr($request, $appModel);
                 $systemConfig->ActionSettings($baseicMini);
             }
@@ -190,11 +190,12 @@ class StoreAppController extends BaseController
     public function create(Request $request)
     {
         $platform = $request->get('platform', '');
+        $store = hp_admin('hp_store');
         if ($request->method() === 'POST') {
-            $post             = $request->post();
+            $post = $request->post();
             $post['store_id'] = hp_admin_id('hp_store');
             $post['platform'] = $platform;
-            $post['status']   = '20';
+            $post['status'] = '20';
 
             hpValidate(StoreApp::class, $post, 'add');
 
@@ -207,11 +208,11 @@ class StoreAppController extends BaseController
                 $settings = config("plugin.{$post['name']}.settings");
                 if (!empty($settings)) {
                     $systemConfig = new SystemConfigMgr($request, $model);
-                    $systemConfig->ActionSettings($settings,false);
+                    $systemConfig->ActionSettings($settings, false);
                 }
                 # 根据项目平台类型-创建小程序默认配置
                 if (in_array($post['platform'], array_keys(AppletPlatform::dictOptions()))) {
-                    $baseicMini   = AppletMiniSettins::toArray();
+                    $baseicMini = AppletMiniSettins::toArray();
                     $systemConfig = new SystemConfigMgr($request, $model);
                     $systemConfig->ActionSettings($baseicMini);
                 }
@@ -219,7 +220,7 @@ class StoreAppController extends BaseController
                 $class = "\\plugin\\{$model['name']}\\api\\Created";
                 if (method_exists($class, 'createAdmin')) {
                     $post['id'] = $model->id;
-                    $logicCls   = new $class;
+                    $logicCls = new $class;
                     $logicCls->createAdmin($post);
                 }
                 Db::commit();
@@ -230,13 +231,13 @@ class StoreAppController extends BaseController
             }
         }
         try {
-            $platforms    = $this->plugins($request);
+            $platforms = $this->plugins((array) $store['plugins_name'],$platform);
         } catch (\Throwable $e) {
-            return $this->failRedirect($e->getMessage(),'/#/Index/index');
+            return $this->failRedirect($e->getMessage(), '/#/Index/index');
         }
         $platformList = [];
         foreach ($platforms as $value) {
-            $item           = [
+            $item = [
                 'label' => $value['title'],
                 'value' => $value['name'],
             ];
@@ -283,12 +284,12 @@ class StoreAppController extends BaseController
     public function edit(Request $request)
     {
         $store_id = hp_admin_id('hp_store');
-        $app_id   = $request->get('id', '');
-        $model    = $this->model;
-        $where    = [
+        $app_id = $request->get('id', '');
+        $model = $this->model;
+        $where = [
             ['id', '=', $app_id],
         ];
-        $model    = $model->where($where)->find();
+        $model = $model->where($where)->find();
         if (!$model) {
             return $this->fail('该应用不存在');
         }
@@ -301,7 +302,7 @@ class StoreAppController extends BaseController
             throw new RedirectException($e->getMessage(), "/#/Index/index");
         }
         if ($request->method() === 'PUT') {
-            $post             = $request->post();
+            $post = $request->post();
             $post['store_id'] = $store_id;
 
             hpValidate(StoreApp::class, $post, 'edit');
@@ -314,7 +315,7 @@ class StoreAppController extends BaseController
                 $class = "\\plugin\\{$model->name}\\api\\Created";
                 if (method_exists($class, 'createAdmin')) {
                     $post['id'] = $model->id;
-                    $logicCls   = new $class;
+                    $logicCls = new $class;
                     $logicCls->createAdmin($post);
                 }
                 Db::commit();
@@ -329,7 +330,7 @@ class StoreAppController extends BaseController
         $class = "\\plugin\\{$model->name}\\api\\Created";
         if (method_exists($class, 'read')) {
             $post['id'] = $model->id;
-            $logicCls   = new $class;
+            $logicCls = new $class;
             try {
                 $userData = $logicCls->read($model->id);
                 isset($userData['username']) && $formData['username'] = $userData['username'];
@@ -384,7 +385,7 @@ class StoreAppController extends BaseController
     public function del(Request $request)
     {
         $store_id = hp_admin_id('hp_store');
-        $app_id   = $request->post('id', '');
+        $app_id = $request->post('id', '');
         StoreAppMgr::del([
             'id' => $app_id,
             'store_id' => $store_id
@@ -402,11 +403,11 @@ class StoreAppController extends BaseController
     public function config(Request $request)
     {
         $app_id = $request->get('id', '');
-        $model  = $this->model;
-        $where  = [
+        $model = $this->model;
+        $where = [
             ['id', '=', $app_id],
         ];
-        $model  = $model->where($where)->find();
+        $model = $model->where($where)->find();
         if (!$model) {
             return $this->fail('项目数据错误');
         }
@@ -427,7 +428,7 @@ class StoreAppController extends BaseController
             throw new RedirectException($e->getMessage(), "/#/Index/index");
         }
         $systemConfig = new SystemConfigMgr($request, $model);
-        $methodFun    = 'list';
+        $methodFun = 'list';
         if ($request->method() === 'PUT') {
             $methodFun = 'saveData';
         }
@@ -444,11 +445,11 @@ class StoreAppController extends BaseController
     public function applet(Request $request)
     {
         $app_id = $request->get('id', '');
-        $model  = $this->model;
-        $where  = [
+        $model = $this->model;
+        $where = [
             ['id', '=', $app_id],
         ];
-        $model  = $model->where($where)->find();
+        $model = $model->where($where)->find();
         if (!$model) {
             throw new RedirectException('项目数据错误', "/#/Index/index");
         }
@@ -479,28 +480,32 @@ class StoreAppController extends BaseController
     }
 
     /**
-     * 获取已安装插件列表
+     * 获取已授权应用列表
      * @param \support\Request $request
      * @return mixed
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      */
-    private function plugins(Request $request)
+    private function plugins(array $plugin_names,$platform = '')
     {
-        $installed  = PluginMgr::getLocalPlugins();
+        $installed = PluginMgr::getLocalPlugins();
         $systemInfo = SystemInfoService::info();
-        $query      = [
-            'active' => '2',
+        $query = [
+            'active' => '20',
             'limit' => 1000,
             'plugins' => $installed,
             'saas_version' => $systemInfo['system_version']
         ];
-        $req        = new PluginRequest;
-        $req->list();
-        $req->setQuery($query, null);
-        $cloud   = new Cloud($req);
-        $plugins = $cloud->send();
-        return $plugins->data;
+        $res = \YcOpen\CloudService\Request::Plugin()->list($query)->v2()->response();
+        $list=$res->data;
+        $data = [];
+        foreach ($list as $key => $item) {
+            if (!in_array($platform,$item['platform']) || !in_array($item['name'],$plugin_names)) {
+                continue;
+            }
+            $data[] = $item;
+        }
+        return $data;
     }
 
     /**
@@ -514,7 +519,7 @@ class StoreAppController extends BaseController
     public function login(Request $request)
     {
         $app_id = $request->post('appid_id', '');
-        $model  = $this->model;
+        $model = $this->model;
 
         $where = [
             'id' => $app_id

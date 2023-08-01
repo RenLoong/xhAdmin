@@ -151,7 +151,7 @@ class PublicsController extends BaseController
      * @Email 416716328@qq.com
      * @DateTime 2023-04-29
      */
-    public function user()
+    public function user(Request $request)
     {
         $admin_id = hp_admin_id('hp_store');
         if (!$admin_id) {
@@ -164,7 +164,11 @@ class PublicsController extends BaseController
         if (!$model) {
             return $this->failFul('该用户不存在',12000);
         }
+        # 重新缓存数据
         $storeData = $model->toArray();
+        $session = $request->session();
+        $session->set('hp_store', $storeData);
+        # 前端数据
         $expireDate = date('Y-m-d',strtotime($storeData['expire_time']));
         $data = [
             'id'                => $storeData['id'],
