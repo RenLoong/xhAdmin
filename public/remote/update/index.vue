@@ -280,7 +280,7 @@ export default {
               width: 100%;
               font-size: 13px;
               color: #555;
-              white-space: normal;
+              white-space: pre-wrap;
               word-break: break-word;
             }
           }
