@@ -45,7 +45,10 @@ class SystemInfoService
      */
     public static function info()
     {
-        $packPath            = base_path('/version.json');
+        $packPath            = base_path('/config/version.json');
+        if (!file_exists($packPath)) {
+            $packPath       = base_path('/version.json');
+        }
         if (!file_exists($packPath)) {
             throw new Exception('框架版本出错');
         }

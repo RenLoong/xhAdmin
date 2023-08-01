@@ -2,7 +2,7 @@
 
 namespace app\store\validate;
 
-use app\store\model\Store as ModelStore;
+use app\common\model\Store as storeModel;
 use yzh52521\validate\Validate;
 
 class Store extends Validate
@@ -38,7 +38,7 @@ class Store extends Validate
             ['title','=',$value],
             ['id','<>',$store_id]
         ];
-        if (ModelStore::where($where)->count()) {
+        if (storeModel::where($where)->count()) {
             return '该租户名称已存在';
         }
         return true;

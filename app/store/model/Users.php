@@ -57,7 +57,7 @@ class Users extends \app\common\model\Users
      * @Email 416716328@qq.com
      * @DateTime 2023-05-20
      */
-    public function platformApp()
+    public function storeApp()
     {
         return $this->hasOne(StoreApp::class, 'id', 'appid');
     }

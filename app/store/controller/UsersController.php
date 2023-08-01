@@ -4,6 +4,8 @@ namespace app\store\controller;
 
 use app\common\builder\ListBuilder;
 use app\BaseController;
+use app\common\enum\StatusEnum;
+use app\common\enum\StatusEnumStyle;
 use support\Request;
 use app\store\model\Users;
 
@@ -46,8 +48,7 @@ class UsersController extends BaseController
         $builder = new ListBuilder;
         $data    = $builder
             ->pageConfig()
-            ->addColumn('platform.configs.web_name', '所属平台')
-            ->addColumn('platform_app.title', '所属应用')
+            ->addColumn('store_app.title', '所属应用')
             ->addColumn('username', '登录账号')
             ->addColumnEle('headimg', '头像', [
                 'params' => [
@@ -57,20 +58,11 @@ class UsersController extends BaseController
             ->addColumnEle('status', '状态', [
                 'width'  => 100,
                 'params' => [
-                    'type'    => 'tags',
-                    'options' => ['冻结', '正常'],
-                    'style'   => [
-                        [
-                            'type' => 'error'
-                        ],
-                        [
-                            'type' => 'success'
-                        ],
-                    ],
+                    'type'              => 'tags',
+                    'options'           => StatusEnum::dictOptions(),
+                    'style'             => StatusEnumStyle::parseAlias('type'),
                 ],
             ])
-            ->addColumn('money', '余额')
-            ->addColumn('integral', '积分')
             ->create();
         return parent::successRes($data);
     }
@@ -90,7 +82,7 @@ class UsersController extends BaseController
             'id' => 'desc'
         ];
         $model   = $this->model;
-        $data    = $model->with(['store', 'platform', 'platform_app'])
+        $data    = $model->with(['store', 'store_app'])
             ->where($where)
             ->order($orderBy)
             ->paginate()
