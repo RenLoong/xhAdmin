@@ -7530,17 +7530,17 @@
         },
         {
             "name": "yc-open/cloud-service",
-            "version": "1.2.1",
-            "version_normalized": "1.2.1.0",
+            "version": "1.2.2",
+            "version_normalized": "1.2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/uRenlong/kfadmin-cloud.git",
-                "reference": "ad515efd834b7c85f8f9f6ff49b41013f9738bc1"
+                "reference": "73f43faf017c6025cd01e867f75b9db2824a9fe1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/uRenlong/kfadmin-cloud/zipball/ad515efd834b7c85f8f9f6ff49b41013f9738bc1",
-                "reference": "ad515efd834b7c85f8f9f6ff49b41013f9738bc1",
+                "url": "https://api.github.com/repos/uRenlong/kfadmin-cloud/zipball/73f43faf017c6025cd01e867f75b9db2824a9fe1",
+                "reference": "73f43faf017c6025cd01e867f75b9db2824a9fe1",
                 "shasum": ""
             },
             "require": {
@@ -7548,7 +7548,7 @@
                 "php": "^8.0",
                 "vlucas/phpdotenv": "^5.4"
             },
-            "time": "2023-07-31T08:59:05+00:00",
+            "time": "2023-08-01T02:51:10+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -7571,7 +7571,7 @@
             ],
             "support": {
                 "issues": "https://github.com/uRenlong/kfadmin-cloud/issues",
-                "source": "https://github.com/uRenlong/kfadmin-cloud/tree/1.2.1"
+                "source": "https://github.com/uRenlong/kfadmin-cloud/tree/1.2.2"
             },
             "install-path": "../yc-open/cloud-service"
         },
