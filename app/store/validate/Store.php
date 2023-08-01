@@ -15,8 +15,8 @@ class Store extends Validate
     ];
 
     protected $message  =   [
-        'title.require'     => '请输入租户名称',
-        'contact.require'   => '请输入租户密码',
+        'title.require'     => '情输入用户名称',
+        'contact.require'   => '请输入用户姓名',
         'mobile.require'    => '请输入联系手机',
         'mobile.mobile'     => '请输入正确的联系手机',
         'logo.require'      => '请上传租户图标',

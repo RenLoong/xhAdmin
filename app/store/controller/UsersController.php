@@ -50,6 +50,7 @@ class UsersController extends BaseController
             ->pageConfig()
             ->addColumn('store_app.title', '所属应用')
             ->addColumn('username', '登录账号')
+            ->addColumn('nickname', '用户昵称')
             ->addColumnEle('headimg', '头像', [
                 'params' => [
                     'type' => 'image',

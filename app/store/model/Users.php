@@ -59,6 +59,6 @@ class Users extends \app\common\model\Users
      */
     public function storeApp()
     {
-        return $this->hasOne(StoreApp::class, 'id', 'appid');
+        return $this->hasOne(StoreApp::class, 'id', 'saas_appid');
     }
 }

@@ -59,7 +59,7 @@ class StoreController extends BaseController
             hpValidate(Store::class, $post, 'edit');
 
             $post['logo'] = UploadService::path($post['logo']);
-            if (isset($post['password']) && empty($post['password'])) {
+            if (empty($post['password'])) {
                 unset($post['password']);
             }
 
