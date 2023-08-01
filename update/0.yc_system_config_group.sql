@@ -51,11 +51,11 @@ CREATE PROCEDURE system_config_group_show()
 BEGIN
 	IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'yc_system_config_group' AND column_name = 'show')
 	THEN
-		ALTER TABLE `yc_system_config_group` ADD COLUMN `show` enum('10','20') NULL COMMENT '是否显示：10否，20是' AFTER `saas_appid`;
+		ALTER TABLE `yc_system_config_group` ADD COLUMN `show` enum('10','20')  NULL DEFAULT '20' COMMENT '是否显示：10否，20是' AFTER `saas_appid`;
 	END IF;
 	IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'yc_system_config_group' AND column_name = 'show')
 	THEN
-		ALTER TABLE `yc_system_config_group` MODIFY COLUMN `show` enum('10','20') NULL COMMENT '是否显示：10否，20是' AFTER `saas_appid`;
+		ALTER TABLE `yc_system_config_group` MODIFY COLUMN `show` enum('10','20') NULL DEFAULT '20' COMMENT '是否显示：10否，20是' AFTER `saas_appid`;
 		UPDATE `yc_system_config_group` SET `show` = '20' WHERE `show` = '10';
 		UPDATE `yc_system_config_group` SET `show` = '10' WHERE `show` = '';
 	END IF;

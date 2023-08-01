@@ -55,6 +55,8 @@ BEGIN
 	IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'yc_system_config' AND column_name = 'cid')
 	THEN
 		ALTER TABLE `yc_system_config` CHANGE COLUMN `cid` `group_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '分组标识（外键）' AFTER `show`;
+		UPDATE `yc_system_config` SET `group_name` = 'system' WHERE `group_name` = '1';
+		UPDATE `yc_system_config` SET `group_name` = 'store_copyright' WHERE `group_name` = '2';
 	END IF;
 END;
 
