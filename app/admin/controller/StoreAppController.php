@@ -4,6 +4,7 @@ namespace app\admin\controller;
 
 use app\common\builder\FormBuilder;
 use app\admin\model\Store;
+use app\common\manager\StoreAppMgr;
 use app\common\service\SystemInfoService;
 use app\BaseController;
 use support\Request;
@@ -45,17 +46,17 @@ class StoreAppController extends BaseController
      */
     public function index(Request $request)
     {
-        $store_id = $request->get('store_id');
-        $model    = $this->model;
-        $where    = [
+        $store_id = (int)$request->get('store_id',0);
+        $model = $this->model;
+        $where = [
             'id' => $store_id
         ];
-        $model    = $model->where($where)->find();
+        $model = $model->where($where)->find();
         if (!$model) {
             return $this->fail('找不到该租户数据');
         }
         if ($request->method() == 'PUT') {
-            $plugins_name = $request->post('plugins_name',[]);
+            $plugins_name = $request->post('plugins_name', []);
             $model->plugins_name = $plugins_name;
             if (!$model->save()) {
                 return $this->fail('授权失败');
@@ -63,43 +64,38 @@ class StoreAppController extends BaseController
             return $this->success('授权成功');
         }
         $systemInfo = SystemInfoService::info();
-        $query     = [
-            'active'  => '2',
+        $query = [
+            'active' => '2',
             'limit' => 1000,
             'saas_version' => $systemInfo['system_version']
         ];
-        $plugins=[];
+        $plugins = [];
         try {
-            $req = new PluginRequest;
-            $req->list();
-            $req->setQuery($query, null);
-            $cloud = new Cloud($req);
-            $data = $cloud->send();
-            $plugins=$data['data'];
-        } catch (\Throwable $th) {
-            p($th->getMessage());
+            $plugins = StoreAppMgr::getBuyInstallApp();
+        } catch (\Throwable $e) {
+            p($e->getMessage());
         }
         $builder = new FormBuilder;
-        $data    = $builder
+        $data = $builder
             ->setMethod('PUT')
-            ->addRow('id', 'input', '租户ID', '', [
+            ->addRow('id', 'input', '代理编号', '', [
                 'disabled' => true,
-                'col'      => [
+                'col' => [
                     'span' => 12
                 ],
             ])
-            ->addRow('title', 'input', '租户名称', '', [
+            ->addRow('title', 'input', '代理名称', '', [
                 'disabled' => true,
-                'col'      => [
+                'col' => [
                     'span' => 12
                 ],
             ])
             ->addComponent('plugins_name', 'remote', '授权应用', [], [
-                'col'   => [
+                'col' => [
                     'span' => 24
                 ],
                 'props' => [
-                    'file'       => 'remote/app/auth',
+                    'file' => 'remote/app/auth',
                     'ajaxParams' => [
                         'plugin_list' => $plugins
                     ],

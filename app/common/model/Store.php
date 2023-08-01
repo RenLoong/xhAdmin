@@ -7,7 +7,7 @@ use app\common\service\UploadService;
 use app\common\utils\Password;
 
 /**
- * 商户
+ * 租户
  *
  * @author 贵州猿创科技有限公司
  * @Email 416716328@qq.com

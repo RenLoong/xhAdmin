@@ -11,6 +11,7 @@ use app\common\exception\RedirectException;
 use app\common\manager\AppletMgr;
 use app\common\manager\StoreAppMgr;
 use app\common\manager\SystemConfigMgr;
+use app\common\model\Store;
 use app\common\service\SystemInfoService;
 use app\BaseController;
 use app\common\manager\PluginMgr;
@@ -189,8 +190,16 @@ class StoreAppController extends BaseController
      */
     public function create(Request $request)
     {
+        # 获取创建平台类型
         $platform = $request->get('platform', '');
+        # 获取登录租户信息
         $store = hp_admin('hp_store');
+        # 验证平台数量是否充足
+        $storePlatformNum = Store::where('id',$store['id'])->value($platform);
+        $storeCreatedPlatform = StoreAppMgr::getStoreCreatedPlatform((int)$store['id'],$platform);
+        if ($storeCreatedPlatform >= $storePlatformNum) {
+            return $this->failRedirect('该平台可用数量不足','/#/Index/index');
+        }
         if ($request->method() === 'POST') {
             $post = $request->post();
             $post['store_id'] = hp_admin_id('hp_store');
@@ -231,17 +240,9 @@ class StoreAppController extends BaseController
             }
         }
         try {
-            $platforms = $this->plugins((array) $store['plugins_name'],$platform);
+            $platformList = StoreAppMgr::getAuthAppOptions($store['id'], $platform);
         } catch (\Throwable $e) {
             return $this->failRedirect($e->getMessage(), '/#/Index/index');
-        }
-        $platformList = [];
-        foreach ($platforms as $value) {
-            $item = [
-                'label' => $value['title'],
-                'value' => $value['name'],
-            ];
-            $platformList[] = $item;
         }
         $builder = new FormBuilder;
         $builder->setMethod('POST');
