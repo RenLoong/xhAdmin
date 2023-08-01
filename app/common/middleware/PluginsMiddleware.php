@@ -27,19 +27,14 @@ class PluginsMiddleware implements MiddlewareInterface
      */
     public function process(Request $request, callable $next): Response
     {
+        # 判断是否为资源文件
+        if (strpos($request->path(), '/assets/')) {
+            return $next($request);
+        }
         # 应用名称
         $pluginName = $request->plugin;
         # 后台地址
         $appAdminPath = "/app/{$pluginName}/admin";
-        # 静态文件
-        $staticFile = str_replace($appAdminPath, '', $request->path());
-        $staticFile = str_replace('/app/' . $pluginName, '', $staticFile);
-        # 视图静态资源
-        $viewFilePath = base_path("/view{$staticFile}");
-        # 判断是否存在
-        if (file_exists($viewFilePath)) {
-            return $next($request);
-        }
         $path = $request->path();
         if (in_array($path, ["/app/{$pluginName}", "/app/{$pluginName}/", $appAdminPath, $appAdminPath . '/'])) {
             return $next($request);

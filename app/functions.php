@@ -57,19 +57,22 @@ function hpValidate($validate, array $data, string $scene = ''): bool
 function getHpConfig($key = '', $group_name = '', $appid = 0): string|array
 {
     $model = new \app\common\model\SystemConfig;
-    $where   = [
-        'store_id'      => null,
-        'saas_appid'    => null,
-    ];
+    $where   = [];
     if ($appid) {
         $appModel = StoreAppMgr::detail(['id' => $appid]);
         if ($appModel) {
-            $where['store_id'] = $appModel['store_id'];
-            $where['saas_appid'] = $appModel['saas_appid'];
+            $where[] = ['store_id', '=', $appModel['store_id']];
+            $where[] = ['saas_appid', '=', $appModel['id']];
         }
     }
+    if (empty($where)) {
+        $where = [
+            ['store_id', '=', null],
+            ['saas_appid', '=', null]
+        ];
+    }
     if ($group_name) {
-        $where['group_name'] = $group_name;
+        $where[] = ['group_name', '=', $group_name];
     }
     $orderBy = [
         'sort'      => 'asc',
@@ -77,9 +80,9 @@ function getHpConfig($key = '', $group_name = '', $appid = 0): string|array
     ];
     if ($key) {
         if (is_array($key)) {
-            $where['name'] = ['in',$key];
+            $where[] = ['name', 'in', $key];
         } else {
-            $where['name'] = $key;
+            $where[] = ['name', '=', $key];
         }
         $model = $model->where($where)->order($orderBy)
             ->select();
