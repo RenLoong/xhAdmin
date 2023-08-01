@@ -169,11 +169,11 @@ class PublicsController extends BaseController
         $expireDate = date('Y-m-d',strtotime($storeData['expire_time']));
         $data = [
             'id'                => $storeData['id'],
-            'nickname'          => $storeData['contact'],
+            'nickname'          => $storeData['title'],
             'headimg'           => $storeData['logo'],
             'plugins'           => $storeData['plugins_name'],
             'role'              => [
-                'title'         => "到期：{$expireDate}"
+                'title'         => "权益：{$expireDate}"
             ],
             'menus'             => $this->getMenus()
         ];

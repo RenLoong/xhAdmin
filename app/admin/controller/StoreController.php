@@ -80,7 +80,7 @@ class StoreController extends BaseController
             ])
             ->addRightButton(
                 'toStore',
-                '管理租户',
+                '管理终端',
                 [
                     'type' => 'link',
                     'api' => 'admin/Store/login',
