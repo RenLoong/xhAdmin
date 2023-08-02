@@ -1,6 +1,7 @@
 <?php
 namespace app\common\service;
 use app\common\manager\DbMgr;
+use app\common\utils\DirUtil;
 use support\Log;
 use support\Request;
 
@@ -85,16 +86,26 @@ class UpdateDataService extends SystemUpdateService
                 if (empty($value['sql'])) {
                     continue;
                 }
-                # 替换前缀
-                $sql = str_replace($prefixs, "`{$prefix}", $value['sql']);
-                # 执行SQL
-                $pdo->exec($sql);
-                # 执行成功后删除文件
+                try {
+                    # 替换前缀
+                    $sql = str_replace($prefixs, "`{$prefix}", $value['sql']);
+                    Log::info("更新系统SQL：{$sql}");
+                    # 执行SQL
+                    $pdo->exec($sql);
+                } catch (\Throwable $e) {
+                    Log::error("系统更新SQL错误，继续执行：{$e->getMessage()}，Line：{$e->getLine()}，File：{$e->getFile()}");
+                }
+                # 执行后，无论成功失败，删除文件
                 $filePath = base_path("/update/{$value['file']}");
                 file_exists($filePath) && unlink($filePath);
             }
+            # 检测目录是否为空，为空则删除
+            $updateDir = base_path('/update');
+            if (DirUtil::isDirEmpty($updateDir)) {
+                DirUtil::delDir($updateDir);
+            }
         } catch (\Throwable $e) {
-            Log::error("执行SAAS系统 - 更新SQL错误：{$e->getMessage()}");
+            Log::error("更新SQL错误，终止：{$e->getMessage()}，Line：{$e->getLine()}，File：{$e->getFile()}");
         }
     }
 }

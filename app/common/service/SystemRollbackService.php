@@ -39,6 +39,11 @@ class SystemRollbackService extends SystemUpdateService
         ZipMgr::unzip($this->backupPath, $this->targetPath);
         # 解压覆盖压缩包
         ZipMgr::unzip($this->backCoverPath, $this->targetPath);
+        # 删除更新SQL目录
+        $updateDir = base_path('/update');
+        if (is_dir($updateDir)) {
+            DirUtil::delDir($updateDir);
+        }
         # 回滚完成
         return JsonMgr::fail('更新失败，已回滚至上个版本');
     }
