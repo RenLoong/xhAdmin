@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\manager;
 
 use app\common\service\FrameworkService;
@@ -8,6 +9,7 @@ use app\common\utils\DirUtil;
 use Exception;
 use support\Request;
 use YcOpen\CloudService\Cloud;
+use YcOpen\CloudService\Request as CloudServiceRequest;
 use YcOpen\CloudService\Request\PluginRequest;
 
 /**
@@ -88,16 +90,14 @@ class PluginUpdateMgr
             # 本地SAAS框架版本
             $systemInfo = SystemInfoService::info();
             # 获取下载KEY
-            $req = new PluginRequest;
-            $req->getKey();
-            $req->name          = $this->name;
-            $req->version       = $this->version;
-            $req->saas_version  = $systemInfo['system_version'];
-            $req->local_version = $installedVersion;
-            $cloud              = new Cloud($req);
-            $data               = $cloud->send();
+            $data = CloudServiceRequest::Plugin()->getKey([
+                'name'              => $this->name,
+                'version'           => $this->version,
+                'saas_version'      => $systemInfo['system_version'],
+                'local_version'     => $installedVersion,
+            ])->v2()->response();
             # 下载应用包
-            $request = new \YcOpen\CloudService\Request();
+            $request = new CloudServiceRequest();
             # 通过获取下载密钥接口获得
             $request->setUrl($data->url);
             # 保存文件到指定路径
@@ -260,7 +260,7 @@ class PluginUpdateMgr
         # 重启延迟
         sleep(3);
         # 重启成功
-        return JsonMgr::successFul('重启服务',[
+        return JsonMgr::successFul('重启服务', [
             'next'      => 'ping',
         ]);
     }
