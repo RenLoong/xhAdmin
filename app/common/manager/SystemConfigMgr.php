@@ -118,22 +118,22 @@ class SystemConfigMgr
         ];
         foreach ($configs as $value) {
             if (empty($value['group_name'])) {
-                throw new Exception('配置项 - [分组标识不能为空]');
+                throw new Exception('配置项 - [配置项分组标识不能为空]');
             }
             if (empty($value['title'])) {
                 throw new Exception('配置项 - [标题不能为空]');
             }
             if (empty($value['name'])) {
-                throw new Exception('配置项 - [分组标识不能为空]');
+                throw new Exception('配置项 - [配置项标识不能为空]');
             }
             if (empty($value['component'])) {
-                throw new Exception('配置项 - [组件不能为空]');
+                throw new Exception('配置项 - [配置项组件不能为空]');
             }
             if (!in_array($value['component'], $formDict)) {
-                throw new Exception('配置项 - [组件不正确]');
+                throw new Exception('配置项 - [配置项组件不正确]');
             }
             if (!in_array($value['group_name'], $cateNames)) {
-                throw new Exception('配置项 - [关联分组不正确]');
+                throw new Exception('配置项 - [配置项关联分组不正确]');
             }
             if (in_array($value['name'], $configNames) && $isKeyword) {
                 throw new Exception("配置项名称不能使用 - [{$value['name']}]");

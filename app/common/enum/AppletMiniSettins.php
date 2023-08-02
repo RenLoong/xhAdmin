@@ -11,7 +11,7 @@ use app\Enum;
 class AppletMiniSettins extends Enum
 {
     // 微信小程序
-    const category = [
+    const group = [
         [
             'title'         => '小程序配置',
             'name'          => 'system_mini_config',
@@ -24,7 +24,7 @@ class AppletMiniSettins extends Enum
     // 抖音小程序
     const configs = [
         [
-            'cate_name'     => 'system_mini_config',
+            'group_name'    => 'system_mini_config',
             'title'         => 'appid',
             'name'          => 'applet_appid',
             'value'         => '',
@@ -35,7 +35,7 @@ class AppletMiniSettins extends Enum
             'show'          => '10'
         ],
         [
-            'cate_name'     => 'system_mini_config',
+            'group_name'    => 'system_mini_config',
             'title'         => 'secret',
             'name'          => 'applet_secret',
             'value'         => '',
@@ -46,7 +46,7 @@ class AppletMiniSettins extends Enum
             'show'          => '10'
         ],
         [
-            'cate_name'     => 'system_mini_config',
+            'group_name'    => 'system_mini_config',
             'title'         => 'privatekey',
             'name'          => 'applet_privatekey',
             'value'         => '',
@@ -57,7 +57,7 @@ class AppletMiniSettins extends Enum
             'show'          => '10'
         ],
         [
-            'cate_name'     => 'system_mini_config',
+            'group_name'    => 'system_mini_config',
             'title'         => '显示预览',
             'name'          => 'applet_state',
             'value'         => '10',
