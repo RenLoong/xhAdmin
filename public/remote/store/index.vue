@@ -557,7 +557,7 @@ export default {
                         cursor: pointer;
                         user-select:none;
                         border-radius: 5px;
-                        z-index: 9999;
+                        z-index: 999;
                     }
 
                     .help-tools {
