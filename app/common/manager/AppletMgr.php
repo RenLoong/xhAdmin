@@ -137,7 +137,6 @@ class AppletMgr
         if (empty($model['url'])) {
             throw new Exception('请填写网站域名');
         }
-        $siteRoot = "{$model['url']}/app/{$model['name']}/api/";
         $query    = [
             'appid' => $config['applet_appid'],
             'name' => $model['name'],
@@ -145,7 +144,7 @@ class AppletMgr
             'type' => 'wxmp',
             'siteinfo' => [
                 'name' => $model['title'],
-                'siteroot' => $siteRoot,
+                'siteroot' => $model['url'],
                 'app_id' => $model['id'],
                 'wx_appid' => $config['applet_appid'],
             ]

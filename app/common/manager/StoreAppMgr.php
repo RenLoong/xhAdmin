@@ -86,6 +86,9 @@ class StoreAppMgr
         $list = self::getBuyInstallApp();
         # 获取租户已授权的应用
         $pluginsNames = Store::where('id', $store_id)->value('plugins_name');
+        if (empty($pluginsNames)) {
+            $pluginsNames = [];
+        }
         $data = [];
         foreach ($list as $item) {
             if (!in_array($item['name'], $pluginsNames)) {

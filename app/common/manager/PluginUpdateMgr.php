@@ -69,7 +69,7 @@ class PluginUpdateMgr
         # 应用目录
         $this->pluginPath = base_path("/plugin/{$this->name}");
         # 下载包储存路径
-        $this->zipFile = runtime_path("/plugin/{$this->name}-install.zip");
+        $this->zipFile = runtime_path("/plugin/{$this->name}-update.zip");
         # 备份压缩包路径
         $this->backPluginPath = runtime_path("/plugin/{$this->name}-back.zip");
     }
@@ -169,7 +169,7 @@ class PluginUpdateMgr
             try {
                 $this->rollback();
             } catch (\Throwable $e) {
-                return JsonMgr::fail("解压安装包失败，回滚失败：{$e->getMessage()}");
+                return JsonMgr::fail("解压更新包包失败，回滚失败：{$e->getMessage()}");
             }
             return JsonMgr::fail($e->getMessage());
         }
@@ -187,7 +187,7 @@ class PluginUpdateMgr
             # 解压安装包
             ZipMgr::unzip($this->zipFile, $this->pluginPath);
             # 解压成功
-            return JsonMgr::successFul('解压安装包', [
+            return JsonMgr::successFul('解压更新包成功', [
                 'next' => 'updateData',
             ]);
         } catch (\Throwable $e) {
@@ -195,7 +195,7 @@ class PluginUpdateMgr
             try {
                 $this->rollback();
             } catch (\Throwable $e) {
-                return JsonMgr::fail("解压安装包失败，回滚失败：{$e->getMessage()}");
+                return JsonMgr::fail("解压更新包失败，回滚失败：{$e->getMessage()}");
             }
             return JsonMgr::fail($e->getMessage());
         }
@@ -213,7 +213,7 @@ class PluginUpdateMgr
             # 获取安装类
             $installPath = base_path("/plugin/{$this->name}/api/Install.php");
             if (!file_exists($installPath)) {
-                throw new Exception('安装类不存在');
+                throw new Exception('更新类不存在');
             }
             # 引入安装类
             require_once $installPath;
@@ -286,7 +286,7 @@ class PluginUpdateMgr
      */
     public function success()
     {
-        return JsonMgr::successFul('安装成功', [
+        return JsonMgr::successFul('更新成功', [
             'next' => '',
         ]);
     }
