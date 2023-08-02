@@ -145,9 +145,9 @@ export default {
                     return;
                 }
                 // 存在忽略版本更新
-                const ignoreVersion = localStorage.getItem('system_updated')
+                const ignoreVersion = parseInt(localStorage.getItem('system_updated'))
                 if (ignoreVersion) {
-                    if (parseInt(ignoreVersion) !== data.version) {
+                    if (ignoreVersion !== data.version) {
                         _this.openUpdate()
                     }
                 } else {
