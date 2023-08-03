@@ -7,7 +7,6 @@ use yzh52521\validate\Validate;
 class SystemConfig extends Validate
 {
     protected $rule =   [
-        'group_name'        => 'require',
         'title'             => 'require',
         'name'              => 'require',
         'component'         => 'require',
@@ -15,11 +14,10 @@ class SystemConfig extends Validate
     ];
 
     protected $message  =   [
-        'group_name.require'        => '缺少参数 - [分组标识]',
-        'title.require'             => '请输入配置项名称',
-        'name.require'              => '请输入配置项标识',
-        'component.require'         => '请选择表单类型',
-        'placeholder.require'       => '请输入配置项描述',
+        'title.require'             => '配置项标识不能为空',
+        'name.require'              => '配置项名称不能为空',
+        'component.require'         => '表单组件不能为空',
+        'placeholder.require'       => '表单底部描述不能为空',
     ];
 
     protected $scene = [

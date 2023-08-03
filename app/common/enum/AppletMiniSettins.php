@@ -10,62 +10,55 @@ use app\Enum;
  */
 class AppletMiniSettins extends Enum
 {
-    // 微信小程序
-    const group = [
+    const CONFIGS = [
         [
             'title'         => '小程序配置',
             'name'          => 'system_mini_config',
             'icon'          => '',
-            'sort'          => 0,
+            'sort'          => 100,
             'layout_col'    => '20',
-            'show'          => '20'
-        ],
-    ];
-    // 抖音小程序
-    const configs = [
-        [
-            'group_name'    => 'system_mini_config',
-            'title'         => 'appid',
-            'name'          => 'applet_appid',
-            'value'         => '',
-            'component'     => 'input',
-            'extra'         => [],
-            'placeholder'   => 'appid',
-            'sort'          => 100,
-            'show'          => '10'
-        ],
-        [
-            'group_name'    => 'system_mini_config',
-            'title'         => 'secret',
-            'name'          => 'applet_secret',
-            'value'         => '',
-            'component'     => 'input',
-            'extra'         => [],
-            'placeholder'   => 'secret',
-            'sort'          => 100,
-            'show'          => '10'
-        ],
-        [
-            'group_name'    => 'system_mini_config',
-            'title'         => 'privatekey',
-            'name'          => 'applet_privatekey',
-            'value'         => '',
-            'component'     => 'input',
-            'extra'         => [],
-            'placeholder'   => 'privatekey',
-            'sort'          => 100,
-            'show'          => '10'
-        ],
-        [
-            'group_name'    => 'system_mini_config',
-            'title'         => '显示预览',
-            'name'          => 'applet_state',
-            'value'         => '10',
-            'component'     => 'input',
-            'extra'         => [],
-            'placeholder'   => 'applet_state',
-            'sort'          => 100,
-            'show'          => '10'
+            'children'      => [
+                [
+                    'title'         => 'appid',
+                    'name'          => 'applet_appid',
+                    'value'         => '',
+                    'component'     => 'input',
+                    'extra'         => [],
+                    'placeholder'   => 'appid',
+                    'sort'          => 100,
+                    'show'          => '10'
+                ],
+                [
+                    'title'         => 'secret',
+                    'name'          => 'applet_secret',
+                    'value'         => '',
+                    'component'     => 'input',
+                    'extra'         => [],
+                    'placeholder'   => 'secret',
+                    'sort'          => 100,
+                    'show'          => '10'
+                ],
+                [
+                    'title'         => 'privatekey',
+                    'name'          => 'applet_privatekey',
+                    'value'         => '',
+                    'component'     => 'input',
+                    'extra'         => [],
+                    'placeholder'   => 'privatekey',
+                    'sort'          => 100,
+                    'show'          => '10'
+                ],
+                [
+                    'title'         => '显示预览',
+                    'name'          => 'applet_state',
+                    'value'         => '10',
+                    'component'     => 'input',
+                    'extra'         => [],
+                    'placeholder'   => 'applet_state',
+                    'sort'          => 100,
+                    'show'          => '10'
+                ],
+            ],
         ],
     ];
 }
