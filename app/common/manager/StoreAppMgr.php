@@ -4,7 +4,6 @@ namespace app\common\manager;
 use app\common\model\Store;
 use app\common\model\StoreApp as modelStoreApp;
 use app\common\model\SystemConfig;
-use app\common\model\SystemConfigGroup;
 use app\common\model\SystemUpload;
 use app\common\model\SystemUploadCate;
 use app\common\service\SystemInfoService;
