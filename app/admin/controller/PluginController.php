@@ -66,7 +66,10 @@ class PluginController extends BaseController
                 '文档',
                 [
                     'type' => 'link',
-                    'api' => 'admin/Plugin/getDoc',
+                    'api' => 'admin/Plugin/getLink',
+                    'queryParams'       => [
+                        'type'          => 'doc'
+                    ],
                     'aliasParams' => [
                         'name',
                         'version'
@@ -100,6 +103,29 @@ class PluginController extends BaseController
                 ],
                 [
                     'type' => 'success'
+                ]
+            )
+            ->addRightButton(
+                'bindsite',
+                '去绑定',
+                [
+                    'type' => 'link',
+                    'api' => 'admin/Plugin/getLink',
+                    'params' => [
+                        'field' => 'updateed',
+                        'value' => 'bindsite',
+                    ],
+                    'queryParams'       => [
+                        'type'          => 'bindsite'
+                    ],
+                    'aliasParams'       => [
+                        'name',
+                        'version'
+                    ],
+                ],
+                [],
+                [
+                    'type' => 'info'
                 ]
             )
             ->addRightButton(
@@ -170,7 +196,7 @@ class PluginController extends BaseController
                     ],
                 ]
             ])
-            ->addColumn('title', '名称')
+            ->addColumn('title', '应用信息')
             ->addColumn('version_name', '最新版本', [
                 'width' => 100
             ])
@@ -201,8 +227,8 @@ class PluginController extends BaseController
                     'style' => PluginTypeStyle::parseAlias('type'),
                 ],
             ])
-            ->addColumn('min_version', '版本要求', [
-                'width' => 100,
+            ->addColumn('min_version', '要求框架版本', [
+                'width' => 120,
                 'titlePrefix' => [
                     'content' => '该应用对于主框架的版本最低要求',
                 ],
@@ -232,9 +258,16 @@ class PluginController extends BaseController
             'plugins' => $installed,
             'saas_version' => $systemInfo['system_version']
         ];
-        $res = CloudServiceRequest::Plugin(CloudServiceRequest::API_VERSION_V2)->list($query)->response();
+        $res = CloudServiceRequest::Plugin(CloudServiceRequest::API_VERSION_V2)
+        ->list($query)
+        ->response();
         $data = $res->toArray();
         foreach ($data['data'] as $key => $value) {
+            $clientVersion                     = '';
+            if (!empty($value['installed']) && $value['installed'] === 'uninstall') {
+                $clientVersion = PluginMgr::getPluginVersion($value['name'],'version_name');
+            }
+            $data['data'][$key]['title']       = "{$value['title']} {$clientVersion}";
             $data['data'][$key]['min_version'] = "无";
             if ($value['saas_version']) {
                 $data['data'][$key]['min_version'] = $value['saas_version'];
@@ -251,21 +284,33 @@ class PluginController extends BaseController
      * @Email 416716328@qq.com
      * @DateTime 2023-05-06
      */
-    public function getDoc(Request $request)
+    public function getLink(Request $request)
     {
-        $name              = $request->get('name');
-        $version           = $request->get('version');
-        $systemInfo        = SystemInfoService::info();
-        $installed_version = PluginMgr::getPluginVersion($name);
-        $req               = new PluginRequest;
-        $req->detail();
-        $req->name          = $name;
-        $req->version       = $version;
-        $req->saas_version  = $systemInfo['system_version'];
-        $req->local_version = $installed_version;
-        $cloud              = new Cloud($req);
-        $data               = $cloud->send()->toArray();
-        return $this->successRes(['url' => $data['doc_url']]);
+        $type              = $request->get('type','');
+        $name              = $request->get('name','');
+        $version           = (int)$request->get('version',0);
+        $url     = '';
+        switch ($type) {
+            # 获取文档地址
+            case 'doc':
+                $systemInfo        = SystemInfoService::info();
+                $installed_version = PluginMgr::getPluginVersion($name);
+                $req               = new PluginRequest;
+                $req->detail();
+                $req->name          = $name;
+                $req->version       = $version;
+                $req->saas_version  = $systemInfo['system_version'];
+                $req->local_version = $installed_version;
+                $cloud              = new Cloud($req);
+                $data               = $cloud->send()->toArray();
+                $url                = $data['doc_url'];
+                break;
+            # 绑定站点
+            case 'bindsite':
+                $url = 'http://www.kfadmin.net/#/control/apps';
+                break;
+        }
+        return $this->successRes(['url' => $url]);
     }
 
     /**

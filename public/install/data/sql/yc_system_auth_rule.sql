@@ -1,15 +1,15 @@
 DROP TABLE IF EXISTS `yc_system_auth_rule`;
 
 CREATE TABLE `yc_system_auth_rule`  (
-  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `create_at` datetime NULL DEFAULT NULL,
   `update_at` datetime NULL DEFAULT NULL,
   `module` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'admin' COMMENT '模块名称',
   `path` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '请求地址：控制器/操作方法',
   `namespace` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '命名空间',
-  `pid` int NULL DEFAULT 0 COMMENT '父级菜单地址',
+  `pid` int(11) NULL DEFAULT 0 COMMENT '父级菜单地址',
   `title` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '菜单名称',
-  `sort` int NULL DEFAULT 0 COMMENT '菜单排序，值越大越靠后',
+  `sort` int(11) NULL DEFAULT 0 COMMENT '菜单排序，值越大越靠后',
   `method` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '请求类型：GET,POST,PUT,DELETE',
   `is_api` enum('10','20') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '10' COMMENT '是否接口：10否 20是',
   `component` enum('none/index','form/index','table/index','remote/index') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'none/index' COMMENT '组件类型',
@@ -22,7 +22,6 @@ CREATE TABLE `yc_system_auth_rule`  (
   INDEX `path`(`path`) USING BTREE COMMENT '唯一索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 190 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-权限规则' ROW_FORMAT = DYNAMIC;
 
-
 INSERT INTO `yc_system_auth_rule` VALUES (1, '2022-10-27 17:22:51', '2023-03-07 21:36:28', 'admin', 'SystemIndex/group', '\\app\\admin\\controller\\', 0, '首页', 0, '[\"GET\"]', '10', 'none/index', '', 'HomeOutlined', '20', '20', '20');
 INSERT INTO `yc_system_auth_rule` VALUES (2, '2022-10-27 17:22:51', '2023-05-10 14:47:24', 'admin', 'Index/index', '\\app\\admin\\controller\\', 1, '控制台', 0, '[\"GET\"]', '10', 'remote/index', '/remote/welcome', 'FolderOpenOutlined', '20', '20', '20');
 INSERT INTO `yc_system_auth_rule` VALUES (3, '2022-10-27 17:22:51', '2023-04-16 17:16:04', 'admin', 'Publics/login', '\\app\\admin\\controller\\', 1, '系统登录', 0, '[\"POST\"]', '20', 'none/index', '', '', '10', '20', '20');
@@ -30,10 +29,10 @@ INSERT INTO `yc_system_auth_rule` VALUES (4, '2022-10-27 17:22:51', '2023-04-16 
 INSERT INTO `yc_system_auth_rule` VALUES (5, '2022-10-27 17:22:51', '2023-04-16 17:16:04', 'admin', 'Publics/user', '\\app\\admin\\controller\\', 1, '获取管理员信息', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '20', '20');
 INSERT INTO `yc_system_auth_rule` VALUES (6, '2022-10-27 17:22:51', '2023-04-16 17:16:04', 'admin', 'Publics/menus', '\\app\\admin\\controller\\', 1, '获取菜单信息', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '20', '20');
 INSERT INTO `yc_system_auth_rule` VALUES (7, '2022-10-27 17:22:51', '2023-03-07 21:36:32', 'admin', 'SystemSettings/group', '\\app\\admin\\controller\\', 0, '系统', 0, '[\"GET\"]', '10', 'none/index', '', 'HomeOutlined', '20', '20', '10');
-INSERT INTO `yc_system_auth_rule` VALUES (8, '2022-10-27 17:22:51', '2023-05-10 18:24:10', 'admin', 'Webconfig/tabs', '\\app\\admin\\controller\\', 7, '配置项', 0, '[\"GET\"]', '10', 'none/index', '', '', '20', '20', '10');
+INSERT INTO `yc_system_auth_rule` VALUES (8, '2022-10-27 17:22:51', '2023-08-03 23:18:05', 'admin', 'Webconfig/tabs', '\\app\\admin\\controller\\', 7, '系统模块', 0, '[\"GET\"]', '10', 'none/index', '', '', '20', '20', '10');
 INSERT INTO `yc_system_auth_rule` VALUES (9, '2022-10-27 17:22:51', '2023-04-16 17:16:04', 'admin', 'Auth/tabs', '\\app\\admin\\controller\\', 7, '权限管理', 0, '[\"GET\"]', '10', 'none/index', '', '', '20', '20', '10');
-INSERT INTO `yc_system_auth_rule` VALUES (10, '2022-10-27 17:22:51', '2023-04-16 17:16:04', 'admin', 'SystemConfig/form', '\\app\\admin\\controller\\', 8, '系统设置', 0, '[\"GET\",\"PUT\"]', '20', 'form/index', '', '', '20', '20', '10');
-INSERT INTO `yc_system_auth_rule` VALUES (11, '2022-10-27 17:22:51', '2023-04-16 17:16:04', 'admin', 'SystemConfigGroup/index', '\\app\\admin\\controller\\', 8, '配置分组', 0, '[\"GET\"]', '20', 'table/index', '', '', '20', '20', '10');
+INSERT INTO `yc_system_auth_rule` VALUES (10, '2022-10-27 17:22:51', '2023-08-03 23:18:21', 'admin', 'SystemConfig/form', '\\app\\admin\\controller\\', 8, '系统设置', 0, '[\"GET\",\"PUT\"]', '20', 'form/index', '', '', '20', '20', '10');
+INSERT INTO `yc_system_auth_rule` VALUES (11, '2022-10-27 17:22:51', '2023-08-03 23:18:44', 'admin', 'SystemConfigGroup/index', '\\app\\admin\\controller\\', 8, '配置分组', 0, '[\"GET\"]', '20', 'table/index', '', '', '10', '20', '10');
 INSERT INTO `yc_system_auth_rule` VALUES (12, '2022-10-27 17:22:51', '2023-04-16 17:16:04', 'admin', 'SystemAuthRule/index', '\\app\\admin\\controller\\', 9, '菜单管理', 0, '[\"GET\"]', '20', 'table/index', '', '', '20', '20', '10');
 INSERT INTO `yc_system_auth_rule` VALUES (13, '2022-10-27 17:22:51', '2023-04-16 17:16:04', 'admin', 'SystemAdminRole/index', '\\app\\admin\\controller\\', 9, '部门管理', 0, '[\"GET\"]', '20', 'table/index', '', '', '20', '20', '10');
 INSERT INTO `yc_system_auth_rule` VALUES (14, '2022-10-27 17:22:51', '2023-04-16 17:16:04', 'admin', 'SystemAdmin/index', '\\app\\admin\\controller\\', 9, '账户管理', 0, '[\"GET\"]', '20', 'table/index', '', '', '20', '20', '10');
@@ -54,12 +53,12 @@ INSERT INTO `yc_system_auth_rule` VALUES (36, '2022-11-15 02:49:00', '2023-04-21
 INSERT INTO `yc_system_auth_rule` VALUES (37, '2022-11-15 02:49:46', '2023-04-21 12:00:09', 'admin', 'SystemAdmin/del', '\\app\\admin\\controller\\', 14, '删除账户', 0, '[\"GET\",\"DELETE\"]', '20', 'none/index', '', '', '10', '20', '10');
 INSERT INTO `yc_system_auth_rule` VALUES (38, '2022-11-15 09:23:53', '2023-04-21 11:59:32', 'admin', 'SystemAdminRole/auth', '\\app\\admin\\controller\\', 13, '设置权限', 0, '[\"GET\",\"PUT\"]', '20', 'form/index', '', '', '10', '20', '10');
 INSERT INTO `yc_system_auth_rule` VALUES (40, '2022-11-16 15:36:42', '2023-04-16 17:16:04', 'admin', 'SystemConfigGroup/indexGetTable', '\\app\\admin\\controller\\', 11, '配置分组列表', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '20', '10');
-INSERT INTO `yc_system_auth_rule` VALUES (41, '2022-11-16 19:33:49', '2023-04-16 17:16:04', 'admin', 'Uploadify/tabs', '\\app\\admin\\controller\\', 7, '附件模块', 0, '[\"GET\"]', '10', 'none/index', '', '', '20', '20', '20');
-INSERT INTO `yc_system_auth_rule` VALUES (42, '2022-11-16 19:34:37', '2023-04-16 17:16:04', 'admin', 'SystemUpload/index', '\\app\\admin\\controller\\', 41, '附件管理', 0, '[\"GET\"]', '20', 'table/index', '', '', '10', '20', '20');
+INSERT INTO `yc_system_auth_rule` VALUES (41, '2022-11-16 19:33:49', '2023-08-03 23:20:47', 'admin', 'Uploadify/tabs', '\\app\\admin\\controller\\', 7, '附件模块', 0, '[\"GET\"]', '10', 'none/index', '', '', '10', '20', '20');
+INSERT INTO `yc_system_auth_rule` VALUES (42, '2022-11-16 19:34:37', '2023-08-03 23:19:40', 'admin', 'SystemUpload/index', '\\app\\admin\\controller\\', 182, '附件管理', 0, '[\"GET\"]', '20', 'table/index', '', '', '10', '20', '20');
 INSERT INTO `yc_system_auth_rule` VALUES (43, '2022-11-16 19:35:31', '2023-04-21 11:51:04', 'admin', 'SystemUpload/upload', '\\app\\admin\\controller\\', 42, '上传附件', 0, '[\"GET\",\"POST\"]', '20', 'none/index', '', '', '10', '20', '20');
 INSERT INTO `yc_system_auth_rule` VALUES (44, '2022-11-16 19:36:17', '2023-04-21 11:51:13', 'admin', 'SystemUpload/del', '\\app\\admin\\controller\\', 42, '删除附件', 0, '[\"GET\",\"DELETE\"]', '20', 'none/index', '', '', '10', '20', '10');
 INSERT INTO `yc_system_auth_rule` VALUES (45, '2022-11-16 19:38:19', '2023-04-21 11:51:23', 'admin', 'SystemUpload/table', '\\app\\admin\\controller\\', 42, '附件列表', 0, '[\"GET\"]', '10', 'none/index', '', '', '10', '20', '20');
-INSERT INTO `yc_system_auth_rule` VALUES (46, '2022-11-16 19:41:08', '2023-04-16 17:16:04', 'admin', 'SystemUploadCate/index', '\\app\\admin\\controller\\', 41, '附件分类', 0, '[\"GET\"]', '20', 'table/index', '', '', '10', '20', '20');
+INSERT INTO `yc_system_auth_rule` VALUES (46, '2022-11-16 19:41:08', '2023-08-03 23:20:00', 'admin', 'SystemUploadCate/index', '\\app\\admin\\controller\\', 182, '附件分类', 0, '[\"GET\"]', '20', 'table/index', '', '', '10', '20', '20');
 INSERT INTO `yc_system_auth_rule` VALUES (47, '2022-11-16 19:41:58', '2023-04-23 19:25:14', 'admin', 'SystemUploadCate/add', '\\app\\admin\\controller\\', 46, '添加附件分类', 0, '[\"GET\",\"POST\"]', '20', 'form/index', '', '', '10', '20', '10');
 INSERT INTO `yc_system_auth_rule` VALUES (48, '2022-11-16 19:42:37', '2023-04-21 11:51:40', 'admin', 'SystemUploadCate/edit', '\\app\\admin\\controller\\', 46, '修改附件分类', 0, '[\"GET\",\"PUT\"]', '20', 'form/index', '', '', '10', '20', '10');
 INSERT INTO `yc_system_auth_rule` VALUES (49, '2022-11-16 19:43:35', '2023-04-21 11:51:48', 'admin', 'SystemUploadCate/del', '\\app\\admin\\controller\\', 46, '删除附件分类', 0, '[\"GET\",\"DELETE\"]', '20', 'none/index', '', '', '10', '20', '10');
@@ -99,10 +98,10 @@ INSERT INTO `yc_system_auth_rule` VALUES (149, '2023-04-30 21:54:40', '2023-04-3
 INSERT INTO `yc_system_auth_rule` VALUES (150, '2023-04-30 21:55:22', '2023-04-30 21:55:22', 'admin', 'Store/del', '\\app\\admin\\controller\\', 147, '删除代理', 0, '[\"GET\",\"DELETE\"]', '20', 'none/index', '', '', '10', '10', '10');
 INSERT INTO `yc_system_auth_rule` VALUES (151, '2023-04-30 21:57:39', '2023-04-30 21:57:39', 'admin', 'Store/indexGetTable', '\\app\\admin\\controller\\', 147, '代理表格', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');
 INSERT INTO `yc_system_auth_rule` VALUES (157, '2023-05-01 02:23:35', '2023-05-01 02:23:35', 'admin', 'StoreProject/index', '\\app\\admin\\controller\\', 146, '项目管理', 0, '[\"GET\"]', '20', 'table/index', '', '', '10', '10', '10');
-INSERT INTO `yc_system_auth_rule` VALUES (158, '2023-05-01 02:39:51', '2023-05-01 02:39:51', 'admin', 'StoreProject/add', '\\app\\admin\\controller\\', 157, '创建项目', 0, '[\"GET\",\"POST\"]', '20', 'form/index', '', '', '10', '10', '10');
-INSERT INTO `yc_system_auth_rule` VALUES (159, '2023-05-01 02:56:21', '2023-05-01 02:56:21', 'admin', 'StoreProject/edit', '\\app\\admin\\controller\\', 157, '修改项目', 0, '[\"GET\",\"PUT\"]', '20', 'form/index', '', '', '10', '10', '10');
-INSERT INTO `yc_system_auth_rule` VALUES (160, '2023-05-01 03:03:01', '2023-05-01 03:03:01', 'admin', 'StoreProject/del', '\\app\\admin\\controller\\', 157, '删除项目', 0, '[\"GET\",\"DELETE\"]', '20', 'none/index', '', '', '10', '10', '10');
-INSERT INTO `yc_system_auth_rule` VALUES (161, '2023-05-01 03:04:09', '2023-05-01 03:04:09', 'admin', 'StoreProject/indexGetTable', '\\app\\admin\\controller\\', 157, '项目列表', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');
+INSERT INTO `yc_system_auth_rule` VALUES (158, '2023-05-01 02:39:51', '2023-05-01 02:39:51', 'admin', 'StoreProject/add', '\\app\\admin\\controller\\', 157, '创建平台', 0, '[\"GET\",\"POST\"]', '20', 'form/index', '', '', '10', '10', '10');
+INSERT INTO `yc_system_auth_rule` VALUES (159, '2023-05-01 02:56:21', '2023-05-01 02:56:21', 'admin', 'StoreProject/edit', '\\app\\admin\\controller\\', 157, '修改平台', 0, '[\"GET\",\"PUT\"]', '20', 'form/index', '', '', '10', '10', '10');
+INSERT INTO `yc_system_auth_rule` VALUES (160, '2023-05-01 03:03:01', '2023-05-01 03:03:01', 'admin', 'StoreProject/del', '\\app\\admin\\controller\\', 157, '删除平台', 0, '[\"GET\",\"DELETE\"]', '20', 'none/index', '', '', '10', '10', '10');
+INSERT INTO `yc_system_auth_rule` VALUES (161, '2023-05-01 03:04:09', '2023-05-01 03:04:09', 'admin', 'StoreProject/indexGetTable', '\\app\\admin\\controller\\', 157, '平台列表', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');
 INSERT INTO `yc_system_auth_rule` VALUES (162, '2023-05-03 12:18:46', '2023-05-03 12:18:46', 'admin', 'Store/login', '\\app\\admin\\controller\\', 147, '管理代理表格', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');
 INSERT INTO `yc_system_auth_rule` VALUES (163, '2023-05-03 14:45:48', '2023-05-03 14:45:48', 'admin', 'StoreMenus/index', '\\app\\admin\\controller\\', 146, '代理菜单', 0, '[\"GET\"]', '20', 'table/index', '', '', '20', '10', '10');
 INSERT INTO `yc_system_auth_rule` VALUES (164, '2023-05-03 14:46:25', '2023-05-03 14:48:02', 'admin', 'StoreMenus/add', '\\app\\admin\\controller\\', 163, '添加代理菜单', 0, '[\"GET\",\"POST\"]', '20', 'form/index', '', '', '10', '10', '10');
@@ -114,10 +113,10 @@ INSERT INTO `yc_system_auth_rule` VALUES (175, '2023-05-06 14:53:49', '2023-05-0
 INSERT INTO `yc_system_auth_rule` VALUES (176, '2023-05-06 14:54:35', '2023-05-06 14:54:35', 'admin', 'PluginCloud/captcha', '\\app\\admin\\controller\\', 174, '云服务验证码', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');
 INSERT INTO `yc_system_auth_rule` VALUES (177, '2023-05-06 18:18:39', '2023-05-06 18:18:39', 'admin', 'Plugin/detail', '\\app\\admin\\controller\\', 139, '插件详情', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');
 INSERT INTO `yc_system_auth_rule` VALUES (178, '2023-05-06 18:20:14', '2023-05-12 16:26:59', 'admin', 'Index/consoleCount', '\\app\\admin\\controller\\', 2, '控制台数据统计', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '20', '20');
-INSERT INTO `yc_system_auth_rule` VALUES (179, '2023-05-06 20:21:59', '2023-05-06 20:21:59', 'admin', 'Plugin/getDoc', '\\app\\admin\\controller\\', 139, '获取文档地址', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');
+INSERT INTO `yc_system_auth_rule` VALUES (179, '2023-05-06 20:21:59', '2023-05-06 20:21:59', 'admin', 'Plugin/getLink', '\\app\\admin\\controller\\', 139, '获取跳转地址', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');
 INSERT INTO `yc_system_auth_rule` VALUES (180, '2023-05-09 16:14:10', '2023-05-09 16:14:10', 'admin', 'StoreApp/index', '\\app\\admin\\controller\\', 147, '授权应用', 0, '[\"GET\",\"PUT\"]', '20', 'form/index', '', '', '10', '10', '10');
 INSERT INTO `yc_system_auth_rule` VALUES (181, '2023-05-15 13:04:59', '2023-07-20 12:16:08', 'admin', 'Updated/updateCheck', '\\app\\admin\\controller\\', 2, '版本更新', 0, '[\"GET\",\"POST\"]', '20', 'remote/index', 'remote/update/index', '', '10', '10', '10');
-INSERT INTO `yc_system_auth_rule` VALUES (182, '2023-06-12 16:07:52', '2023-06-12 16:07:52', 'admin', 'SystemUpload/config', '\\app\\admin\\controller\\', 41, '附件库设置', 0, '[\"GET\",\"PUT\"]', '20', 'form/index', '', '', '20', '10', '10');
+INSERT INTO `yc_system_auth_rule` VALUES (182, '2023-06-12 16:07:52', '2023-08-03 23:21:13', 'admin', 'SystemUpload/config', '\\app\\admin\\controller\\', 8, '附件设置', 0, '[\"GET\",\"PUT\"]', '20', 'form/index', '', '', '20', '10', '10');
 INSERT INTO `yc_system_auth_rule` VALUES (183, '2023-06-17 11:33:56', '2023-06-17 11:33:56', 'admin', 'Store/copyrightSet', '\\app\\admin\\controller\\', 147, '代理版权设置', 0, '[\"GET\",\"PUT\"]', '20', 'form/index', '', '', '10', '10', '10');
 INSERT INTO `yc_system_auth_rule` VALUES (184, '2023-06-17 12:12:00', '2023-06-17 12:12:23', 'admin', 'StorePlatform/restore', '\\app\\admin\\controller\\', 157, '恢复删除平台', 0, '[\"GET\",\"DELETE\"]', '20', 'none/index', '', '', '10', '10', '10');
 INSERT INTO `yc_system_auth_rule` VALUES (185, '2023-07-01 14:03:18', '2023-07-01 14:03:18', 'admin', 'Curd/index', '\\app\\admin\\controller\\', 20, 'CURD管理', 0, '[\"GET\"]', '20', 'table/index', '', '', '10', '10', '10');

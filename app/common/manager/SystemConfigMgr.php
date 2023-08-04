@@ -271,26 +271,32 @@ class SystemConfigMgr
      */
     private function getConfigs()
     {
-        $storeModel = $this->model;
-        $where      = [
-            'store_id'      => $storeModel['store_id'],
-            'saas_appid'    => $storeModel['id'],
-            'show'          => '20'
-        ];
-        $category   = SystemConfigGroup::where($where)
-            ->order('sort', 'asc')
-            ->order('id', 'asc')
-            ->select()
-            ->toArray();
-        if (empty($category)) {
-            throw new RedirectException('配置项分组错误', '/#/Index/index');
+
+        $appModel = $this->model;
+        $settings = config("plugin.{$appModel['name']}.settings", []);
+        if (empty($settings)) {
+            throw new RedirectException('配置项文件数据错误', '/#/Index/index');
         }
+        // $where      = [
+        //     'store_id'      => $storeModel['store_id'],
+        //     'saas_appid'    => $storeModel['id'],
+        //     'show'          => '20'
+        // ];
+        // $category   = SystemConfigGroup::where($where)
+        //     ->order('sort', 'asc')
+        //     ->order('id', 'asc')
+        //     ->select()
+        //     ->toArray();
+        // if (empty($category)) {
+        //     throw new RedirectException('配置项分组错误', '/#/Index/index');
+        // }
+        // $list = [];
+        // foreach ($category as $key => $value) {
+        //     $list[$key]['name']     = $value['name'];
+        //     $list[$key]['title']    = $value['title'];
+        //     $list[$key]['children'] = $this->getChildren($value);
+        // }
         $list = [];
-        foreach ($category as $key => $value) {
-            $list[$key]['name']     = $value['name'];
-            $list[$key]['title']    = $value['title'];
-            $list[$key]['children'] = $this->getChildren($value);
-        }
         return $list;
     }
 

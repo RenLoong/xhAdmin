@@ -12,7 +12,6 @@ use app\common\manager\AppletMgr;
 use app\common\manager\StoreAppMgr;
 use app\common\manager\SystemConfigMgr;
 use app\common\model\Store;
-use app\common\service\SystemInfoService;
 use app\BaseController;
 use app\common\manager\PluginMgr;
 use app\store\validate\StoreApp;
@@ -20,8 +19,6 @@ use Exception;
 use support\Log;
 use support\Request;
 use think\facade\Db;
-use YcOpen\CloudService\Cloud;
-use YcOpen\CloudService\Request\PluginRequest;
 
 /**
  * 应用管理

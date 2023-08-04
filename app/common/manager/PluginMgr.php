@@ -45,7 +45,7 @@ class PluginMgr
      * @Email 416716328@qq.com
      * @DateTime 2023-05-08
      */
-    public static function getPluginVersion($name)
+    public static function getPluginVersion($name,$versionName = 'version')
     {
         if (!is_dir(base_path("/plugin/{$name}"))) {
             return 1;
@@ -55,7 +55,7 @@ class PluginMgr
             return 1;
         }
         $config = json_decode(file_get_contents($json), true);
-        return isset($config['version']) ? $config['version'] : 1;
+        return isset($config[$versionName]) ? $config[$versionName] : 1;
     }
 
     /**
