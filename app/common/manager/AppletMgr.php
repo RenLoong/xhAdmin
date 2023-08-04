@@ -115,6 +115,7 @@ class AppletMgr
         $request = $this->request;
         $model   = $this->model;
         $where   = [
+            ['name', 'in', $this->configName],
             ['store_id', '=', $model['store_id']],
             ['saas_appid', '=', $model['id']],
         ];
@@ -132,21 +133,27 @@ class AppletMgr
             throw new Exception('请填写privatekey');
         }
         if (empty($model['title'])) {
-            throw new Exception('请填写网站名称');
+            throw new Exception('请填写项目名称');
         }
         if (empty($model['url'])) {
-            throw new Exception('请填写网站域名');
+            throw new Exception('请填写项目域名');
+        }
+        if (empty($model['name'])) {
+            throw new Exception('项目绑定应用错误');
+        }
+        if (!is_dir(base_path("/plugin/{$model['name']}"))) {
+            throw new Exception('项目绑定的应用未安装');
         }
         $query    = [
-            'appid' => $config['applet_appid'],
-            'name' => $model['name'],
-            'preview_desc' => '',
-            'type' => 'wxmp',
-            'siteinfo' => [
-                'name' => $model['title'],
-                'siteroot' => $model['url'],
-                'app_id' => $model['id'],
-                'wx_appid' => $config['applet_appid'],
+            'appid'             => $config['applet_appid'],
+            'name'              => $model['name'],
+            'preview_desc'      => '',
+            'type'              => 'wxmp',
+            'siteinfo'          => [
+                'name'          => $model['title'],
+                'siteroot'      => $model['url'],
+                'app_id'        => $model['id'],
+                'wx_appid'      => $config['applet_appid'],
             ]
         ];
         $data = CloudServiceRequest::Miniproject()
@@ -168,30 +175,19 @@ class AppletMgr
         $request = $this->request;
         $model   = $this->model;
         $post    = $request->post();
-        # 数据处理
         foreach ($post as $field => $value) {
-            # 图片处理
-            if (in_array($field, ['uploadify'])) {
-                $post[$field] = empty($value) ? '' : UploadService::path($value);
+            $where      = [
+                ['name', '=', $field],
+                ['store_id', '=', $model['store_id']],
+                ['saas_appid', '=', $model['id']],
+            ];
+            $confModel = SystemConfig::where($where)->find();
+            if (!$confModel) {
+                $confModel = new SystemConfig;
+                $confModel->name        = $field;
+                $confModel->store_id    = $model['store_id'];
+                $confModel->saas_appid  = $model['id'];
             }
-        }
-        # 数据保存更新
-        $fields     = $this->configName;
-        $where      = [
-            ['name', 'in', $fields],
-            ['store_id', '=', $model['store_id']],
-            ['saas_appid', '=', $model['id']],
-        ];
-        $confModels = SystemConfig::where($where)->select();
-        $isEmpty    = $confModels->toArray();
-        if (empty($isEmpty)) {
-            throw new Exception('小程序配置项不存在');
-        }
-        foreach ($confModels as $confModel) {
-            if (empty($post[$confModel->name])) {
-                throw new Exception("参数错误--[{$confModel->name}]");
-            }
-            $value            = $post[$confModel->name];
             $confModel->value = $value;
             $confModel->save();
         }
@@ -199,10 +195,10 @@ class AppletMgr
         try {
             if (!empty($post['applet_appid']) && !empty($post['applet_secret']) && !empty($post['applet_privatekey'])) {
                 $data = [
-                    'appid' => $post['applet_appid'],
-                    'secret' => $post['applet_secret'],
-                    'privatekey' => $post['applet_privatekey'],
-                    'type' => 'wxmp'
+                    'appid'         => $post['applet_appid'],
+                    'secret'        => $post['applet_secret'],
+                    'privatekey'    => $post['applet_privatekey'],
+                    'type'          => 'wxmp'
                 ];
                 CloudServiceRequest::Miniproject()
                     ->setConfig()
@@ -239,20 +235,19 @@ class AppletMgr
     private function getConfig()
     {
         $model = $this->model;
-        $names = [
-            'applet_appid',
-            'applet_secret',
-            'applet_privatekey',
-            'applet_state'
-        ];
         $where = [
             ['store_id', '=', $model['store_id']],
             ['saas_appid', '=', $model['id']],
-            ['name', 'in', $names]
+            ['name', 'in', $this->configName]
         ];
         $data  = SystemConfig::where($where)->column('value', 'name');
         if (empty($data)) {
-            throw new RedirectException('小程序配置不存在', '/#/Index/index');
+            $data = [
+                'applet_appid'          => '',
+                'applet_secret'         => '',
+                'applet_privatekey'     => '',
+                'applet_state'          => '',
+            ];
         }
         return $data;
     }

@@ -60,10 +60,6 @@
                         <n-image :src="item.logo" width="150" height="150" class="logo" />
                         <img :src="item.platformLogo" class="platform-type" alt="" />
                         <div class="title">{{ item.title }}</div>
-                        <!-- async_data为真则需要同步旧版本数据 -->
-                        <div class="async-data" @click="hanldAsyncData(item)" v-if="item.async_data">
-                            点击同步配置数据
-                        </div>
                         <div class="help-tools" v-if="item.isSetting || appletType.includes(item.platform)">
                             <div class="help-box">
                                 <n-tooltip trigger="hover" placement="top" v-if="item.isSetting">
@@ -545,19 +541,6 @@ export default {
                         display: flex;
                         justify-content: center;
                         align-items: center;
-                    }
-                    .async-data{
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        position: absolute;
-                        inset: 0;
-                        background: rgba(#000000, .4);
-                        color: #fff;
-                        cursor: pointer;
-                        user-select:none;
-                        border-radius: 5px;
-                        z-index: 999;
                     }
 
                     .help-tools {

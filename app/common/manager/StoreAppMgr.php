@@ -170,7 +170,7 @@ class StoreAppMgr
             throw new Exception('参数错误--[项目ID]');
         }
         if (empty($where['store_id'])) {
-            throw new Exception('参数错误--[租户ID]');
+            throw new Exception('参数错误--[代理ID]');
         }
         $whereOther['saas_appid'] = $where['id'];
         $whereOther['store_id']   = $where['store_id'];
@@ -180,7 +180,6 @@ class StoreAppMgr
             $model = self::model($where);
             # 删除项目配置
             SystemConfig::where($whereOther)->delete();
-            SystemConfigGroup::where($whereOther)->delete();
             # 删除项目附件
             SystemUpload::where($whereOther)->delete();
             SystemUploadCate::where($whereOther)->delete();

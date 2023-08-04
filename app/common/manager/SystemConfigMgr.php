@@ -3,19 +3,16 @@ namespace app\common\manager;
 
 use app\common\builder\FormBuilder;
 use app\common\enum\ConfigGroupCol;
-use app\common\enum\FormType;
-use app\common\exception\RedirectException;
-use app\common\model\StoreApp;
 use app\common\model\SystemConfig;
-use app\common\model\SystemConfigGroup;
 use app\common\service\UploadService;
 use Exception;
 use support\Request;
 
 /**
- * 小程序管理类
+ * 系统配置管理
  * @author 贵州猿创科技有限公司
- * @copyright (c) 贵州猿创科技有限公司
+ * @copyright 贵州猿创科技有限公司
+ * @email 416716328@qq.com
  */
 class SystemConfigMgr
 {
@@ -24,164 +21,21 @@ class SystemConfigMgr
      * @var Request
      */
     protected $request = null;
-
-    /**
-     * 模型对象
-     * @var StoreApp
-     */
-    protected $model = null;
-
-    /**
-     * 额外扩展参数--组件类型
-     * @var array
-     */
-    protected $componentType = [
-        'checkbox',
-        'radio',
-        'select'
-    ];
+    # 自定义组件类型
+    private $customComponent = ['uploadify'];
+    # 扩展组件类型
+    private $extraOptions = ['checkbox', 'radio', 'select'];
 
     /**
      * 构造函数
      * @param \support\Request $request
-     * @param \app\common\model\SystemConfig $model
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
-    public function __construct(Request $request, StoreApp $model)
+    public function __construct(Request $request)
     {
         $this->request = $request;
-        $this->model   = $model;
-    }
-
-    /**
-     * 创建项目配置项
-     * @param array $data
-     * @param bool $isKeyword
-     * @return void
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     */
-    public function ActionSettings(array $data,bool $isKeyword = true)
-    {
-        $group = empty($data['group']) ? [] : $data['group'];
-        $configs = empty($data['configs']) ? [] : $data['configs'];
-        if (empty($group)) {
-            throw new Exception('分组数据格式错误');
-        }
-        if (empty($configs)) {
-            throw new Exception('配置项数据格式错误');
-        }
-        # 验证配置项分组
-        $cateNames = array_column($group,'name');
-        foreach ($group as $value){
-            if (empty($value['title'])) {
-                throw new Exception('分组标题不能为空');
-            }
-            if (empty($value['name'])) {
-                throw new Exception('分组标识不能为空');
-            }
-            if (!isset($value['sort'])) {
-                throw new Exception('分组排序不能为空');
-            }
-            if (!is_numeric($value['sort'])) {
-                throw new Exception('分组排序必须为数字');
-            }
-            if (empty($value['layout_col'])) {
-                throw new Exception('分组布局不能为空');
-            }
-            if (!in_array($value['layout_col'], array_keys(ConfigGroupCol::dictOptions()))) {
-                throw new Exception('分组布局不正确');
-            }
-            # 验证是否存在分组
-            $where = [
-                'name'          => $value['name'],
-                'store_id'      => $this->model['store_id'],
-                'saas_appid'    => $this->model['id'],
-            ];
-            $model = SystemConfigGroup::where($where)->find();
-            if ($model) {
-                $model->save($value);
-                continue;
-            }
-            # 保存分组
-            $value['store_id'] = $this->model['store_id'];
-            $value['saas_appid'] = $this->model['id'];
-            $model = new SystemConfigGroup;
-            $model->save($value);
-        }
-        # 验证配置项
-        $formDict = array_keys(FormType::dictOptions());
-        $configNames = [
-            'web_name',
-            'web_url',
-        ];
-        foreach ($configs as $value) {
-            if (empty($value['group_name'])) {
-                throw new Exception('配置项 - [配置项分组标识不能为空]');
-            }
-            if (empty($value['title'])) {
-                throw new Exception('配置项 - [标题不能为空]');
-            }
-            if (empty($value['name'])) {
-                throw new Exception('配置项 - [配置项标识不能为空]');
-            }
-            if (empty($value['component'])) {
-                throw new Exception('配置项 - [配置项组件不能为空]');
-            }
-            if (!in_array($value['component'], $formDict)) {
-                throw new Exception('配置项 - [配置项组件不正确]');
-            }
-            if (!in_array($value['group_name'], $cateNames)) {
-                throw new Exception('配置项 - [配置项关联分组不正确]');
-            }
-            if (in_array($value['name'], $configNames) && $isKeyword) {
-                throw new Exception("配置项名称不能使用 - [{$value['name']}]");
-            }
-            if (empty($value['sort'])) {
-                throw new Exception('配置项 - [排序不能为空]');
-            }
-            if (!is_numeric($value['sort'])) {
-                throw new Exception('配置项 - [排序必须为数字]');
-            }
-            if (empty($value['show'])) {
-                throw new Exception('配置项 - [隐藏/显示 - 不正确]');
-            }
-            if (empty($value['placeholder'])) {
-                throw new Exception('配置项 - [placeholder不能为空]');
-            }
-            if (!isset($value['value'])) {
-                throw new Exception('配置项 - [缺少默认数据字段]');
-            }
-            # 验证是否存在配置项
-            $where = [
-                'name' => $value['name'],
-                'store_id' => $this->model['store_id'],
-                'saas_appid' => $this->model['id'],
-            ];
-            $model = SystemConfig::where($where)->find();
-            if ($model) {
-                $model->save($value);
-                continue;
-            }
-            # 查询关联分组
-            $where = [
-                'name' => $value['group_name'],
-                'store_id' => $this->model['store_id'],
-                'saas_appid' => $this->model['id'],
-            ];
-            $cateModel = SystemConfigGroup::where($where)->find();
-            if (!$cateModel) {
-                throw new Exception('配置项 - [关联分组不存在]');
-            }
-            # 保存配置项
-            unset($value['cate_name']);
-            $value['group_name']    = $cateModel['name'];
-            $value['store_id']      = $this->model['store_id'];
-            $value['saas_appid']    = $this->model['id'];
-            $model = new SystemConfig;
-            $model->save($value);
-        }
     }
 
     /**
@@ -193,21 +47,77 @@ class SystemConfigMgr
      */
     public function getConfig(array $where)
     {
-        return SystemConfig::where($where)->column('value','name');
+        return SystemConfig::where($where)->column('value', 'name');
     }
 
     /**
-     * 获取系统配置列表
-     * @return \support\Response
+     * 保存配置项
+     * 无报错则保存成功
+     * @param array $settings
+     * @param array $post
+     * @param mixed $store_id
+     * @param mixed $saas_appid
+     * @throws \Exception
+     * @return void
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
-    public function list()
+    public function saveData(array $settings, array $post, $store_id = null, $saas_appid = null)
     {
-        # 获取配置项
-        $configs = $this->getConfigs();
+        $settings = array_column($settings, 'children');
+        $data     = [];
+        foreach ($settings as $value) {
+            $data = array_merge($data, $value);
+        }
+        foreach ($data as $value) {
+            # 保存数据
+            $dataValue = empty($value['name']) ? '' : $post[$value['name']];
+            # 查询数据
+            $where = [
+                'name'              => $value['name'],
+                'store_id'          => $store_id,
+                'saas_appid'        => $saas_appid,
+            ];
+            $model = SystemConfig::where($where)->find();
+            if (!$model) {
+                $model              = new SystemConfig;
+                $model->name        = $value['name'];
+                $model->store_id    = $store_id;
+                $model->saas_appid  = $saas_appid;
+            }
+            // 更新数据
+            $model->value = $dataValue;
+            # 验证是否附件库
+            if (is_array($model['value']) && $value['component'] === 'uploadify') {
+                $files = [];
+                foreach ($dataValue as $k => $v) {
+                    $files[$k] = UploadService::path($v);
+                }
+                $uploadPath   = implode(',', $files);
+                $model->value = $uploadPath;
+            }
+            if ($model->save() === false) {
+                throw new Exception('保存配置失败');
+            }
+        }
+    }
+
+    /**
+     * 获取配置项视图
+     * @param array $data
+     * @param mixed $store_id
+     * @param mixed $saas_appid
+     * @throws \Exception
+     * @return array
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function getConfigView(array $data, $store_id = null, $saas_appid = null)
+    {
         # 设置默认选中
-        $first  = current($configs);
+        $first  = current($data);
         $actvie = empty($first['name']) ? '' : $first['name'];
         # 实例表单构建器
         $builder = new FormBuilder;
@@ -218,155 +128,114 @@ class SystemConfigMgr
                 'type' => 'line'
             ],
         ]);
-        foreach ($configs as $value) {
+        foreach ($data as $value) {
+            if (empty($value['name'])) {
+                throw new Exception('分组标识不能为空');
+            }
+            if (empty($value['title'])) {
+                throw new Exception('分组名称不能为空');
+            }
+            if (empty($value['children'])) {
+                throw new Exception('配置项数据错误');
+            }
+            # 默认布局模式
+            $col = 24;
+            if (!empty($value['layout_col'])) {
+                $colData = ConfigGroupCol::getValue($value['layout_col']);
+                if (empty($colData['col'])) {
+                    throw new Exception('布局模式错误');
+                }
+                $col = (int) $colData['col'];
+            }
+            $configs = $this->getConfigData($value['children'], $col, $store_id, $saas_appid);
             $builder = $builder->addTab(
                 $value['name'],
                 $value['title'],
-                $value['children']
+                $configs
             );
         }
         $data = $builder->endTabs()->create();
-        return JsonMgr::successRes($data);
+        return $data;
     }
-
     /**
-     * 保存项目系统配置
-     * @return \support\Response
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     */
-    public function saveData()
-    {
-        $post = request()->post();
-        foreach ($post as $name => $value) {
-            $where = [
-                'name' => $name
-            ];
-            $model = SystemConfig::where($where)->find();
-            if (!$model) {
-                throw new Exception('项目配置数据错误');
-            }
-            // 更新数据
-            $model->value = $value;
-            if (is_array($value) && $model['component'] == 'uploadify') {
-                $files = [];
-                foreach ($value as $k => $v) {
-                    $files[$k] = UploadService::path($v);
-                }
-                $uploadPath   = implode(',', $files);
-                $model->value = $uploadPath;
-            }
-            if ($model->save() === false) {
-                throw new Exception('保存项目数据失败');
-            }
-        }
-        return JsonMgr::success('保存成功');
-    }
-
-    /**
-     * 获取配置项数据
+     * 获取系统配置
+     * @param array $list
+     * @param int $col
      * @return array
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      */
-    private function getConfigs()
+    private function getConfigData(array $list, int $col, $store_id, $saas_appid): array
     {
-
-        $appModel = $this->model;
-        $settings = config("plugin.{$appModel['name']}.settings", []);
-        if (empty($settings)) {
-            throw new RedirectException('配置项文件数据错误', '/#/Index/index');
-        }
-        // $where      = [
-        //     'store_id'      => $storeModel['store_id'],
-        //     'saas_appid'    => $storeModel['id'],
-        //     'show'          => '20'
-        // ];
-        // $category   = SystemConfigGroup::where($where)
-        //     ->order('sort', 'asc')
-        //     ->order('id', 'asc')
-        //     ->select()
-        //     ->toArray();
-        // if (empty($category)) {
-        //     throw new RedirectException('配置项分组错误', '/#/Index/index');
-        // }
-        // $list = [];
-        // foreach ($category as $key => $value) {
-        //     $list[$key]['name']     = $value['name'];
-        //     $list[$key]['title']    = $value['title'];
-        //     $list[$key]['children'] = $this->getChildren($value);
-        // }
-        $list = [];
-        return $list;
-    }
-
-    /**
-     * 获取配置项子项
-     * @param array $data
-     * @return array
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     */
-    private function getChildren(array $data)
-    {
-        $model   = $this->model;
-        $where   = [
-            'group_name'    => $data['name'],
-            'saas_appid'    => $model['id'],
-            'store_id'      => $model['store_id'],
-            'show'          => '20'
+        # 查询数据
+        $configNames = array_column($list, 'name');
+        $where       = [
+            ['name', 'in', $configNames],
+            ['store_id', '=', $store_id],
+            ['saas_appid', '=', $saas_appid],
         ];
-        $list    = SystemConfig::where($where)
-            ->select()
-            ->toArray();
-        $config  = [];
-        $builder = new FormBuilder;
+        $dataValue   = SystemConfig::where($where)->column('value', 'name');
+        $config      = [];
+        $builder     = new FormBuilder;
         foreach ($list as $value) {
-            // 设置数据
-            $configValue = $value['value'];
-            if ($value['value'] == 'checkbox') {
-                $configValue = [$value['value']];
-            }
-            $options = [];
-            // 设置扩展数据
-            $layoutCol = ConfigGroupCol::getDictValues((string)$data['layout_col']);
-            $extra = [
-                'info' => $value['placeholder'],
-                'col' => empty($layoutCol['col']) ? 24 : $layoutCol['col'],
-            ];
-            if ($value['extra'] && in_array($value['component'], $this->componentType)) {
-                $extras = explode('|', $value['extra']);
-                foreach ($extras as $key2 => $value2) {
-                    list($optionValue, $label) = explode(',', $value2);
-                    $options[$key2]['label']   = $label;
-                    $options[$key2]['value']   = $optionValue;
+            # 数据验证
+            hpValidate(\app\admin\validate\SystemConfig::class, $value);
+            # 设置数据
+            $configValue = empty($dataValue[$value['name']]) ? '' : $dataValue[$value['name']];
+            # 验证扩展组件
+            if (in_array($value['component'], $this->extraOptions)) {
+                if (empty($value['extra'])) {
+                    throw new Exception("[{$value['name']}] - 扩展数据不能为空");
                 }
-                $extra['options'] = $options;
+                if (empty($value['extra']['options'])) {
+                    throw new Exception("[{$value['name']}] - 扩展的选项数据不能为空");
+                }
             }
+            # 附件库参数设置
             if ($value['component'] == 'uploadify') {
-                // 重设的模型数据
+                # 重设的模型数据
                 if ($configValue) {
                     $tempConfig  = array_filter(explode(',', $configValue));
                     $configValue = UploadService::urls($tempConfig);
                 } else {
                     $configValue = [];
                 }
-                // 附件库
+            }
+            # 设置组件参数
+            if (in_array($value['component'], $this->customComponent)) {
+                # 设置底部描述
+                if (!empty($value['placeholder'])) {
+                    $value['extra']['props']['prompt']['text'] = $value['placeholder'];
+                }
+                # 设置布局模式
+                $value['extra']['props']['col'] = $col;
+                # 自定义组件
                 $builder->addComponent(
                     $value['name'],
                     $value['component'],
                     $value['title'],
                     $configValue,
-                    $extra
+                    $value['extra']
                 );
             } else {
-                // 普通组件
+                # 多选框组件
+                if ($value['component'] == 'checkbox') {
+                    $value['extra']['props']['options'] = $value['extra']['options'];
+                    $configValue                        = [];
+                }
+                # 设置底部描述
+                if (!empty($value['placeholder'])) {
+                    $value['extra']['prompt']['text'] = $value['placeholder'];
+                }
+                # 设置布局模式
+                $value['extra']['props']['col'] = $col;
+                # 普通组件
                 $builder->addRow(
                     $value['name'],
                     $value['component'],
                     $value['title'],
                     $configValue,
-                    $extra
+                    $value['extra']
                 );
             }
         }
