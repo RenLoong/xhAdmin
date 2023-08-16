@@ -1,0 +1,1 @@
+ALTER TABLE `php_users` CHANGE COLUMN `appid` `saas_appid` int(11) NULL DEFAULT NULL COMMENT '所属应用' AFTER `platform_id`;
