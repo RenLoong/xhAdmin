@@ -55,7 +55,8 @@
         "orhanerday/open-ai": "^4.7",
         "phpoffice/phpspreadsheet": "^1.28",
         "flc/dysms": "^1.0",
-        "yansongda/pay": "^2.10"
+        "yansongda/pay": "^2.10",
+        "endroid/qr-code": "^4.8"
     },
     "suggest": {
         "ext-event": "For better performance. "

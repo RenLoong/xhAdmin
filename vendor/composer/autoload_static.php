@@ -173,6 +173,10 @@ class ComposerStaticInit28ab241856c3f199130cd914a54ecec6
             'Flc\\Dysms\\' => 10,
             'FastRoute\\' => 10,
         ),
+        'E' => 
+        array (
+            'Endroid\\QrCode\\' => 15,
+        ),
         'D' => 
         array (
             'Dotenv\\' => 7,
@@ -185,6 +189,7 @@ class ComposerStaticInit28ab241856c3f199130cd914a54ecec6
             'Doctrine\\Common\\' => 16,
             'Darabonba\\OpenApi\\' => 18,
             'Darabonba\\GatewaySpi\\' => 21,
+            'DASPRiD\\Enum\\' => 13,
         ),
         'C' => 
         array (
@@ -195,6 +200,7 @@ class ComposerStaticInit28ab241856c3f199130cd914a54ecec6
         'B' => 
         array (
             'Brick\\Math\\' => 11,
+            'BaconQrCode\\' => 12,
         ),
         'A' => 
         array (
@@ -565,6 +571,10 @@ class ComposerStaticInit28ab241856c3f199130cd914a54ecec6
         array (
             0 => __DIR__ . '/..' . '/nikic/fast-route/src',
         ),
+        'Endroid\\QrCode\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/endroid/qr-code/src',
+        ),
         'Dotenv\\' => 
         array (
             0 => __DIR__ . '/..' . '/vlucas/phpdotenv/src',
@@ -605,6 +615,10 @@ class ComposerStaticInit28ab241856c3f199130cd914a54ecec6
         array (
             0 => __DIR__ . '/..' . '/alibabacloud/gateway-spi/src',
         ),
+        'DASPRiD\\Enum\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/dasprid/enum/src',
+        ),
         'Complex\\' => 
         array (
             0 => __DIR__ . '/..' . '/markbaker/complex/classes/src',
@@ -620,6 +634,10 @@ class ComposerStaticInit28ab241856c3f199130cd914a54ecec6
         'Brick\\Math\\' => 
         array (
             0 => __DIR__ . '/..' . '/brick/math/src',
+        ),
+        'BaconQrCode\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/bacon/bacon-qr-code/src',
         ),
         'App\\' => 
         array (
