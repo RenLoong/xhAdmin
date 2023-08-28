@@ -13,10 +13,28 @@ use app\common\builder\ListBuilder;
  */
 trait Button
 {
-    // 表格顶部按钮
+    /**
+     * 表格顶部按钮
+     * @var array
+     * @author 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
     private $topButtonList = [];
 
-    // 表格列按钮
+    /**
+     * 开启选择按钮操作
+     * @var array
+     * @author 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    private $selectButtonList = [];
+
+    /**
+     * 表格列按钮
+     * @var array
+     * @author 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
     private $rightButtonList = [];
 
     /**
@@ -68,6 +86,32 @@ trait Button
         );
         // 设置按钮
         $this->topButtonList[] = $btnData;
+        return $this;
+    }
+
+    /**
+     * 添加选择按钮
+     * @param string $field
+     * @param string $title
+     * @param array $pageData
+     * @param array $message
+     * @param array $button
+     * @return \app\common\builder\ListBuilder
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function addSelectButton(string $field, string $title, array $pageData = [], array $message = [], array $button = []): ListBuilder
+    {
+        $btnData = $this->checkUsedAttrs(
+            $field,
+            $title,
+            $pageData,
+            $message,
+            $button
+        );
+        // 设置按钮
+        $this->selectButtonList[] = $btnData;
         return $this;
     }
 

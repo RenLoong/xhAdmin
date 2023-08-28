@@ -91,15 +91,19 @@ class ListBuilder
         if (isset($data['tableConfig']['topButtonList'])) {
             unset($data['tableConfig']['topButtonList']);
         }
+        if (isset($data['tableConfig']['selectButtonList'])) {
+            unset($data['tableConfig']['selectButtonList']);
+        }
         if (isset($data['tableConfig']['rightButtonList'])) {
             unset($data['tableConfig']['rightButtonList']);
         }
         if (isset($data['tabsConfig']['tabsConfig'])) {
             unset($data['tabsConfig']['tabsConfig']);
         }
-        $data['tabsConfig']      = $resutl['tabsConfig'];
-        $data['topButtonList']   = $resutl['topButtonList'];
-        $data['rightButtonList'] = $resutl['rightButtonList'];
+        $data['tabsConfig']             = $resutl['tabsConfig'];
+        $data['topButtonList']          = $resutl['topButtonList'];
+        $data['selectButtonList']       = $resutl['selectButtonList'];
+        $data['rightButtonList']        = $resutl['rightButtonList'];
         # 返回数据
         return $data;
     }
