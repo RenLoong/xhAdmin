@@ -40,10 +40,10 @@ class BtController
         $btData      = isset($post['btData']) ? $post['btData'] : null;
         $panel_ssl   = isset($btData['panel_ssl']) ? (bool) $btData['panel_ssl'] : false;
         $panelLogic  = new BtPanelLogic($btData['panel_port'], $btData['panel_key'], $panel_ssl);
-        $server_name = str_replace('.', '_', basename(ROOT_PATH));
+        $server_name = str_replace('.', '_', $_SERVER['SERVER_NAME']);
         # 执行安装步骤
         switch ($step) {
-            # 安装数据库结构
+                # 安装数据库结构
             case 'structure':
                 $database = isset($post['database']) ? $post['database'] : [];
                 if (!$database) {
@@ -67,7 +67,7 @@ class BtController
                     # 执行SQL
                     Db::exceSQL($sql);
                     # 获取安装名称
-                    $installName = str_replace(['.sql', 'php_','yc_'], '', $sqlItem['filename']);
+                    $installName = str_replace(['.sql', 'php_', 'yc_'], '', $sqlItem['filename']);
                     # 返回成功
                     return Json::json("安装 【{$installName}】 数据表成功", 200, [
                         'next' => 'structure',
@@ -76,7 +76,7 @@ class BtController
                 } catch (\Throwable $e) {
                     return Json::failFul($e->getMessage(), 404);
                 }
-            # 写入数据库数据
+                # 写入数据库数据
             case 'database':
                 $database = isset($post['database']) ? $post['database'] : null;
                 $site = isset($post['site']) ? $post['site'] : null;
@@ -107,7 +107,7 @@ class BtController
                 } catch (\Throwable $e) {
                     return Json::failFul($e->getMessage(), 404);
                 }
-            # 安装守护进程配置
+                # 安装守护进程配置
             case 'supervisor':
                 $panelLogic->addSupervisor($server_name);
                 # 安装完成
@@ -118,7 +118,7 @@ class BtController
                         'next' => 'config'
                     ]
                 );
-            # 写入文件配置
+                # 写入文件配置
             case 'config':
                 # 安装Env配置文件
                 Helpers::installEnv($post);
