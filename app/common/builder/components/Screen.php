@@ -25,6 +25,33 @@ trait Screen
     ];
 
     /**
+     * 筛选表单远程组件
+     * @var string
+     * @author 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    protected $screenRemote = [
+        'file'          => '',
+        'ajaxParams'    => []
+    ];
+
+    /**
+     * 设置启用远程组件表单
+     * @param string $remote
+     * @param array $params
+     * @return \app\common\builder\ListBuilder
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function screenRemote(string $remote,array $params = []):ListBuilder
+    {
+        $this->screenRemote['file']         = $remote;
+        $this->screenRemote['ajaxParams']   = $params;
+        return $this;
+    }
+
+    /**
      * 添加筛选单元格
      * @param string $field
      * @param string $type
