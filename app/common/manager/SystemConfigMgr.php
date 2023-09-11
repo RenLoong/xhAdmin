@@ -22,7 +22,11 @@ class SystemConfigMgr
      */
     protected $request = null;
     # 自定义组件类型
-    private $customComponent = ['uploadify','wangEditor'];
+    private $customComponent = [
+        'uploadify',
+        'wangEditor',
+        'remote',
+    ];
     # 扩展组件类型
     private $extraOptions = ['checkbox', 'radio', 'select'];
 
