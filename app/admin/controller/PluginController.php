@@ -72,7 +72,8 @@ class PluginController extends BaseController
                 ],
                 [],
                 [
-                    'type' => 'warning'
+                    'type'      => 'warning',
+                    'text'      => false,
                 ]
             )
             ->addRightButton(
@@ -96,7 +97,8 @@ class PluginController extends BaseController
                     'width' => '45%',
                 ],
                 [
-                    'type' => 'success'
+                    'type'      => 'success',
+                    'text'      => false,
                 ]
             )
             ->addRightButton(
@@ -119,7 +121,8 @@ class PluginController extends BaseController
                 ],
                 [],
                 [
-                    'type' => 'info'
+                    'type'      => 'info',
+                    'text'      => false,
                 ]
             )
             ->addRightButton(
@@ -143,7 +146,8 @@ class PluginController extends BaseController
                     'width' => '45%',
                 ],
                 [
-                    'type' => 'success'
+                    'type'      => 'success',
+                    'text'      => false,
                 ]
             )
             ->addRightButton(
@@ -169,7 +173,8 @@ class PluginController extends BaseController
                     'content' => "是否确认卸载该应用插件？\n该操作者将不可恢复数据，请自行备份应用数据",
                 ],
                 [
-                    'type' => 'danger'
+                    'type'      => 'danger',
+                    'text'      => false,
                 ]
             )
             ->tabsConfig([
