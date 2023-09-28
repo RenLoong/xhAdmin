@@ -24,30 +24,18 @@ trait Screen
         'content'       => '查询',
     ];
 
-    /**
-     * 筛选表单远程组件
-     * @var string
-     * @author 贵州猿创科技有限公司
-     * @email 416716328@qq.com
-     */
-    protected $screenRemote = [
-        'file'          => '',
-        'ajaxParams'    => []
-    ];
-
-    /**
-     * 设置启用远程组件表单
-     * @param string $remote
-     * @param array $params
-     * @return \app\common\builder\ListBuilder
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
-     */
+     /**
+      * 设置启用远程组件表单
+      * @param string $remote
+      * @param array $params
+      * @return \app\common\builder\ListBuilder
+      * @copyright 贵州猿创科技有限公司
+      * @email 416716328@qq.com
+      */
     public function screenRemote(string $remote,array $params = []):ListBuilder
     {
-        $this->screenRemote['file']         = $remote;
-        $this->screenRemote['ajaxParams']   = $params;
+        $this->screenRemote['file']     = $remote;
+        $this->screenRemote['ajaxParams']  = $params;
         return $this;
     }
 
@@ -57,7 +45,7 @@ trait Screen
      * @param string $type
      * @param string $title
      * @param array $extra
-     * @return \app\admin\builder\ListBuilder
+     * @return \app\common\builder\ListBuilder
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      */
@@ -88,7 +76,7 @@ trait Screen
     /**
      * 筛选表单配置
      * @param array $config
-     * @return \app\admin\builder\ListBuilder
+     * @return \app\common\builder\ListBuilder
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      */

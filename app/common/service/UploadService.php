@@ -2,11 +2,15 @@
 
 namespace app\common\service;
 
+use app\common\manager\SettingsMgr;
+use app\common\manager\StoreAppMgr;
+use app\common\manager\UsersMgr;
 use app\common\model\SystemUpload;
 use app\common\model\SystemUploadCate;
 use Exception;
-use Shopwwi\WebmanFilesystem\Storage;
-use Webman\Http\UploadFile;
+use think\facade\Config;
+use think\file\UploadedFile;
+use yzh52521\filesystem\facade\Filesystem;
 
 /**
  * 附件服务类
@@ -18,18 +22,19 @@ use Webman\Http\UploadFile;
 class UploadService
 {
     /**
-     * 下载远程文件并上传
-     * @param mixed $url
-     * @param mixed $cid
-     * @param array $dataId
-     * @param mixed $config
+     * 下载远程文件并上传至附件库
+     * @param string $url
+     * @param string $dir_name
+     * @param mixed $appid
+     * @param mixed $uid
+     * @param mixed $store_id
      * @throws \Exception
-     * @return array|bool|mixed
+     * @return array
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public static function remoteFile(string $url, int $cid = 0, array $dataId = [], array $config = []): array
+    public static function remoteFile(string $url, string $dir_name = '', $appid = null, $uid = null,$store_id = null): array
     {
         $fileInfo = pathinfo($url);
         if (!isset($fileInfo['extension'])) {
@@ -39,17 +44,19 @@ class UploadService
             throw new Exception('获取远程文件名称失败');
         }
         $fileMd5  = md5($fileInfo['filename']);
-        $tempFile = runtime_path("/remoteFile/{$fileMd5}.{$fileInfo['extension']}");
+        # 储存临时缓存文件目录
+        $tempFile = runtime_path() . "tempDown/{$fileMd5}.{$fileInfo['extension']}";
         if (!is_dir(dirname($tempFile))) {
             mkdir(dirname($tempFile), 0775, true);
         }
+        # 读取远程文件
         $file = file_get_contents($url);
         if (!file_put_contents($tempFile, $file)) {
             throw new Exception('远程资源文件下载失败');
         }
         $fileMimeType = self::getFileMimeType($tempFile);
-        $uploadFile   = new UploadFile($tempFile, $fileInfo['basename'], $fileMimeType, 0);
-        if (!$data = self::upload($uploadFile, $cid, $dataId)) {
+        $uploadFile   = new UploadedFile($tempFile, $fileInfo['basename'], $fileMimeType, 0);
+        if (!$data = self::upload($uploadFile, $dir_name, $appid, $uid,$store_id)) {
             throw new Exception('上传文件失败');
         }
         return $data;
@@ -70,35 +77,91 @@ class UploadService
         finfo_close($finfo);
         return $mime_type;
     }
-    
+
     /**
      * 上传文件
-     * @param mixed $file
-     * @param int $cid
-     * @param array $dataId
-     * @param array $config TODO:该参数预留后续使用
-     * @return mixed
+     * @param \think\file\UploadedFile $file
+     * @param string $dir_name 上传目录(分类dir_name)
+     * @param mixed $appid 上传应用ID
+     * @param mixed $uid 上传用户ID
+     * @param mixed $store_id 上传渠道ID
+     * @throws \Exception
+     * @return array
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public static function upload($file, int $cid = 0, array $dataId = [], array $config = [])
+    public static function upload(UploadedFile $file, string $dir_name = '', $appid = null, $uid = null,$store_id = null)
     {
         # 获取分类
-        $category = self::getCategory($cid);
-        # 上传目标地址
-        $path     = "upload/{$category['dir_name']}";
-        # 上传目录
-        $uploadDir = dirname($path);
-        # 检测目录不存在则创建
-        if (!is_dir(public_path($uploadDir))) {
-            mkdir(public_path($uploadDir), 0775, true);
+        $category = self::getCategory($dir_name, $appid, $store_id, $uid);
+        # 上传子目录
+        $dirName = $category['dir_name'] ?? 'default';
+
+        # 获取当前所有配置项
+        $config = self::getConfig();
+        # 获取当前使用驱动
+        $uploadDrive = self::getDrive();
+
+        # 获取驱动SDK
+        $filesystem = self::getDisk();
+
+        # 组装数据
+        $data['cid']      = $category['id'];
+        $data['title']    = $file->getOriginalName();
+        $data['filename'] = $file->getOriginalName();
+        $data['format']   = $file->extension();
+        $data['adapter']  = $uploadDrive;
+        $data['size']     = '';
+        $data['path']     = '';
+        $data['url']      = '';
+
+        # 检测文件是否已上传
+        $info = self::getFileInfo($data['filename'], $uploadDrive, $appid, $store_id);
+        if (!empty($info)) {
+            $data['size'] = $info['size'];
+            $data['path'] = $info['path'];
+            $data['url']  = $filesystem->url($info['path']);
+            # 返回数据
+            return $data;
         }
-        # 上传附件
-        $result   = (new Storage)->path($path)->upload($file, false);
-        # 增加附件库
-        $data     = self::addUpload($result, $category, $dataId);
-        # 返回上传数据
+
+        # 上传文件
+        $path = $filesystem->putFile($dirName, $file);
+
+        # 本地附件库
+        $localPath = $path;
+        if ($uploadDrive === 'local') {
+            $localPath = "{$config['root']}/{$path}";
+        }
+        # 根据用户重设应用ID
+        if ($uid) {
+            $user = UsersMgr::detail(['id'=> $uid]);
+            $store_id = empty($user['store_id']) ? null : $user['store_id'];
+            $appid = empty($user['saas_appid']) ? null : $user['saas_appid'];
+        }
+        # 根据项目ID重设渠道ID
+        if ($appid) {
+            $store = StoreAppMgr::detail(['id'=> $appid]);
+            $store_id = empty($store['store_id']) ? null : $store['store_id'];
+        }
+        # 组装数据
+        $data['cid']            = $category['id'];
+        $data['saas_appid']     = $appid;
+        $data['store_id']       = $store_id;
+        $data['title']          = $file->getOriginalName();
+        $data['filename']       = $file->getOriginalName();
+        $data['path']           = $localPath;
+        $data['format']         = $file->extension();
+        $data['size']           = get_size($filesystem->size($path));
+        $data['adapter']        = $uploadDrive;
+        $data['url']            = $filesystem->url($localPath);
+
+        $model = new SystemUpload;
+        if (!$model->save($data)) {
+            throw new Exception('附件上传失败');
+        }
+        # 返回数据
         return $data;
     }
 
@@ -127,10 +190,8 @@ class UploadService
      */
     public static function url(string $path): string
     {
-        if (!$path) {
-            return '';
-        }
-        $url = (string) (new Storage)->url($path);
+        $disk = self::getDisk();
+        $url  = $disk->url($path);
         return $url;
     }
 
@@ -187,92 +248,146 @@ class UploadService
      */
     public static function path(string|array $url)
     {
-        $config    = config('plugin.shopwwi.filesystem.app');
-        $default   = $config['default'] ?? 'public';
-        $configUrl = isset($config['storage'][$default]['url']) ? "{$config['storage'][$default]['url']}/" : '';
         if (is_array($url)) {
             $data = [];
-            foreach ($url as $value) {
-                $data[] = str_replace($configUrl, '', $value);
+            if (count($url) === 1) {
+                return self::path(current($url));
             }
-            return count($data) === 1 ? current($data) : $data;
+            foreach ($url as $value) {
+                if (filter_var($value, FILTER_SANITIZE_URL) === false) {
+                    throw new Exception('URL地址不合法');
+                }
+                $parseUrl = parse_url($value);
+                $data[]   = ltrim($parseUrl['path'], '/');
+            }
+            return $data;
         } else {
-            return str_replace($configUrl, '', $url);
+            if (filter_var($url, FILTER_SANITIZE_URL) === false) {
+                throw new Exception('URL地址不合法');
+            }
+            $parseUrl = parse_url($url);
+            $data     = ltrim($parseUrl['path'], '/');
+            return $data;
         }
     }
 
     /**
-     * 附件储存
-     * @param mixed $result
-     * @param mixed $category
-     * @param array $dataId
-     * @throws \Exception
+     * 检测文件是否已存在
+     * @param mixed $fileName
+     * @param mixed $adapter
+     * @param mixed $appid
+     * @param mixed $store_id
      * @return mixed
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
+     * @author John
      */
-    private static function addUpload($result, array $category, array $dataId = [])
+    public static function getFileInfo($fileName, $adapter, $appid = null, $store_id = null)
     {
-        $fiel_name = basename($result->file_name);
-        # 查询条件
-        $where =[];
-        $where['filename'] = $fiel_name;
-        $where['adapter'] = $result->adapter;
-        isset($dataId['store_id']) && $where['store_id'] = $dataId['store_id'];
-        isset($dataId['saas_appid']) && $where['saas_appid'] = $dataId['saas_appid'];
-        isset($dataId['uid']) && $where['uid'] = $dataId['uid'];
-
-        # 查询数据
+        $where['filename'] = $fileName;
+        $where['adapter']  = $adapter;
+        if ($appid) {
+            $where['saas_appid'] = $appid;
+        }
+        if ($store_id) {
+            $where['store_id'] = $store_id;
+        }
         $fileModel = SystemUpload::where($where)->find();
         if ($fileModel) {
             $fileModel->update_at = date('Y-m-d H:i:s');
             $fileModel->save();
             return $fileModel->toArray();
         }
-        $data['cid']      = $category['id'];
-        $data['title']    = $result->origin_name;
-        $data['filename'] = basename($result->file_name);
-        $data['path']     = $result->file_name;
-        $data['format']   = $result->extension;
-        $data['size']     = $result->size;
-        $data['adapter']  = $result->adapter;
-
-        # 组装入库数据
-        isset($dataId['store_id']) && $data['store_id'] = $dataId['store_id'];
-        isset($dataId['saas_appid']) && $data['saas_appid'] = $dataId['saas_appid'];
-        isset($dataId['uid']) && $data['uid'] = $dataId['uid'];
-
-        # 数据入库
-        if (!(new SystemUpload)->save($data)) {
-            throw new Exception('附件上传失败');
-        }
-        $data['url'] = self::url($result->file_name);
-        return $data;
+        return [];
     }
 
     /**
      * 获取储存的分类
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-04
+     * @param string $dir_name
+     * @param mixed $appid
+     * @param mixed $store_id
+     * @throws \Exception
      * @return array
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
-    private static function getCategory(int $cid): array
+    private static function getCategory(string $dir_name, $appid = null, $store_id = null, $uid = null): array
     {
-        if ($cid) {
-            $where[] = ['id', '=', $cid];
+        $where = [];
+        if ($dir_name) {
+            $where[] = ['dir_name', '=', $dir_name];
         } else {
-            $where[] = ['is_system', '=', '1'];
+            $where[] = ['is_system', '=', '20'];
+        }
+        if ($appid) {
+            $where[] = ['saas_appid', '=', $appid];            
+        }
+        if ($store_id) {
+            $where[] = ['store_id', '=', $store_id];
+        }
+        if ($uid) {
+            $where[] = ['uid', '=', $uid];
         }
         $category = SystemUploadCate::where($where)->find();
         if (!$category) {
-            $category = SystemUploadCate::order(['id'=>'asc'])->find();
+            $category = SystemUploadCate::order(['id' => 'asc'])->find();
         }
         if (!$category) {
             throw new Exception('没有更多的附件分类可用');
         }
         return $category->toArray();
+    }
+
+    /**
+     * 获取附件系统配置项
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function getConfig()
+    {
+        return (new SettingsMgr)->group('upload');
+    }
+
+    /**
+     * 获取当前使用驱动
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function getDrive()
+    {
+        $config = self::getConfig();
+        return $config['upload_drive'] ?? '';
+    }
+
+    /**
+     * 获取驱动SDK
+     * @return \yzh52521\filesystem\Driver
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function getDisk()
+    {
+        # 获取配置项
+        $config = self::getConfig();
+        unset($config['upload_drive']);
+
+        $uploadDrive = self::getDrive();
+
+        # 合并配置
+        $config = array_merge(config("filesystem.disks.{$uploadDrive}", []), $config);
+
+        # 动态设置配置
+        Config::set([
+            'disks' => [
+                $uploadDrive => $config,
+            ]
+        ], 'filesystem');
+
+        # 获取驱动SDK
+        return Filesystem::disk($uploadDrive);
     }
 }

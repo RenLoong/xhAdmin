@@ -30,7 +30,7 @@ class PluginMgr
             'version' => $installedVersion,
             'saas_version' => $systemInfo['system_version'],
             'local_version' => $installedVersion,
-        ])->response();
+        ])->response()->toArray();
         if (empty($data['local_version'])) {
             throw new Exception('云端应用数据错误');
         }
@@ -47,10 +47,10 @@ class PluginMgr
      */
     public static function getPluginVersion($name,$versionName = 'version')
     {
-        if (!is_dir(base_path("/plugin/{$name}"))) {
+        if (!is_dir(root_path()."/plugin/{$name}")) {
             return 1;
         }
-        $json = base_path("/plugin/{$name}/version.json");
+        $json = root_path()."/plugin/{$name}/version.json";
         if (!is_file($json)) {
             return 1;
         }
@@ -72,10 +72,10 @@ class PluginMgr
             'version'           => 1,
             'version_name'      => '1.0.0'
         ];
-        if (!is_dir(base_path("/plugin/{$name}"))) {
+        if (!is_dir(root_path()."/plugin/{$name}")) {
             return $version;
         }
-        $json = base_path("/plugin/{$name}/version.json");
+        $json = root_path()."/plugin/{$name}/version.json";
         if (!is_file($json)) {
             return $version;
         }
@@ -93,14 +93,14 @@ class PluginMgr
      */
     public static function getLocalPlugins(): array
     {
-        if (!is_dir(base_path('/plugin/'))) {
+        if (!is_dir(root_path().'/plugin/')) {
             return [];
         }
         clearstatcache();
         $installed = [];
-        $plugin_names = array_diff(scandir(base_path('/plugin/')), array('.', '..')) ?: [];
+        $plugin_names = array_diff(scandir(root_path().'/plugin/'), array('.', '..')) ?: [];
         foreach ($plugin_names as $plugin_name) {
-            if (is_dir(base_path("/plugin/{$plugin_name}")) && $version = self::getPluginVersion($plugin_name)) {
+            if (is_dir(root_path()."/plugin/{$plugin_name}") && $version = self::getPluginVersion($plugin_name)) {
                 $installed[$plugin_name] = $version;
             }
         }

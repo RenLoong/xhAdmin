@@ -2,11 +2,13 @@
 
 namespace app\store\controller;
 
-use app\BaseController;
+use app\common\BaseController;
 use app\common\enum\PlatformTypes;
 use app\common\model\Store;
 use app\common\model\StoreApp;
 use support\Request;
+use YcOpen\CloudService\Cloud;
+use YcOpen\CloudService\Request\UserRequest;
 
 /**
  * 默认控制器
@@ -17,6 +19,18 @@ use support\Request;
 class IndexController extends BaseController
 {
     /**
+     * 后台视图
+     * @return \think\Response
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function index()
+    {
+        return getAdminView();
+    }
+
+    /**
      * 首页数据统计
      * @param Request $request
      * @return \support\Response
@@ -24,9 +38,9 @@ class IndexController extends BaseController
      * @Email 416716328@qq.com
      * @DateTime 2023-05-12
      */
-    public function countData(Request $request)
+    public function indexData(Request $request)
     {
-        $admin_id = hp_admin_id('hp_store');
+        $admin_id = $request->user['id'];
         if (!$admin_id) {
             return $this->failFul('登录超时，请重新登录',12000);
         }
@@ -55,7 +69,16 @@ class IndexController extends BaseController
             ];
             $platformList[] = $item;
         }
+        $req = new UserRequest;
+        $req->info();
+        $cloud = new Cloud($req);
+        $data  = $cloud->send()->toArray();
+        # 是否开发者
+        $isDeveloper = $data['is_dev'] == 1 ? true : false;
+
+        # 返回数据
         $data = [
+            'isDeveloper'   => $isDeveloper,
             'platformApp'   => $platformList
         ];
         return $this->successRes($data);

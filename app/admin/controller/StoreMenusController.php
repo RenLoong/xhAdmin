@@ -6,7 +6,7 @@ use app\common\builder\FormBuilder;
 use app\common\builder\ListBuilder;
 use app\admin\model\StoreMenus;
 use app\admin\validate\SystemAuthRule as ValidateSystemAuthRule;
-use app\BaseController;
+use app\common\BaseController;
 use app\common\enum\AuthRuleRuleTypeStyle;
 use app\common\enum\ShowStatusStyle;
 use app\common\enum\YesNoEum;
@@ -17,6 +17,7 @@ use app\common\enum\YesNoEumStyle;
 use app\common\service\AuthRuleService;
 use support\Request;
 use FormBuilder\Factory\Elm;
+use think\App;
 
 /**
  * 权限菜单
@@ -41,10 +42,10 @@ class StoreMenusController extends BaseController
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public function __construct()
+    public function __construct(App $app)
     {
         $this->model = new StoreMenus;
-        parent::__construct();
+        parent::__construct($app);
     }
 
     /**
@@ -86,7 +87,7 @@ class StoreMenusController extends BaseController
                     'title'   => '温馨提示',
                     'content' => '是否确认删除该数据',
                 ], [
-                    'type' => 'error',
+                    'type' => 'danger',
                     'link' => true
                 ])
             ->addColumn('path_text', '权限地址', [

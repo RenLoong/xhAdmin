@@ -51,6 +51,19 @@ class SystemUpdateRequest extends Request
         return $this;
     }
     /**
+     * 获取最新版
+     * @param mixed $query
+     * @return SystemUpdateRequest
+     */
+    public function newVersion(mixed $query = null)
+    {
+        $this->setUrl('SystemUpdate/newVersion');
+        if ($query) {
+            $this->setQuery($query);
+        }
+        return $this;
+    }
+    /**
      * 获取插件密钥
      * @param mixed $query
      * @return SystemUpdateRequest

@@ -3,9 +3,7 @@
 namespace app\common\utils;
 
 use Exception;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-use support\Log;
+use think\facade\Log;
 
 /**
  * 目录操作类
@@ -302,7 +300,7 @@ final class DirUtil
     }
 
     /**
-     * 检测目录是否问空
+     * 检测目录是否为空
      * @param mixed $dir
      * @return bool|null
      * @author 贵州猿创科技有限公司

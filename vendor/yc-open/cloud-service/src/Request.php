@@ -21,9 +21,10 @@ class Request
     protected $file;
     protected $isDownFile = false;
     protected $timeout = 60;
+    protected $tokenKey = 'yc-cloud-service-token';
     public function __construct(string $version = null)
     {
-        $this->siteinfo_file = base_path('/config/site.json');
+        $this->siteinfo_file = root_path('config') . 'site.json';
         if (!is_dir(dirname($this->siteinfo_file))) {
             mkdir(dirname($this->siteinfo_file), 0777, true);
         }
@@ -31,7 +32,12 @@ class Request
             $siteinfo = json_decode(file_get_contents($this->siteinfo_file), true);
             $this->setHeaders($siteinfo);
         }
-        $token = Redis::get('yc-cloud-service-token');
+        $root = basename(root_path());
+        $this->tokenKey = 'yc-cloud-service-token.' . $root;
+        $token = Redis::get($this->tokenKey);
+        if (!$token) {
+            $token = Redis::get('yc-cloud-service-token');
+        }
         if ($token) {
             $this->setToken($token);
         }
@@ -296,7 +302,11 @@ class Request
             throw new Exception\HttpException('未设置文件保存路径');
         }
         $client = new Client([
-            'timeout' => 0
+            'timeout' => 0,
+            'headers' => [
+                'Accept-Encoding' => 'gzip',
+            ],
+            'decode_content' => false
         ]);
         $response = $client->get($this->url);
 

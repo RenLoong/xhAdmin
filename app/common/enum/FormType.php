@@ -1,7 +1,7 @@
 <?php
 namespace app\common\enum;
 
-use app\Enum;
+use app\common\Enum;
 
 /**
  * 配置项表单类型
@@ -13,6 +13,10 @@ use app\Enum;
  */
 class FormType extends Enum
 {
+    const HIDDEN = [
+        'text'      => '隐藏框',
+        'value'     => 'input'
+    ];
     const INPUT = [
         'text'      => '输入框',
         'value'     => 'input'

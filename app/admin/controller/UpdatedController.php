@@ -6,11 +6,11 @@ use app\common\exception\RollBackException;
 use app\common\service\SystemRollbackService;
 use app\common\service\SystemUpdateService;
 use app\common\service\SystemInfoService;
-use app\BaseController;
+use app\common\BaseController;
 use Exception;
-use process\Monitor;
-use support\Log;
 use support\Request;
+use think\App;
+use think\facade\Log;
 use YcOpen\CloudService\Cloud;
 use YcOpen\CloudService\Request\SystemUpdateRequest;
 
@@ -53,7 +53,7 @@ class UpdatedController extends BaseController
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public function __construct()
+    public function __construct(App $app)
     {
         $data = SystemInfoService::info();
         if (!isset($data['system_version'])) {
@@ -67,7 +67,7 @@ class UpdatedController extends BaseController
             'client_version_name' => $this->version_name,
             'client_version' => $this->system_version,
         ];
-        parent::__construct();
+        parent::__construct($app);
     }
     /**
      * 更新升级
@@ -113,26 +113,16 @@ class UpdatedController extends BaseController
         if (empty($funcName)) {
             return $this->fail('操作方法出错');
         }
-        # 暂停代码监听变动
-        $monitor_support_pause = method_exists(Monitor::class, 'pause');
-        if ($monitor_support_pause) {
-            Monitor::pause();
-        }
         try {
             $class = new SystemUpdateService($request);
             return call_user_func([$class, $funcName]);
         } catch (RollBackException $e) {
             # 日志记录
-            Log::error("{$e->getMessage()}，Line:{$e->getLine()}，File:{$e->getFile()}");
+            Log::write("{$e->getMessage()}，Line:{$e->getLine()}，File:{$e->getFile()}",'xhadmin_update_error');
             # 开始进行版本回滚
             return (new SystemRollbackService($request))->startRollback();
         } catch (\Throwable $e) {
             return $this->fail($e->getMessage());
-        } finally {
-            # 恢复代码监听变动
-            if ($monitor_support_pause) {
-                Monitor::resume();
-            }
         }
     }
 

@@ -36,12 +36,9 @@ class AuthMgr
      */
     public static function run(array $admin): array
     {
-        // 默认选择菜单
-        $active = '/Index/index';
         // 获取管理员权限
         $adminRoleRule = self::getAdminRoleRule($admin);
-        
-        return ['active' => $active, 'list' => $adminRoleRule];
+        return $adminRoleRule;
     }
 
     /**

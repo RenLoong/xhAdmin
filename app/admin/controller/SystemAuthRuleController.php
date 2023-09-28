@@ -12,7 +12,7 @@ use app\common\enum\YesNoEumStyle;
 use app\common\service\AuthRuleService;
 use app\common\model\SystemAuthRule;
 use app\admin\validate\SystemAuthRule as ValidateSystemAuthRule;
-use app\BaseController;
+use app\common\BaseController;
 use app\common\enum\AuthRuleMethods;
 use app\common\enum\AuthRuleRuleType;
 use app\common\service\FrameworkService;
@@ -67,7 +67,7 @@ class SystemAuthRuleController extends BaseController
                     'title'   => '温馨提示',
                     'content' => '是否确认删除该数据',
                 ], [
-                    'type' => 'error',
+                    'type' => 'danger',
                     'link' => true
                 ])
             ->addColumn('path_text', '权限地址', [
@@ -95,7 +95,7 @@ class SystemAuthRuleController extends BaseController
                 'params' => [
                     'type'    => 'tags',
                     'options' => AuthRuleRuleType::dictOptions(),
-                    'style'   => AuthRuleRuleTypeStyle::parseAlias('type'),
+                    'style'   => AuthRuleRuleTypeStyle::parseAlias('type',false),
                 ],
             ])
             ->addColumn('method', '请求类型', [

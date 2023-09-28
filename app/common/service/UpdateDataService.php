@@ -1,9 +1,10 @@
 <?php
 namespace app\common\service;
+
 use app\common\manager\DbMgr;
 use app\common\utils\DirUtil;
-use support\Log;
 use support\Request;
+use think\facade\Log;
 
 /**
  * 执行数据同步更新
@@ -40,18 +41,14 @@ class UpdateDataService extends SystemUpdateService
     public function beforeUpdate()
     {
         # sql目录
-        $sqlDir = base_path('/update');
+        $sqlDir = base_path().'/update';
         if (!is_dir($sqlDir)) {
             return [];
         }
         # 获取sql文件
-        $sqlFiles = array_values(array_diff(scandir($sqlDir), ['.', '..']));
-        $extension = '.sql';
+        $sqlFiles = glob("{$sqlDir}/*.sql");
         $data      = [];
         foreach ($sqlFiles as $file) {
-            if (!strpos($file, $extension)) {
-                continue;
-            }
             $sqlContent = file_get_contents("{$sqlDir}/{$file}");
             if (empty($sqlContent) && file_exists("{$sqlDir}/{$file}")) {
                 unlink("{$sqlDir}/{$file}");
@@ -96,11 +93,11 @@ class UpdateDataService extends SystemUpdateService
                     Log::error("系统更新SQL错误，继续执行：{$e->getMessage()}，Line：{$e->getLine()}，File：{$e->getFile()}");
                 }
                 # 执行后，无论成功失败，删除文件
-                $filePath = base_path("/update/{$value['file']}");
+                $filePath = root_path()."/update/{$value['file']}";
                 file_exists($filePath) && unlink($filePath);
             }
             # 检测目录是否为空，为空则删除
-            $updateDir = base_path('/update');
+            $updateDir = root_path().'/update';
             if (DirUtil::isDirEmpty($updateDir)) {
                 DirUtil::delDir($updateDir);
             }

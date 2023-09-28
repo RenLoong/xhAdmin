@@ -13,16 +13,16 @@ use Exception;
 class SystemInfoService
 {
     // 系统名称
-    public static $system_name = 'KFAdmin';
+    public static $system_name = 'XHAdmin';
     // 框架文档
-    public static $system_doc = 'https://www.kfadmin.net/dev';
+    public static $system_doc = 'http://doc.kfadmin.net/kfadmin-doc/';
     // 企业名称
     public static $about_name = '贵州猿创科技有限公司';
     // 生态
     public static $ecology = [
         [
             'name' => '使用文档',
-            'url'  => 'https://www.kfadmin.net/doc',
+            'url'  => 'https://www.kancloud.cn/me_coder/kfadmin/3169580',
         ],
         [
             'name' => '在线社区',
@@ -45,9 +45,9 @@ class SystemInfoService
      */
     public static function info()
     {
-        $packPath            = base_path('/config/version.json');
+        $packPath            = root_path().'config/version.json';
         if (!file_exists($packPath)) {
-            $packPath       = base_path('/version.json');
+            $packPath       = root_path().'version.json';
         }
         if (!file_exists($packPath)) {
             throw new Exception('框架版本出错');

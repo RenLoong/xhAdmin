@@ -1,14 +1,13 @@
 <?php
 namespace app\common\manager;
 
-use app\common\service\FrameworkService;
 use app\common\service\SystemInfoService;
 use app\common\manager\JsonMgr;
+use app\common\utils\DirUtil;
 use Exception;
 use support\Request;
-use YcOpen\CloudService\Cloud;
+use think\facade\Log;
 use YcOpen\CloudService\Request as CloudServiceRequest;
-use YcOpen\CloudService\Request\PluginRequest;
 
 /**
  * 应用安装管理器
@@ -54,15 +53,15 @@ class PluginInstallMgr
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      */
-    public function __construct(Request $request,string $name,int $version)
+    public function __construct(Request $request, string $name, int $version)
     {
         $this->request = $request;
-        $this->name = $name;
+        $this->name    = $name;
         $this->version = $version;
         # 应用路径
-        $this->pluginPath = base_path("/plugin/{$this->name}");
+        $this->pluginPath = root_path() . "plugin/{$this->name}";
         # 下载包储存路径
-        $this->zipFile = runtime_path("/plugin/{$this->name}-install.zip");
+        $this->zipFile = runtime_path() . "{$this->name}-install.zip";
     }
 
     /**
@@ -76,11 +75,16 @@ class PluginInstallMgr
         # 获取本地版本
         $installed_version = PluginMgr::getPluginVersion($this->name);
         if ($installed_version > 1) {
-            throw new Exception('该应用已安装');
+            throw new Exception('该应用插件已安装');
+        }
+        if (file_exists($this->pluginPath . "/api/Install.php")) {
+            return JsonMgr::successFul('项目文件已存在，开始安装数据', [
+                'next' => 'updateData',
+            ]);
         }
         # 获取下载KEY
         $systemInfo = SystemInfoService::info();
-        $res=CloudServiceRequest::Plugin(CloudServiceRequest::API_VERSION_V2)->getKey()->setQuery([
+        $res        = CloudServiceRequest::Plugin(CloudServiceRequest::API_VERSION_V2)->getKey()->setQuery([
             'name' => $this->name,
             'version' => $this->version,
             'saas_version' => $systemInfo['system_version'],
@@ -95,8 +99,8 @@ class PluginInstallMgr
         if (!$status) {
             throw new Exception('安装包下载失败');
         }
-        return JsonMgr::successFul('下载成功',[
-            'next'      => 'unzip',
+        return JsonMgr::successFul('下载成功', [
+            'next' => 'unzip',
         ]);
     }
 
@@ -109,7 +113,7 @@ class PluginInstallMgr
     public function unzip()
     {
         # 检测安装包是否存在
-        if(!file_exists($this->zipFile)){
+        if (!file_exists($this->zipFile)) {
             throw new Exception('安装包不存在');
         }
         # 解压安装包
@@ -117,8 +121,8 @@ class PluginInstallMgr
         # 解压成功，删除安装包
         file_exists($this->zipFile) && unlink($this->zipFile);
         # 操作完成
-        return JsonMgr::successFul('解压成功',[
-            'next'      => 'updateData',
+        return JsonMgr::successFul('解压成功', [
+            'next' => 'updateData',
         ]);
     }
 
@@ -132,7 +136,7 @@ class PluginInstallMgr
     {
         try {
             # 获取安装类
-            $installPath = base_path("/plugin/{$this->name}/api/Install.php");
+            $installPath = root_path() . "plugin/{$this->name}/api/Install.php";
             if (!file_exists($installPath)) {
                 throw new Exception('安装类不存在');
             }
@@ -147,45 +151,15 @@ class PluginInstallMgr
                 call_user_func([$installClass, 'install'], $local_version);
             }
         } catch (\Throwable $e) {
-            # 安装失败，删除安装目录
+            # 安装失败，删除插件目录
             if (is_dir($this->pluginPath)) {
-                shell_exec("rm -rf {$this->pluginPath}");
+                DirUtil::delDir($this->pluginPath);
             }
-            return JsonMgr::fail($e->getMessage());
+            Log::write($e->getMessage(),'plugin_install_error');
+            return JsonMgr::fail("安装数据失败");
         }
-        return JsonMgr::successFul('更新数据成功',[
-            'next'      => 'reload',
-        ]);
-    }
-
-    /**
-     * 重启服务
-     * @return \support\Response
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     */
-    public function reload()
-    {
-        # 重启主进程
-        FrameworkService::reloadWebman();
-        # 重启延迟
-        sleep(3);
-        # 重启成功
-        return JsonMgr::successFul('重启服务',[
-            'next'      => 'ping',
-        ]);
-    }
-
-    /**
-     * 等待重启
-     * @return \support\Response
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     */
-    public function ping()
-    {
-        return JsonMgr::successFul('重启成功',[
-            'next'      => 'success',
+        return JsonMgr::successFul('安装数据成功', [
+            'next' => 'success',
         ]);
     }
 
@@ -197,8 +171,8 @@ class PluginInstallMgr
      */
     public function success()
     {
-        return JsonMgr::successFul('重启成功',[
-            'next'      => '',
+        return JsonMgr::successFul('应用插件安装成功', [
+            'next' => '',
         ]);
     }
 }

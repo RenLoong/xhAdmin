@@ -1,7 +1,7 @@
 <?php
 namespace app\common\enum;
 
-use app\Enum;
+use app\common\Enum;
 
 /**
  * 显示状态通用枚举
@@ -12,7 +12,7 @@ use app\Enum;
 class ShowStatusStyle extends Enum
 {
     const SHOW_NO = [
-        'text'      => '',
+        'text'      => 'danger',
         'value'     => '10',
     ];
     const SHOW_YES = [

@@ -5,58 +5,19 @@ namespace Overtrue\CosClient;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 use Overtrue\CosClient\Exceptions\InvalidArgumentException;
-use Overtrue\CosClient\Exceptions\InvalidConfigException;
 use Overtrue\CosClient\Support\XML;
 
 class ObjectClient extends Client
 {
-    public ?string $baseUri = null;
-
-    /**
-     * @param  \Overtrue\CosClient\Config|array  $config
-     *
-     * @throws \Overtrue\CosClient\Exceptions\InvalidConfigException
-     */
-    public function __construct($config)
-    {
-        if (!($config instanceof Config)) {
-            $config = new Config($config);
-        }
-
-        if (!$config->has('bucket')) {
-            throw new InvalidConfigException('No bucket configured.');
-        }
-
-        parent::__construct($config);
-
-        $this->setBaseUri(\sprintf(
-            'https://%s-%s.cos.%s.myqcloud.com/',
-            $config->get('bucket'),
-            $config->get('app_id'),
-            $config->get('region', self::DEFAULT_REGION)
-        ));
-    }
-
-    /**
-     * @param  string  $key
-     * @param  string  $body
-     * @param  array  $headers
-     *
-     * @return \Overtrue\CosClient\Http\Response
-     */
-    public function putObject(string $key, string $body, array $headers = [])
+    public function putObject(string $key, string $body, array $headers = []): Http\Response
     {
         return $this->put(\urlencode($key), \compact('body', 'headers'));
     }
 
     /**
-     * @param  string  $key
-     * @param  array  $headers
-     *
-     * @return \Overtrue\CosClient\Http\Response
      * @throws \Overtrue\CosClient\Exceptions\InvalidArgumentException
      */
-    public function copyObject(string $key, array $headers)
+    public function copyObject(string $key, array $headers): Http\Response
     {
         if (empty($headers['x-cos-copy-source'])) {
             throw new InvalidArgumentException('Missing required header: x-cos-copy-source');
@@ -71,36 +32,18 @@ class ObjectClient extends Client
 
     /**
      * @see https://docs.guzzlephp.org/en/stable/request-options.html#multipart
-     *
-     * @param  array  $multipart
-     *
-     * @return \Overtrue\CosClient\Http\Response
      */
-    public function postObject(array $multipart)
+    public function postObject(array $multipart): Http\Response
     {
         return $this->post('/', \compact('multipart'));
     }
 
-    /**
-     * @param  string  $key
-     * @param  array  $query
-     * @param  array  $headers
-     *
-     * @return \Overtrue\CosClient\Http\Response
-     */
-    public function getObject(string $key, array $query = [], array $headers = [])
+    public function getObject(string $key, array $query = [], array $headers = []): Http\Response
     {
         return $this->get(\urlencode($key), \compact('query', 'headers'));
     }
 
-    /**
-     * @param  string  $key
-     * @param  string|null  $versionId
-     * @param  array  $headers
-     *
-     * @return \Overtrue\CosClient\Http\Response
-     */
-    public function headObject(string $key, string $versionId = null, array $headers = [])
+    public function headObject(string $key, string $versionId = null, array $headers = []): Http\Response
     {
         return $this->head(\urlencode($key), [
             'query' => \compact('versionId'),
@@ -108,47 +51,24 @@ class ObjectClient extends Client
         ]);
     }
 
-    /**
-     * @param  string  $key
-     * @param  string|null  $versionId
-     *
-     * @return \Overtrue\CosClient\Http\Response
-     */
-    public function deleteObject(string $key, string $versionId = null)
+    public function deleteObject(string $key, string $versionId = null): Http\Response
     {
         return $this->delete(\urlencode($key), [
             'query' => \compact('versionId'),
         ]);
     }
 
-    /**
-     * @param  array  $body
-     *
-     * @return \Overtrue\CosClient\Http\Response
-     */
-    public function deleteObjects(array $body)
+    public function deleteObjects(array $body): Http\Response
     {
         return $this->post('/?delete', ['body' => XML::fromArray($body)]);
     }
 
-    /**
-     * @param  string  $key
-     *
-     * @return \Overtrue\CosClient\Http\Response
-     */
-    public function optionsObject(string $key)
+    public function optionsObject(string $key): Http\Response
     {
         return $this->options(\urlencode($key));
     }
 
-    /**
-     * @param  string  $key
-     * @param  array  $body
-     * @param  string|null  $versionId
-     *
-     * @return \Overtrue\CosClient\Http\Response
-     */
-    public function restoreObject(string $key, array $body, string $versionId = null)
+    public function restoreObject(string $key, array $body, string $versionId = null): Http\Response
     {
         return $this->post(\urlencode($key), [
             'query' => [
@@ -159,13 +79,7 @@ class ObjectClient extends Client
         ]);
     }
 
-    /**
-     * @param  string  $key
-     * @param  array  $body
-     *
-     * @return \Overtrue\CosClient\Http\Response
-     */
-    public function selectObjectContents(string $key, array $body)
+    public function selectObjectContents(string $key, array $body): Http\Response
     {
         return $this->post(\urlencode($key), [
             'query' => [
@@ -176,14 +90,7 @@ class ObjectClient extends Client
         ]);
     }
 
-    /**
-     * @param  string  $key
-     * @param  array  $body
-     * @param  array  $headers
-     *
-     * @return \Overtrue\CosClient\Http\Response
-     */
-    public function putObjectACL(string $key, array $body, array $headers = [])
+    public function putObjectACL(string $key, array $body, array $headers = []): Http\Response
     {
         return $this->put(\urlencode($key), [
             'query' => [
@@ -194,12 +101,7 @@ class ObjectClient extends Client
         ]);
     }
 
-    /**
-     * @param  string  $key
-     *
-     * @return \Overtrue\CosClient\Http\Response
-     */
-    public function getObjectACL(string $key)
+    public function getObjectACL(string $key): Http\Response
     {
         return $this->get(\urlencode($key), [
             'query' => [
@@ -208,14 +110,7 @@ class ObjectClient extends Client
         ]);
     }
 
-    /**
-     * @param  string  $key
-     * @param  array  $body
-     * @param  string|null  $versionId
-     *
-     * @return \Overtrue\CosClient\Http\Response
-     */
-    public function putObjectTagging(string $key, array $body, string $versionId = null)
+    public function putObjectTagging(string $key, array $body, string $versionId = null): Http\Response
     {
         return $this->put(\urlencode($key), [
             'query' => [
@@ -226,13 +121,7 @@ class ObjectClient extends Client
         ]);
     }
 
-    /**
-     * @param  string  $key
-     * @param  string|null  $versionId
-     *
-     * @return \Overtrue\CosClient\Http\Response
-     */
-    public function getObjectTagging(string $key, string $versionId = null)
+    public function getObjectTagging(string $key, string $versionId = null): Http\Response
     {
         return $this->get(\urlencode($key), [
             'query' => [
@@ -242,13 +131,7 @@ class ObjectClient extends Client
         ]);
     }
 
-    /**
-     * @param  string  $key
-     * @param  string|null  $versionId
-     *
-     * @return \Overtrue\CosClient\Http\Response
-     */
-    public function deleteObjectTagging(string $key, string $versionId = null)
+    public function deleteObjectTagging(string $key, string $versionId = null): Http\Response
     {
         return $this->delete(\urlencode($key), [
             'query' => [
@@ -259,13 +142,9 @@ class ObjectClient extends Client
     }
 
     /**
-     * @param  string  $key
-     * @param  array  $headers
-     *
-     * @return \Overtrue\CosClient\Http\Response
-     * @throws \Overtrue\CosClient\Exceptions\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    public function createUploadId(string $key, array $headers)
+    public function createUploadId(string $key, array $headers): Http\Response
     {
         if (empty($headers['Content-Type'])) {
             throw new InvalidArgumentException('Missing required headers: Content-Type');
@@ -279,30 +158,12 @@ class ObjectClient extends Client
         ]);
     }
 
-    /**
-     * @param  string  $key
-     * @param  int  $partNumber
-     * @param  string  $uploadId
-     * @param  string  $body
-     * @param  array  $headers
-     *
-     * @return \Overtrue\CosClient\Http\Response
-     */
-    public function uploadPart(string $key, int $partNumber, string $uploadId, string $body, array $headers = [])
+    public function uploadPart(string $key, int $partNumber, string $uploadId, string $body, array $headers = []): Http\Response
     {
         return $this->putPart(...\func_get_args());
     }
 
-    /**
-     * @param  string  $key
-     * @param  int  $partNumber
-     * @param  string  $uploadId
-     * @param  string  $body
-     * @param  array  $headers
-     *
-     * @return \Overtrue\CosClient\Http\Response
-     */
-    public function putPart(string $key, int $partNumber, string $uploadId, string $body, array $headers = [])
+    public function putPart(string $key, int $partNumber, string $uploadId, string $body, array $headers = []): Http\Response
     {
         return $this->put(\urlencode($key), [
             'query' => \compact('partNumber', 'uploadId'),
@@ -312,15 +173,9 @@ class ObjectClient extends Client
     }
 
     /**
-     * @param  string  $key
-     * @param  int  $partNumber
-     * @param  string  $uploadId
-     * @param  array  $headers
-     *
-     * @return \Overtrue\CosClient\Http\Response
-     * @throws \Overtrue\CosClient\Exceptions\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    public function copyPart(string $key, int $partNumber, string $uploadId, array $headers = [])
+    public function copyPart(string $key, int $partNumber, string $uploadId, array $headers = []): Http\Response
     {
         if (empty($headers['x-cos-copy-source'])) {
             throw new InvalidArgumentException('Missing required header: x-cos-copy-source');
@@ -332,14 +187,7 @@ class ObjectClient extends Client
         ]);
     }
 
-    /**
-     * @param  string  $key
-     * @param  string  $uploadId
-     * @param  array  $body
-     *
-     * @return \Overtrue\CosClient\Http\Response
-     */
-    public function markUploadAsCompleted(string $key, string $uploadId, array $body)
+    public function markUploadAsCompleted(string $key, string $uploadId, array $body): Http\Response
     {
         return $this->post(\urlencode($key), [
             'query' => [
@@ -349,13 +197,7 @@ class ObjectClient extends Client
         ]);
     }
 
-    /**
-     * @param  string  $key
-     * @param  string  $uploadId
-     *
-     * @return \Overtrue\CosClient\Http\Response
-     */
-    public function markUploadAsAborted(string $key, string $uploadId)
+    public function markUploadAsAborted(string $key, string $uploadId): Http\Response
     {
         return $this->delete(\urlencode($key), [
             'query' => [
@@ -364,52 +206,36 @@ class ObjectClient extends Client
         ]);
     }
 
-    /**
-     * @param  array  $query
-     *
-     * @return \Overtrue\CosClient\Http\Response
-     */
-    public function getUploadJobs(array $query = [])
+    public function getUploadJobs(array $query = []): Http\Response
     {
         return $this->get('/?uploads', \compact('query'));
     }
 
-    /**
-     * @param  string  $key
-     * @param  string  $uploadId
-     * @param  array  $query
-     *
-     * @return \Overtrue\CosClient\Http\Response
-     */
-    public function getUploadedParts(string $key, string $uploadId, array $query = [])
+    public function getUploadedParts(string $key, string $uploadId, array $query = []): Http\Response
     {
         $query['uploadId'] = $uploadId;
 
         return $this->get(\urlencode($key), compact('query'));
     }
 
-    /**
-     * @param  string  $key
-     *
-     * @return string
-     */
-    public function getObjectUrl(string $key)
+    public function getObjectUrl(string $key): string
     {
         return \sprintf('%s/%s', \rtrim($this->getBaseUri(), '/'), \ltrim($key, '/'));
     }
 
-    /**
-     * @param  string  $key
-     * @param  string|null  $expires
-     *
-     * @return string
-     */
-    public function getObjectSignedUrl(string $key, ?string $expires = '+60 minutes')
+    public function getObjectSignedUrl(string $key, ?string $expires = '+60 minutes'): string
     {
         $objectUrl = $this->getObjectUrl($key);
         $signature = new Signature($this->config['secret_id'], $this->config['secret_key']);
         $request = new Request('GET', $objectUrl);
 
         return \strval((new Uri($objectUrl))->withQuery(\http_build_query(['sign' => $signature->createAuthorizationHeader($request, $expires)])));
+    }
+
+    public function detectImage(string $key, array $query = []): Http\Response
+    {
+        $query['ci-process'] = 'sensitive-content-recognition';
+
+        return $this->getObject($key, $query);
     }
 }

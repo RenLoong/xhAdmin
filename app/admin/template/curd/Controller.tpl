@@ -4,7 +4,7 @@ namespace plugin\{PLUGIN_NAME}\app\admin\controller;
 
 use app\common\builder\ListBuilder;
 use app\common\builder\FormBuilder;
-use app\BaseController;
+use app\common\BaseController;
 use plugin\{PLUGIN_NAME}\app\model\{CLASS_NAME};
 use plugin\{PLUGIN_NAME}\app\validate\{CLASS_NAME}Validate;
 use support\Request;

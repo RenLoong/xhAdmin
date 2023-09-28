@@ -2,10 +2,11 @@
 
 namespace app\admin\middleware;
 
+use app\admin\model\SystemAdmin;
 use app\common\manager\AuthMgr;
-use Webman\MiddlewareInterface;
-use Webman\Http\Response;
-use Webman\Http\Request;
+use Closure;
+use support\Request;
+use think\facade\Session;
 
 /**
  * 权限中间件
@@ -13,53 +14,56 @@ use Webman\Http\Request;
  * @Email 416716328@qq.com
  * @DateTime 2023-04-29
  */
-class AuthMiddleware implements MiddlewareInterface
+class AuthMiddleware
 {
     /**
-     * 逻辑处理
-     * @param \Webman\Http\Request $request
-     * @param callable $handler
-     * @return \Webman\Http\Response
+     * 鉴权检测
+     * @param \support\Request $request
+     * @param \Closure $next
+     * @return mixed
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
-    public function process(Request $request, callable $handler): Response
+    public function handle(Request $request, Closure $next)
     {
-        // 从headers中拿去请求用户token
-        $authorization = $request->header('authorization');
-        $request->sessionId($authorization);
-        // 获得请求路径
-        $controller = $request->controller;
-        $action = $request->action;
-        $msg = '';
-        $code = 0;
-        // 鉴权检测
-        if (!self::canAccess($controller, $action, $msg, $code)) {
-            $response = json(['code' => $code, 'msg' => $msg]);
-        } else {
-            $response = $request->method() == 'OPTIONS' ? response('', 204) : $handler($request);
-        }
+        $request->token = null;
+        $request->user = null;
+        # 检测是否具有权限
+        self::canAccess($request);
+        # 检测通过
+        $response = $next($request);
         return $response;
     }
 
     
     /**
      * 检测是否有权限
-     *
-     * @param string $control
-     * @param string $action
-     * @param string $msg
-     * @param integer $code
-     * @return boolean
+     * @param \support\Request $request
+     * @throws \Exception
+     * @return bool
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
-    private static function canAccess(string $control, string $action, string &$msg, int &$code): bool
+    private static function canAccess(Request $request): bool
     {
+        $control  = '';
+        $action  = '';
+        $pathinfo = explode('/',$request->pathinfo());
+        if (isset($pathinfo[0])) {
+            $control = $pathinfo[0];
+        }
+        if (isset($pathinfo[1])) {
+            $action = $pathinfo[1];
+        }
         // 无控制器地址
         if (!$control) {
             return true;
         }
         // 获取控制器鉴权信息
-        $class = new \ReflectionClass($control);
+        $class = app()->getNamespace() . '\\controller\\' . $control . 'Controller';
+        $class = new \ReflectionClass($class);
         $properties = $class->getDefaultProperties();
         $noNeedLogin = $properties['noNeedLogin'] ?? [];
         $noNeedAuth = $properties['noNeedAuth'] ?? [];
@@ -69,35 +73,35 @@ class AuthMiddleware implements MiddlewareInterface
             return true;
         }
         // 获取登录信息
-        $admin = hp_admin('hp_admin');
-        if (!$admin) {
-            // 12000 未登录固定的返回码
-            $code = 12000;
-            $msg = '请先登录';
-            return false;
+        $authorization = $request->header('Authorization', '');
+        if (empty($authorization)) {
+            throw new \Exception('请先登录', 12000);
         }
+        // 获取用户信息
+        $user           = Session::get('XhAdmin');
+        if (!$user) {
+            throw new \Exception('登录已过期，请重新登录', 12000);
+        }
+        $request->token = $authorization;
+        $request->user = $user;
         // 不需要鉴权
         if (in_array($action, $noNeedAuth)) {
             return true;
         }
-        if (empty($admin['role']['is_system'])) {
-            $code = 404;
-            $msg = '操作权限错误';
-            return false;
+        if (empty($user['role']['is_system'])) {
+            throw new \Exception('操作权限出错', 404);
         }
         // 系统级部门，不需要鉴权
-        if ($admin['role']['is_system'] === '20') {
+        if ($user['role']['is_system'] === '20') {
             return true;
         }
         // 获取角色规则
-        $rule = AuthMgr::getAdminRoleColumn($admin);
+        $rule = AuthMgr::getAdminRoleColumn($user->toArray());
         // 检测是否有操作权限
         $ctrlName = str_replace('Controller', '', basename(str_replace('\\', '/', $control)));
-        $path = "{$ctrlName}/{$action}";
+        $path = "{$ctrlName}/{$control}";
         if (!in_array($path, $rule)) {
-            $code = 404;
-            $msg = '没有该操作权限';
-            return false;
+            throw new \Exception('没有该操作权限', 404);
         }
         return true;
     }

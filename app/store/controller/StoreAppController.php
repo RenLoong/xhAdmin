@@ -10,11 +10,11 @@ use app\common\manager\AppletMgr;
 use app\common\manager\StoreAppConfigMgr;
 use app\common\manager\StoreAppMgr;
 use app\common\model\Store;
-use app\BaseController;
+use app\common\BaseController;
 use app\common\manager\PluginMgr;
 use app\store\validate\StoreApp;
 use Exception;
-use support\Log;
+use think\facade\Log;
 use support\Request;
 use think\facade\Db;
 
@@ -53,7 +53,7 @@ class StoreAppController extends BaseController
      */
     public function index(Request $request)
     {
-        $store_id = hp_admin_id('hp_store');
+        $store_id     = $request->user['id'];
         $platformType = $request->get('platform', '');
         $model = $this->model;
         $where = [
@@ -79,6 +79,11 @@ class StoreAppController extends BaseController
                 $platform = PlatformTypes::getValue($item['platform']);
                 $icon = empty($platform['icon']) ? '' : "{$web_url}{$platform['icon']}";
                 $item->platformLogo = $icon;
+                
+                # 应用类型名称
+                $platformTitle = empty($platform['text']) ? '类型错误' : $platform['text'];
+                $item->platformTitle = $platformTitle;
+
                 # 返回数据
                 return $item;
             })
@@ -99,7 +104,7 @@ class StoreAppController extends BaseController
         # 获取创建平台类型
         $platform = $request->get('platform', '');
         # 获取登录租户信息
-        $store = hp_admin('hp_store');
+        $store     = $request->user;
         # 验证平台数量是否充足
         $storePlatformNum = Store::where('id',$store['id'])->value($platform);
         $storeCreatedPlatform = StoreAppMgr::getStoreCreatedPlatform((int)$store['id'],$platform);
@@ -107,31 +112,23 @@ class StoreAppController extends BaseController
             return $this->failRedirect('该平台可用数量不足','/#/Index/index');
         }
         if ($request->method() === 'POST') {
+            # 获取数据
             $post = $request->post();
-            $post['store_id'] = hp_admin_id('hp_store');
-            $post['platform'] = $platform;
-            $post['status'] = '20';
+            $store = $request->user;
 
+            # 重组数据
+            $post['store_id']   = $store['id'];
+            $post['platform']   = $platform;
+            $post['status']     = '20';
+
+            # 数据验证
             hpValidate(StoreApp::class, $post, 'add');
 
-            Db::startTrans();
-            try {
-                # 创建项目
-                $model = $this->model;
-                $model->save($post);
-                # 执行项目插件方法
-                $class = "\\plugin\\{$model['name']}\\api\\Created";
-                if (method_exists($class, 'createAdmin')) {
-                    $post['id'] = $model->id;
-                    $logicCls = new $class;
-                    $logicCls->createAdmin($post);
-                }
-                Db::commit();
-                return $this->success('操作成功');
-            } catch (\Throwable $e) {
-                Db::rollback();
-                return $this->fail($e->getMessage());
-            }
+            # 创建项目
+            StoreAppMgr::created($post);
+
+            # 创建成功
+            return $this->success('项目创建成功');
         }
         try {
             $platformList = StoreAppMgr::getAuthAppOptions($store['id'], $platform);
@@ -145,7 +142,7 @@ class StoreAppController extends BaseController
         ]);
         $builder->addRow('url', 'input', '项目域名', '', [
             'col' => 12,
-            'placeholder' => '不带结尾的网址域名，示例：http://www.kfadmin.com',
+            'placeholder' => '不带结尾的网址域名，示例：http://www.xhadmin.cn',
         ]);
         $builder->addRow('username', 'input', '超管账号', '', [
             'col' => 12,
@@ -178,7 +175,7 @@ class StoreAppController extends BaseController
      */
     public function edit(Request $request)
     {
-        $store_id = hp_admin_id('hp_store');
+        $store_id = $request->user['id'];
         $app_id = $request->get('id', '');
         $model = $this->model;
         $where = [
@@ -279,12 +276,10 @@ class StoreAppController extends BaseController
      */
     public function del(Request $request)
     {
-        $store_id = hp_admin_id('hp_store');
-        $app_id = $request->post('id', '');
-        StoreAppMgr::del([
-            'id' => $app_id,
-            'store_id' => $store_id
-        ]);
+        # 获取数据
+        $saas_appid = (int)$request->post('id', 0);
+        # 删除项目
+        StoreAppMgr::del($saas_appid);
         return $this->success('操作成功');
     }
 
@@ -395,7 +390,7 @@ class StoreAppController extends BaseController
             return $this->fail('找不到该应用');
         }
         # 检测应用是否存在
-        if (!is_dir(base_path("plugin/{$model->name}"))) {
+        if (!is_dir(root_path()."plugin/{$model->name}")) {
             return $this->fail('该项目绑定应用已卸载');
         }
         # 检测应用对SAAS版本支持
@@ -404,6 +399,9 @@ class StoreAppController extends BaseController
         }
         try {
             $class = "\\plugin\\{$model->name}\\api\\Login";
+            if (!class_exists($class)) {
+                throw new Exception("该应用插件 [{$model['name']}] 未实现登录类");
+            }
             if (!method_exists($class, 'login')) {
                 throw new Exception("该应用插件 [{$model['name']}] 未实现登录方法");
             }

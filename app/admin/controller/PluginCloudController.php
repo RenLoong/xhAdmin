@@ -2,7 +2,7 @@
 
 namespace app\admin\controller;
 
-use app\BaseController;
+use app\common\BaseController;
 use support\Request;
 use YcOpen\CloudService\Cloud;
 use YcOpen\CloudService\Request\CaptchaRequest;

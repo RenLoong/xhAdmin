@@ -1,10 +1,10 @@
 <?php
 
 namespace app\store\middleware;
-
-use Webman\MiddlewareInterface;
-use Webman\Http\Response;
-use Webman\Http\Request;
+use app\common\model\Store;
+use Closure;
+use support\Request;
+use think\facade\Session;
 
 /**
  * 权限中间件
@@ -12,32 +12,25 @@ use Webman\Http\Request;
  * @Email 416716328@qq.com
  * @DateTime 2023-04-29
  */
-class AuthMiddleware implements MiddlewareInterface
+class AuthMiddleware
 {
     /**
-     * 逻辑处理
-     * @param \Webman\Http\Request $request
+     * 业务处理
+     * @param \support\Request $request
      * @param callable $handler
-     * @return \Webman\Http\Response
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
+     * @return mixed
+     * @author John
      */
-    public function process(Request $request, callable $handler): Response
+    public function handle(Request $request, Closure $next)
     {
-        // 从headers中拿去请求用户token
-        $authorization = $request->header('Authorization');
-        $request->sessionId($authorization);
-        // 获得请求路径
-        $controller = $request->controller;
-        $action = $request->action;
-        $msg = '';
-        $code = 0;
-        // 鉴权检测
-        if (!self::canAccess($controller, $action, $msg, $code)) {
-            $response = json(['code' => $code, 'msg' => $msg]);
-        } else {
-            $response = $request->method() == 'OPTIONS' ? response('', 204) : $handler($request);
+        $request->token = null;
+        $request->user = null;
+        try {
+            self::canAccess($request);
+        } catch (\Throwable $e) {
+            return json(['code' => $e->getCode(), 'msg' => $e->getMessage()]);
         }
+        $response = $next($request);
         return $response;
     }
 
@@ -50,14 +43,24 @@ class AuthMiddleware implements MiddlewareInterface
      * @param integer $code
      * @return boolean
      */
-    private static function canAccess(string $control, string $action, string &$msg, int &$code): bool
+    private function canAccess(Request $request): bool
     {
+        $control  = '';
+        $action  = '';
+        $pathinfo = explode('/',$request->pathinfo());
+        if (isset($pathinfo[0])) {
+            $control = $pathinfo[0];
+        }
+        if (isset($pathinfo[1])) {
+            $action = $pathinfo[1];
+        }
         // 无控制器地址
         if (!$control) {
             return true;
         }
         // 获取控制器鉴权信息
-        $class = new \ReflectionClass($control);
+        $class = app()->getNamespace() . '\\controller\\' . $control . 'Controller';
+        $class = new \ReflectionClass($class);
         $properties = $class->getDefaultProperties();
         $noNeedLogin = $properties['noNeedLogin'] ?? [];
 
@@ -66,25 +69,25 @@ class AuthMiddleware implements MiddlewareInterface
             return true;
         }
         // 获取登录信息
-        $user = hp_admin('hp_store');
+        $authorization = $request->header('Authorization', '');
+        if (empty($authorization)) {
+            throw new \Exception('请先登录渠道账号', 12000);
+        }
+        // 获取用户信息
+        $user           = Session::get('XhAdminStore');
         if (!$user) {
-            // 12000 未登录固定的返回码
-            $code = 12000;
-            $msg = '请先登录租户';
-            return false;
+            throw new \Exception('登录已过期，请重新登录', 12000);
         }
-        # 验证代理状态
+        $request->token = $authorization;
+        $request->user = $user;
+        # 验证渠道状态
         if ($user['status'] === '10') {
-            $code = 12000;
-            $msg = '该代理已被禁用，请联系管理员';
-            return false;
+            throw new \Exception('该渠道已被禁用，请联系管理员', 12000);
         }
-        # 验证代理是否过期
+        # 验证渠道是否过期
         $expire_time = strtotime($user['expire_time']);
         if (time() > $expire_time) {
-            $code = 12000;
-            $msg = '该代理已过期，请联系管理员';
-            return false;
+            throw new \Exception('渠道权益已过期，请联系管理员', 12000);
         }
         return true;
     }

@@ -1,7 +1,7 @@
 <?php
 namespace app\common\enum;
 
-use app\Enum;
+use app\common\Enum;
 
 /**
  * 配置分组布局模式

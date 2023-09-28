@@ -3,7 +3,7 @@
 namespace app\store\validate;
 
 use app\store\model\StoreApp as ModelStoreApp;
-use yzh52521\validate\Validate;
+use think\Validate;
 
 class StoreApp extends Validate
 {
@@ -12,6 +12,8 @@ class StoreApp extends Validate
         'platform'          => 'require',
         'title'             => 'require|verifyTitle',
         'url'               => 'require|url',
+        'username'          => 'require',
+        'password'          => 'require',
         'name'              => 'require',
         'logo'              => 'require',
     ];
@@ -22,6 +24,8 @@ class StoreApp extends Validate
         'title.require'             => '请输入项目名称',
         'url.require'               => '请输入项目域名',
         'url.url'                   => '请输入正确的域名',
+        'username.require'          => '请输入管理员账号',
+        'password.require'          => '请输入管理员密码',
         'name.require'              => '请选择应用插件',
         'logo.require'              => '请上传应用图标',
     ];
@@ -34,6 +38,8 @@ class StoreApp extends Validate
                 'platform',
                 'title',
                 'url',
+                'username',
+                'password',
                 'name',
                 'logo',
             ]);
@@ -47,6 +53,7 @@ class StoreApp extends Validate
                 'title',
                 'url',
                 'name',
+                'username',
                 'logo',
             ])
             ->remove('title', ['verifyTitle']);
@@ -62,7 +69,7 @@ class StoreApp extends Validate
      */
     protected function verifyTitle($value)
     {
-        $store_id = hp_admin_id('hp_store');
+        $store_id = request()->user['id'];
         $where = [
             'store_id'      => $store_id,
             'title'         => $value

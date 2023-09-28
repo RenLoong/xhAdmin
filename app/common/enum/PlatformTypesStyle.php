@@ -1,7 +1,7 @@
 <?php
 namespace app\common\enum;
 
-use app\Enum;
+use app\common\Enum;
 
 /**
  * 应用平台类型

@@ -4,7 +4,7 @@ namespace app\admin\controller;
 
 use app\common\builder\ListBuilder;
 use app\admin\model\Store;
-use app\BaseController;
+use app\common\BaseController;
 use support\Request;
 
 /**

@@ -6,7 +6,7 @@ use app\common\builder\FormBuilder;
 use app\admin\model\Store;
 use app\common\manager\StoreAppMgr;
 use app\common\service\SystemInfoService;
-use app\BaseController;
+use app\common\BaseController;
 use support\Request;
 
 /**
@@ -71,18 +71,18 @@ class StoreAppController extends BaseController
         try {
             $plugins = StoreAppMgr::getBuyInstallApp();
         } catch (\Throwable $e) {
-            p($e->getMessage());
+            return $this->fail($e->getMessage());
         }
         $builder = new FormBuilder;
         $data = $builder
             ->setMethod('PUT')
-            ->addRow('id', 'input', '代理编号', '', [
+            ->addRow('id', 'input', '渠道编号', '', [
                 'disabled' => true,
                 'col' => [
                     'span' => 12
                 ],
             ])
-            ->addRow('title', 'input', '代理名称', '', [
+            ->addRow('title', 'input', '渠道名称', '', [
                 'disabled' => true,
                 'col' => [
                     'span' => 12

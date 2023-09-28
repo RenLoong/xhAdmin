@@ -1,7 +1,7 @@
 <?php
 namespace app\common\enum;
 
-use app\Enum;
+use app\common\Enum;
 
 /**
  * 权限规则-组件类型样式 枚举类
@@ -24,7 +24,7 @@ class AuthRuleRuleTypeStyle extends Enum
         'value'     => 'table/index',
     ];
     const REMOTE_VIEW = [
-        'text'      => 'error',
+        'text'      => 'info',
         'value'     => 'remote/index',
     ];
 }

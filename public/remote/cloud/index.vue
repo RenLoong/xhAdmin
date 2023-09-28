@@ -69,7 +69,7 @@ export default {
     };
   },
   created() {
-    this.ob=new IntersectionObserver(e=>{
+    this.ob = new IntersectionObserver(e=>{
       if(e[0].isIntersecting){
         this.getBill();
       }
@@ -94,8 +94,7 @@ export default {
           _this.isLogin = true;
         })
         .catch((err) => {
-          console.log(err);
-          if (err?.code === 600 || err?.code === 11000) {
+          if ([11000,666,600].includes(err?.code)) {
             _this.$emit("update:openWin", "remote/cloud/login");
           }
         });
@@ -124,8 +123,8 @@ export default {
           })
         })
         .catch((err) => {
-          if (err?.code === 600 || err?.code === 11000) {
-            _this.$emit('update:openWin', 'remote/cloud/login')
+          if ([11000,666,600].includes(err?.code)) {
+            _this.$emit("update:openWin", "remote/cloud/login");
           }
         });
     },
@@ -140,25 +139,26 @@ export default {
 <style lang="scss" scoped>
 .cloud-container {
   display: flex;
-  padding: 10px;
   height: 100%;
-  margin-bottom: 10px;
   background: #f5f5f5;
   .bill-container {
     flex: 1;
-    padding: 10px;
+    overflow: hidden;
     .bill-title {
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 700;
-      padding: 10px 0;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
     }
     .bill-list {
       display: flex;
       flex-direction: column;
       gap: 20px;
-      height: 90%;
+      height: calc(100% - 40px);
       overflow-y: auto;
-      padding-right:10px;
+      padding: 0 10px;
       .item {
         background: #fff;
         box-shadow: 2px 3px 3px #e5e5e5;
@@ -206,6 +206,7 @@ export default {
   }
   .user-container {
     width: 230px;
+    padding: 20px;
     .user-block {
       border: 1px solid #e5e5e5;
       border-radius: 10px;

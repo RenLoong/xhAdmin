@@ -1,15 +1,17 @@
 <?php
 namespace app\common\service;
+
 use app\common\exception\RollBackException;
 use app\common\manager\ZipMgr;
 use app\common\manager\JsonMgr;
 use app\common\utils\DirUtil;
 use Exception;
-use support\Log;
 use support\Request;
+use think\facade\Log;
 use YcOpen\CloudService\Request as CloudRequest;
 use YcOpen\CloudService\Cloud;
 use YcOpen\CloudService\Request\SystemUpdateRequest;
+use zjkal\MysqlHelper;
 
 /**
  * 更新服务类
@@ -19,9 +21,7 @@ use YcOpen\CloudService\Request\SystemUpdateRequest;
  * 3、备份数据库
  * 4、解压更新包-删除代码-复制已解压文件至目标路径
  * 5、执行数据同步更新（引入最新的更新类）
- * 6、重启主进程服务
- * 7、等待服务重启
- * 8、更新成功
+ * 6、更新成功
  * @author 贵州猿创科技有限公司
  * @copyright 贵州猿创科技有限公司
  * @email 416716328@qq.com
@@ -66,32 +66,29 @@ class SystemUpdateService
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    protected $backupPath = null;
-
-     /**
-      * 备份覆盖代码路径
-      * @var 
-      * @author 贵州猿创科技有限公司
-      * @email 416716328@qq.com
-      */
-
-      protected $backCoverPath = null;
+    protected $backupCodePath = null;
 
     /**
-     * 解压的目标路径
+     * 备份源数据库路径
      * @var string
+     */
+    protected $backupSqlPath = null;
+
+    /**
+     * 备份覆盖代码路径
+     * @var 
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    protected $targetPath = null;
+    protected $backCoverPath = null;
 
     /**
-     * 根目录路径
+     * 目标路径
      * @var string
      */
-    protected $rootPath = null;
+    protected $targetPath = null;
 
-    
+
     /**
      * 打包时忽略文件或目录列表
      * 删除时忽略以下目录或文件
@@ -100,6 +97,8 @@ class SystemUpdateService
      * @email 416716328@qq.com
      */
     protected $ignoreList = [
+        'backup',
+        'update',
         'public/upload',
         'plugin',
         'runtime',
@@ -113,8 +112,6 @@ class SystemUpdateService
      */
     protected $backCoverList = [
         '.env',
-        'config/plugin',
-        'config/redis.php',
     ];
 
     /**
@@ -128,36 +125,39 @@ class SystemUpdateService
     {
         # 设置请求实体
         $this->request = $Request;
+
+        # 本地版本信息
+        $clientSystemVersion = SystemInfoService::info();
+        # 客户端版本号
+        $this->clientVersion = $clientSystemVersion['system_version'];
+        # 客户端版本名称
+        $this->clientVersionName = $clientSystemVersion['system_version_name'];
+
         # 下载框架更新包临时地址
-        $this->tempZipFilePath = runtime_path("/core/kfadmin-update.zip");
+        $this->tempZipFilePath = runtime_path() . "core/xhadmin-update.zip";
         # 检测核心目录不存在则创建
         if (!is_dir(dirname($this->tempZipFilePath))) {
             mkdir(dirname($this->tempZipFilePath), 0755, true);
         }
-        # 解压至临时目标地址
-        $this->targetPath = runtime_path('temp');
-        if (!is_dir($this->targetPath)) {
-            mkdir($this->targetPath, 0755, true);
-        }
         # 解压至目标地址(根据环境变量设置)
-        if (!config('app.debug',true)) {
+        if (!env('APP_DEBUG', true)) {
             # 生产环境
-            $this->rootPath = base_path();
+            $rootPath = substr(root_path(),0,-1);
+            $this->targetPath = $rootPath;
         } else {
             # 开发环境
-            $this->rootPath = runtime_path('web');
-            if (!is_dir($this->rootPath)) {
-                mkdir($this->rootPath, 0755, true);
+            $this->targetPath = runtime_path() . 'web';
+            if (!is_dir($this->targetPath)) {
+                mkdir($this->targetPath, 0755, true);
             }
         }
         # 备份当前版本代码地址
-        $this->backupPath = runtime_path("/core/backup.zip");
+        $this->backupCodePath = root_path() . "backup/xhadmin-backup-{$this->clientVersion}.zip";
+        # 备份当前版本数据库地址
+        $this->backupSqlPath = root_path() . "backup/xhadmin-backup-{$this->clientVersion}.sql";
+
         # 备份覆盖代码地址
-        $this->backCoverPath = runtime_path("/core/cover.zip");
-        # 本地版本信息
-        $clientSystemVersion     = SystemInfoService::info();
-        $this->clientVersion = $clientSystemVersion['system_version'];
-        $this->clientVersionName = $clientSystemVersion['system_version_name'];
+        $this->backCoverPath = runtime_path() . "core/xhadmin-backup-cover.zip";
     }
 
     /**
@@ -178,9 +178,9 @@ class SystemUpdateService
         $req = new SystemUpdateRequest;
         $req->getKey();
         $req->target_version = $version;
-        $cloud = new Cloud($req);
-        $data = $cloud->send();
-        $downUrl = $data->url;
+        $cloud               = new Cloud($req);
+        $data                = $cloud->send();
+        $downUrl             = $data->url;
         # 下载更新包
         $req = new CloudRequest;
         $req->setUrl($downUrl);
@@ -202,14 +202,28 @@ class SystemUpdateService
      */
     public function backCode()
     {
-        # 打包至目标压缩包
-        if (!is_dir(dirname($this->backupPath))) {
-            mkdir(dirname($this->backupPath), 0755, true);
+        try {
+            # 打包至目标压缩包
+            if (!is_dir(dirname($this->backupCodePath))) {
+                mkdir(dirname($this->backupCodePath), 0755, true);
+            }
+            # 目标目录为空，直接备份走下一步
+            if (DirUtil::isDirEmpty($this->targetPath)) {
+                return JsonMgr::successRes([
+                    'next' => 'backSql'
+                ]);
+            }
+            # 备份原始代码
+            ZipMgr::build($this->backupCodePath, $this->targetPath, $this->ignoreList);
+            # 备份覆盖代码
+            // ZipMgr::buildFiles($this->backCoverPath, $this->targetPath, $this->backCoverList);
+        } catch (\Throwable $e) {
+            Log::write(
+                "备份代码失败：{$e->getMessage()}，Line：{$e->getFile()}，File：{$e->getFile()}",
+                'xhadmin_update_error'
+            );
+            throw $e;
         }
-        # 备份原始代码
-        ZipMgr::build($this->backupPath, base_path(), $this->ignoreList);
-        # 备份覆盖代码
-        ZipMgr::buildFiles($this->backCoverPath, base_path(), $this->backCoverList);
         # 打包成功
         return JsonMgr::successRes([
             'next' => 'backSql'
@@ -225,6 +239,26 @@ class SystemUpdateService
      */
     public function backSql()
     {
+        try {
+            $config = config('database.connections.mysql');
+            $mysql  = new MysqlHelper(
+                $config['username'],
+                $config['password'],
+                $config['database'],
+                $config['hostname'],
+                $config['hostport'],
+                $config['prefix'],
+                $config['charset']
+            );
+            # 检测备份目录是否存在
+            if (!is_dir(dirname($this->backupSqlPath))) {
+                mkdir(dirname($this->backupSqlPath), 0755, true);
+            }
+            # 执行导出数据
+            $mysql->exportSqlFile($this->backupSqlPath);
+        } catch (\Throwable $e) {
+            return JsonMgr::fail("数据库备份失败：{$e->getMessage()}，Line：{$e->getFile()}，File：{$e->getFile()}");
+        }
         return JsonMgr::successRes([
             'next' => 'unzip'
         ]);
@@ -241,13 +275,9 @@ class SystemUpdateService
     {
         try {
             # 解压更新包
-            ZipMgr::unzip($this->tempZipFilePath, $this->rootPath);
+            ZipMgr::unzip($this->tempZipFilePath, $this->targetPath);
             # 解压覆盖文件
-            ZipMgr::unzip($this->backCoverPath, $this->rootPath);
-            # 删除根目录原始代码
-            // DirUtil::delDir($this->rootPath, $ignore);
-            # 复制解压后的文件至目标路径
-            // DirUtil::copyDir($this->targetPath, $this->rootPath);
+            // ZipMgr::unzip($this->backCoverPath, $this->targetPath);
             # 解压成功，删除临时文件
             file_exists($this->tempZipFilePath) && unlink($this->tempZipFilePath);
             # 返回成功
@@ -256,7 +286,7 @@ class SystemUpdateService
             ]);
         } catch (\Throwable $e) {
             # 日志记录
-            Log::error("更新出错：{$e->getMessage()}，line：{$e->getLine()}，file：{$e->getFile()}");
+            Log::write("框架解压出错：{$e->getMessage()}，line：{$e->getLine()}，file：{$e->getFile()}", "xhadmin_update_error");
             # 报错异常，执行回滚
             throw new RollBackException("解压出错：{$e->getMessage()}");
         }
@@ -273,7 +303,7 @@ class SystemUpdateService
     {
         try {
             # 获取更新类
-            $updateDataPath = app_path('common/service/UpdateDataService.php');
+            $updateDataPath = base_path() . 'common/service/UpdateDataService.php';
             if (!file_exists($updateDataPath)) {
                 throw new Exception('更新类不存在');
             }
@@ -282,9 +312,9 @@ class SystemUpdateService
             # 更新服务类
             $class = "app\\common\\service\\UpdateDataService";
             if (class_exists($class)) {
-                $updateServiceCls = new $class($this->request,$this->clientVersion);
+                $updateServiceCls = new $class($this->request, $this->clientVersion);
                 # 执行更新前置
-                $context       = [];
+                $context = [];
                 if (method_exists($class, 'beforeUpdate')) {
                     $context = call_user_func([$updateServiceCls, 'beforeUpdate']);
                 }
@@ -296,48 +326,26 @@ class SystemUpdateService
                     );
                 }
             }
-            # 更新成功
-            return JsonMgr::successRes([
-                'next' => 'reload'
-            ]);
         } catch (\Throwable $e) {
-            # 报错异常仍然继续下一步
-            return JsonMgr::successRes([
-                'next' => 'reload'
-            ]);
+            # 报错异常，记录日志
+            Log::write("框架更新数据出错：{$e->getMessage()}，Line：{$e->getFile()}，File：{$e->getFile()}", 'xhadmin_update_error');
         }
-    }
-
-    /**
-     * 重启主进程服务
-     * @return \support\Response
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
-     */
-    public function reload()
-    {
-        # 重启主进程服务
-        FrameworkService::reloadWebman();
-        # 延迟3秒，等待服务重启
-        sleep(3);
-        # 重启成功
         return JsonMgr::successRes([
-            'next' => 'ping'
+            'next' => 'success'
         ]);
     }
 
     /**
-     * 等待服务重启
+     * 更新成功
      * @return \support\Response
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public function ping()
+    public function success()
     {
-        return JsonMgr::successFul('更新成功，即将跳转首页...', [
-            'next' => 'success'
+        return JsonMgr::successFul('更新成功，即将跳转...', [
+            'next' => ''
         ]);
     }
 }

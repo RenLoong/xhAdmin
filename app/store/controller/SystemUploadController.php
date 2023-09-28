@@ -2,11 +2,8 @@
 
 namespace app\store\controller;
 
-use app\common\builder\FormBuilder;
-use app\store\model\SystemUpload;
-use app\BaseController;
-use app\common\service\UploadService;
-use support\Request;
+use app\common\trait\UploadTrait;
+use app\common\BaseController;
 
 /**
  * @title 附件管理
@@ -16,154 +13,23 @@ use support\Request;
  */
 class SystemUploadController extends BaseController
 {
-    /**
-     * 获取附件列表
-     * @param Request $request
-     * @return \support\Response
-     * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-04-29
-     */
-    public function index(Request $request)
-    {
-        list($where, $orderBy, $limit) = $this->getParams($request);
-        empty($orderBy) && $orderBy = ['update_at'=> 'desc'];
-        
-        $data = SystemUpload::with(['category'])
-            ->where($where)
-            ->order($orderBy)
-            ->paginate($limit)
-            ->toArray();
-        return parent::successRes($data);
-    }
+    # 附件库
+    use UploadTrait;
 
     /**
-     * 修改附件
-     * @param Request $request
-     * @return \support\Response
-     * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-04-29
+     * 渠道ID
+     * @var int|null
      */
-    public function edit(Request $request)
-    {
-        $id    = $request->get('id','');
-        $where = [
-            ['id','=',$id]
-        ];
-        $model = SystemUpload::where($where)->find();
-        if (!$model) {
-            return parent::fail('该附件不存在');
-        }
-        if ($request->method() === 'PUT') {
-            $post = $request->post();
-            if (!$model->save($post)) {
-                return parent::fail('修改失败');
-            }
-            return parent::success('修改成功');
-        }
-        else {
-            $builder = new FormBuilder;
-            $data    = $builder
-                ->setMethod('PUT')
-                ->addRow('title', 'input', '附件名称')
-                ->addRow('path', 'input', '文件地址', '', [
-                    'disabled' => true,
-                ])
-                ->addRow('filename', 'input', '文件名称','',[
-                    'disabled'  => true,
-                    'col'       => [
-                        'span'  => 12
-                    ]
-                ])
-                ->addRow('format', 'input', '文件格式','',[
-                    'disabled'  => true,
-                    'col'       => [
-                        'span'  => 12
-                    ]
-                ])
-                ->addRow('size_format', 'input', '文件大小','',[
-                    'disabled'  => true,
-                    'col'       => [
-                        'span'  => 12
-                    ]
-                ])
-                ->addRow('adapter', 'input', '选定器','',[
-                    'disabled'  => true,
-                    'col'       => [
-                        'span'  => 12
-                    ]
-                ])
-                ->setData($model)
-                ->create();
-            return parent::successRes($data);
-        }
-    }
+    protected $store_id = null;
 
     /**
-     * 移动选中附件
-     * @param Request $request
-     * @return \support\Response
+     * 构造函数
+     * @return void
+     * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-04-29
      */
-    public function move(Request $request)
+    public function initialize()
     {
-        $cate_id = $request->post('cate_id');
-        $ad_id = $request->post('ids');
-        if (!$cate_id) {
-            return parent::fail('请选择移动的分类');
-        }
-        if (!$ad_id) {
-            return parent::fail('附件选择错误');
-        }
-        if (!is_array($ad_id)) {
-            return parent::fail('请选择移动的附件');
-        }
-        $where[] = ['id', 'in', $ad_id];
-        SystemUpload::where($where)->save(['cid' => $cate_id]);
-        return parent::success('附件移动完成');
-    }
-
-    /**
-     * 删除选中附件
-     * @param Request $request
-     * @return \support\Response
-     * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-04-29
-     */
-    public function del(Request $request)
-    {
-        $id = (int)$request->post('id',0);
-        if (!$id) {
-            return parent::fail('请选择需要删除的附件');
-        }
-        if (!UploadService::delete($id)) {
-            return parent::fail('删除失败');
-        }
-        return parent::success('删除完成');
-    }
-
-
-    /**
-     * 上传附件
-     * @param Request $request
-     * @return \support\Response
-     * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-04-29
-     */
-    public function upload(Request $request)
-    {
-        $file = $request->file('file');
-        $cid = (int)$request->post('cid');
-        $store_id = hp_admin_id('hp_store');
-        $data = UploadService::upload($file, $cid,['store_id'=> $store_id]);
-        if (!$data) {
-            return $this->fail('上传失败');
-        }
-        return $this->successFul('上传成功', $data);
+        $this->store_id = $this->request->user['id'];
     }
 }

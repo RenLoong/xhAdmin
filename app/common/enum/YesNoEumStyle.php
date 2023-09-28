@@ -1,7 +1,7 @@
 <?php
 namespace app\common\enum;
 
-use app\Enum;
+use app\common\Enum;
 
 /**
  * YES/NO 枚举类
@@ -12,7 +12,7 @@ use app\Enum;
 class YesNoEumStyle extends Enum
 {
     const STATUS_NO = [
-        'text'      => 'error',
+        'text'      => 'danger',
         'value'     => '10',
     ];
     const STATUS_YES = [

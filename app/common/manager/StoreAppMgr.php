@@ -3,6 +3,7 @@ namespace app\common\manager;
 
 use app\common\model\Store;
 use app\common\model\StoreApp as modelStoreApp;
+use app\common\model\StoreApp;
 use app\common\model\SystemConfig;
 use app\common\model\SystemUpload;
 use app\common\model\SystemUploadCate;
@@ -157,34 +158,85 @@ class StoreAppMgr
     }
 
     /**
+     * 创建项目
+     * @param array $data
+     * @return bool
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public static function created(array $data)
+    {
+        if (empty($data['store_id'])) {
+            throw new Exception('缺少参数 -- [渠道ID]');
+        }
+        if (empty($data['platform'])) {
+            throw new Exception('缺少参数 -- [项目类型]');
+        }
+        Db::startTrans();
+        try {
+            # 创建项目
+            $model = new StoreApp;
+            $model->save($data);
+            # 执行项目插件方法
+            $class = "\\plugin\\{$model['name']}\\api\\Created";
+            if (method_exists($class, 'createAdmin')) {
+                $data['id'] = $model->id;
+                $logicCls = new $class;
+                $logicCls->createAdmin($data);
+            }
+            # 创建附件库分类
+            $cateData = [
+                'saas_appid'        => $model->id,
+                'store_id'          => $model['store_id'],
+                'title'             => '默认分类',
+                'dir_name'          => $model['name'],
+                'sort'              => 100,
+                'is_system'         => '20'
+            ];
+            $uploadCateModel = new SystemUploadCate;
+            if (!$uploadCateModel->save($cateData)) {
+                throw new Exception('创建项目默认分类失败');
+            }
+            # 提交事务
+            Db::commit();
+            # 创建成功
+            return true;
+        } catch (\Throwable $e) {
+            Db::rollback();
+            throw $e;
+        }
+    }
+
+    /**
      * 删除项目
-     * @param array $where
+     * @param int $saas_appid
      * @return void
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      */
-    public static function del(array $where)
+    public static function del(int $saas_appid)
     {
-        if (empty($where['id'])) {
+        if (!$saas_appid) {
             throw new Exception('参数错误--[项目ID]');
         }
-        if (empty($where['store_id'])) {
-            throw new Exception('参数错误--[代理ID]');
-        }
-        $whereOther['saas_appid'] = $where['id'];
-        $whereOther['store_id']   = $where['store_id'];
+        # 获取项目
+        $model              = self::model(['id' => $saas_appid]);
+        # 开始事务
         Db::startTrans();
         try {
-            # 获取项目
-            $model = self::model($where);
+            $whereMap           = [
+                'saas_appid'    => $model['id'],
+                'store_id'      => $model['store_id'],
+            ];
             # 删除项目配置
-            SystemConfig::where($whereOther)->delete();
+            SystemConfig::where($whereMap)->delete();
             # 删除项目附件
-            SystemUpload::where($whereOther)->delete();
-            SystemUploadCate::where($whereOther)->delete();
+            SystemUpload::where($whereMap)->delete();
+            # 删除附件库分类
+            SystemUploadCate::where($whereMap)->delete();
             # 删除项目
             if (!$model->delete()) {
-                throw new Exception('删除失败');
+                throw new Exception('删除项目失败');
             }
             Db::commit();
         } catch (\Throwable $e) {

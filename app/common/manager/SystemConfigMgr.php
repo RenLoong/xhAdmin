@@ -21,12 +21,6 @@ class SystemConfigMgr
      * @var Request
      */
     protected $request = null;
-    # 自定义组件类型
-    private $customComponent = [
-        'uploadify',
-        'wangEditor',
-        'remote',
-    ];
     # 扩展组件类型
     private $extraOptions = ['checkbox', 'radio', 'select'];
 
@@ -126,12 +120,7 @@ class SystemConfigMgr
         # 实例表单构建器
         $builder = new FormBuilder;
         $builder = $builder->setMethod('PUT');
-        $builder = $builder->initTabs($actvie, [
-            'props' => [
-                // 选项卡样式
-                'type' => 'line'
-            ],
-        ]);
+        $builder = $builder->initTabs($actvie);
         foreach ($data as $value) {
             if (empty($value['name'])) {
                 throw new Exception('分组标识不能为空');
@@ -205,36 +194,20 @@ class SystemConfigMgr
                     $configValue = [];
                 }
             }
-            # 设置组件参数
-            if (in_array($value['component'], $this->customComponent)) {
-                # 设置底部描述
-                if (!empty($value['placeholder'])) {
-                    $value['extra']['props']['prompt']['text'] = $value['placeholder'];
-                }
-                # 设置布局模式
-                $value['extra']['props']['col'] = $col;
-                # 自定义组件
-                $builder->addComponent(
+            # 设置布局模式
+            $value['extra']['props']['col'] = $col;
+            try {
+                # 普通组件
+                $builder->addRow(
                     $value['name'],
                     $value['component'],
                     $value['title'],
                     $configValue,
                     $value['extra']
                 );
-            } else {
-                # 多选框组件
-                if ($value['component'] == 'checkbox') {
-                    $value['extra']['props']['options'] = $value['extra']['options'];
-                    $configValue                        = [];
-                }
-                # 设置底部描述
-                if (!empty($value['placeholder'])) {
-                    $value['extra']['prompt']['text'] = $value['placeholder'];
-                }
-                # 设置布局模式
-                $value['extra']['props']['col'] = $col;
-                # 普通组件
-                $builder->addRow(
+            } catch (\Throwable $e) {
+                # 自定义组件
+                $builder->addComponent(
                     $value['name'],
                     $value['component'],
                     $value['title'],

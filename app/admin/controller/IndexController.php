@@ -4,7 +4,7 @@ namespace app\admin\controller;
 
 use app\common\model\StoreApp;
 use app\common\service\SystemInfoService;
-use app\BaseController;
+use app\common\BaseController;
 use app\common\enum\PlatformTypes;
 use support\Request;
 
@@ -16,6 +16,18 @@ use support\Request;
  */
 class IndexController extends BaseController
 {
+    /**
+     * 渲染后台视图
+     * @return \think\Response
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function index()
+    {
+        return getAdminView();
+    }
+
     /**
      * 首页数据统计
      * @param Request $request
@@ -30,10 +42,10 @@ class IndexController extends BaseController
         $teamInfo = SystemInfoService::info();
         $inKeys = array_keys($teamInfo);
         $teamFields = [
-            'about_name' => '研发企业',
-            'ecology' => '系统生态',
-            'fream_version' => '框架版本',
-            'service_wx' => '微信咨询',
+            'about_name'        => '研发企业',
+            'ecology'           => '系统生态',
+            'fream_version'     => '框架版本',
+            'service_wx'        => '微信咨询',
         ];
         $team = [];
         foreach ($teamFields as $field => $label) {

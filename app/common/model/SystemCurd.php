@@ -2,7 +2,7 @@
 
 namespace app\common\model;
 
-use app\Model;
+use app\common\Model;
 
 /**
  * CURD一键生成模型

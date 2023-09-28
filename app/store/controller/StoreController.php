@@ -3,7 +3,7 @@
 namespace app\store\controller;
 
 use app\common\builder\FormBuilder;
-use app\BaseController;
+use app\common\BaseController;
 use app\common\service\UploadService;
 use app\store\validate\Store;
 use support\Request;

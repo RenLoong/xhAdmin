@@ -4,41 +4,39 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit28ab241856c3f199130cd914a54ecec6
+class ComposerStaticInit2438499dbe71b96805c448479aa3db48
 {
     public static $files = array (
-        '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
-        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
-        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
+        '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
-        'd767e4fc2dc52fe66584ab8c6684783e' => __DIR__ . '/..' . '/adbario/php-dot-notation/src/helpers.php',
-        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
-        '60799491728b879e74601d83e38b2cad' => __DIR__ . '/..' . '/illuminate/collections/helpers.php',
-        'a1105708a18b76903365ca1c4aa61b02' => __DIR__ . '/..' . '/symfony/translation/Resources/functions.php',
-        '72579e7bd17821bb1321b87411366eae' => __DIR__ . '/..' . '/illuminate/support/helpers.php',
-        '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
-        '8825ede83f2f289127722d4e842cf7e8' => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme/bootstrap.php',
-        'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
-        'b6b991a57620e2fb6b2f66f03fe9ddc2' => __DIR__ . '/..' . '/symfony/string/Resources/functions.php',
-        '253c157292f75eb38082b5acb06f3f01' => __DIR__ . '/..' . '/nikic/fast-route/src/functions.php',
         '9b552a3cc426e3287cc811caefa3cf53' => __DIR__ . '/..' . '/topthink/think-helper/src/helper.php',
-        '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
-        '841780ea2e1d6545ea3a253239d59c05' => __DIR__ . '/..' . '/qiniu/php-sdk/src/Qiniu/functions.php',
+        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
+        '23c18046f52bef3eea034657bafda50f' => __DIR__ . '/..' . '/symfony/polyfill-php81/bootstrap.php',
         '35fab96057f1bf5e7aba31a8a6d5fdde' => __DIR__ . '/..' . '/topthink/think-orm/stubs/load_stubs.php',
-        'ef65a1626449d89d0811cf9befce46f0' => __DIR__ . '/..' . '/illuminate/events/functions.php',
+        'b067bc7112e384b61c701452d53a14a8' => __DIR__ . '/..' . '/mtdowling/jmespath.php/src/JmesPath.php',
+        'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
+        '8a9dc1de0ca7e01f3e08231539562f61' => __DIR__ . '/..' . '/aws/aws-sdk-php/src/functions.php',
+        'decc78cc4436b1292c6c0d151b19445c' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
+        '841780ea2e1d6545ea3a253239d59c05' => __DIR__ . '/..' . '/qiniu/php-sdk/src/Qiniu/functions.php',
+        '5dd19d8a547b7318af0c3a93c8bd6565' => __DIR__ . '/..' . '/qiniu/php-sdk/src/Qiniu/Http/Middleware/Middleware.php',
+        '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
+        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
         '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
+        '85eba2b7d6ee3a5c42f99bacefd928d4' => __DIR__ . '/..' . '/xbai/plugins/src/utils/helpers.php',
         'a35be646ad6144ec86a2505d75f87e8f' => __DIR__ . '/..' . '/yc-open/cloud-service/src/helpers.php',
-        '8567e47203eb70814fbea1b304c7d693' => __DIR__ . '/..' . '/yc-open/midjourney/src/helpers.php',
-        'bb86edb2c8e579242b2c4c0575786fa9' => __DIR__ . '/..' . '/yzh52521/webman-validate/src/helper.php',
-        'e04d298651ac0bb903ff2ec8325ccc3b' => __DIR__ . '/../..' . '/support/helpers.php',
     );
 
     public static $prefixLengthsPsr4 = array (
+        'z' => 
+        array (
+            'zjkal\\' => 6,
+        ),
         'y' => 
         array (
-            'yzh52521\\validate\\' => 18,
-            'yzh52521\\EasyHttp\\' => 18,
+            'yzh52521\\filesystem\\' => 20,
+            'yzh52521\\Flysystem\\Oss\\' => 23,
+            'yzh52521\\Flysystem\\Obs\\' => 23,
         ),
         'v' => 
         array (
@@ -46,69 +44,55 @@ class ComposerStaticInit28ab241856c3f199130cd914a54ecec6
         ),
         't' => 
         array (
+            'think\\view\\driver\\' => 18,
+            'think\\trace\\' => 12,
+            'think\\ide\\' => 10,
+            'think\\app\\' => 10,
             'think\\' => 6,
         ),
         's' => 
         array (
             'support\\' => 8,
         ),
+        'p' => 
+        array (
+            'phpseclib3\\' => 11,
+            'phpDocumentor\\Reflection\\' => 25,
+        ),
         'a' => 
         array (
-            'app\\View\\Components\\' => 20,
             'app\\' => 4,
-        ),
-        'Z' => 
-        array (
-            'ZipStream\\' => 10,
         ),
         'Y' => 
         array (
-            'YcOpen\\Midjourney\\' => 18,
             'YcOpen\\CloudService\\' => 20,
-            'Yansongda\\Supports\\' => 19,
-            'Yansongda\\Pay\\' => 14,
+        ),
+        'X' => 
+        array (
+            'Xbai\\Plugins\\' => 13,
         ),
         'W' => 
         array (
-            'Workerman\\Redis\\' => 16,
-            'Workerman\\RedisQueue\\' => 21,
-            'Workerman\\Crontab\\' => 18,
-            'Workerman\\' => 10,
-            'Webman\\ThinkOrm\\' => 16,
-            'Webman\\RedisQueue\\' => 18,
-            'Webman\\Console\\' => 15,
-            'Webman\\Captcha\\' => 15,
-            'Webman\\' => 7,
-            'WePay\\' => 6,
-            'WePayV3\\' => 8,
-            'WeMini\\' => 7,
-            'WeChat\\' => 7,
+            'Webmozart\\Assert\\' => 17,
+        ),
+        'T' => 
+        array (
+            'TheNorthMemory\\Xml\\' => 19,
         ),
         'S' => 
         array (
+            'Symfony\\Polyfill\\Php81\\' => 23,
             'Symfony\\Polyfill\\Php80\\' => 23,
             'Symfony\\Polyfill\\Mbstring\\' => 26,
-            'Symfony\\Polyfill\\Intl\\Normalizer\\' => 33,
-            'Symfony\\Polyfill\\Intl\\Grapheme\\' => 31,
             'Symfony\\Polyfill\\Ctype\\' => 23,
-            'Symfony\\Contracts\\Translation\\' => 30,
-            'Symfony\\Contracts\\Service\\' => 26,
-            'Symfony\\Contracts\\EventDispatcher\\' => 34,
-            'Symfony\\Contracts\\Cache\\' => 24,
-            'Symfony\\Component\\VarExporter\\' => 30,
             'Symfony\\Component\\VarDumper\\' => 28,
-            'Symfony\\Component\\Translation\\' => 30,
-            'Symfony\\Component\\String\\' => 25,
             'Symfony\\Component\\HttpFoundation\\' => 33,
-            'Symfony\\Component\\EventDispatcher\\' => 34,
-            'Symfony\\Component\\Console\\' => 26,
-            'Symfony\\Component\\Cache\\' => 24,
-            'Support\\View\\' => 13,
-            'Support\\Exception\\' => 18,
-            'Support\\Bootstrap\\' => 18,
-            'Support\\' => 8,
-            'Shopwwi\\WebmanFilesystem\\' => 25,
-            'Shopwwi\\FilesystemOss\\' => 22,
+        ),
+        'R' => 
+        array (
+            'Rize\\' => 5,
+            'Ramsey\\Uuid\\' => 12,
+            'Ramsey\\Collection\\' => 18,
         ),
         'Q' => 
         array (
@@ -120,45 +104,40 @@ class ComposerStaticInit28ab241856c3f199130cd914a54ecec6
             'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Http\\Client\\' => 16,
-            'Psr\\EventDispatcher\\' => 20,
             'Psr\\Container\\' => 14,
             'Psr\\Cache\\' => 10,
             'PhpOption\\' => 10,
-            'PhpOffice\\PhpWord\\' => 18,
-            'PhpOffice\\PhpSpreadsheet\\' => 25,
+            'ParagonIE\\ConstantTime\\' => 23,
+            'PHPStan\\PhpDocParser\\' => 21,
         ),
         'O' => 
         array (
             'Overtrue\\Flysystem\\Qiniu\\' => 25,
             'Overtrue\\Flysystem\\Cos\\' => 23,
             'Overtrue\\CosClient\\' => 19,
-            'Orhanerday\\OpenAi\\' => 18,
-            'OneSm\\' => 6,
+            'Obs\\' => 4,
             'OSS\\' => 4,
         ),
         'M' => 
         array (
             'MyCLabs\\Enum\\' => 13,
             'Monolog\\' => 8,
-            'Matrix\\' => 7,
         ),
         'L' => 
         array (
             'League\\MimeTypeDetection\\' => 25,
+            'League\\Flysystem\\ReadOnly\\' => 26,
+            'League\\Flysystem\\PhpseclibV3\\' => 29,
+            'League\\Flysystem\\PathPrefixing\\' => 31,
+            'League\\Flysystem\\Local\\' => 23,
+            'League\\Flysystem\\GoogleCloudStorage\\' => 36,
+            'League\\Flysystem\\Ftp\\' => 21,
+            'League\\Flysystem\\AwsS3V3\\' => 25,
             'League\\Flysystem\\' => 17,
-            'Laminas\\Escaper\\' => 16,
         ),
-        'I' => 
+        'J' => 
         array (
-            'Illuminate\\Support\\' => 19,
-            'Illuminate\\Redis\\' => 17,
-            'Illuminate\\Pipeline\\' => 20,
-            'Illuminate\\Pagination\\' => 22,
-            'Illuminate\\Events\\' => 18,
-            'Illuminate\\Database\\' => 20,
-            'Illuminate\\Contracts\\' => 21,
-            'Illuminate\\Container\\' => 21,
-            'Illuminate\\Bus\\' => 15,
+            'JmesPath\\' => 9,
         ),
         'G' => 
         array (
@@ -166,158 +145,121 @@ class ComposerStaticInit28ab241856c3f199130cd914a54ecec6
             'GuzzleHttp\\Promise\\' => 19,
             'GuzzleHttp\\' => 11,
             'GrahamCampbell\\ResultType\\' => 26,
+            'Google\\Cloud\\Storage\\' => 21,
+            'Google\\Cloud\\Core\\' => 18,
+            'Google\\Auth\\' => 12,
         ),
         'F' => 
         array (
             'FormBuilder\\' => 12,
-            'Flc\\Dysms\\' => 10,
-            'FastRoute\\' => 10,
+            'Firebase\\JWT\\' => 13,
         ),
         'E' => 
         array (
-            'Endroid\\QrCode\\' => 15,
+            'Ergebnis\\Classy\\' => 16,
+            'EasyTask\\' => 9,
         ),
         'D' => 
         array (
             'Dotenv\\' => 7,
-            'Doctrine\\Inflector\\' => 19,
             'Doctrine\\Deprecations\\' => 22,
-            'Doctrine\\DBAL\\' => 14,
             'Doctrine\\Common\\Lexer\\' => 22,
-            'Doctrine\\Common\\Cache\\' => 22,
             'Doctrine\\Common\\Annotations\\' => 28,
-            'Doctrine\\Common\\' => 16,
-            'Darabonba\\OpenApi\\' => 18,
-            'Darabonba\\GatewaySpi\\' => 21,
-            'DASPRiD\\Enum\\' => 13,
-        ),
-        'C' => 
-        array (
-            'Complex\\' => 8,
-            'Chance\\Log\\' => 11,
-            'Carbon\\' => 7,
         ),
         'B' => 
         array (
             'Brick\\Math\\' => 11,
-            'BaconQrCode\\' => 12,
         ),
         'A' => 
         array (
-            'App\\' => 4,
-            'AlibabaCloud\\Tea\\XML\\' => 21,
-            'AlibabaCloud\\Tea\\Utils\\' => 23,
-            'AlibabaCloud\\Tea\\' => 17,
-            'AlibabaCloud\\SDK\\Dysmsapi\\V20170525\\' => 36,
-            'AlibabaCloud\\OpenApiUtil\\' => 25,
-            'AlibabaCloud\\Endpoint\\' => 22,
-            'AlibabaCloud\\Credentials\\' => 25,
-            'AliPay\\' => 7,
-            'Adbar\\' => 6,
+            'Aws\\' => 4,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'yzh52521\\validate\\' => 
+        'zjkal\\' => 
         array (
-            0 => __DIR__ . '/..' . '/yzh52521/webman-validate/src',
+            0 => __DIR__ . '/..' . '/zjkal/mysql-helper/src',
         ),
-        'yzh52521\\EasyHttp\\' => 
+        'yzh52521\\filesystem\\' => 
         array (
-            0 => __DIR__ . '/..' . '/yzh52521/easyhttp/src',
+            0 => __DIR__ . '/..' . '/yzh52521/think-filesystem/src',
+        ),
+        'yzh52521\\Flysystem\\Oss\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/yzh52521/flysystem-oss/src',
+        ),
+        'yzh52521\\Flysystem\\Obs\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/yzh52521/flysystem-obs/src',
         ),
         'voku\\' => 
         array (
             0 => __DIR__ . '/..' . '/voku/portable-ascii/src/voku',
         ),
+        'think\\view\\driver\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/topthink/think-view/src',
+        ),
+        'think\\trace\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/topthink/think-trace/src',
+        ),
+        'think\\ide\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/topthink/think-ide-helper/src',
+        ),
+        'think\\app\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/topthink/think-multi-app/src',
+        ),
         'think\\' => 
         array (
-            0 => __DIR__ . '/..' . '/topthink/think-helper/src',
-            1 => __DIR__ . '/..' . '/topthink/think-orm/src',
+            0 => __DIR__ . '/..' . '/topthink/framework/src/think',
+            1 => __DIR__ . '/..' . '/topthink/think-cache/src',
+            2 => __DIR__ . '/..' . '/topthink/think-container/src',
+            3 => __DIR__ . '/..' . '/topthink/think-helper/src',
+            4 => __DIR__ . '/..' . '/topthink/think-orm/src',
+            5 => __DIR__ . '/..' . '/topthink/think-template/src',
+            6 => __DIR__ . '/..' . '/topthink/think-validate/src',
         ),
         'support\\' => 
         array (
-            0 => __DIR__ . '/..' . '/workerman/webman-framework/src/support',
+            0 => __DIR__ . '/..' . '/xbai/plugins/src/support',
         ),
-        'app\\View\\Components\\' => 
+        'phpseclib3\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/app/view/components',
+            0 => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib',
+        ),
+        'phpDocumentor\\Reflection\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
+            1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
+            2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
         ),
         'app\\' => 
         array (
             0 => __DIR__ . '/../..' . '/app',
         ),
-        'ZipStream\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/maennchen/zipstream-php/src',
-        ),
-        'YcOpen\\Midjourney\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/yc-open/midjourney/src',
-        ),
         'YcOpen\\CloudService\\' => 
         array (
             0 => __DIR__ . '/..' . '/yc-open/cloud-service/src',
         ),
-        'Yansongda\\Supports\\' => 
+        'Xbai\\Plugins\\' => 
         array (
-            0 => __DIR__ . '/..' . '/yansongda/supports/src',
+            0 => __DIR__ . '/..' . '/xbai/plugins/src',
         ),
-        'Yansongda\\Pay\\' => 
+        'Webmozart\\Assert\\' => 
         array (
-            0 => __DIR__ . '/..' . '/yansongda/pay/src',
+            0 => __DIR__ . '/..' . '/webmozart/assert/src',
         ),
-        'Workerman\\Redis\\' => 
+        'TheNorthMemory\\Xml\\' => 
         array (
-            0 => __DIR__ . '/..' . '/workerman/redis/src',
+            0 => __DIR__ . '/..' . '/thenorthmemory/xml/src',
         ),
-        'Workerman\\RedisQueue\\' => 
+        'Symfony\\Polyfill\\Php81\\' => 
         array (
-            0 => __DIR__ . '/..' . '/workerman/redis-queue/src',
-        ),
-        'Workerman\\Crontab\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/workerman/crontab/src',
-        ),
-        'Workerman\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/workerman/workerman',
-        ),
-        'Webman\\ThinkOrm\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/webman/think-orm/src',
-        ),
-        'Webman\\RedisQueue\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/webman/redis-queue/src',
-        ),
-        'Webman\\Console\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/webman/console/src',
-        ),
-        'Webman\\Captcha\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/webman/captcha/src',
-        ),
-        'Webman\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/workerman/webman-framework/src',
-        ),
-        'WePay\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/zoujingli/wechat-developer/WePay',
-        ),
-        'WePayV3\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/zoujingli/wechat-developer/WePayV3',
-        ),
-        'WeMini\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/zoujingli/wechat-developer/WeMini',
-        ),
-        'WeChat\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/zoujingli/wechat-developer/WeChat',
+            0 => __DIR__ . '/..' . '/symfony/polyfill-php81',
         ),
         'Symfony\\Polyfill\\Php80\\' => 
         array (
@@ -327,89 +269,29 @@ class ComposerStaticInit28ab241856c3f199130cd914a54ecec6
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
-        'Symfony\\Polyfill\\Intl\\Normalizer\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer',
-        ),
-        'Symfony\\Polyfill\\Intl\\Grapheme\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme',
-        ),
         'Symfony\\Polyfill\\Ctype\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
-        ),
-        'Symfony\\Contracts\\Translation\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/translation-contracts',
-        ),
-        'Symfony\\Contracts\\Service\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/service-contracts',
-        ),
-        'Symfony\\Contracts\\EventDispatcher\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/event-dispatcher-contracts',
-        ),
-        'Symfony\\Contracts\\Cache\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/cache-contracts',
-        ),
-        'Symfony\\Component\\VarExporter\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/var-exporter',
         ),
         'Symfony\\Component\\VarDumper\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/var-dumper',
         ),
-        'Symfony\\Component\\Translation\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/translation',
-        ),
-        'Symfony\\Component\\String\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/string',
-        ),
         'Symfony\\Component\\HttpFoundation\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/http-foundation',
         ),
-        'Symfony\\Component\\EventDispatcher\\' => 
+        'Rize\\' => 
         array (
-            0 => __DIR__ . '/..' . '/symfony/event-dispatcher',
+            0 => __DIR__ . '/..' . '/rize/uri-template/src/Rize',
         ),
-        'Symfony\\Component\\Console\\' => 
+        'Ramsey\\Uuid\\' => 
         array (
-            0 => __DIR__ . '/..' . '/symfony/console',
+            0 => __DIR__ . '/..' . '/ramsey/uuid/src',
         ),
-        'Symfony\\Component\\Cache\\' => 
+        'Ramsey\\Collection\\' => 
         array (
-            0 => __DIR__ . '/..' . '/symfony/cache',
-        ),
-        'Support\\View\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/workerman/webman-framework/src/support/view',
-        ),
-        'Support\\Exception\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/workerman/webman-framework/src/support/exception',
-        ),
-        'Support\\Bootstrap\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/workerman/webman-framework/src/support/bootstrap',
-        ),
-        'Support\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/workerman/webman-framework/src/support',
-        ),
-        'Shopwwi\\WebmanFilesystem\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/shopwwi/webman-filesystem/src',
-        ),
-        'Shopwwi\\FilesystemOss\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/shopwwi/filesystem-oss/src',
+            0 => __DIR__ . '/..' . '/ramsey/collection/src',
         ),
         'Qiniu\\' => 
         array (
@@ -432,10 +314,6 @@ class ComposerStaticInit28ab241856c3f199130cd914a54ecec6
         array (
             0 => __DIR__ . '/..' . '/psr/http-client/src',
         ),
-        'Psr\\EventDispatcher\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/psr/event-dispatcher/src',
-        ),
         'Psr\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
@@ -448,13 +326,13 @@ class ComposerStaticInit28ab241856c3f199130cd914a54ecec6
         array (
             0 => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption',
         ),
-        'PhpOffice\\PhpWord\\' => 
+        'ParagonIE\\ConstantTime\\' => 
         array (
-            0 => __DIR__ . '/..' . '/phpoffice/phpword/src/PhpWord',
+            0 => __DIR__ . '/..' . '/paragonie/constant_time_encoding/src',
         ),
-        'PhpOffice\\PhpSpreadsheet\\' => 
+        'PHPStan\\PhpDocParser\\' => 
         array (
-            0 => __DIR__ . '/..' . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet',
+            0 => __DIR__ . '/..' . '/phpstan/phpdoc-parser/src',
         ),
         'Overtrue\\Flysystem\\Qiniu\\' => 
         array (
@@ -468,13 +346,9 @@ class ComposerStaticInit28ab241856c3f199130cd914a54ecec6
         array (
             0 => __DIR__ . '/..' . '/overtrue/qcloud-cos-client/src',
         ),
-        'Orhanerday\\OpenAi\\' => 
+        'Obs\\' => 
         array (
-            0 => __DIR__ . '/..' . '/orhanerday/open-ai/src',
-        ),
-        'OneSm\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/lizhichao/one-sm/src',
+            0 => __DIR__ . '/..' . '/zing/esdk-obs-php/Obs',
         ),
         'OSS\\' => 
         array (
@@ -488,60 +362,45 @@ class ComposerStaticInit28ab241856c3f199130cd914a54ecec6
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
-        'Matrix\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/markbaker/matrix/classes/src',
-        ),
         'League\\MimeTypeDetection\\' => 
         array (
             0 => __DIR__ . '/..' . '/league/mime-type-detection/src',
+        ),
+        'League\\Flysystem\\ReadOnly\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/league/flysystem-read-only',
+        ),
+        'League\\Flysystem\\PhpseclibV3\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/league/flysystem-sftp-v3',
+        ),
+        'League\\Flysystem\\PathPrefixing\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/league/flysystem-path-prefixing',
+        ),
+        'League\\Flysystem\\Local\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/league/flysystem-local',
+        ),
+        'League\\Flysystem\\GoogleCloudStorage\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/league/flysystem-google-cloud-storage',
+        ),
+        'League\\Flysystem\\Ftp\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/league/flysystem-ftp',
+        ),
+        'League\\Flysystem\\AwsS3V3\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/league/flysystem-aws-s3-v3',
         ),
         'League\\Flysystem\\' => 
         array (
             0 => __DIR__ . '/..' . '/league/flysystem/src',
         ),
-        'Laminas\\Escaper\\' => 
+        'JmesPath\\' => 
         array (
-            0 => __DIR__ . '/..' . '/laminas/laminas-escaper/src',
-        ),
-        'Illuminate\\Support\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/illuminate/collections',
-            1 => __DIR__ . '/..' . '/illuminate/conditionable',
-            2 => __DIR__ . '/..' . '/illuminate/macroable',
-            3 => __DIR__ . '/..' . '/illuminate/support',
-        ),
-        'Illuminate\\Redis\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/illuminate/redis',
-        ),
-        'Illuminate\\Pipeline\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/illuminate/pipeline',
-        ),
-        'Illuminate\\Pagination\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/illuminate/pagination',
-        ),
-        'Illuminate\\Events\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/illuminate/events',
-        ),
-        'Illuminate\\Database\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/illuminate/database',
-        ),
-        'Illuminate\\Contracts\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/illuminate/contracts',
-        ),
-        'Illuminate\\Container\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/illuminate/container',
-        ),
-        'Illuminate\\Bus\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/illuminate/bus',
+            0 => __DIR__ . '/..' . '/mtdowling/jmespath.php/src',
         ),
         'GuzzleHttp\\Psr7\\' => 
         array (
@@ -559,161 +418,106 @@ class ComposerStaticInit28ab241856c3f199130cd914a54ecec6
         array (
             0 => __DIR__ . '/..' . '/graham-campbell/result-type/src',
         ),
+        'Google\\Cloud\\Storage\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/google/cloud-storage/src',
+        ),
+        'Google\\Cloud\\Core\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/google/cloud-core/src',
+        ),
+        'Google\\Auth\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/google/auth/src',
+        ),
         'FormBuilder\\' => 
         array (
             0 => __DIR__ . '/..' . '/xaboy/form-builder/src',
         ),
-        'Flc\\Dysms\\' => 
+        'Firebase\\JWT\\' => 
         array (
-            0 => __DIR__ . '/..' . '/flc/dysms/src',
+            0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
         ),
-        'FastRoute\\' => 
+        'Ergebnis\\Classy\\' => 
         array (
-            0 => __DIR__ . '/..' . '/nikic/fast-route/src',
+            0 => __DIR__ . '/..' . '/ergebnis/classy/src',
         ),
-        'Endroid\\QrCode\\' => 
+        'EasyTask\\' => 
         array (
-            0 => __DIR__ . '/..' . '/endroid/qr-code/src',
+            0 => __DIR__ . '/..' . '/easy-task/easy-task/src',
         ),
         'Dotenv\\' => 
         array (
             0 => __DIR__ . '/..' . '/vlucas/phpdotenv/src',
         ),
-        'Doctrine\\Inflector\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/doctrine/inflector/lib/Doctrine/Inflector',
-        ),
         'Doctrine\\Deprecations\\' => 
         array (
             0 => __DIR__ . '/..' . '/doctrine/deprecations/lib/Doctrine/Deprecations',
-        ),
-        'Doctrine\\DBAL\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/doctrine/dbal/src',
         ),
         'Doctrine\\Common\\Lexer\\' => 
         array (
             0 => __DIR__ . '/..' . '/doctrine/lexer/src',
         ),
-        'Doctrine\\Common\\Cache\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/doctrine/cache/lib/Doctrine/Common/Cache',
-        ),
         'Doctrine\\Common\\Annotations\\' => 
         array (
             0 => __DIR__ . '/..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations',
-        ),
-        'Doctrine\\Common\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/doctrine/event-manager/lib/Doctrine/Common',
-        ),
-        'Darabonba\\OpenApi\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/alibabacloud/darabonba-openapi/src',
-        ),
-        'Darabonba\\GatewaySpi\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/alibabacloud/gateway-spi/src',
-        ),
-        'DASPRiD\\Enum\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/dasprid/enum/src',
-        ),
-        'Complex\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/markbaker/complex/classes/src',
-        ),
-        'Chance\\Log\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/chance-fyi/operation-log/src',
-        ),
-        'Carbon\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon',
         ),
         'Brick\\Math\\' => 
         array (
             0 => __DIR__ . '/..' . '/brick/math/src',
         ),
-        'BaconQrCode\\' => 
+        'Aws\\' => 
         array (
-            0 => __DIR__ . '/..' . '/bacon/bacon-qr-code/src',
-        ),
-        'App\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/app',
-        ),
-        'AlibabaCloud\\Tea\\XML\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/alibabacloud/tea-xml/src',
-        ),
-        'AlibabaCloud\\Tea\\Utils\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/alibabacloud/tea-utils/src',
-        ),
-        'AlibabaCloud\\Tea\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/alibabacloud/tea/src',
-        ),
-        'AlibabaCloud\\SDK\\Dysmsapi\\V20170525\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/alibabacloud/dysmsapi-20170525/src',
-        ),
-        'AlibabaCloud\\OpenApiUtil\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/alibabacloud/openapi-util/src',
-        ),
-        'AlibabaCloud\\Endpoint\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/alibabacloud/endpoint-util/src',
-        ),
-        'AlibabaCloud\\Credentials\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/alibabacloud/credentials/src',
-        ),
-        'AliPay\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/zoujingli/wechat-developer/AliPay',
-        ),
-        'Adbar\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/adbario/php-dot-notation/src',
+            0 => __DIR__ . '/..' . '/aws/aws-sdk-php/src',
         ),
     );
 
-    public static $fallbackDirsPsr4 = array (
-        0 => __DIR__ . '/../..' . '/',
-    );
-
-    public static $prefixesPsr0 = array (
-        'H' => 
-        array (
-            'HTMLPurifier' => 
-            array (
-                0 => __DIR__ . '/..' . '/ezyang/htmlpurifier/library',
-            ),
-        ),
+    public static $fallbackDirsPsr0 = array (
+        0 => __DIR__ . '/../..' . '/extend',
     );
 
     public static $classMap = array (
+        'AWS\\CRT\\Auth\\AwsCredentials' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/Auth/AwsCredentials.php',
+        'AWS\\CRT\\Auth\\CredentialsProvider' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/Auth/CredentialsProvider.php',
+        'AWS\\CRT\\Auth\\Signable' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/Auth/Signable.php',
+        'AWS\\CRT\\Auth\\SignatureType' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/Auth/SignatureType.php',
+        'AWS\\CRT\\Auth\\SignedBodyHeaderType' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/Auth/SignedBodyHeaderType.php',
+        'AWS\\CRT\\Auth\\Signing' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/Auth/Signing.php',
+        'AWS\\CRT\\Auth\\SigningAlgorithm' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/Auth/SigningAlgorithm.php',
+        'AWS\\CRT\\Auth\\SigningConfigAWS' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/Auth/SigningConfigAWS.php',
+        'AWS\\CRT\\Auth\\SigningResult' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/Auth/SigningResult.php',
+        'AWS\\CRT\\Auth\\StaticCredentialsProvider' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/Auth/StaticCredentialsProvider.php',
+        'AWS\\CRT\\CRT' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/CRT.php',
+        'AWS\\CRT\\HTTP\\Headers' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/HTTP/Headers.php',
+        'AWS\\CRT\\HTTP\\Message' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/HTTP/Message.php',
+        'AWS\\CRT\\HTTP\\Request' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/HTTP/Request.php',
+        'AWS\\CRT\\HTTP\\Response' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/HTTP/Response.php',
+        'AWS\\CRT\\IO\\EventLoopGroup' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/IO/EventLoopGroup.php',
+        'AWS\\CRT\\IO\\InputStream' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/IO/InputStream.php',
+        'AWS\\CRT\\Internal\\Encoding' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/Internal/Encoding.php',
+        'AWS\\CRT\\Internal\\Extension' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/Internal/Extension.php',
+        'AWS\\CRT\\Log' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/Log.php',
+        'AWS\\CRT\\NativeResource' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/NativeResource.php',
+        'AWS\\CRT\\OptionValue' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/Options.php',
+        'AWS\\CRT\\Options' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/Options.php',
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
+        'CURLStringFile' => __DIR__ . '/..' . '/symfony/polyfill-php81/Resources/stubs/CURLStringFile.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
+        'PclZip' => __DIR__ . '/..' . '/pclzip/pclzip/pclzip.lib.php',
         'PhpToken' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
+        'ReturnTypeWillChange' => __DIR__ . '/..' . '/symfony/polyfill-php81/Resources/stubs/ReturnTypeWillChange.php',
         'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
         'UnhandledMatchError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
         'ValueError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',
-        'We' => __DIR__ . '/..' . '/zoujingli/wechat-developer/We.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit28ab241856c3f199130cd914a54ecec6::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit28ab241856c3f199130cd914a54ecec6::$prefixDirsPsr4;
-            $loader->fallbackDirsPsr4 = ComposerStaticInit28ab241856c3f199130cd914a54ecec6::$fallbackDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit28ab241856c3f199130cd914a54ecec6::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit28ab241856c3f199130cd914a54ecec6::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit2438499dbe71b96805c448479aa3db48::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit2438499dbe71b96805c448479aa3db48::$prefixDirsPsr4;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit2438499dbe71b96805c448479aa3db48::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit2438499dbe71b96805c448479aa3db48::$classMap;
 
         }, null, ClassLoader::class);
     }

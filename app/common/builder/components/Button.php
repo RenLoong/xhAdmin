@@ -38,7 +38,7 @@ trait Button
     private $rightButtonList = [];
 
     /**
-     * 开启操作选项
+     * 开启右侧操作选项
      *
      * @Author 贵州猿创科技有限公司
      * @Email 416716328@qq.com
@@ -57,7 +57,11 @@ trait Button
                 'default'       => $field
             ],
             'params'            => [
-                'group'         => false
+                'group'                 => false,
+                'groupText'             => false,
+                'buttonGroupIcon'       => '',
+                'buttonGroupIconType'   => '',
+                'buttonStyle'           => '',
             ],
         ], $extra);
         $this->addColumn($field, $title, $extra);
@@ -90,7 +94,7 @@ trait Button
     }
 
     /**
-     * 添加选择按钮
+     * 添加底部按钮
      * @param string $field
      * @param string $title
      * @param array $pageData
@@ -101,7 +105,7 @@ trait Button
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public function addSelectButton(string $field, string $title, array $pageData = [], array $message = [], array $button = []): ListBuilder
+    public function addBottomButton(string $field, string $title, array $pageData = [], array $message = [], array $button = []): ListBuilder
     {
         $btnData = $this->checkUsedAttrs(
             $field,
@@ -116,7 +120,7 @@ trait Button
     }
 
     /**
-     * 添加列按钮
+     * 添加右侧列按钮
      *
      * @Author 贵州猿创科技有限公司
      * @Email 416716328@qq.com
@@ -195,10 +199,17 @@ trait Button
             'field'    => $field,
             'title'    => $title,
             'pageData' => [
-                // 支持：page，link，confirm，table，form，remote
+                /**
+                 * 按钮组件类型
+                 * page：跳转页面
+                 * link：跳转链接
+                 * confirm：确认框
+                 * table：模态框-表格
+                 * modal：模态框-表单
+                 * remote：模态框-远程组件
+                 * info：模态框-详情数据
+                 */
                 'type'        => 'page',
-                // 仅支持：form，table，remote
-                'modal'       => false,
                 // 是否支持返回
                 'isBack'      => true,
                 // 请求API
@@ -209,10 +220,12 @@ trait Button
                 'path'        => '',
                 // 附带参数
                 'queryParams' => [],
+                // 右侧按钮别名参数(仅支持右侧按钮)
+                'aliasParams' => [],
             ],
             // 按钮样式
             'button'   => [],
-            // modal为true时有效
+            // type为[modal，table，remote，info]时有效
             'message'  => [
                 'title' => '温馨提示',
             ],
@@ -230,22 +243,15 @@ trait Button
      */
     private function getModalAttrs(array &$btnData): array
     {
-        // 设置模态框通用属性
-        if (in_array($btnData['pageData']['type'], ['form', 'table', 'remote', 'confirm'])) {
-        }
         // 设置模态框专有属性
-        if (in_array($btnData['pageData']['type'], ['form', 'table', 'remote']) && $btnData['pageData']['modal']) {
-            $btnData['message']['style']['width']  = '40%';
-            $btnData['message']['style']['height'] = '650px';
-            $btnData['message']['showIcon']        = false;
-            $btnData['message']['maskClosable']    = false;
+        if (in_array($btnData['pageData']['type'], ['modal', 'table', 'remote','info'])) {
+            $btnData['message']['customStyle']['width']     = '45%';
+            $btnData['message']['customStyle']['height']    = '650px';
+            $btnData['message']['closeOnClickModal']        = false;
+            $btnData['message']['showConfirmButton']        = true;
         }
         // 设置确认框专有属性
         if ($btnData['pageData']['type'] === 'confirm') {
-            $btnData['message']['type']         = 'warning';
-            $btnData['message']['content']      = '是否确认进行该操作？';
-            $btnData['message']['positiveText'] = '确定';
-            $btnData['message']['negativeText'] = '取消';
         }
         return $btnData;
     }

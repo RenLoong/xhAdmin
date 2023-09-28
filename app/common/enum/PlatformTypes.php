@@ -1,7 +1,7 @@
 <?php
 namespace app\common\enum;
 
-use app\Enum;
+use app\common\Enum;
 
 /**
  * 应用平台类型
@@ -17,36 +17,36 @@ class PlatformTypes extends Enum
         'text'      => '微信公众号',
         'value'     => 'wechat',
         'type'      => 'path',
-        'icon'      => '/image/new_wechat.png',
+        'icon'      => '/image/wechat-3.png',
     ];
     const MINI_WECHAT = [
         'text'      => '微信小程序',
         'value'     => 'mini_wechat',
         'type'      => 'path',
-        'icon'      => '/image/new_wx_mini.png',
+        'icon'      => '/image/mini_wechat-3.png',
     ];
     const DOUYIN = [
         'text'      => '抖音应用',
         'value'     => 'douyin',
         'type'      => 'path',
-        'icon'      => '/image/new_douyin.png',
+        'icon'      => '/image/douyin-3.png',
     ];
     const H5 = [
         'text'      => '网页应用',
         'value'     => 'h5',
         'type'      => 'path',
-        'icon'      => '/image/new_h5.png',
+        'icon'      => '/image/h5-3.png',
     ];
     const APP = [
         'text'      => 'APP应用',
         'value'     => 'app',
         'type'      => 'path',
-        'icon'      => '/image/new_other.png',
+        'icon'      => '/image/app-3.png',
     ];
     const OTHER = [
         'text'      => '其他应用',
         'value'     => 'other',
         'type'      => 'path',
-        'icon'      => '/image/new_other.png',
+        'icon'      => '/image/other-3.png',
     ];
 }

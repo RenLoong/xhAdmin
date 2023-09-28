@@ -6,7 +6,7 @@ use app\common\builder\FormBuilder;
 use app\common\builder\ListBuilder;
 use app\common\manager\ModulesMgr;
 use app\admin\validate\Modules;
-use app\BaseController;
+use app\common\BaseController;
 use app\common\exception\RedirectException;
 use app\common\manager\DbMgr;
 use Exception;
@@ -70,7 +70,7 @@ class ModulesController extends BaseController
                 'title' => '温馨提示',
                 'content' => '是否确认删除该数据，该操作将不可恢复',
             ], [
-                'type' => 'error',
+                'type' => 'danger',
                 'link' => true
             ])
             ->addColumn('CREATE_TIME', '创建时间', [

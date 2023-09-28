@@ -3,7 +3,7 @@
 namespace app\store\controller;
 
 use app\common\builder\ListBuilder;
-use app\BaseController;
+use app\common\BaseController;
 use app\common\enum\StatusEnum;
 use app\common\enum\StatusEnumStyle;
 use support\Request;

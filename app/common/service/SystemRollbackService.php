@@ -1,5 +1,6 @@
 <?php
 namespace app\common\service;
+
 use app\common\manager\JsonMgr;
 use app\common\manager\ZipMgr;
 use app\common\utils\DirUtil;
@@ -36,11 +37,11 @@ class SystemRollbackService extends SystemUpdateService
         # 删除代码文件
         // DirUtil::delDir($this->targetPath);
         # 解压备份压缩包
-        ZipMgr::unzip($this->backupPath, $this->targetPath);
+        ZipMgr::unzip($this->backupCodePath, $this->targetPath);
         # 解压覆盖压缩包
         ZipMgr::unzip($this->backCoverPath, $this->targetPath);
         # 删除更新SQL目录
-        $updateDir = base_path('/update');
+        $updateDir = root_path().'/update';
         if (is_dir($updateDir)) {
             DirUtil::delDir($updateDir);
         }

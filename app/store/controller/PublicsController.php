@@ -9,7 +9,8 @@ use app\common\utils\Password;
 use Exception;
 use support\Request;
 use app\admin\validate\SystemAdmin as ValidateSystemAdmin;
-use app\BaseController;
+use app\common\BaseController;
+use think\facade\Session;
 
 class PublicsController extends BaseController
 {
@@ -34,7 +35,7 @@ class PublicsController extends BaseController
         $private_key = empowerFile('private_key');
         $data = [
             'web_name' => getHpConfig('web_name'),
-            'web_title' => '登录',
+            'web_title' => '渠道商登录',
             'web_logo' => empty($web_logo) ? '' : $web_logo,
             'version_name' => $systemInfo['system_version_name'],
             'version' => $systemInfo['system_version'],
@@ -83,10 +84,6 @@ class PublicsController extends BaseController
                 'edit' => "{$this->moduleName}/SystemUploadCate/edit",
                 'del' => "{$this->moduleName}/SystemUploadCate/del",
             ],
-            // 主题配置（待扩展）
-            'theme'             => [
-                'layout'        => 'top',
-            ],
         ];
         return parent::successRes($data);
     }
@@ -127,19 +124,19 @@ class PublicsController extends BaseController
         if (time() > strtotime($adminModel['expire_time'])) {
             return $this->fail('该用户使用权益已过期');
         }
-        $session = $request->session();
-        $session->set('hp_store', $adminModel->toArray());
 
         // 更新登录信息
-        $ip = $request->getRealIp($safe_mode = true);
+        $ip = $request->ip();
         $adminModel->last_login_ip = $ip;
         $adminModel->last_login_time = date('Y-m-d H:i:s');
         $adminModel->save();
 
-        // 返回数据
-        return $this->successFul('登录成功', ['token' => $request->sessionId()]);
-    }
+        // 构建令牌
+        Session::set('XhAdminStore', $adminModel);
 
+        // 返回数据
+        return $this->successToken('登录成功', 'XhAdminStore');
+    }
 
     /**
      * 获取管理员数据
@@ -150,32 +147,23 @@ class PublicsController extends BaseController
      */
     public function user(Request $request)
     {
-        $admin_id = hp_admin_id('hp_store');
-        if (!$admin_id) {
-            return $this->failFul('登录超时，请重新登录',12000);
-        }
-        $where = [
-            'id' => $admin_id
-        ];
-        $model = Store::where($where)->find();
-        if (!$model) {
-            return $this->failFul('该用户不存在',12000);
-        }
-        # 重新缓存数据
-        $storeData = $model->toArray();
-        $session = $request->session();
-        $session->set('hp_store', $storeData);
+        $user = $request->user;
         # 前端数据
-        $expireDate = date('Y-m-d',strtotime($storeData['expire_time']));
+        $expireDate = date('Y-m-d',strtotime($user['expire_time']));
         $data = [
-            'id'                => $storeData['id'],
-            'nickname'          => $storeData['title'],
-            'headimg'           => $storeData['logo'],
-            'plugins'           => $storeData['plugins_name'],
+            'id'                => $user['id'],
+            'username'          => $user['username'],
+            'nickname'          => $user['title'],
+            'headimg'           => $user['logo'],
+            'plugins'           => $user['plugins_name'],
             'role'              => [
                 'title'         => "权益：{$expireDate}"
             ],
-            'menus'             => $this->getMenus()
+            'menus'             => $this->getMenus(),
+            // 主题配置（待扩展）
+            'theme'             => [
+                'layout'        => 'top',
+            ],
         ];
         return parent::successRes($data);
     }
@@ -204,7 +192,7 @@ class PublicsController extends BaseController
             'icon',
             'show',
         ];
-        $list = StoreMenus::order($order)
+        $data = StoreMenus::order($order)
         ->field($field)
         ->select()
         ->each(function ($e) {
@@ -216,10 +204,6 @@ class PublicsController extends BaseController
             return $e;
         })
         ->toArray();
-        $data = [
-            'active' => '/Index/index',
-            'list' => $list
-        ];
         return $data;
     }
 
@@ -233,8 +217,6 @@ class PublicsController extends BaseController
      */
     public function loginout(Request $request)
     {
-        $session = $request->session();
-        $session->delete('hp_store');
         return parent::success('成功退出');
     }
 }

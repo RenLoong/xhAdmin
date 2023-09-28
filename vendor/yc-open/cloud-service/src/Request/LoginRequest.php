@@ -42,6 +42,7 @@ class LoginRequest extends Request
     public function outLogin()
     {
         Redis::del('yc-cloud-service-token');
+        Redis::del($this->tokenKey);
     }
     /**
      * 设置响应数据模型
@@ -50,7 +51,7 @@ class LoginRequest extends Request
     public function setResponse(mixed $data): DataModel
     {
         # 将data中token写入Redis
-        Redis::set('yc-cloud-service-token', $data['token']);
+        Redis::set($this->tokenKey, $data['token']);
         return new DataModel($data);
     }
 }

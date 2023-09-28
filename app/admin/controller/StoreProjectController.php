@@ -7,7 +7,7 @@ use app\common\builder\ListBuilder;
 use app\common\enum\PlatformTypesStyle;
 use app\common\model\StoreApp;
 use app\admin\validate\StoreApp as ValidateStoreApp;
-use app\BaseController;
+use app\common\BaseController;
 use app\common\enum\PlatformTypes;
 use Exception;
 use support\Request;
@@ -76,7 +76,7 @@ class StoreProjectController extends BaseController
                 'title' => '温馨提示',
                 'content' => '该数据删除将不可恢复，请谨慎操作',
             ], [
-                'type' => 'error',
+                'type' => 'danger',
                 'icon' => 'RestOutlined'
             ])
             ->addColumn('create_at', '创建时间', [

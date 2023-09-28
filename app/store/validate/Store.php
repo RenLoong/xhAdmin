@@ -3,7 +3,7 @@
 namespace app\store\validate;
 
 use app\common\model\Store as storeModel;
-use yzh52521\validate\Validate;
+use think\Validate;
 
 class Store extends Validate
 {
@@ -33,7 +33,7 @@ class Store extends Validate
      */
     protected function verifyTitle($value)
     {
-        $store_id = hp_admin_id('hp_store');
+        $store_id = request()->user['id'];
         $where = [
             ['title','=',$value],
             ['id','<>',$store_id]

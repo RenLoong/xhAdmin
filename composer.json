@@ -1,86 +1,60 @@
 {
-    "name": "ycopen/kfadmin",
+    "name": "topthink/think",
+    "description": "the new thinkphp framework",
     "type": "project",
     "keywords": [
-        "high performance",
-        "http service"
+        "framework",
+        "thinkphp",
+        "ORM"
     ],
-    "homepage": "https://www.kfadmin.net/",
-    "license": "Apache",
-    "description": "High performance HTTP Service Framework.",
+    "homepage": "https://www.thinkphp.cn/",
+    "license": "Apache-2.0",
     "authors": [
         {
-            "name": "贵州猿创科技有限公司",
-            "homepage": "https://www.kfadmin.net/",
-            "role": "Developer"
+            "name": "liu21st",
+            "email": "liu21st@gmail.com"
+        },
+        {
+            "name": "yunwuxin",
+            "email": "448901948@qq.com"
         }
     ],
-    "support": {
-        "issues": "https://gitee.com/yc_open/kfadmin-cloud/issues",
-        "forum": "https://www.kfadmin.net/",
-        "wiki": "https://gitee.com/yc_open/kfadmin-cloud/wikis",
-        "source": "https://gitee.com/yc_open/kfadmin-cloud"
-    },
     "require": {
-        "php": "^8.0",
-        "workerman/webman-framework": "^1.5.0",
-        "monolog/monolog": "^2.0",
-        "psr/container": "^1.1.1",
-        "webman/think-orm": "^1.0",
-        "webman/captcha": "^1.0",
-        "vlucas/phpdotenv": "^5.4",
+        "php": ">=8.0.0",
+        "topthink/framework": "^8.0",
+        "topthink/think-orm": "^3.0",
+        "xbai/plugins": "^1.0",
         "xaboy/form-builder": "^2.0",
-        "webman/console": "^1.2",
-        "chance-fyi/operation-log": "^2.0",
-        "yzh52521/easyhttp": "^1.0",
-        "yzh52521/webman-validate": "^0.1.3",
-        "shopwwi/webman-filesystem": "^1.0",
-        "shopwwi/filesystem-oss": "^1.0",
-        "overtrue/flysystem-qiniu": "^2.0",
-        "overtrue/flysystem-cos": "^4.0",
-        "illuminate/redis": "^9.52",
-        "symfony/cache": "^6.0",
-        "illuminate/database": "^9.52",
-        "illuminate/pagination": "^9.52",
-        "illuminate/events": "^9.52",
-        "symfony/var-dumper": "^6.0",
-        "doctrine/dbal": "^3.6",
-        "yc-open/cloud-service": "^1.1",
-        "yc-open/midjourney": "^1.0.0",
-        "webman/redis-queue": "^1.2",
-        "workerman/crontab": "^1.0",
-        "zoujingli/wechat-developer": "^1.2",
-        "alibabacloud/dysmsapi-20170525": "^2.0",
-        "phpoffice/phpword": "^1.1",
-        "orhanerday/open-ai": "^4.7",
-        "phpoffice/phpspreadsheet": "^1.28",
-        "flc/dysms": "^1.0",
-        "yansongda/pay": "^2.10",
-        "endroid/qr-code": "^4.8"
+        "topthink/think-multi-app": "^1.0",
+        "topthink/think-view": "^2.0",
+        "topthink/think-cache": "^1.1",
+        "topthink/think-validate": "^2.0",
+        "zjkal/mysql-helper": "^1.0",
+        "yzh52521/think-filesystem": "^3.0",
+        "yc-open/cloud-service": "dev-master",
+        "topthink/think-ide-helper": "^1.0",
+        "pclzip/pclzip": "^2.8",
+        "easy-task/easy-task": "^2.4"
     },
-    "suggest": {
-        "ext-event": "For better performance. "
+    "require-dev": {
+        "symfony/var-dumper": ">=4.2",
+        "topthink/think-trace": "^1.0"
     },
     "autoload": {
         "psr-4": {
-            "": "./",
-            "app\\": "./app",
-            "App\\": "./app",
-            "app\\View\\Components\\": "./app/view/components"
+            "app\\": "app"
         },
-        "files": [
-            "./support/helpers.php"
-        ]
+        "psr-0": {
+            "": "extend/"
+        }
+    },
+    "config": {
+        "preferred-install": "dist"
     },
     "scripts": {
-        "post-package-install": [
-            "support\\Plugin::install"
-        ],
-        "post-package-update": [
-            "support\\Plugin::install"
-        ],
-        "pre-package-uninstall": [
-            "support\\Plugin::uninstall"
+        "post-autoload-dump": [
+            "@php think service:discover",
+            "@php think vendor:publish"
         ]
     }
 }

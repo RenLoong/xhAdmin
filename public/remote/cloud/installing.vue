@@ -1,10 +1,8 @@
 <template>
     <div class="update-container">
-        <div class="step-container">
-            <n-steps vertical :current="stepData.step" :status="stepData.status">
-                <n-step v-for="(item, index) in stepData.list" :key="index" :title="item.title" />
-            </n-steps>
-        </div>
+        <el-steps class="step-container" direction="vertical" :active="stepData.step" process-status="success">
+            <el-step v-for="(item, index) in stepData.list" :key="index" :title="item.title" />
+        </el-steps>
         <div class="content-container" v-if="pageData">
             <img :src="pageData.logo" class="logo" alt="">
             <div class="title">{{ pageData.title }} {{ pageData.version_name }}</div>
@@ -46,14 +44,6 @@ export default {
                         title: '数据安装',
                     },
                     {
-                        step: 'reload',
-                        title: '重启服务',
-                    },
-                    {
-                        step: 'ping',
-                        title: '等待重启',
-                    },
-                    {
                         step: 'success',
                         title: '安装完成',
                     },
@@ -76,48 +66,27 @@ export default {
             _this.stepData.step = _this.stepData.list.findIndex(item => item.step === step) + 1;
             _this.$http.usePost(`admin/Plugin/install?step=${step}`, queryParams).then((res) => {
                 if (res?.code === 200) {
-                    if (res.data.next === 'success') {
+                    if (res.data.next === '') {
                         const stepIndex = _this.stepData.list.findIndex(item => item.step === res.data.next) + 1;
                         _this.stepData.step = stepIndex
                         setTimeout(() => {
                             _this.$emit("update:closeWin");
                         }, 2000);
                         _this.stepData.stepText = res.msg;
-                        _this.$useNotification?.success({
-                            title: res?.msg ?? "操作成功",
-                            duration: 1500,
-                        });
+                        _this.$useNotify(res?.msg || "操作成功", 'success', '温馨提示');
                     } else if (res.data.next) {
                         _this.exceStep(res.data.next);
                     }
                 } else {
-                    _this.$useNotification?.error({
-                        title: res?.msg ?? "操作成功",
-                        duration: 1500,
-                        onAfterLeave: () => {
+                    _this.$useNotify(res?.msg || "操作失败", 'error', '温馨提示', {
+                        'onClose': () => {
                             _this.$emit("update:closeWin");
                         }
-                    });
+                    })
                 }
             }).catch((err) => {
-                console.error('error', err)
-                let step = '';
-                if (err?.response?.status === 502) {
-                    step = 'ping';
-                    setTimeout(() => {
-                        _this.exceStep(step);
-                    }, 1000)
-                    return;
-                }
-                if (step === 'reload') {
-                    step = 'ping';
-                    setTimeout(() => {
-                        _this.exceStep(step);
-                    }, 1000)
-                } else {
-                    setTimeout(() => {
-                        _this.$emit("update:closeWin");
-                    }, 1500);
+                if ([404, 502].includes(err?.code)) {
+                    _this.$emit("update:closeWin");
                 }
             })
         },
@@ -133,17 +102,15 @@ export default {
                         _this.pageData = res?.data ?? {};
                         _this.exceStep('download')
                     } else {
-                        _this.$useNotification?.error({
-                            title: res?.msg ?? "获取失败",
-                            duration: 1500,
-                            onAfterLeave: () => {
+                        _this.$useNotify(res?.msg || "操作失败", 'error', '温馨提示', {
+                            'onClose': () => {
                                 _this.$emit("update:closeWin");
                             }
-                        });
+                        })
                     }
                 })
                 .catch((err) => {
-                    if (err?.code == 11000) {
+                    if ([11000,666,600].includes(err?.code)) {
                         _this.openWin("remote/cloud/login");
                     } else {
                         _this.$emit("update:closeWin");
@@ -159,15 +126,18 @@ export default {
     display: flex;
     width: 100%;
     height: 100%;
-    border-top: 1px solid #e5e5e5;
-    margin-top: 10px;
+    overflow: hidden;
 
     .step-container {
         display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 0 20px;
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding: 20px;
         border-right: 1px solid #e5e5e5;
+        height: 100%;
+        overflow-y: hidden;
+        overflow-x: hidden;
+        box-sizing: border-box;
     }
 
     .content-container {

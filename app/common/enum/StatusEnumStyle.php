@@ -2,7 +2,7 @@
 
 namespace app\common\enum;
 
-use app\Enum;
+use app\common\Enum;
 
 /**
  * 状态管理器-样式

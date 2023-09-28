@@ -26,7 +26,6 @@ class SystemZipCmdMgr
     {
         # 获取系统级解压命令
         $cmd     = self::getUnzipCmd($zipFile, $extractTo);
-        p("执行系统命令解压：{$cmd}");
         $desc    = [
             0 => ["pipe", "r"],
             1 => ["pipe", "w"],
@@ -79,7 +78,6 @@ class SystemZipCmdMgr
         chdir($extractTo);
         # 获取系统级打包命令
         $cmd     = self::getZipBuildCmd($zipFile, '*', $ignoreFiles);
-        p("执行系统命令打包：{$cmd}");
         $desc    = [
             0 => ["pipe", "r"],
             1 => ["pipe", "w"],
@@ -115,7 +113,6 @@ class SystemZipCmdMgr
         # 获取系统级打包命令
         $files = implode(',', $files);
         $cmd     = self::getZipBuildCmd($zipFilePath, $files);
-        p("执行系统命令打包指定文件：{$cmd}");
         $desc    = [
             0 => ["pipe", "r"],
             1 => ["pipe", "w"],

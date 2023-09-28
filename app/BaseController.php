@@ -1,161 +1,94 @@
 <?php
+declare (strict_types = 1);
 
 namespace app;
 
-use app\common\utils\Json;
-use support\Request;
-use app\Model;
+use think\App;
+use think\exception\ValidateException;
+use think\Validate;
 
 /**
- * @title 控制器基类
- * @desc 控制器描述
- * @author 楚羽幽 <admin@hangpu.net>
+ * 控制器基础类
  */
-class BaseController
+abstract class BaseController
 {
-    // 使用JSON工具类
-    use Json;
+    /**
+     * Request实例
+     * @var \think\Request
+     */
+    protected $request;
 
     /**
-     * @var Model
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-13
+     * 应用实例
+     * @var \think\App
      */
-    protected $model;
+    protected $app;
 
     /**
-     * 模块名
-     * @var string
+     * 是否批量验证
+     * @var bool
      */
-    protected $moduleName;
+    protected $batchValidate = false;
 
     /**
-     * 构造函数
-     * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-05-03
+     * 控制器中间件
+     * @var array
      */
-    public function __construct()
+    protected $middleware = [];
+
+    /**
+     * 构造方法
+     * @access public
+     * @param  App  $app  应用对象
+     */
+    public function __construct(App $app)
     {
-        # 请求信息
-        $request    = request();
+        $this->app     = $app;
+        $this->request = $this->app->request;
 
-        # 基础模块名
-        $moduleName = $this->getPathModule($request->path());
-        $moduleName = getModule($moduleName);
-        $this->moduleName = $moduleName;
-        
-        # 插件名称
-        if ($request->plugin) {
-            $this->moduleName = $request->plugin;
-        }
+        // 控制器初始化
+        $this->initialize();
     }
 
-    /**
-     * 获取HTTP路径中的模块
-     * @param string $path
-     * @return string
-     * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-05-03
-     */
-    private function getPathModule(string $path)
-    {
-        $modules = explode('/', $path);
-        $modules = current(array_filter($modules));
-        return $modules ? $modules : 'admin';
-    }
+    // 初始化
+    protected function initialize()
+    {}
 
     /**
-     * 获取地址栏参数后，返回查询相应参数
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-04
-     * @param  Request $request
-     * @return array
+     * 验证数据
+     * @access protected
+     * @param  array        $data     数据
+     * @param  string|array $validate 验证器名或者验证规则数组
+     * @param  array        $message  提示信息
+     * @param  bool         $batch    是否批量验证
+     * @return array|string|true
+     * @throws ValidateException
      */
-    protected function getParams(Request $request): array
+    protected function validate(array $data, string|array $validate, array $message = [], bool $batch = false)
     {
-        if (!$request) {
-            $request = request();
-        }
-        $params = $request->get();
-        // 关联预查询
-        $with = [];
-        if (isset($params['with'])) {
-            $with = explode(',', $params['with']);
-            unset($params['with']);
-        }
-        // 数据排序
-        $orderBy = [];
-        if (isset($params['orderBy'])) {
-            $orderBy = $params['orderBy'];
-            unset($params['orderBy']);
-        }
-        // 获取数量
-        $limit = 15;
-        if (isset($params['limit'])) {
-            $limit = $params['limit'];
-            unset($params['limit']);
-        }
-        // 当前分页
-        $page = 1;
-        if (isset($params['page'])) {
-            $page = $params['page'];
-            unset($params['page']);
-        }
-        // 组装查询条件
-        $where = [];
-        foreach ($params as $field => $value) {
-            if ($value) {
-                if (is_array($value)) {
-                    foreach ($value as $condition => $val) {
-                        if ($condition == 'like') {
-                            $where[] = [$field, $condition, "%{$val}%"];
-                        } else {
-                            $where[] = [$field, $condition, $val];
-                        }
-                    }
-                } else {
-                    $inValue = explode(',', $value);
-                    if (count($inValue) > 1) {
-                        $where[] = [$field, 'in', $inValue];
-                    } else {
-                        $where[] = [$field, '=', $value];
-                    }
-                }
+        if (is_array($validate)) {
+            $v = new Validate();
+            $v->rule($validate);
+        } else {
+            if (strpos($validate, '.')) {
+                // 支持场景
+                [$validate, $scene] = explode('.', $validate);
+            }
+            $class = false !== strpos($validate, '\\') ? $validate : $this->app->parseClass('validate', $validate);
+            $v     = new $class();
+            if (!empty($scene)) {
+                $v->scene($scene);
             }
         }
 
-        // 返回参数
-        return [$where, $orderBy, $limit, $page, $with];
+        $v->message($message);
+
+        // 是否批量验证
+        if ($batch || $this->batchValidate) {
+            $v->batch(true);
+        }
+
+        return $v->failException(true)->check($data);
     }
 
-    /**
-     * 设置开关值
-     * @param Request $request
-     * @return \support\Response
-     * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-05-01
-     */
-    public function rowEdit(Request $request)
-    {
-        $keyField = $request->post('keyField');
-        $id = $request->post($keyField);
-        $field = $request->post('field');
-        $value = $request->post('value');
-        $where = [
-            $keyField => $id
-        ];
-        $model = $this->model;
-        $model = $model->where($where)->find();
-        $model->$field = $value;
-        if (!$model->save()) {
-            return Json::fail('修改失败');
-        }
-        return Json::success('修改成功');
-    }
 }

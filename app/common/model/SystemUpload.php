@@ -2,7 +2,7 @@
 
 namespace app\common\model;
 
-use app\Model;
+use app\common\Model;
 use app\common\service\UploadService;
 
 class SystemUpload extends Model
@@ -39,20 +39,5 @@ class SystemUpload extends Model
     protected function getUrlAttr($value, $data)
     {
         return UploadService::url((string) $data['path']);
-    }
-
-    /**
-     * 追加文件大小
-     * @param mixed $value
-     * @param mixed $data
-     * @return string
-     * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-04-30
-     */
-    protected function getSizeFormatAttr($value, $data)
-    {
-        $size = isset($data['size']) ? get_size($data['size']) : '0KB';
-        return $size;
     }
 }

@@ -8,12 +8,13 @@ use app\admin\model\Store;
 use app\common\model\StoreApp;
 use app\common\model\Users;
 use app\admin\validate\Store as ValidateStore;
-use app\BaseController;
+use app\common\BaseController;
 use app\common\enum\PlatformTypes;
 use app\common\service\UploadService;
 use Exception;
 use support\Request;
 use think\facade\Db;
+use think\facade\Session;
 
 /**
  * 租户管理
@@ -58,11 +59,8 @@ class StoreController extends BaseController
         }
         $builder = new ListBuilder;
         $data    = $builder
-            ->addActionOptions('操作', [
-                'width' => 100,
-                'params' => [
-                    'group' => true
-                ]
+            ->addActionOptions('操作',[
+                'width'     => 400
             ])
             ->pageConfig()
             ->editConfig()
@@ -80,11 +78,11 @@ class StoreController extends BaseController
             ])
             ->addRightButton(
                 'toStore',
-                '管理终端',
+                '管理后台',
                 [
-                    'type' => 'link',
-                    'api' => 'admin/Store/login',
-                    'aliasParams' => [
+                    'type'          => 'link',
+                    'api'           => 'admin/Store/login',
+                    'aliasParams'   => [
                         'id' => 'store_id'
                     ],
                 ],
@@ -94,7 +92,7 @@ class StoreController extends BaseController
                     'icon' => 'CodeSandboxOutlined'
                 ]
             )
-            ->addRightButton('storeApp', '授权应用', [
+            ->addRightButton('storeApp', '应用授权', [
                 'type' => 'page',
                 'api' => 'admin/StoreApp/index',
                 'path' => '/StoreApp/index',
@@ -106,9 +104,10 @@ class StoreController extends BaseController
                 'icon' => 'CompassOutlined'
             ])
             ->addRightButton('copyrightSet', '版权设置', [
-                'type' => 'page',
-                'api' => 'admin/Store/copyrightSet',
-                'path' => '/Store/copyrightSet',
+                'group'     => true,
+                'type'      => 'page',
+                'api'       => 'admin/Store/copyrightSet',
+                'path'      => '/Store/copyrightSet',
             ], [
                 'title' => '租户版权设置',
             ], [
@@ -124,6 +123,7 @@ class StoreController extends BaseController
                 'icon' => 'DesktopOutlined'
             ])
             ->addRightButton('edit', '修改租户', [
+                'group'     => true,
                 'type' => 'page',
                 'api' => 'admin/Store/edit',
                 'path' => '/Store/edit',
@@ -134,14 +134,16 @@ class StoreController extends BaseController
                 'icon' => 'EditOutlined'
             ])
             ->addRightButton('del', '删除租户', [
+                'group'     => true,
                 'type' => 'confirm',
                 'api' => 'admin/Store/del',
                 'method' => 'delete',
             ], [
+                'type' => 'error',
                 'title' => '温馨提示',
                 'content' => '该数据删除将不可恢复，请谨慎操作',
             ], [
-                'type' => 'error',
+                'type' => 'danger',
                 'icon' => 'RestOutlined'
             ])
             ->addColumn('title', '名称')
@@ -168,7 +170,7 @@ class StoreController extends BaseController
                 ],
             ])
             ->addColumnEle('surplusNum', '租户资产：已创建/总数量', [
-                'minWidth' => '100px',
+                'width' => 330,
                 'params' => [
                     'type' => 'assets',
                     'resource' => $platformAssets,
@@ -221,14 +223,13 @@ class StoreController extends BaseController
     {
         $validate = ValidateStore::class;
         if ($request->method() == 'POST') {
-            $post = $request->post();
+            $post           = $request->post();
             $post['status'] = '20';
 
             // 数据验证
             hpValidate($validate, $post, 'add');
 
-            $post['logo'] = UploadService::path($post['logo']);
-            $model        = $this->model;
+            $model = $this->model;
             if (!$model->save($post)) {
                 return parent::fail('保存失败');
             }
@@ -347,7 +348,6 @@ class StoreController extends BaseController
             if (empty($post['password']) && isset($post['password'])) {
                 unset($post['password']);
             }
-            $post['logo'] = UploadService::path($post['logo']);
             if (!$model->save($post)) {
                 return parent::fail('保存失败');
             }
@@ -560,11 +560,11 @@ class StoreController extends BaseController
         if (!$adminModel) {
             return parent::fail('登录错误');
         }
-        $sessionId = $request->sessionId();
-        $session   = $request->session();
-        $session->set('hp_store', $adminModel->toArray());
 
-        $url = "store/#/Index/index?token={$sessionId}";
+        // 构建令牌
+        Session::set('XhAdminStore', $adminModel);
+
+        $url = "/store/#/?token=XhAdminStore";
         return $this->successRes(['url' => $url]);
     }
 }

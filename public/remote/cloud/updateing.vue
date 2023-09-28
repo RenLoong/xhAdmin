@@ -1,10 +1,8 @@
 <template>
     <div class="update-container">
-        <div class="step-container">
-            <n-steps vertical :current="stepData.step" :status="stepData.status">
-                <n-step v-for="(item, index) in stepData.list" :key="index" :title="item.title" />
-            </n-steps>
-        </div>
+        <el-steps class="step-container" direction="vertical" :active="stepData.step" process-status="success">
+            <el-step v-for="(item, index) in stepData.list" :key="index" :title="item.title" />
+        </el-steps>
         <div class="content-container" v-if="pageData">
             <img :src="pageData.logo" class="logo" alt="">
             <div class="title">{{ pageData.title }} {{ pageData.version_name }}</div>
@@ -163,15 +161,18 @@ export default {
     display: flex;
     width: 100%;
     height: 100%;
-    border-top: 1px solid #e5e5e5;
-    margin-top: 10px;
+    overflow: hidden;
 
     .step-container {
         display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 0 15px;
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding: 20px;
         border-right: 1px solid #e5e5e5;
+        height: 100%;
+        overflow-y: hidden;
+        overflow-x: hidden;
+        box-sizing: border-box;
     }
 
     .content-container {

@@ -7,9 +7,10 @@ use app\common\builder\ListBuilder;
 use app\admin\model\SystemAdmin;
 use app\admin\model\SystemAdminRole;
 use app\admin\validate\SystemAdmin as ValidateSystemAdmin;
-use app\BaseController;
+use app\common\BaseController;
 use app\common\enum\StatusEnum;
 use support\Request;
+use think\facade\Session;
 
 /**
  * 管理员列表
@@ -74,12 +75,15 @@ class SystemAdminController extends BaseController
                 'width'             => 90,
                 'params'            => [
                     'type'          => 'tags',
-                    'options'       => ['禁用', '正常'],
+                    'options'       => [
+                        '10'=>'禁用',
+                        '20'=>'正常'
+                    ],
                     'style'         => [
-                        [
-                            'type'  => 'error',
+                        '10'=>[
+                            'type'  => 'danger',
                         ],
-                        [
+                        '20'=>[
                             'type'  => 'success',
                         ],
                     ],
@@ -99,7 +103,7 @@ class SystemAdminController extends BaseController
      */
     public function index(Request $request)
     {
-        $admin_id = hp_admin_id('hp_admin');
+        $admin_id = $request->user->id;
         $where = [
             ['pid', '=', $admin_id]
         ];
@@ -120,7 +124,7 @@ class SystemAdminController extends BaseController
      */
     public function add(Request $request)
     {
-        $admin_id = hp_admin_id('hp_admin');
+        $admin_id = $request->user->id;
         if ($request->method() == 'POST') {
             $post = $request->post();
             $post['pid'] = $admin_id;
@@ -190,7 +194,7 @@ class SystemAdminController extends BaseController
      */
     public function edit(Request $request)
     {
-        $admin_id = hp_admin_id('hp_admin');
+        $admin_id = $request->user->id;
         $id = $request->get('id');
         $where = [
             ['id', '=', $id]
@@ -268,7 +272,7 @@ class SystemAdminController extends BaseController
      */
     public function editSelf(Request $request)
     {
-        $admin_id = hp_admin_id('hp_admin');
+        $admin_id = $request->user->id;
         $where    = [
             ['id', '=', $admin_id]
         ];
@@ -290,10 +294,10 @@ class SystemAdminController extends BaseController
                 return parent::fail('保存失败');
             }
             $adminModel = SystemAdmin::with(['role'])->where($where)->find();
+            // 更新session
+            Session::set('XhAdmin', $adminModel);
 
-            $session = $request->session();
-            $session->set('hp_admin', $adminModel);
-            return parent::success('保存成功');
+            return $this->success('保存成功');
         }
         $builder = new FormBuilder;
         $data    = $builder

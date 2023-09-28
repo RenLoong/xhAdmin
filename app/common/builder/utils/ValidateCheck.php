@@ -1,7 +1,7 @@
 <?php
 namespace app\common\builder\utils;
 
-use yzh52521\validate\Validate;
+use think\Validate;
 
 class ValidateCheck
 {

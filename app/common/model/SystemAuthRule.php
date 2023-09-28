@@ -2,7 +2,7 @@
 
 namespace app\common\model;
 
-use app\Model;
+use app\common\Model;
 
 class SystemAuthRule extends Model
 {

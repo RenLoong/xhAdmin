@@ -6,19 +6,15 @@ use app\common\builder\ListBuilder;
 use app\common\manager\PluginInstallMgr;
 use app\common\manager\PluginMgr;
 use app\common\manager\PluginUpdateMgr;
-use app\common\service\FrameworkService;
 use app\common\service\SystemInfoService;
-use app\admin\utils\ComposerMgr;
-use app\BaseController;
+use app\common\BaseController;
 use app\common\enum\PluginType;
 use app\common\enum\PluginTypeStyle;
 use app\common\utils\DirUtil;
-use process\Monitor;
 use support\Request;
 use YcOpen\CloudService\Cloud;
 use YcOpen\CloudService\Request as CloudServiceRequest;
 use YcOpen\CloudService\Request\PluginRequest;
-use ZipArchive;
 
 /**
  * 插件管理
@@ -49,7 +45,6 @@ class PluginController extends BaseController
                 '云服务',
                 [
                     'type' => 'remote',
-                    'modal' => true,
                     'api' => 'admin/PluginCloud/index',
                     'path' => 'remote/cloud/index'
                 ],
@@ -67,8 +62,8 @@ class PluginController extends BaseController
                 [
                     'type' => 'link',
                     'api' => 'admin/Plugin/getLink',
-                    'queryParams'       => [
-                        'type'          => 'doc'
+                    'queryParams' => [
+                        'type' => 'doc'
                     ],
                     'aliasParams' => [
                         'name',
@@ -85,7 +80,6 @@ class PluginController extends BaseController
                 '更新',
                 [
                     'type' => 'remote',
-                    'modal' => true,
                     'api' => 'admin/Plugin/update',
                     'path' => 'remote/cloud/update',
                     'params' => [
@@ -115,10 +109,10 @@ class PluginController extends BaseController
                         'field' => 'updateed',
                         'value' => 'bindsite',
                     ],
-                    'queryParams'       => [
-                        'type'          => 'bindsite'
+                    'queryParams' => [
+                        'type' => 'bindsite'
                     ],
-                    'aliasParams'       => [
+                    'aliasParams' => [
                         'name',
                         'version'
                     ],
@@ -133,7 +127,6 @@ class PluginController extends BaseController
                 '安装',
                 [
                     'type' => 'remote',
-                    'modal' => true,
                     'api' => 'admin/Plugin/install',
                     'path' => 'remote/cloud/install',
                     'params' => [
@@ -171,11 +164,12 @@ class PluginController extends BaseController
                     ],
                 ],
                 [
+                    'type'=>'error',
                     'title' => '温馨提示',
                     'content' => "是否确认卸载该应用插件？\n该操作者将不可恢复数据，请自行备份应用数据",
                 ],
                 [
-                    'type' => 'error'
+                    'type' => 'danger'
                 ]
             )
             ->tabsConfig([
@@ -258,14 +252,14 @@ class PluginController extends BaseController
             'plugins' => $installed,
             'saas_version' => $systemInfo['system_version']
         ];
-        $res = CloudServiceRequest::Plugin(CloudServiceRequest::API_VERSION_V2)
-        ->list($query)
-        ->response();
-        $data = $res->toArray();
+        $res        = CloudServiceRequest::Plugin(CloudServiceRequest::API_VERSION_V2)
+            ->list($query)
+            ->response();
+        $data       = $res->toArray();
         foreach ($data['data'] as $key => $value) {
-            $clientVersion                     = '';
+            $clientVersion = '';
             if (!empty($value['installed']) && $value['installed'] === 'uninstall') {
-                $clientVersion = PluginMgr::getPluginVersion($value['name'],'version_name');
+                $clientVersion = PluginMgr::getPluginVersion($value['name'], 'version_name');
             }
             $data['data'][$key]['title']       = "{$value['title']} {$clientVersion}";
             $data['data'][$key]['min_version'] = "无";
@@ -286,24 +280,24 @@ class PluginController extends BaseController
      */
     public function getLink(Request $request)
     {
-        $type              = $request->get('type','');
-        $name              = $request->get('name','');
-        $version           = (int)$request->get('version',0);
+        $type    = $request->get('type', '');
+        $name    = $request->get('name', '');
+        $version = (int) $request->get('version', 0);
         $url     = '';
         switch ($type) {
             # 获取文档地址
             case 'doc':
-                $systemInfo        = SystemInfoService::info();
+                $systemInfo = SystemInfoService::info();
                 $installed_version = PluginMgr::getPluginVersion($name);
-                $req               = new PluginRequest;
+                $req = new PluginRequest;
                 $req->detail();
-                $req->name          = $name;
-                $req->version       = $version;
-                $req->saas_version  = $systemInfo['system_version'];
+                $req->name = $name;
+                $req->version = $version;
+                $req->saas_version = $systemInfo['system_version'];
                 $req->local_version = $installed_version;
-                $cloud              = new Cloud($req);
-                $data               = $cloud->send()->toArray();
-                $url                = $data['doc_url'];
+                $cloud = new Cloud($req);
+                $data = $cloud->send()->toArray();
+                $url = $data['doc_url'];
                 break;
             # 绑定站点
             case 'bindsite':
@@ -337,8 +331,8 @@ class PluginController extends BaseController
         $req->local_version = $installed_version;
         $req->coupon_code   = $coupon_code;
         $cloud              = new Cloud($req);
-        $data               = $cloud->send()->toArray();
-        return $this->successRes($data);
+        $cloud->send()->toArray();
+        return $this->success('购买成功');
     }
 
     /**
@@ -354,12 +348,12 @@ class PluginController extends BaseController
         $name    = $request->get('name');
         $version = $request->get('version');
 
-        $systemInfo        = SystemInfoService::info();
-        $installed_version = PluginMgr::getPluginVersion($name);
-        $res = CloudServiceRequest::Plugin(CloudServiceRequest::API_VERSION_V2)
+        $systemInfo           = SystemInfoService::info();
+        $installed_version    = PluginMgr::getPluginVersion($name);
+        $res                  = CloudServiceRequest::Plugin(CloudServiceRequest::API_VERSION_V2)
             ->detail(['name' => $name, 'version' => $version, 'saas_version' => $systemInfo['system_version'], 'local_version' => $installed_version])
             ->response();
-        $data               = $res->toArray();
+        $data                 = $res->toArray();
         $data['localVersion'] = $installed_version;
         return $this->successRes($data);
     }
@@ -386,21 +380,11 @@ class PluginController extends BaseController
         if (empty($funcName)) {
             return $this->fail('操作方法出错');
         }
-        # 暂停代码监听变动
-        $monitor_support_pause = method_exists(Monitor::class, 'pause');
-        if ($monitor_support_pause) {
-            Monitor::pause();
-        }
         try {
             $class = new PluginInstallMgr($request, $name, $version);
             return call_user_func([$class, $funcName]);
         } catch (\Throwable $e) {
             return $this->fail($e->getMessage());
-        } finally {
-            # 恢复代码监听变动
-            if ($monitor_support_pause) {
-                Monitor::resume();
-            }
         }
     }
 
@@ -426,22 +410,9 @@ class PluginController extends BaseController
         if (empty($funcName)) {
             return $this->fail('操作方法出错');
         }
-        # 暂停代码监听变动
-        $monitor_support_pause = method_exists(Monitor::class, 'pause');
-        if ($monitor_support_pause) {
-            Monitor::pause();
-        }
-        try {
-            $class = new PluginUpdateMgr($request, $name, $version);
-            return call_user_func([$class, $funcName]);
-        } catch (\Throwable $e) {
-            return $this->fail($e->getMessage());
-        } finally {
-            # 恢复代码监听变动
-            if ($monitor_support_pause) {
-                Monitor::resume();
-            }
-        }
+        // 执行转发
+        $class = new PluginUpdateMgr($request, $name, $version);
+        return call_user_func([$class, $funcName]);
     }
 
     /**
@@ -460,9 +431,8 @@ class PluginController extends BaseController
             return $this->fail('参数错误');
         }
         # 获得插件路径
-        clearstatcache();
-        $path = get_realpath(base_path("/plugin/{$name}"));
-        if (!$path || !is_dir($path)) {
+        $path = root_path()."plugin/{$name}";
+        if (!is_dir($path)) {
             return $this->success('卸载成功');
         }
         # 执行uninstall卸载
@@ -471,26 +441,7 @@ class PluginController extends BaseController
             call_user_func([$install_class, 'uninstall'], $version);
         }
         # 删除目录
-        clearstatcache();
-        if (is_dir($path)) {
-            # 暂停代码监听变动
-            $monitor_support_pause = method_exists(Monitor::class, 'pause');
-            if ($monitor_support_pause) {
-                Monitor::pause();
-            }
-            try {
-                # 删除目录
-                DirUtil::delDir($path);
-            } finally {
-                # 恢复代码监听变动
-                if ($monitor_support_pause) {
-                    Monitor::resume();
-                }
-            }
-        }
-        clearstatcache();
-        # 重启主进程
-        FrameworkService::reloadWebman();
+        DirUtil::delDir($path);
         # 返回操作结果
         return $this->success('卸载成功');
     }

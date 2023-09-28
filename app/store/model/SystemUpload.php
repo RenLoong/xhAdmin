@@ -18,7 +18,7 @@ class SystemUpload extends ModelSystemUpload
      */
     public function scopeStore($query)
     {
-        $store_id = hp_admin_id('hp_store');
+        $store_id = request()->user['id'];
         $query->where('store_id', $store_id);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace app\common\model;
 
-use app\Model;
+use app\common\Model;
 use app\common\service\UploadService;
 use app\common\utils\Password;
 
@@ -54,5 +54,16 @@ class Store extends Model
     protected function getLogoAttr($value)
     {
         return $value ? UploadService::url((string)$value) : '';
+    }
+
+    /**
+     * 设置LOGO
+     * @param mixed $value
+     * @return array|string
+     * @author John
+     */
+    protected function setLogoAttr($value)
+    {
+        return $value ? UploadService::path($value) : '';
     }
 }

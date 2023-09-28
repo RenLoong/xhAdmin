@@ -2,11 +2,11 @@
 
 namespace app\common\builder;
 
-use app\Model;
+use app\common\Model;
 use FormBuilder\Driver\CustomComponent;
 use FormBuilder\Factory\Elm;
 use FormBuilder\Form;
-use yzh52521\validate\Validate;
+use think\Validate;
 
 /**
  * @title 表单构造器
@@ -15,6 +15,9 @@ use yzh52521\validate\Validate;
  */
 class FormBuilder extends Form
 {
+    // Tabs表单构造器
+    use TabsFormBuilder;
+    
     /**
      * 表单对象
      * @var Form
@@ -43,7 +46,7 @@ class FormBuilder extends Form
     public function __construct()
     {
         $this->request = request();
-        $url           = $this->request->path();
+        $url           = $this->request->baseUrl();
         $rule          = [];
         $config        = [];
         $this->builder = Form::elm($url, $rule, $config);
@@ -51,7 +54,7 @@ class FormBuilder extends Form
         // 额外扩展配置
         $extraConfig       = [
             'submitBtn' => [
-                'type' => 'success',
+                'type' => 'primary',
                 'content' => '提交保存',
                 'show' => true,
                 'style' => [
@@ -59,7 +62,7 @@ class FormBuilder extends Form
                 ]
             ],
             'resetBtn' => [
-                'type' => 'warning',
+                'type' => 'info',
                 'content' => '数据重置',
                 'show' => true,
                 'style' => [
@@ -111,7 +114,7 @@ class FormBuilder extends Form
             if (!isset($promptData['text'])) {
                 throw new \Exception('请设置提示词语');
             }
-            $prompt['type'] = 'prompt-tip';
+            $prompt['type'] = 'x-prompt';
             $prompt['props'] = $promptData;
             unset($prompt['text']);
             # 插入组件
@@ -167,7 +170,7 @@ class FormBuilder extends Form
     public function addDivider(string $title, array $extra = []): FormBuilder
     {
         // 创建自定义组件
-        $component = new CustomComponent('n-divider');
+        $component = new CustomComponent('el-divider');
         // 设置属性
         $component
             ->appendChild($title)
@@ -204,73 +207,6 @@ class FormBuilder extends Form
         return $this;
     }
 
-    /**
-     * 初始化选项卡
-     * @param string $active
-     * @param array $extra
-     * @return FormBuilder
-     * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-04-29
-     */
-    public function initTabs(string $active, array $extra = []): FormBuilder
-    {
-        // 选项卡组件
-        $component = new CustomComponent('n-tabs');
-        // 设置默认选中
-        $component->props([
-            'defaultValue' => $active,
-        ]);
-        // 设置默认样式
-        $component->style([
-            'width' => '100%',
-            'margin' => '0 15px',
-        ]);
-        foreach ($extra as $componentType => $componentValue) {
-            $component->$componentType($componentValue);
-        }
-        $this->tabBuilder = $component;
-        // 返回资源对象
-        return $this;
-    }
-
-    /**
-     * 添加子面板数据
-     * @param string $field
-     * @param string $title
-     * @param array $children
-     * @return FormBuilder
-     * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-04-29
-     */
-    public function addTab(string $field, string $title, array $children): FormBuilder
-    {
-        $component[] = [
-            'type' => 'n-tab-pane',
-            'props' => [
-                'name' => $field,
-                'tab' => $title,
-            ],
-            'children' => $children
-        ];
-        $this->tabBuilder->appendChildren($component);
-        // 返回资源对象
-        return $this;
-    }
-
-    /**
-     * 结束选项卡表单
-     * @return FormBuilder
-     * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-04-29
-     */
-    public function endTabs(): FormBuilder
-    {
-        $this->builder->append($this->tabBuilder);
-        return $this;
-    }
 
     /**
      * 设置表单渲染数据

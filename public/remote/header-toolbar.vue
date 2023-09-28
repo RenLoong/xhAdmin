@@ -4,7 +4,7 @@
         <Teleport to="body">
             <div class="updated-version" v-if="updateInfo.status">
                 <div class="updated-box">
-                    <img src="/image/updated-bg.png" class="updated-bg" alt="" />
+                    <img src="/image/updated-bg.png" class="updated-bg" />
                     <div class="updated-title">
                         发现新版本更新
                     </div>
@@ -28,15 +28,12 @@
         </Teleport>
         <!-- 工具栏 -->
         <div v-if="toolbar.length" class="h-100% flex justify-start items-center">
-            <n-tooltip v-for="(item, index) in toolbar" :key="index" :show="item.isUpdate" trigger="hover"
+            <el-tooltip v-for="(item, index) in toolbar" :key="index" effect="dark" :content="item?.title"
                 placement="bottom">
-                <template #trigger>
-                    <div @click="item.hanlder" class="item-container">
-                        <AppIcons :icon="item.icon" :size="18" :color="item.isUpdate ? '#ff0000' : '#555'" />
-                    </div>
-                </template>
-                {{ item?.title ?? '未知' }}
-            </n-tooltip>
+                <div class="item-container" @click="item.hanlder">
+                    <AppIcons :icon="item.icon" :size="18" :color="item.isUpdate ? '#ff0000' : '#555'" />
+                </div>
+            </el-tooltip>
         </div>
     </div>
 </template>
@@ -61,7 +58,7 @@ export default {
             // 工具栏
             toolbar: [
                 {
-                    title: '打开用户端',
+                    title: '打开渠道中心',
                     name: 'home',
                     icon: 'HomeOutlined',
                     hanlder: () => {
@@ -135,7 +132,7 @@ export default {
             const _this = this
             const currentRoute = _this.$routeApp.path
             // 已经在更新页面，不再重复请求
-            if (currentRoute === '/Updated/updateCheck') {
+            if (currentRoute.includes('/Updated/updateCheck')) {
                 return;
             }
             _this.$http.useDelete('admin/Updated/updateCheck').then((res) => {
@@ -145,24 +142,32 @@ export default {
                     return;
                 }
                 // 存在忽略版本更新
-                const ignoreVersion = parseInt(localStorage.getItem('system_updated'))
-                if (ignoreVersion) {
-                    if (ignoreVersion !== data.version) {
-                        _this.openUpdate()
-                    }
-                } else {
-                    // 有新版本，弹窗提示
-                    _this.updateInfo = {
-                        status: true,
-                        detail: data
-                    }
+                const ignoreVersion = parseInt(localStorage.getItem('ignore_system_version'))
+                if (ignoreVersion && ignoreVersion === data.version) {
+                    return;
+                }
+                // 有新版本，弹窗提示
+                _this.updateInfo = {
+                    status: true,
+                    detail: data
+                }
+            }).catch((err) => { 
+                // 未登录
+                if (err?.code === 666) {
+                    _this.$useRemote('remote/cloud/login', {}, {
+                        title:'云服务登录',
+                        customStyle: {
+                            width: '480px',
+                            height:'430px',
+                        },
+                    })
                 }
             })
         },
         // 取消本次更新
         hanldCancel() {
             const _this = this;
-            localStorage.setItem("system_updated", _this.updateInfo.detail.version);
+            localStorage.setItem("ignore_system_version", _this.updateInfo.detail.version);
             window.location.reload();
         },
         initify() {
@@ -195,6 +200,7 @@ export default {
         .updated-bg {
             height: 100px;
             background: #722ED1;
+            object-fit: cover;
         }
 
         .updated-title {
@@ -242,22 +248,30 @@ export default {
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 15px 0;
+            padding: 10px 0;
             gap: 20px;
 
             .action-button {
                 color: #fff;
-                padding: 6px 15px;
+                padding: 8px 15px;
                 border-radius: 4px;
                 font-size: 12px;
+                cursor: pointer;
+                border: none;
             }
 
             .to-btn {
                 background: #722ED1;
+                &:hover{
+                    background: #a065e9;
+                }
             }
 
             .cancel-btn {
                 background: #FF7D00;
+                &:hover{
+                    background: #ff9d00;
+                }
             }
         }
     }

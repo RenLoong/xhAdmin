@@ -2,109 +2,117 @@
   <div class="app-container">
     <!-- 平台应用 -->
     <div class="platform-count">
-      <n-grid :cols="5" :x-gap="24" :y-gap="12" class="num-container">
-        <n-grid-item class="item">
+      <div class="num-container">
+        <!-- 平台统计组 -->
+        <div class="item">
           <div class="logo-container">
-            <img src="/image/new_wechat.png" class="logo" alt="">
+            <img src="/image/wechat-3.png" class="logo" alt="">
           </div>
           <div class="content">
-            <n-statistic tabular-nums>
-              <template #label>
-                <div class="count-label">
-                  微信公众号
-                </div>
-              </template>
-              <n-number-animation show-separator :from="0" :to="platformApp.wechat" />
-            </n-statistic>
+            <el-statistic title="微信公众号" value-style="font-size:1rem;" :value="platformApp.wechat" />
           </div>
-        </n-grid-item>
-        <n-grid-item class="item">
+        </div>
+        <div class="item">
           <div class="logo-container">
-            <img src="/image/new_wx_mini.png" class="logo" alt="">
+            <img src="/image/mini_wechat-3.png" class="logo" alt="">
           </div>
           <div class="content">
-            <n-statistic tabular-nums>
-              <template #label>
-                <div class="count-label">
-                  微信小程序
-                </div>
-              </template>
-              <n-number-animation show-separator :from="0" :to="platformApp.mini_wechat" />
-            </n-statistic>
+            <el-statistic title="微信小程序" value-style="font-size:1rem;" :value="platformApp.wechat" />
           </div>
-        </n-grid-item>
-        <n-grid-item class="item">
+        </div>
+        <div class="item">
           <div class="logo-container">
-            <img src="/image/new_douyin.png" class="logo" alt="">
+            <img src="/image/douyin-3.png" class="logo" alt="">
           </div>
           <div class="content">
-            <n-statistic tabular-nums>
-              <template #label>
-                <div class="count-label">
-                  抖音小程序
-                </div>
-              </template>
-              <n-number-animation show-separator :from="0" :to="platformApp.douyin" />
-            </n-statistic>
+            <el-statistic title="抖音小程序" value-style="font-size:1rem;" :value="platformApp.wechat" />
           </div>
-        </n-grid-item>
-        <n-grid-item class="item">
+        </div>
+        <div class="item">
           <div class="logo-container">
-            <img src="/image/new_h5.png" class="logo" alt="">
+            <img src="/image/h5-3.png" class="logo" alt="">
           </div>
           <div class="content">
-            <n-statistic tabular-nums>
-              <template #label>
-                <div class="count-label">
-                  网页应用
-                </div>
-              </template>
-              <n-number-animation show-separator :from="0" :to="platformApp.h5" />
-            </n-statistic>
+            <el-statistic title="网页应用" value-style="font-size:1rem;" :value="platformApp.wechat" />
           </div>
-        </n-grid-item>
-        <n-grid-item class="item">
+        </div>
+        <div class="item">
           <div class="logo-container">
-            <img src="/image/new_other.png" class="logo" alt="">
+            <img src="/image/app-3.png" class="logo" alt="">
           </div>
           <div class="content">
-            <n-statistic tabular-nums>
-              <template #label>
-                <div class="count-label">
-                  其他应用
-                </div>
-              </template>
-              <n-number-animation show-separator :from="0" :to="platformApp.other" />
-            </n-statistic>
+            <el-statistic title="APP应用" value-style="font-size:1rem;" :value="platformApp.wechat" />
           </div>
-        </n-grid-item>
-      </n-grid>
+        </div>
+        <div class="item">
+          <div class="logo-container">
+            <img src="/image/other-3.png" class="logo" alt="">
+          </div>
+          <div class="content">
+            <el-statistic title="其他应用" value-style="font-size:1rem;" :value="platformApp.wechat" />
+          </div>
+        </div>
+      </div>
     </div>
     <!-- 请求数据 -->
     <div class="http-container">
-      <n-grid :cols="16" :x-gap="12" :y-gap="12" item-responsive>
-        <n-grid-item span="11" class="item">
-          <div style="width:100%;height:500px;" ref="httpRef"></div>
-        </n-grid-item>
-        <n-grid-item span="5" class="item">
-          <div class="data-item">
-            <div class="title">开发团队</div>
-            <n-table>
-              <tbody>
-                <tr v-for="(item, index) in teamTable" :key="index">
-                  <td>{{ item.title }}</td>
-                  <td v-html="item.values"></td>
-                </tr>
-              </tbody>
-            </n-table>
-          </div>
-          <div class="data-item">
-            <div class="title">产品动态</div>
-            <n-data-table :columns="productTable.columns" :data="productTable.data" />
-          </div>
-        </n-grid-item>
-      </n-grid>
+      <div class="echart-container">
+        <div class="echart" ref="httpRef"></div>
+      </div>
+      <div class="team-product">
+        <div class="item">
+          <div class="title">开发团队</div>
+          <el-table :data="teamTable" border stripe style="width: 100%">
+            <el-table-column prop="title" label="名称" width="100" />
+            <el-table-column prop="values" label="数据">
+              <template #default="scope">
+                <div v-html="scope.row.values" />
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+        <div class="item">
+          <div class="title">产品动态</div>
+          <el-table :data="productTable.data" border stripe style="width: 100%">
+            <el-table-column prop="title" label="名称" width="100" />
+            <el-table-column prop="values" label="数据">
+              <template #default="scope">
+                <div v-html="scope.row.values" />
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </div>
     </div>
+    <!-- <el-row class="http-container">
+      <el-col :span="17" class="echart">
+        <div style="width:100%;height:500px;" ref="httpRef"></div>
+      </el-col>
+      <el-col :span="7" class="dev-description">
+        <div class="dev-item">
+          <div class="title">开发团队</div>
+          <el-table :data="teamTable" border stripe style="width: 100%">
+            <el-table-column prop="title" label="名称" width="100" />
+            <el-table-column prop="values" label="数据">
+              <template #default="scope">
+                <div v-html="scope.row.values" />
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+        <div class="dev-item">
+          <div class="title">产品动态</div>
+          <el-table :data="productTable.data" border stripe style="width: 100%">
+            <el-table-column prop="title" label="名称" width="100" />
+            <el-table-column prop="values" label="数据">
+              <template #default="scope">
+                <div v-html="scope.row.values" />
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </el-col>
+    </el-row> -->
   </div>
 </template>
 
@@ -213,7 +221,11 @@ export default {
     padding: 0 0 20px 0;
 
     .num-container {
+      display: flex;
+      gap: 20px;
+
       .item {
+        width: 16.666%;
         margin-top: 20px;
         display: flex;
         justify-content: center;
@@ -222,15 +234,15 @@ export default {
         background: #fff;
 
         .logo-container {
-          width: 120px;
-          height: 60px;
+          width: 100px;
+          height: 80px;
           display: flex;
-          justify-content: center;
+          justify-content: right;
           align-items: center;
 
           .logo {
-            width: 60px;
-            height: 60px;
+            width: 80px;
+            height: 80px;
             user-select: none;
             pointer-events: none;
           }
@@ -240,19 +252,16 @@ export default {
           flex: 1;
           padding: 25px 0;
 
-          .count-label {
-            width: 100px;
-            text-align: center;
-            font-size: 1rem;
-            user-select: none;
-          }
+          .el-statistic {
+            .el-statistic__head {
+              display: flex;
+              justify-content: center;
+              font-size: 16px;
+            }
 
-          .n-statistic-value {
-            width: 100px;
-            text-align: center;
-
-            .n-statistic-value__content {
-              user-select: none;
+            .el-statistic__content {
+              display: flex;
+              justify-content: center;
             }
           }
         }
@@ -262,19 +271,33 @@ export default {
 
   .http-container {
     margin-top: 10px;
+    display: flex;
+    gap: 30px;
 
-    .item {
-      background: #fff;
+    .echart-container {
+      flex: 1;
       padding: 20px;
+      background: #fff;
+
+      .echart {
+        width: 100%;
+        height: 600px;
+      }
+    }
+
+    .team-product {
+      width: 500px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 30px;
+      background: #fff;
+      padding: 10px;
 
-      .data-item {
+      .item {
         .title {
-          font-size: 18px;
+          font-size: 20px;
           font-weight: 700;
-          padding-bottom: 10px;
+          margin-bottom: 10px;
         }
       }
     }
@@ -286,6 +309,5 @@ export default {
 }
 
 .a-link:hover {
-  color: #0eca62;
-}
-</style>
+  color: var(--xh-color-primary);
+}</style>

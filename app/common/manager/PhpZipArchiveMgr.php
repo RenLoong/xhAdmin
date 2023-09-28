@@ -30,8 +30,7 @@ class PhpZipArchiveMgr
      */
     public function __construct()
     {
-        $has_zip_archive = class_exists(ZipArchive::class, false);
-        if (!$has_zip_archive) {
+        if (!class_exists("ZipArchive")) {
             throw new Exception('请给php安装zip模块');
         }
         $this->zipCls = new ZipArchive;
@@ -77,9 +76,9 @@ class PhpZipArchiveMgr
         # 执行递归打包
         foreach ($files as $file) {
             $filePath = "{$extractTo}/{$file}";
-            if (is_file($filePath)) {
+            if (is_file($filePath) && file_exists($filePath)) {
                 $zip->addFile($filePath, $file);
-            }else{
+            }else if(is_dir($filePath)){
                 $this->addFileToZip($zip, $filePath, "{$file}/");
             }
         }
@@ -107,7 +106,7 @@ class PhpZipArchiveMgr
                     if (is_dir($path)) {
                         $zip->addEmptyDir($zipPath . $file);
                         $this->addFileToZip($zip, $path, $zipPath . $file . DIRECTORY_SEPARATOR);
-                    } else {
+                    } else if(is_file($path) && file_exists($path)){
                         $zip->addFile($path, $zipPath . $file);
                     }
                 }

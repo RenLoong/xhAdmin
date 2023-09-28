@@ -2,15 +2,14 @@
 
 namespace app\common\manager;
 
-use app\common\service\FrameworkService;
 use app\common\service\SystemInfoService;
 use app\common\manager\JsonMgr;
 use app\common\utils\DirUtil;
 use Exception;
 use support\Request;
+use think\facade\Log;
 use YcOpen\CloudService\Cloud;
 use YcOpen\CloudService\Request as CloudServiceRequest;
-use YcOpen\CloudService\Request\PluginRequest;
 
 /**
  * 应用更新管理器
@@ -65,15 +64,18 @@ class PluginUpdateMgr
      */
     public function __construct(Request $request, string $name, int $version)
     {
+        # 请求对象
         $this->request = $request;
+        # 应用标识
         $this->name    = $name;
+        # 目标版本
         $this->version = $version;
         # 应用目录
-        $this->pluginPath = base_path("/plugin/{$this->name}");
+        $this->pluginPath = root_path()."plugin/{$this->name}";
         # 下载包储存路径
-        $this->zipFile = runtime_path("/plugin/{$this->name}-update.zip");
+        $this->zipFile = runtime_path()."plugin/{$this->name}-update.zip";
         # 备份压缩包路径
-        $this->backPluginPath = runtime_path("/plugin/{$this->name}-back.zip");
+        $this->backPluginPath = runtime_path()."plugin/{$this->name}-backup.zip";
     }
 
     /**
@@ -85,7 +87,7 @@ class PluginUpdateMgr
     public function download()
     {
         try {
-            # 已安装应用信息
+            # 已安装应用版本
             $installedVersion = PluginMgr::getPluginVersion($this->name);
             # 本地SAAS框架版本
             $systemInfo = SystemInfoService::info();
@@ -112,6 +114,7 @@ class PluginUpdateMgr
                 'next' => 'backCode'
             ]);
         } catch (\Throwable $e) {
+            Log::write("下载应用安装包失败：{$e->getMessage()}，Line：{$e->getLine()}，File：{$e->getFile()}", 'plugin_update_error');
             return JsonMgr::fail($e->getMessage());
         }
     }
@@ -125,15 +128,16 @@ class PluginUpdateMgr
     public function backCode()
     {
         try {
-            # 执行备份应
+            # 执行备份应用
             ZipMgr::build($this->backPluginPath, $this->pluginPath);
-            # 备份成功
-            return JsonMgr::successFul('备份成功', [
-                'next' => 'backSql'
-            ]);
         } catch (\Throwable $e) {
+            Log::write("备份代码应用失败：{$e->getMessage()}，Line：{$e->getLine()}，File：{$e->getFile()}", 'plugin_update_error');
             return JsonMgr::fail($e->getMessage());
         }
+        # 备份成功
+        return JsonMgr::successFul('备份成功', [
+            'next' => 'backSql'
+        ]);
     }
 
     /**
@@ -165,11 +169,13 @@ class PluginUpdateMgr
                 'next' => 'unzip',
             ]);
         } catch (\Throwable $e) {
+            Log::write("删除应用失败：{$e->getMessage()}，Line：{$e->getLine()}，File：{$e->getFile()}", 'plugin_update_error');
             # 执行回滚
             try {
                 $this->rollback();
             } catch (\Throwable $e) {
-                return JsonMgr::fail("解压更新包包失败，回滚失败：{$e->getMessage()}");
+                Log::write("删除--回滚应用失败：{$e->getMessage()}，Line：{$e->getLine()}，File：{$e->getFile()}", 'plugin_update_error');
+                return JsonMgr::fail("解压更新包失败，回滚失败");
             }
             return JsonMgr::fail($e->getMessage());
         }
@@ -191,11 +197,13 @@ class PluginUpdateMgr
                 'next' => 'updateData',
             ]);
         } catch (\Throwable $e) {
+            Log::write("解压应用更新包失败：{$e->getMessage()}，Line：{$e->getLine()}，File：{$e->getFile()}", 'plugin_update_error');
             # 执行回滚
             try {
                 $this->rollback();
             } catch (\Throwable $e) {
-                return JsonMgr::fail("解压更新包失败，回滚失败：{$e->getMessage()}");
+                Log::write("解压--回滚应用失败：{$e->getMessage()}，Line：{$e->getLine()}，File：{$e->getFile()}", 'plugin_update_error');
+                return JsonMgr::fail("解压更新包失败，回滚失败");
             }
             return JsonMgr::fail($e->getMessage());
         }
@@ -211,7 +219,7 @@ class PluginUpdateMgr
     {
         try {
             # 获取安装类
-            $installPath = base_path("/plugin/{$this->name}/api/Install.php");
+            $installPath = root_path()."plugin/{$this->name}/api/Install.php";
             if (!file_exists($installPath)) {
                 throw new Exception('更新类不存在');
             }
@@ -234,48 +242,19 @@ class PluginUpdateMgr
             file_exists($this->zipFile) && unlink($this->zipFile);
             # 更新成功
             return JsonMgr::successFul('应用更新成功，请等待', [
-                'next' => 'reload'
+                'next' => 'success'
             ]);
         } catch (\Throwable $e) {
+            Log::write("更新应用数据失败：{$e->getMessage()}，Line：{$e->getLine()}，File：{$e->getFile()}", 'plugin_update_error');
             # 执行回滚
             try {
                 $this->rollback();
             } catch (\Throwable $e) {
-                return JsonMgr::fail("更新数据失败，回滚失败：{$e->getMessage()}");
+                Log::write("更新数据-回滚应用失败：{$e->getMessage()}，Line：{$e->getLine()}，File：{$e->getFile()}", 'plugin_update_error');
+                return JsonMgr::fail("更新数据失败，回滚失败");
             }
             return JsonMgr::fail($e->getMessage());
         }
-    }
-
-    /**
-     * 重启服务
-     * @return \support\Response
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     */
-    public function reload()
-    {
-        # 重启主进程
-        FrameworkService::reloadWebman();
-        # 重启延迟
-        sleep(3);
-        # 重启成功
-        return JsonMgr::successFul('重启服务', [
-            'next'      => 'ping',
-        ]);
-    }
-
-    /**
-     * 检测服务是否重启成功
-     * @return \support\Response
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     */
-    public function ping()
-    {
-        return JsonMgr::successFul('重启成功', [
-            'next' => 'success',
-        ]);
     }
 
     /**
@@ -303,7 +282,5 @@ class PluginUpdateMgr
         DirUtil::delDir($this->pluginPath);
         # 解压备份包
         ZipMgr::unzip($this->backPluginPath, $this->pluginPath);
-        # 删除备份包
-        file_exists($this->backPluginPath) && unlink($this->backPluginPath);
     }
 }

@@ -7,7 +7,7 @@ use app\common\builder\FormBuilder;
 use app\common\builder\ListBuilder;
 use app\common\model\SystemAdminRole;
 use app\common\model\SystemAuthRule;
-use app\BaseController;
+use app\common\BaseController;
 use app\common\utils\Data;
 use support\Request;
 
@@ -61,7 +61,7 @@ class SystemAdminRoleController extends BaseController
                 'title'         => '温馨提示',
                 'content'       => '是否确认删除该数据',
             ], [
-                'type'          => 'error',
+                'type'          => 'danger',
                 'link'          => true
             ])
             ->addColumn('id', '序号', [
@@ -84,7 +84,7 @@ class SystemAdminRoleController extends BaseController
      */
     public function index(Request $request)
     {
-        $admin_id = hp_admin_id('hp_admin');
+        $admin_id = $request->user->id;
         $where = [
             ['pid', '=', $admin_id],
         ];
@@ -102,7 +102,7 @@ class SystemAdminRoleController extends BaseController
      */
     public function add(Request $request)
     {
-        $admin_id = hp_admin_id('hp_admin');
+        $admin_id = $request->user->id;
         if ($request->method() == 'POST') {
             $post = $request->post();
             $post['pid'] = $admin_id;
@@ -245,19 +245,12 @@ class SystemAdminRoleController extends BaseController
             ->addRow('rule', 'tree', '权限授权', [], [
                 // 节点数据
                 'data'                      => $authRule,
-                // 是否展开全部
+                // 是否默认展开所有节点
                 'defaultExpandAll'          => true,
-                // 透传组件属性
-                'props'                     => [
-                    // 是否允许多选节点
-                    'multiple'              => true,
-                    // 是否关联子节点
-                    // 'cascade'               => true,
-                    // 选择框位置
-                    'checkboxPlacement'     => 'left',
-                    // 子节点为块元素
-                    'blockNode'             => true
-                ],
+                // 	在显示复选框的情况下，是否严格的遵循父子不互相关联的做法，默认为 false
+                'checkStrictly'             => true,
+                // 每个树节点用来作为唯一标识的属性，整棵树应该是唯一的
+                'nodeKey'                   => 'value',
             ])
             ->setData($model)
             ->create();
@@ -297,8 +290,8 @@ class SystemAdminRoleController extends BaseController
             if ($value['path']) {
                 $label .= "（{$value['path']}）";
             }
-            $data[$i]['label']          = $label;
-            $data[$i]['key']            = $value['id'];
+            $data[$i]['title']          = $label;
+            $data[$i]['value']          = $value['id'];
             $data[$i]['disabled']       = $disabled;
             $data[$i]['level']          = $value['_level'];
             if ($value['children']) {

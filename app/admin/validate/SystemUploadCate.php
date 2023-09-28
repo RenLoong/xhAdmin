@@ -2,7 +2,7 @@
 
 namespace app\admin\validate;
 
-use yzh52521\validate\Validate;
+use think\Validate;
 
 class SystemUploadCate extends Validate
 {

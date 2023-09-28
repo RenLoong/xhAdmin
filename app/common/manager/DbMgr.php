@@ -2,7 +2,7 @@
 
 namespace app\common\manager;
 use Exception;
-use support\Db;
+use think\facade\Db;
 
 /**
  * Laravel数据库管理函数

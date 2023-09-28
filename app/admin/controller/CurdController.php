@@ -6,7 +6,7 @@ use app\common\builder\ListBuilder;
 use app\common\manager\CurdMgr;
 use app\common\manager\ModulesMgr;
 use app\common\model\SystemCurd;
-use app\BaseController;
+use app\common\BaseController;
 use app\common\exception\RedirectException;
 use app\common\manager\DbMgr;
 use app\common\service\FrameworkService;

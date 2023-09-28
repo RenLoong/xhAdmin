@@ -9,7 +9,8 @@ use support\Request;
 use app\admin\model\SystemAdmin;
 use app\common\service\SystemInfoService;
 use app\admin\validate\SystemAdmin as ValidateSystemAdmin;
-use app\BaseController;
+use app\common\BaseController;
+use think\facade\Session;
 
 class PublicsController extends BaseController
 {
@@ -35,7 +36,7 @@ class PublicsController extends BaseController
         $web_logo = getHpConfig('admin_logo');
         $data       = [
             'web_name'          => getHpConfig('web_name'),
-            'web_title'         => '登录',
+            'web_title'         => '总后台登录',
             'web_logo'          => empty($web_logo) ? '' : $web_logo,
             'version_name'      => $systemInfo['system_version_name'],
             'version'           => $systemInfo['system_version'],
@@ -71,13 +72,7 @@ class PublicsController extends BaseController
                 "header_right_file" => "remote/header-toolbar",
             ],
             // 远程组件
-            'remote_url'     => [
-                /* [
-                    'title'  => '用户注册',
-                    'path'   => '/register',
-                    'remote' => 'remote/register'
-                ],*/
-            ],
+            'remote_url'     => [],
             // 附件库API
             'uploadify_api'  => [
                 'index'  => "{$moduleName}/SystemUpload/index",
@@ -127,18 +122,18 @@ class PublicsController extends BaseController
         }
         if ($adminModel->status == 0) {
             throw new Exception('该用户已被冻结');
-        }
-        $session = $request->session();
-        $session->set('hp_admin', $adminModel->toArray());
-
+        }        
         // 更新登录信息
-        $ip                          = $request->getRealIp($safe_mode = true);
+        $ip                          = $request->ip();
         $adminModel->last_login_ip   = $ip;
         $adminModel->last_login_time = date('Y-m-d H:i:s');
         $adminModel->save();
 
+        // 构建令牌
+        Session::set('XhAdmin', $adminModel);
+
         // 返回数据
-        return $this->successFul('登录成功', ['token' => $request->sessionId()]);
+        return $this->successToken('登录成功', 'XhAdmin');
     }
 
 
@@ -149,22 +144,14 @@ class PublicsController extends BaseController
      * @Email 416716328@qq.com
      * @DateTime 2023-04-29
      */
-    public function user()
+    public function user(Request $request)
     {
-        $admin_id = hp_admin_id('hp_admin');
-        if (!$admin_id) {
-            return $this->failFul('登录超时，请重新登录',12000);
-        }
-        // 查询数据
-        $where      = [
-            'id' => $admin_id
-        ];
-        $adminModel = SystemAdmin::with(['role'])->where($where)->find();
-        if (!$adminModel) {
-            return $this->failFul('该用户不存在',12000);
-        }
-        $data       = $adminModel->toArray();
+        $user = $request->user;
+        $data       = $user->toArray();
         $data['menus'] = $this->getMenus();
+        $data['theme'] = [
+            'layoutMenu'        => 'level',
+        ];
         return parent::successRes($data);
     }
 
@@ -176,17 +163,7 @@ class PublicsController extends BaseController
      */
     private function getMenus()
     {
-        $admin_id = hp_admin_id('hp_admin');
-        if (!$admin_id) {
-            throw new Exception('登录超时，请重新登录',12000);
-        }
-        $where = [
-            'id' => $admin_id
-        ];
-        $adminModel = SystemAdmin::where($where)->find();
-        if (!$adminModel) {
-            throw new Exception('该用户不存在',12000);
-        }
+        $adminModel = $this->request->user;
         $admin      = $adminModel->toArray();
         $data       = AuthMgr::run($admin);
         return $data;
@@ -202,8 +179,6 @@ class PublicsController extends BaseController
      */
     public function loginout(Request $request)
     {
-        $session = $request->session();
-        $session->delete('hp_admin');
         return parent::success('成功退出');
     }
 }

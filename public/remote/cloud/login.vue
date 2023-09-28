@@ -1,30 +1,30 @@
 <template>
   <div class="form-page">
     <div class="form-container">
-      <n-form :model="form" label-position="top">
-        <n-form-item label="登录账号">
-          <n-input v-model:value="form.username" placeholder="请输入云服务账号" />
-        </n-form-item>
-        <n-form-item label="登录密码">
-          <n-input type="password" v-model:value="form.password" placeholder="请输入登录密码" />
-        </n-form-item>
-        <n-form-item label="验证码">
-          <n-input-group>
-            <n-input v-model:value="form.scode" placeholder="请输入验证码" class="flex-1">
-            </n-input>
-            <n-image :src="captcha" @click="getCaptcha()" :preview-disabled="true" class="captcha" />
-          </n-input-group>
-        </n-form-item>
+      <el-form :model="form" @submit.native.prevent="onSubmit" label-position="top">
+        <el-form-item label="登录账号">
+          <el-input v-model="form.username" placeholder="请输入云服务账号" />
+        </el-form-item>
+        <el-form-item label="登录密码">
+          <el-input type="password" v-model="form.password" placeholder="请输入登录密码" />
+        </el-form-item>
+        <el-form-item label="验证码">
+          <el-input v-model="form.scode" placeholder="请输入验证码">
+            <template #suffix>
+              <el-image :src="captcha" @click="getCaptcha()" class="captcha" />
+            </template>
+          </el-input>
+        </el-form-item>
         <div class="action-btn">
-          <a href="http://kfadmin.net/#/register" target="_blank">注册账号</a>
-          <a href="http://kfadmin.net/#/forgot" target="_blank">忘记密码</a>
+          <a href="http://xhadmin.cn/#/register" target="_blank">注册账号</a>
+          <!-- <a href="http://xhadmin.cn/#/forgot" target="_blank">忘记密码</a> -->
         </div>
         <div class="submit-button">
-          <n-button type="primary" block @click="onSubmit">
+          <el-button type="primary" class="cls-button" @click="onSubmit">
             立即登录
-          </n-button>
+          </el-button>
         </div>
-      </n-form>
+      </el-form>
     </div>
   </div>
 </template>
@@ -47,6 +47,7 @@ export default {
   },
   created() {
     this.init();
+    this.$useKeyCodeEvent(() => this.onSubmit())
     this.form.host = window.location.host;
   },
   methods: {
@@ -57,11 +58,8 @@ export default {
       var _this = this;
       _this.$http.usePost("admin/PluginCloud/login", _this.form)
         .then((res) => {
-          _this.openWin("remote/cloud/index");
-          _this.$useNotification?.success({
-            title: res?.msg ?? '操作成功',
-            duration: 1500
-          });
+          _this.$emit("update:closeWin");
+          _this.$useNotify(res?.msg || "登录成功", 'success', '温馨提示')
         })
     },
     // 获取验证码
@@ -75,7 +73,6 @@ export default {
     },
     init() {
       // 检测是否已登录
-      //   console.log("用户数据", this.$user);
       this.getCaptcha();
     },
   },
@@ -106,7 +103,15 @@ export default {
 
     .submit-button {
       margin-top: 20px;
+
+      .cls-button {
+        width: 100%;
+      }
     }
   }
+}
+
+.vcode-button {
+  cursor: pointer;
 }
 </style>
