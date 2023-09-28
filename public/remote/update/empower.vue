@@ -37,8 +37,8 @@
                         授权版本
                     </div>
                     <div class="value">
-                        <el-tag type="info" v-if="detail?.is_auth == 1">商业版</el-tag>
-                        <el-tag type="info" v-else>免费版</el-tag>
+                        <el-tag type="success" v-if="detail?.is_auth == 1">商业版</el-tag>
+                        <el-tag type="danger" v-else>免费版</el-tag>
                     </div> 
                 </div>
             </div>
@@ -82,23 +82,24 @@ export default {
     flex-direction: column;
 
     .title {
-        height: 60px;
+        height: 50px;
         border-bottom: 1px solid #e5e5e5;
         display: flex;
         align-items: center;
         padding: 0 20px;
-        font-size: 22px;
+        font-size: 16px;
+        font-weight: 700;
     }
 
     .empower-box {
         display: flex;
         justify-content: center;
-        height: calc(100% - 60px);
+        height: calc(100% - 50px);
         .empower {
             width: 500px;
             padding: 30px 20px;
             border-radius: 10px;
-            margin-top: 100px;
+            margin-top: 50px;
             .logo-box{
                 text-align: center;
                 .logo{
@@ -117,7 +118,7 @@ export default {
                 padding: 15px 0;
                 display: flex;
                 justify-content: center;
-                font-size: 16px;
+                font-size: 14px;
                 .label{
                     width: 200px;
                     text-align: center;

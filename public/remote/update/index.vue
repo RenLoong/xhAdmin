@@ -2,7 +2,7 @@
   <div class="update-version-container" v-if="updated.client_version">
     <div class="version-info">
       <div class="xhadmin-version">
-        <el-image class="system-logo" src="/api/image/logo.png" />
+        <el-image class="system-logo" src="/image/logo.png" />
         <div class="system-name">
           XHAdmin
         </div>
@@ -11,7 +11,7 @@
         </div>
       </div>
       <div class="xhadmin-empty">
-        <el-empty description="已经是最新版本"></el-empty>
+        <el-empty image="/image/complete.png" description="已经是最新版本"></el-empty>
       </div>
     </div>
   </div>

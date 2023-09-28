@@ -170,7 +170,7 @@ export default {
 
   .title {
     padding: 30px;
-    font-size: 22px;
+    font-size: 18px;
   }
 
   .content {
