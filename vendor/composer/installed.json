@@ -5145,12 +5145,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/uRenlong/kfadmin-cloud.git",
-                "reference": "3c2f81d6381d48f70be72cc64a9087046630b363"
+                "reference": "9c24fe9c1241d8b02f554e86a2e655e14d3506ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/uRenlong/kfadmin-cloud/zipball/3c2f81d6381d48f70be72cc64a9087046630b363",
-                "reference": "3c2f81d6381d48f70be72cc64a9087046630b363",
+                "url": "https://api.github.com/repos/uRenlong/kfadmin-cloud/zipball/9c24fe9c1241d8b02f554e86a2e655e14d3506ff",
+                "reference": "9c24fe9c1241d8b02f554e86a2e655e14d3506ff",
                 "shasum": ""
             },
             "require": {
@@ -5158,7 +5158,7 @@
                 "php": "^8.0",
                 "vlucas/phpdotenv": "^5.4"
             },
-            "time": "2023-09-26T07:43:10+00:00",
+            "time": "2023-09-28T10:26:53+00:00",
             "default-branch": true,
             "type": "library",
             "installation-source": "dist",

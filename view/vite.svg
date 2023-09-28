@@ -1,1 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="31.88" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 257"><defs><linearGradient id="IconifyId1813088fe1fbc01fb466" x1="-.828%" x2="57.636%" y1="7.652%" y2="78.411%"><stop offset="0%" stop-color="#41D1FF"></stop><stop offset="100%" stop-color="#BD34FE"></stop></linearGradient><linearGradient id="IconifyId1813088fe1fbc01fb467" x1="43.376%" x2="50.316%" y1="2.242%" y2="89.03%"><stop offset="0%" stop-color="#FFEA83"></stop><stop offset="8.333%" stop-color="#FFDD35"></stop><stop offset="100%" stop-color="#FFA800"></stop></linearGradient></defs><path fill="url(#IconifyId1813088fe1fbc01fb466)" d="M255.153 37.938L134.897 252.976c-2.483 4.44-8.862 4.466-11.382.048L.875 37.958c-2.746-4.814 1.371-10.646 6.827-9.67l120.385 21.517a6.537 6.537 0 0 0 2.322-.004l117.867-21.483c5.438-.991 9.574 4.796 6.877 9.62Z"></path><path fill="url(#IconifyId1813088fe1fbc01fb467)" d="M185.432.063L96.44 17.501a3.268 3.268 0 0 0-2.634 3.014l-5.474 92.456a3.268 3.268 0 0 0 3.997 3.378l24.777-5.718c2.318-.535 4.413 1.507 3.936 3.838l-7.361 36.047c-.495 2.426 1.782 4.5 4.151 3.78l15.304-4.649c2.372-.72 4.652 1.36 4.15 3.788l-11.698 56.621c-.732 3.542 3.979 5.473 5.943 2.437l1.313-2.028l72.516-144.72c1.215-2.423-.88-5.186-3.54-4.672l-25.505 4.922c-2.396.462-4.435-1.77-3.759-4.114l16.646-57.705c.677-2.35-1.37-4.583-3.769-4.113Z"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 75">
+<defs>
+<style>.cls-1{fill:#1677ff;fill-rule:evenodd;}</style>
+</defs>
+<title>xhadmin</title>
+<g id="图层_2" data-name="图层 2">
+<g id="svg26">
+<g id="g24">
+<path id="path14" class="cls-1" d="M30.8,32.9q22.35-17.38,42.46-4c10,6.64,14.29,8.63,17.26,6.64,6-4,.66-12-10.62-15.92Q54,10.47,30.8,32.9Z"/>
+<path id="path16" class="cls-1" d="M24.16,38.2q7.45-23.75,30.65-24.64C66.29,13.11,70.73,12.23,72,9c2.4-6.46-6.22-9.66-17.24-6.42Q29.43,10.07,24.16,38.2Z"/>
+<path id="path18" class="cls-1" d="M20,51.8q-3-23,11.75-36.39c7.31-6.64,9.75-9.7,8.77-12.47-2-5.57-9.45-2.91-14.89,5.31Q13.2,27.12,20,51.8Z"/>
+<path id="path20" class="cls-1" d="M26.41,65Q13.5,49,14.19,32.24c.35-8.28,0-11.66-2-13.09-4-2.86-5.7,4.85-5.68,11.37Q6.6,51.93,26.41,65Z"/>
+<path id="path22" class="cls-1" d="M35.44,69.4c1.5-.67-17.24.66-25.8-14.8-3.39-6.12-5.18-8.39-7.3-8.36-4.22.06-2,6.45.92,11.14C12.88,72.71,34,70.05,35.44,69.4Z"/>
+</g>
+<text data-v-4db12289="" class="logo-svg-cls-2 logo-svg-text theme--transparent" transform="translate(28.28 57.81)">xhadmin</text>
+</g>
+</g>
+</svg>

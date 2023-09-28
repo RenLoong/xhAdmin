@@ -107,14 +107,14 @@ export default {
                 //         console.log('系统设置');
                 //     },
                 // },
-                {
-                    title: '在线升级',
-                    name: 'update',
-                    icon: 'RocketOutlined',
-                    hanlder: () => {
-                        this.$routerApp.push('/Updated/updateCheck')
-                    },
-                }
+                // {
+                //     title: '在线升级',
+                //     name: 'update',
+                //     icon: 'RocketOutlined',
+                //     hanlder: () => {
+                //         this.$routerApp.push('/Updated/updateCheck')
+                //     },
+                // }
             ]
         }
     },
@@ -132,7 +132,7 @@ export default {
             const _this = this
             const currentRoute = _this.$routeApp.path
             // 已经在更新页面，不再重复请求
-            if (currentRoute.includes('/Updated/updateCheck')) {
+            if (currentRoute.includes('/Updated/')) {
                 return;
             }
             _this.$http.useDelete('admin/Updated/updateCheck').then((res) => {

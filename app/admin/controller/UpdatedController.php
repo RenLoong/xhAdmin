@@ -12,6 +12,7 @@ use support\Request;
 use think\App;
 use think\facade\Log;
 use YcOpen\CloudService\Cloud;
+use YcOpen\CloudService\Request\SiteRequest;
 use YcOpen\CloudService\Request\SystemUpdateRequest;
 
 /**
@@ -69,6 +70,41 @@ class UpdatedController extends BaseController
         ];
         parent::__construct($app);
     }
+    
+    /**
+     * 系统更新日志
+     * @param \support\Request $request
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public function index(Request $request)
+    {
+        $req = new SystemUpdateRequest;
+        $req->list();
+        $cloud             = new Cloud($req);
+        $data              = $cloud->send();
+        return $this->successRes($data->toArray());
+    }
+
+    /**
+     * 获取授权信息
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public function empower()
+    {
+        $req = new SiteRequest;
+        $req->getInfo();
+        $cloud             = new Cloud($req);
+        $response              = $cloud->send();
+        $data     = $response->toArray();
+        $info = SystemInfoService::info();
+        $data['system_info'] = $info;
+        return $this->successRes($data);
+    }
+
     /**
      * 更新升级
      * @param \support\Request $request

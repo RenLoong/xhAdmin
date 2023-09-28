@@ -60,7 +60,7 @@ class StoreController extends BaseController
         $builder = new ListBuilder;
         $data    = $builder
             ->addActionOptions('操作',[
-                'width'     => 400
+                'width'     => 380
             ])
             ->pageConfig()
             ->editConfig()
@@ -78,7 +78,7 @@ class StoreController extends BaseController
             ])
             ->addRightButton(
                 'toStore',
-                '管理后台',
+                '管理',
                 [
                     'type'          => 'link',
                     'api'           => 'admin/Store/login',
@@ -88,11 +88,11 @@ class StoreController extends BaseController
                 ],
                 [],
                 [
-                    'type' => 'warning',
+                    'type' => 'primary',
                     'icon' => 'CodeSandboxOutlined'
                 ]
             )
-            ->addRightButton('storeApp', '应用授权', [
+            ->addRightButton('storeApp', '授权', [
                 'type' => 'page',
                 'api' => 'admin/StoreApp/index',
                 'path' => '/StoreApp/index',
@@ -114,7 +114,7 @@ class StoreController extends BaseController
                 'type' => 'primary',
                 'icon' => 'EditOutlined'
             ])
-            ->addRightButton('projects', '项目管理', [
+            ->addRightButton('projects', '项目', [
                 'type' => 'page',
                 'api' => 'admin/StoreProject/index',
                 'path' => '/StoreProject/index',

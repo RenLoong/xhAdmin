@@ -94,7 +94,6 @@ class PluginController extends BaseController
                 ],
                 [
                     'title' => '更新应用',
-                    'width' => '45%',
                 ],
                 [
                     'type'      => 'success',
@@ -142,12 +141,10 @@ class PluginController extends BaseController
                     ],
                 ],
                 [
-                    'title' => '应用安装',
-                    'width' => '45%',
+                    'title'     => '应用安装',
                 ],
                 [
-                    'type'      => 'success',
-                    'text'      => false,
+                    'type'      => 'primary',
                 ]
             )
             ->addRightButton(
@@ -203,7 +200,10 @@ class PluginController extends BaseController
             ->addColumnEle('money', '价格', [
                 'width' => 150,
                 'params' => [
-                    'type' => 'money'
+                    'type'      => 'money',
+                    'style'     => [
+                        'color' => 'red'
+                    ],
                 ]
             ])
             ->addColumnEle('logo', '图标', [

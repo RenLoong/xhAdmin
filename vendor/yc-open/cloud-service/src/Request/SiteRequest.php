@@ -32,13 +32,28 @@ class SiteRequest extends Request
         return $this;
     }
     /**
+     * 获取网站信息
+     * @param mixed $query
+     * @return SystemUpdateRequest
+     */
+    public function getInfo(mixed $query = null)
+    {
+        $this->setUrl('Site/getInfo');
+        if ($query) {
+            $this->setQuery($query);
+        }
+        return $this;
+    }
+    /**
      * 设置响应数据模型
      * @return DataModel
      */
     public function setResponse(mixed $data): DataModel
     {
         # 将data写入网站根目录下的ycOpen.json文件
-        file_put_contents($this->siteinfo_file, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        if(!empty($data['site-token'])){
+            file_put_contents($this->siteinfo_file, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        }
         return new DataModel($data);
     }
 }
