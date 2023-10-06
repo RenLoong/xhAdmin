@@ -1,10 +1,8 @@
 <?php
 namespace app\common\manager;
 
-use app\common\exception\RedirectException;
 use app\common\model\StoreApp;
 use app\common\model\SystemConfig;
-use app\common\service\UploadService;
 use Exception;
 use support\Request;
 use YcOpen\CloudService\Request as CloudServiceRequest;
@@ -60,46 +58,42 @@ class AppletMgr
      */
     public function publish()
     {
-        $request   = $this->request;
-        $appid = $request->post('applet_appid', '');
-        $isPreview = $request->post('preview', '10');
-        $token     = $this->getToken();
+        $request    = $this->request;
+        $appid      = $request->post('applet_appid', '');
+        $isPreview  = $request->post('preview', '10');
+        $token      = $this->getToken();
         $tokenQuery = ['token' => $token];
-        try {
-            $projectCls = CloudServiceRequest::Miniproject();
-            if ($isPreview === '20') {
-                # 发布后二维码预览
-                $data = $projectCls
-                    ->miniprojectPreview()
-                    ->setQuery($tokenQuery)
-                    ->cloud()
-                    ->send();
-                $data = $data->toArray();
-                $query  = [
-                    'appid'     => $appid,
-                    'name'      => $this->model['name'],
-                ];
-                $qrcode = $projectCls
+        $projectCls = CloudServiceRequest::Miniproject();
+        if ($isPreview === '20') {
+            # 发布后二维码预览
+            $data   = $projectCls
+                ->miniprojectPreview()
+                ->setQuery($tokenQuery)
+                ->cloud()
+                ->send();
+            $data   = $data->toArray();
+            $query  = [
+                'appid' => $appid,
+                'name' => $this->model['name'],
+            ];
+            $qrcode = $projectCls
                 ->setQuery($query)
                 ->miniprojectPreviewQrcode();
-                $data =  [
-                    'preview' => true,
-                    'qrcode' => $qrcode,
-                ];
-                return JsonMgr::successFul('发布成功', $data);
-            } else {
-                # 纯发布
-                $projectCls
-                    ->miniprojectUpload()
-                    ->setQuery($tokenQuery)
-                    ->cloud()
-                    ->send();
-                return JsonMgr::successFul('发布成功',[
-                    'preview'   => false
-                ]);
-            }
-        } catch (\Throwable $e) {
-            return JsonMgr::fail("发布失败：{$e->getMessage()}");
+            $data   = [
+                'preview' => true,
+                'qrcode' => $qrcode,
+            ];
+            return JsonMgr::successFul('发布成功', $data);
+        } else {
+            # 纯发布
+            $projectCls
+                ->miniprojectUpload()
+                ->setQuery($tokenQuery)
+                ->cloud()
+                ->send();
+            return JsonMgr::successFul('发布成功', [
+                'preview' => false
+            ]);
         }
     }
 
@@ -144,19 +138,19 @@ class AppletMgr
         if (!is_dir(base_path("/plugin/{$model['name']}"))) {
             throw new Exception('项目绑定的应用未安装');
         }
-        $query    = [
-            'appid'             => $config['applet_appid'],
-            'name'              => $model['name'],
-            'preview_desc'      => '',
-            'type'              => 'wxmp',
-            'siteinfo'          => [
-                'name'          => $model['title'],
-                'siteroot'      => $model['url'],
-                'app_id'        => $model['id'],
-                'wx_appid'      => $config['applet_appid'],
+        $query = [
+            'appid' => $config['applet_appid'],
+            'name' => $model['name'],
+            'preview_desc' => '',
+            'type' => 'wxmp',
+            'siteinfo' => [
+                'name' => $model['title'],
+                'siteroot' => $model['url'],
+                'app_id' => $model['id'],
+                'wx_appid' => $config['applet_appid'],
             ]
         ];
-        $data = CloudServiceRequest::Miniproject()
+        $data  = CloudServiceRequest::Miniproject()
             ->getUploadToken()
             ->setParams($query)
             ->cloud()
@@ -176,38 +170,34 @@ class AppletMgr
         $model   = $this->model;
         $post    = $request->post();
         foreach ($post as $field => $value) {
-            $where      = [
+            $where     = [
                 ['name', '=', $field],
                 ['store_id', '=', $model['store_id']],
                 ['saas_appid', '=', $model['id']],
             ];
             $confModel = SystemConfig::where($where)->find();
             if (!$confModel) {
-                $confModel = new SystemConfig;
-                $confModel->name        = $field;
-                $confModel->store_id    = $model['store_id'];
-                $confModel->saas_appid  = $model['id'];
+                $confModel             = new SystemConfig;
+                $confModel->name       = $field;
+                $confModel->store_id   = $model['store_id'];
+                $confModel->saas_appid = $model['id'];
             }
             $confModel->value = $value;
             $confModel->save();
         }
         # 服务端小程序配置
-        try {
-            if (!empty($post['applet_appid']) && !empty($post['applet_secret']) && !empty($post['applet_privatekey'])) {
-                $data = [
-                    'appid'         => $post['applet_appid'],
-                    'secret'        => $post['applet_secret'],
-                    'privatekey'    => $post['applet_privatekey'],
-                    'type'          => 'wxmp'
-                ];
-                CloudServiceRequest::Miniproject()
-                    ->setConfig()
-                    ->setParams($data)
-                    ->cloud()
-                    ->send();
-            }
-        } catch (\Throwable $e) {
-            return JsonMgr::fail($e->getMessage());
+        if (!empty($post['applet_appid']) && !empty($post['applet_secret']) && !empty($post['applet_privatekey'])) {
+            $data = [
+                'appid' => $post['applet_appid'],
+                'secret' => $post['applet_secret'],
+                'privatekey' => $post['applet_privatekey'],
+                'type' => 'wxmp'
+            ];
+            CloudServiceRequest::Miniproject()
+                ->setConfig()
+                ->setParams($data)
+                ->cloud()
+                ->send();
         }
         return JsonMgr::success('保存成功');
     }
@@ -235,20 +225,12 @@ class AppletMgr
     private function getConfig()
     {
         $model = $this->model;
-        $where = [
-            ['store_id', '=', $model['store_id']],
-            ['saas_appid', '=', $model['id']],
-            ['name', 'in', $this->configName]
-        ];
-        $data  = SystemConfig::where($where)->column('value', 'name');
-        if (empty($data)) {
-            $data = [
-                'applet_appid'          => '',
-                'applet_secret'         => '',
-                'applet_privatekey'     => '',
-                'applet_state'          => '',
-            ];
-        }
-        return $data;
+        $data  = getHpConfig([
+            'applet_appid' => '',
+            'applet_secret' => '',
+            'applet_privatekey' => '',
+            'applet_state' => '',
+        ], $model['id']);
+        return empty($data) ? [] : $data;
     }
 }

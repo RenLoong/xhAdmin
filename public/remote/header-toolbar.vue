@@ -31,7 +31,7 @@
             <el-tooltip v-for="(item, index) in toolbar" :key="index" effect="dark" :content="item?.title"
                 placement="bottom">
                 <div class="item-container" @click="item.hanlder">
-                    <AppIcons :icon="item.icon" :size="18" :color="item.isUpdate ? '#ff0000' : '#555'" />
+                    <AppIcons :icon="item.icon" :size="15" :color="item.isUpdate ? '#ff0000' : '#555'" />
                 </div>
             </el-tooltip>
         </div>
@@ -287,6 +287,6 @@ export default {
 }
 
 .item-container:hover {
-    background: #d5d5d5;
+    background: #f3f3f3;
 }
 </style>

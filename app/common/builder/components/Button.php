@@ -57,11 +57,18 @@ trait Button
                 'default'       => $field
             ],
             'params'            => [
+                # 是否显示更多按钮
                 'group'                 => false,
-                'groupText'             => false,
+                # 更多按钮文本
+                'groupText'             => '',
+                # 更多按钮图标
                 'buttonGroupIcon'       => '',
+                # 更多按钮图标类型：element / @vicons/antd（默认）
                 'buttonGroupIconType'   => '',
-                'buttonStyle'           => '',
+                # 按钮样式，参考element-plug
+                'buttonStyle'           => [
+                    'link'              => true,
+                ],
             ],
         ], $extra);
         $this->addColumn($field, $title, $extra);
@@ -141,10 +148,12 @@ trait Button
             $message,
             $button
         );
-        // 别名参数，仅右侧按钮
+        # 设置右侧按钮默认为文字类型
+        $btnData['button']['link'] = true;
+        # 别名参数，仅右侧按钮
         $btnData['pageData']['aliasParams'] = [];
         $btnData['pageData']                = array_merge($btnData['pageData'], $pageData);
-        // 处理别名转换
+        # 处理别名转换
         foreach ($btnData['pageData']['aliasParams'] as $key => $value) {
             if (is_numeric($key)) {
                 $btnData['pageData']['aliasParams'][$value] = $value;

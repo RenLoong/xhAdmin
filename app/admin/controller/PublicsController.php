@@ -33,13 +33,14 @@ class PublicsController extends BaseController
         $empower_token = empowerFile('token');
         $private_key = empowerFile('private_key');
         $moduleName = getModule('admin');
-        $web_logo = getHpConfig('admin_logo');
+        $web_logo = getHpConfig('admin_logo','');
+        $web_logo = is_array($web_logo) && !empty($web_logo) ? current($web_logo) : $web_logo;
         $data       = [
-            'web_name'          => getHpConfig('web_name'),
-            'web_title'         => '总后台登录',
-            'web_logo'          => empty($web_logo) ? '' : $web_logo,
-            'version_name'      => $systemInfo['system_version_name'],
-            'version'           => $systemInfo['system_version'],
+            'web_name'              => getHpConfig('web_name'),
+            'web_title'             => '总后台登录',
+            'web_logo'              => empty($web_logo) ? '' : $web_logo,
+            'version_name'          => $systemInfo['system_version_name'],
+            'version'               => $systemInfo['system_version'],
             // 版权token
             'empower_token'         => $empower_token,
             // 版权私钥
@@ -51,7 +52,7 @@ class PublicsController extends BaseController
                 'other_login'       => [],
             ],
             // 公用接口
-            'public_api'     => [
+            'public_api'            => [
                 // 登录接口
                 'login'             => "{$moduleName}/Publics/login",
                 // 自定义登录页
@@ -72,21 +73,21 @@ class PublicsController extends BaseController
                 "header_right_file" => "remote/header-toolbar",
             ],
             // 远程组件
-            'remote_url'     => [],
+            'remote_url'            => [],
             // 附件库API
-            'uploadify_api'  => [
-                'index'  => "{$moduleName}/SystemUpload/index",
-                'upload' => "{$moduleName}/SystemUpload/upload",
-                'edit'   => "{$moduleName}/SystemUpload/edit",
-                'del'    => "{$moduleName}/SystemUpload/del",
-                'move'   => "{$moduleName}/SystemUpload/move",
+            'uploadify_api'         => [
+                'index'             => "{$moduleName}/SystemUpload/index",
+                'upload'            => "{$moduleName}/SystemUpload/upload",
+                'edit'              => "{$moduleName}/SystemUpload/edit",
+                'del'               => "{$moduleName}/SystemUpload/del",
+                'move'              => "{$moduleName}/SystemUpload/move",
             ],
             // 附件库分类
-            'uploadify_cate' => [
-                'index' => "{$moduleName}/SystemUploadCate/index",
-                'add'   => "{$moduleName}/SystemUploadCate/add",
-                'edit'  => "{$moduleName}/SystemUploadCate/edit",
-                'del'   => "{$moduleName}/SystemUploadCate/del",
+            'uploadify_cate'        => [
+                'index'             => "{$moduleName}/SystemUploadCate/index",
+                'add'               => "{$moduleName}/SystemUploadCate/add",
+                'edit'              => "{$moduleName}/SystemUploadCate/edit",
+                'del'               => "{$moduleName}/SystemUploadCate/del",
             ],
         ];
         return parent::successRes($data);
@@ -130,10 +131,11 @@ class PublicsController extends BaseController
         $adminModel->save();
 
         // 构建令牌
-        Session::set('XhAdmin', $adminModel);
+        $name = 'XhAdmin';
+        Session::set($name, $adminModel);
 
         // 返回数据
-        return $this->successToken('登录成功', 'XhAdmin');
+        return $this->successToken('登录成功', $name);
     }
 
 
@@ -179,6 +181,7 @@ class PublicsController extends BaseController
      */
     public function loginout(Request $request)
     {
-        return parent::success('成功退出');
+        Session::delete('XhAdmin');
+        return $this->success('成功退出');
     }
 }

@@ -19,9 +19,9 @@ trait Table
     // 表格高度
     private $height = 'auto';
     // 是否带有边框
-    private $border = true;
+    private $border = 'inner';
     // 是否为圆角边框
-    private $round = true;
+    private $round = false;
     // 表格的尺寸 medium, small, mini
     private $size = 'small';
     // 所有的列对齐方式
@@ -593,7 +593,7 @@ trait Table
         // 当前页码
         $currentPage = (int) request()->get('page', 1);
         // 分页配置
-        $config = config('paginator');
+        $config = config('paginator',[]);
         // 每页数量
         $listRows                   = isset($config['listRows']) ? $config['listRows'] : 20;
         $this->pagerConfig          = array_merge([
@@ -602,9 +602,9 @@ trait Table
             'total'       => 1000,
             'pageSizes'   => [10, 15, 20, 50, 100, 200, 500, 1000],
             'align'       => 'right',
-            'background'  => true,
-            'perfect'     => true,
-            'border'      => true,
+            'background'  => false,
+            'perfect'     => false,
+            'border'      => false,
             'layouts'     => [
                 'PrevJump',
                 'PrevPage',

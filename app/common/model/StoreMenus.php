@@ -15,6 +15,7 @@ class StoreMenus extends Model
 {
     // 设置JSON字段转换
     protected $json = ['method'];
+    
     // 设置JSON数据返回数组
     protected $jsonAssoc = true;
 
@@ -60,6 +61,6 @@ class StoreMenus extends Model
      */
     protected function getPathTextAttr($value, $data)
     {
-        return "{$data['module']}/{$data['path']}";
+        return "store/{$data['path']}";
     }
 }

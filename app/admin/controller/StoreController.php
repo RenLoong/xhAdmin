@@ -60,7 +60,7 @@ class StoreController extends BaseController
         $builder = new ListBuilder;
         $data    = $builder
             ->addActionOptions('操作',[
-                'width'     => 380
+                'width'     => 270
             ])
             ->pageConfig()
             ->editConfig()
@@ -74,7 +74,7 @@ class StoreController extends BaseController
             ], [
                 'title' => '开通租户',
             ], [
-                'type' => 'success'
+                'type' => 'primary'
             ])
             ->addRightButton(
                 'toStore',
@@ -564,7 +564,7 @@ class StoreController extends BaseController
         // 构建令牌
         Session::set('XhAdminStore', $adminModel);
 
-        $url = "/store/#/?token=XhAdminStore";
+        $url = "store/#/?token=XhAdminStore";
         return $this->successRes(['url' => $url]);
     }
 }

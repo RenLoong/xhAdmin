@@ -42,10 +42,9 @@ class StoreMenusController extends BaseController
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public function __construct(App $app)
+    public function initialize()
     {
         $this->model = new StoreMenus;
-        parent::__construct($app);
     }
 
     /**
@@ -162,9 +161,6 @@ class StoreMenusController extends BaseController
             // 额外验证
             if ($post['component'] !== 'remote/index') {
                 // 接口/表单/表格
-                if (!isset($post['namespace']) || !$post['namespace']) {
-                    return parent::fail('请输入命名空间');
-                }
                 if (!isset($post['path']) || !$post['path'] && $post['is_api'] === '20') {
                     return parent::fail('请输入权限路由');
                 }
@@ -184,9 +180,8 @@ class StoreMenusController extends BaseController
         $builder = new FormBuilder;
         $view    = $builder
             ->setMethod('POST')
-            ->addRow('module', 'input', '模块名称', 'store', [
-                'placeholder' => '如app目录下则直接填写模块名，应用插件则填写：服务商/插件名',
-                'col'         => [
+            ->addRow('title', 'input', '菜单名称', '', [
+                'col' => [
                     'span' => 12
                 ],
             ])
@@ -199,11 +194,6 @@ class StoreMenusController extends BaseController
                 'options'     => StoreMenus::getCascaderOptions(),
                 'placeholder' => '如不选择则是顶级菜单',
                 'col'         => [
-                    'span' => 12
-                ],
-            ])
-            ->addRow('title', 'input', '菜单名称', '', [
-                'col' => [
                     'span' => 12
                 ],
             ])
@@ -246,12 +236,6 @@ class StoreMenusController extends BaseController
                 'options'       => YesNoEum::getOptions(),
                 'col'           => [
                     'span'      => 12
-                ],
-            ])
-            ->addRow('namespace', 'input', '命名空间', "\\app\\store\\controller\\", [
-                'placeholder'=> '示例：\\app\\store\\controller\\',
-                'col' => [
-                    'span' => 12
                 ],
             ])
             ->addRow('path', 'input', '权限路由', '', [
@@ -313,10 +297,6 @@ class StoreMenusController extends BaseController
 
             // 额外验证
             if ($post['component'] !== 'remote/index') {
-                // 接口/表单/表格
-                if (!isset($post['namespace']) || !$post['namespace']) {
-                    return parent::fail('请输入命名空间');
-                }
                 if (!isset($post['path']) || !$post['path'] && $post['is_api'] === '10') {
                     return parent::fail('请输入权限路由');
                 }
@@ -334,9 +314,8 @@ class StoreMenusController extends BaseController
         $builder = new FormBuilder;
         $view    = $builder
             ->setMethod('PUT')
-            ->addRow('module', 'input', '模块名称', 'store', [
-                'placeholder' => '如app目录下则直接填写模块名，应用插件则填写：服务商/插件名',
-                'col'         => [
+            ->addRow('title', 'input', '菜单名称', '', [
+                'col' => [
                     'span' => 12
                 ],
             ])
@@ -349,11 +328,6 @@ class StoreMenusController extends BaseController
                 'options'     => StoreMenus::getCascaderOptions(),
                 'placeholder' => '如不选择则是顶级菜单',
                 'col'         => [
-                    'span' => 12
-                ],
-            ])
-            ->addRow('title', 'input', '菜单名称', '', [
-                'col' => [
                     'span' => 12
                 ],
             ])
@@ -396,12 +370,6 @@ class StoreMenusController extends BaseController
                 'options'       => YesNoEum::getOptions(),
                 'col'           => [
                     'span'      => 12
-                ],
-            ])
-            ->addRow('namespace', 'input', '命名空间', "\\app\\store\\controller\\", [
-                'placeholder'=> '示例：\\app\\store\\controller\\',
-                'col' => [
-                    'span' => 12
                 ],
             ])
             ->addRow('path', 'input', '权限路由', '', [

@@ -53,6 +53,6 @@ class SystemAuthRule extends Model
      */
     protected function getPathTextAttr($value, $data)
     {
-        return "{$data['module']}/{$data['path']}";
+        return "admin/{$data['path']}";
     }
 }

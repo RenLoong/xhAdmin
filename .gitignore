@@ -1,6 +1,7 @@
 *.log
 .env
 .env2
+.example.env
 composer.phar
 .DS_Store
 Thumbs.db

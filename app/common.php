@@ -353,3 +353,25 @@ function empowerFile(string $fileName, $default = '')
     }
     return $content;
 }
+
+/**
+ * 渲染自定义页面视图
+ * @param string $file
+ * @param mixed $plugin
+ * @return think\Response
+ * @author 贵州猿创科技有限公司
+ * @copyright 贵州猿创科技有限公司
+ */
+function renderCustomView(string $file,$plugin = '')
+{
+    $filePath = public_path($file);
+    if ($plugin) {
+        $filePath = root_path("plugin/{$plugin}/public/");
+    }
+    if (!file_exists($filePath)) {
+        throw new Exception('视图文件不存在');
+    }
+    $content = file_get_contents($filePath);
+    $response = Response::create()->content($content);
+    return $response;
+}

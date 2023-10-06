@@ -16,7 +16,6 @@ class AuthMgr
     // 设置允许输出字段
     private static $visible = [
         'id',
-        'module',
         'pid',
         'path',
         'title',

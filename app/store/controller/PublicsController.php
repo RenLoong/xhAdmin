@@ -132,10 +132,11 @@ class PublicsController extends BaseController
         $adminModel->save();
 
         // 构建令牌
-        Session::set('XhAdminStore', $adminModel);
+        $tokenName = 'XhAdminStore';
+        Session::set($tokenName, $adminModel);
 
         // 返回数据
-        return $this->successToken('登录成功', 'XhAdminStore');
+        return $this->successToken('登录成功', $tokenName);
     }
 
     /**
@@ -165,7 +166,7 @@ class PublicsController extends BaseController
                 'layout'        => 'top',
             ],
         ];
-        return parent::successRes($data);
+        return $this->successRes($data);
     }
 
     /**
@@ -182,7 +183,6 @@ class PublicsController extends BaseController
         ];
         $field = [
             'id',
-            'module',
             'pid',
             'path',
             'title',
@@ -217,6 +217,7 @@ class PublicsController extends BaseController
      */
     public function loginout(Request $request)
     {
-        return parent::success('成功退出');
+        Session::delete('XhAdminStore');
+        return $this->success('成功退出');
     }
 }

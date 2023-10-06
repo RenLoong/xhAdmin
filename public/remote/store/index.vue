@@ -28,7 +28,7 @@
                     项目看板
                 </div>
                 <div class="project-action">
-                    <button class="action-btn create-project" v-if="isDeveloper" @click="hanldOepn('/Develop/create')">
+                    <button class="action-btn create-project" v-if="isDeveloper" @click="hanldOepn('/Develop/create',{isBack:1})">
                         <AppIcons icon="Compass" type="element" :size="16" />
                         <span class="title">创建开发者项目</span>
                     </button>

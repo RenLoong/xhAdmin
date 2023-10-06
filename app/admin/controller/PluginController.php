@@ -53,7 +53,7 @@ class PluginController extends BaseController
                     'width' => '350px'
                 ],
                 [
-                    'type' => 'success'
+                    'type' => 'primary'
                 ]
             )
             ->addRightButton(

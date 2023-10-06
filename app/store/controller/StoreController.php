@@ -19,7 +19,7 @@ class StoreController extends BaseController
 {
     /**
      * 模型
-     * @var \app\admin\model\StorePlatform
+     * @var \app\common\model\Store
      */
     public $model;
 
@@ -44,7 +44,7 @@ class StoreController extends BaseController
      */
     public function edit(Request $request)
     {
-        $store_id = hp_admin_id('hp_store');
+        $store_id = hp_admin_id('XhAdminStore');
         $model = $this->model;
         $where = [
             ['id','=',$store_id],

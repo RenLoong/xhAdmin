@@ -7,6 +7,9 @@ use app\common\manager\StoreAppMgr;
 use app\common\manager\UsersMgr;
 use app\common\model\SystemUpload;
 use app\common\model\SystemUploadCate;
+use app\common\validate\AliyunValidate;
+use app\common\validate\QcloudValidate;
+use app\common\validate\QiniuValidate;
 use Exception;
 use think\facade\Config;
 use think\file\UploadedFile;
@@ -373,6 +376,22 @@ class UploadService
     {
         # 获取配置项
         $config = self::getConfig();
+        if (empty($config['upload_drive'])) {
+            throw new Exception('请先设置附件驱动');
+        }
+        # 阿里云驱动验证
+        if ($config['upload_drive'] === 'aliyun') {
+            hpValidate(AliyunValidate::class, $config);
+        }
+        # 腾讯云驱动
+        if ($config['upload_drive'] === 'qcloud') {
+            hpValidate(QcloudValidate::class, $config);
+        }
+        # 七牛云驱动
+        if ($config['upload_drive'] === 'qiniu') {
+            hpValidate(QiniuValidate::class, $config);
+        }
+        # 删除驱动配置项
         unset($config['upload_drive']);
 
         $uploadDrive = self::getDrive();

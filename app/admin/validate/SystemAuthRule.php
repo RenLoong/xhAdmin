@@ -7,21 +7,17 @@ use think\Validate;
 class SystemAuthRule extends Validate
 {
     protected $rule = [
-        'module'    => 'require',
-        'pid'       => 'require',
         'title'     => 'require',
+        'pid'       => 'require',
         'component' => 'verifyComponet',
-        'namespace' => 'require',
         'path'      => 'require',
         'method'    => 'require',
         'sort'      => 'require',
     ];
 
     protected $message = [
-        'module.require'    => '请输入模块名称',
-        'pid.require'       => '请选择父级菜单',
         'title.require'     => '请输入菜单名称',
-        'namespace.require' => '请输入命名空间',
+        'pid.require'       => '请选择父级菜单',
         'path.require'      => '请输入权限路由',
         'method.require'    => '请选择请求类型',
         'sort.require'      => '请输入菜单排序',
@@ -29,7 +25,6 @@ class SystemAuthRule extends Validate
 
     protected $scene = [
         'add'  => [
-            'module',
             'pid',
             'title',
             'component',
@@ -37,7 +32,6 @@ class SystemAuthRule extends Validate
             'sort',
         ],
         'edit' => [
-            'module',
             'pid',
             'title',
             'component',

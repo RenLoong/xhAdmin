@@ -24,7 +24,15 @@ class AuthRuleRuleType extends Enum
         'value'     => 'table/index',
     ];
     const REMOTE_VIEW = [
-        'text'      => '远程组件',
+        'text'      => '远程Vue组件',
         'value'     => 'remote/index',
+    ];
+    const VUE_VIEW = [
+        'text'      => '渲染Vue组件',
+        'value'     => 'vue/index',
+    ];
+    const HTML_PAGE = [
+        'text'      => 'HTML页面',
+        'value'     => 'html/index',
     ];
 }
