@@ -1,53 +1,83 @@
 <template>
     <div class="update-container">
-        <!-- 更新UI -->
         <div class="update-box">
-            <img :src="pageData.logo" class="logo" alt="">
-            <div class="title">小程序在线更新</div>
-            <div class="body">
+            <div class="logo-container">
+                <img :src="pageData.logo" class="logo" />
+            </div>
+            <div class="title">
+                {{ pageData?.title }}
+            </div>
+            <div class="update-config-container">
+                <div class="item" :class="{ active: tabs.active === index }" v-for="(item, index) in tabs.list"
+                    :key="index" @click="hanldSelect(index)">
+                    {{ item }}
+                </div>
+            </div>
+            <!-- 版本发布 -->
+            <div class="body" v-if="tabs.active === 0">
                 <div class="item">
-                    <div class="label">APPID</div>
+                    <div class="label">版本信息</div>
                     <div class="value">
-                        <n-input placeholder="请输入APPID" :clearable="true" v-model:value="formData.applet_appid"></n-input>
+                        <el-input :value="`${version?.version_name}（${version?.version}）`" disabled />
                     </div>
                 </div>
                 <div class="item">
-                    <div class="label">Secret</div>
+                    <div class="label">版本描述</div>
                     <div class="value">
-                        <n-input placeholder="请输入Secret" :clearable="true" v-model:value="formData.applet_secret"></n-input>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="label">privatekey</div>
-                    <div class="value">
-                        <n-input type="textarea" placeholder="请输入privatekey" rows="8" :clearable="true"
-                            v-model:value="formData.applet_privatekey" />
+                        <el-input type="textarea" placeholder="版本描述（选填）" rows="8" :clearable="true" :value="pageData?.desc" />
                     </div>
                 </div>
                 <div class="item">
                     <div class="label">发布预览</div>
                     <div class="value">
-                        <n-switch v-model:value="formData.applet_state" unchecked-value="10" checked-value="20">
+                        <el-switch v-model="formData.applet_state" inactive-value="10" active-value="20">
                             <template #checked>
                                 二维码预览
                             </template>
                             <template #unchecked>
                                 无需预览
                             </template>
-                        </n-switch>
+                        </el-switch>
                     </div>
                 </div>
-                <div class="submit">
-                    <n-button type="warning" @click="hanldBack">
-                        返回项目
-                    </n-button>
-                    <n-button type="success" @click="hanldSave" :disabled="submitStatus">
+                <div class="item">
+                    <div class="label"></div>
+                    <div class="value">
+                        <el-button type="primary" @click="hanldSubmit"
+                            :disabled="(!formData.applet_appid || !formData.applet_secret || !formData.applet_privatekey) || submitStatus">
+                            {{ submitStatus ? '提交中...' : '立即发布' }}
+                        </el-button>
+                    </div>
+                </div>
+            </div>
+            <!-- 参数配置 -->
+            <div class="body" v-if="tabs.active === 1">
+                <div class="item">
+                    <div class="label">APPID</div>
+                    <div class="value">
+                        <el-input placeholder="请输入APPID" :clearable="true" v-model="formData.applet_appid" />
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="label">Secret</div>
+                    <div class="value">
+                        <el-input placeholder="请输入Secret" :clearable="true" v-model="formData.applet_secret" />
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="label">privatekey</div>
+                    <div class="value">
+                        <el-input type="textarea" placeholder="请输入privatekey" rows="8" :clearable="true"
+                            v-model="formData.applet_privatekey" />
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="label"> </div>
+                    <div class="value">
+                    <el-button type="success" @click="hanldSave" :disabled="submitStatus">
                         {{ submitStatus ? '提交中...' : '保存设置' }}
-                    </n-button>
-                    <n-button type="info" @click="hanldSubmit"
-                        :disabled="(!formData.applet_appid || !formData.applet_secret || !formData.applet_privatekey) || submitStatus">
-                        {{ submitStatus ? '提交中...' : '立即发布' }}
-                    </n-button>
+                    </el-button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -66,10 +96,22 @@
 export default {
     data() {
         return {
+            tabs: {
+                active: 0,
+                list: [
+                    '版本发布',
+                    '参数配置',
+                ],
+            },
             submitStatus: false,
             pageData: {
                 logo: '',
+                desc:'',
                 preview: false,
+            },
+            version:{
+                version:'',
+                version_name:'',
             },
             formData: {
                 applet_appid: '',
@@ -79,7 +121,7 @@ export default {
             }
         }
     },
-    created() {
+    mounted() {
         this.initify();
     },
     methods: {
@@ -87,12 +129,12 @@ export default {
         hanldSave() {
             const _this = this;
             _this.submitStatus = true;
-            const url = `store/StoreApp/applet?id=${this.$routeApp.query?.id ?? ''}`
-            this.$http.usePut(url, this.formData).then((res) => {
-                _this.$useNotification?.success({
-                    title: res?.msg ?? "操作成功",
-                    duration: 1500,
-                });
+            const api = this.$moduleName + '/Applet/config'
+            this.$http.usePut(api, this.formData).then((res) => {
+                _this.$useNotify(res?.msg ?? '操作成功','success','温馨提示')
+                setTimeout(() => {
+                    window.location.reload()
+                }, 1500);
             }).finally(() => {
                 _this.submitStatus = false;
             })
@@ -101,71 +143,99 @@ export default {
         hanldSubmit() {
             const _this = this;
             _this.submitStatus = true;
-            const url = `store/StoreApp/applet?id=${this.$routeApp.query?.id ?? ''}`
+            const loading = _this.$useLoading('发布中...',{
+                background: 'rgba(0, 0, 0, 0.7)',
+            })
+            const api = this.$moduleName + '/Applet/publish'
             const params = {
                 preview: this.formData.applet_state,
-                applet_appid: this.formData.applet_appid
             };
-            this.$http.usePost(url, params).then((res) => {
+            this.$http.usePost(api, params).then((res) => {
                 if (res?.data?.preview) {
                     _this.pageData.preview = true;
                     _this.pageData.qrcode = res?.data?.qrcode ?? '';
                 }
                 // 预览二维码
-                _this.$useNotification?.success({
-                    title: res?.msg ?? "操作成功",
-                    duration: 1500,
-                });
+                _this.$useNotify(res?.msg ?? '操作成功')
             }).finally(() => {
                 _this.submitStatus = false;
+                loading.close();
             })
         },
-        hanldBack() {
-            this.$routerApp.back();
+        hanldSelect(index) {
+            this.tabs.active = index
         },
         initify() {
-            const params = {
-                id: this.$routeApp.query?.id ?? '',
-            }
-            this.$http.useGet('store/StoreApp/applet', params).then((res) => {
+            const api = this.$moduleName + '/Applet/config'
+            this.$http.useGet(api).then((res) => {
                 const { data } = res;
-                this.pageData.logo = data?.logo ?? '';
                 this.formData = data?.config ?? {};
+                this.pageData = {
+                    ...data?.app
+                };
+                this.version = {
+                    ...this.version,
+                    ...data?.version
+                };
             })
         }
     },
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .update-container {
     width: 100%;
     height: 100%;
     background-color: #fff;
 
     .update-box {
-        width: 100%;
+        width: 500px;
         height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 20px 0;
+        margin: 0 auto;
+        padding-top: 50px;
 
-        .logo {
-            width: 80px;
-            height: 80px;
-            border-radius: 5px;
+        .logo-container {
+            text-align: center;
+
+            .logo {
+                width: 80px;
+                height: 80px;
+                border-radius: 5px;
+                margin: 0 auto;
+            }
         }
 
         .title {
             font-size: 22px;
             color: #333;
-            margin-bottom: 20px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .update-config-container {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e5e5e5;
+
+            .item {
+                width: 80px;
+                color: #555;
+                cursor: pointer;
+                padding: 15px 0;
+                font-size: 14px;
+                text-align: center;
+                user-select: none;
+                border-bottom: 1px solid transparent;
+                font-weight:700;
+            }
+
+            .active {
+                border-bottom: 1px solid #409eff;
+            }
         }
 
         .body {
-            width: 40%;
             display: flex;
             flex-direction: column;
             gap: 20px 0;

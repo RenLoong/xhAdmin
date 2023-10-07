@@ -18,7 +18,7 @@ CREATE TABLE `__PREFIX__system_auth_rule`  (
   `is_default` enum('10','20') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '10' COMMENT '默认权限：10否 20是',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `path`(`path`) USING BTREE COMMENT '唯一索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 193 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-权限规则' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 0 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-权限规则' ROW_FORMAT = DYNAMIC;
 
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (1, '2022-10-27 17:22:51', '2023-03-07 21:36:28', 'SystemIndex/group', 0, '首页', 0, '[\"GET\"]', '10', 'none/index', '', 'HomeOutlined', '20', '20', '20');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (2, '2022-10-27 17:22:51', '2023-05-10 14:47:24', 'Index/index', 1, '控制台', 0, '[\"GET\"]', '10', 'remote/index', '/remote/welcome', 'FolderOpenOutlined', '20', '20', '20');

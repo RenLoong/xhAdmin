@@ -59,6 +59,10 @@ class ComposerStaticInit2438499dbe71b96805c448479aa3db48
             'phpseclib3\\' => 11,
             'phpDocumentor\\Reflection\\' => 25,
         ),
+        'l' => 
+        array (
+            'loong\\oauth\\' => 12,
+        ),
         'a' => 
         array (
             'app\\' => 4,
@@ -236,6 +240,10 @@ class ComposerStaticInit2438499dbe71b96805c448479aa3db48
             0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
             1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
             2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
+        ),
+        'loong\\oauth\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/loong/oauth/src',
         ),
         'app\\' => 
         array (

@@ -19,6 +19,7 @@ return array(
     'support\\' => array($vendorDir . '/xbai/plugins/src/support'),
     'phpseclib3\\' => array($vendorDir . '/phpseclib/phpseclib/phpseclib'),
     'phpDocumentor\\Reflection\\' => array($vendorDir . '/phpdocumentor/reflection-common/src', $vendorDir . '/phpdocumentor/reflection-docblock/src', $vendorDir . '/phpdocumentor/type-resolver/src'),
+    'loong\\oauth\\' => array($vendorDir . '/loong/oauth/src'),
     'app\\' => array($baseDir . '/app'),
     'YcOpen\\CloudService\\' => array($vendorDir . '/yc-open/cloud-service/src'),
     'Xbai\\Plugins\\' => array($vendorDir . '/xbai/plugins/src'),

@@ -71,12 +71,13 @@ function getAdminView($plugin = '')
  * 获取配置项
  * @param string|array $key
  * @param mixed $appid
+ * @param string $group
  * @return mixed
  * @author 贵州猿创科技有限公司
  * @copyright 贵州猿创科技有限公司
  * @email 416716328@qq.com
  */
- function getHpConfig(string|array $key = '', $appid = null)
+ function getHpConfig(string|array $key = '', $appid = null,string $group = '')
  {
      $model = new \app\common\model\SystemConfig;
      if ($appid) {
@@ -91,6 +92,10 @@ function getAdminView($plugin = '')
          $model = $model->where('store_id',NULL);
          $model = $model->where('saas_appid',NULL);
          $model = $model->where('group','system');
+     }
+     # 读取分组
+     if ($group) {
+        $model = $model->where('group',$group);
      }
      $data = $model->field('value')->column('value');
      $list = [];
@@ -107,6 +112,9 @@ function getAdminView($plugin = '')
      }
      if (is_array($key)) {
          return $list;
+     }
+     if (empty($key)) {
+        return $list;
      }
      return $list[$key] ?? '';
  }
@@ -358,13 +366,15 @@ function empowerFile(string $fileName, $default = '')
  * 渲染自定义页面视图
  * @param string $file
  * @param mixed $plugin
- * @return think\Response
+ * @param string $suffix
+ * @return bool|string
  * @author 贵州猿创科技有限公司
  * @copyright 贵州猿创科技有限公司
  */
-function renderCustomView(string $file,$plugin = '')
+function renderCustomView(string $file,$plugin = '',string $suffix = 'vue')
 {
-    $filePath = public_path($file);
+    # 根目录官方视图文件
+    $filePath = public_path().$file.".".$suffix;
     if ($plugin) {
         $filePath = root_path("plugin/{$plugin}/public/");
     }
@@ -372,6 +382,5 @@ function renderCustomView(string $file,$plugin = '')
         throw new Exception('视图文件不存在');
     }
     $content = file_get_contents($filePath);
-    $response = Response::create()->content($content);
-    return $response;
+    return $content;
 }

@@ -84,35 +84,6 @@
         </div>
       </div>
     </div>
-    <!-- <el-row class="http-container">
-      <el-col :span="17" class="echart">
-        <div style="width:100%;height:500px;" ref="httpRef"></div>
-      </el-col>
-      <el-col :span="7" class="dev-description">
-        <div class="dev-item">
-          <div class="title">开发团队</div>
-          <el-table :data="teamTable" border stripe style="width: 100%">
-            <el-table-column prop="title" label="名称" width="100" />
-            <el-table-column prop="values" label="数据">
-              <template #default="scope">
-                <div v-html="scope.row.values" />
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
-        <div class="dev-item">
-          <div class="title">产品动态</div>
-          <el-table :data="productTable.data" border stripe style="width: 100%">
-            <el-table-column prop="title" label="名称" width="100" />
-            <el-table-column prop="values" label="数据">
-              <template #default="scope">
-                <div v-html="scope.row.values" />
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
-      </el-col>
-    </el-row> -->
   </div>
 </template>
 
@@ -180,7 +151,7 @@ export default {
       }
     };
   },
-  created() {
+  mounted() {
     this.initify();
   },
   methods: {

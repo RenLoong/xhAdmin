@@ -1838,6 +1838,46 @@
             "install-path": "../league/mime-type-detection"
         },
         {
+            "name": "loong/oauth",
+            "version": "1.0.1",
+            "version_normalized": "1.0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/uRenlong/oauth.git",
+                "reference": "013573b7c4d595aa989b87d208c5309bd6212073"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/uRenlong/oauth/zipball/013573b7c4d595aa989b87d208c5309bd6212073",
+                "reference": "013573b7c4d595aa989b87d208c5309bd6212073",
+                "shasum": ""
+            },
+            "time": "2023-09-22T09:51:34+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "loong\\oauth\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Unknown",
+                    "email": "1016683587@qq.com"
+                }
+            ],
+            "description": "基于TP8, 不同系统之间安全传递信息, 用于用户登录验证, 信息传递等",
+            "support": {
+                "issues": "https://github.com/uRenlong/oauth/issues",
+                "source": "https://github.com/uRenlong/oauth/tree/1.0.1"
+            },
+            "install-path": "../loong/oauth"
+        },
+        {
             "name": "monolog/monolog",
             "version": "2.9.1",
             "version_normalized": "2.9.1.0",

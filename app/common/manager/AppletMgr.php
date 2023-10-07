@@ -56,11 +56,8 @@ class AppletMgr
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      */
-    public function publish()
+    public function publish(int $appid,string $isPreview = '10')
     {
-        $request    = $this->request;
-        $appid      = $request->post('applet_appid', '');
-        $isPreview  = $request->post('preview', '10');
         $token      = $this->getToken();
         $tokenQuery = ['token' => $token];
         $projectCls = CloudServiceRequest::Miniproject();
@@ -73,15 +70,15 @@ class AppletMgr
                 ->send();
             $data   = $data->toArray();
             $query  = [
-                'appid' => $appid,
-                'name' => $this->model['name'],
+                'appid'     => $appid,
+                'name'      => $this->model['name'],
             ];
             $qrcode = $projectCls
                 ->setQuery($query)
                 ->miniprojectPreviewQrcode();
             $data   = [
-                'preview' => true,
-                'qrcode' => $qrcode,
+                'preview'       => true,
+                'qrcode'        => $qrcode,
             ];
             return JsonMgr::successFul('发布成功', $data);
         } else {
@@ -106,14 +103,8 @@ class AppletMgr
      */
     private function getToken()
     {
-        $request = $this->request;
         $model   = $this->model;
-        $where   = [
-            ['name', 'in', $this->configName],
-            ['store_id', '=', $model['store_id']],
-            ['saas_appid', '=', $model['id']],
-        ];
-        $config  = SystemConfig::where($where)->column('value', 'name');
+        $config = getHpConfig('',(int)$model['id'],'applet');
         if (empty($config)) {
             throw new Exception('请先配置系统');
         }
@@ -135,7 +126,8 @@ class AppletMgr
         if (empty($model['name'])) {
             throw new Exception('项目绑定应用错误');
         }
-        if (!is_dir(base_path("/plugin/{$model['name']}"))) {
+        $pluginPath = root_path() . "/plugin/{$model['name']}";
+        if (!is_dir($pluginPath)) {
             throw new Exception('项目绑定的应用未安装');
         }
         $query = [
@@ -158,40 +150,81 @@ class AppletMgr
         return $data['token'];
     }
 
+    
     /**
-     * 小程序配置
+     * 获取小程序配置
      * @return \support\Response
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      */
-    public function config()
+    public function getSettings()
     {
-        $request = $this->request;
-        $model   = $this->model;
-        $post    = $request->post();
-        foreach ($post as $field => $value) {
-            $where     = [
-                ['name', '=', $field],
-                ['store_id', '=', $model['store_id']],
-                ['saas_appid', '=', $model['id']],
-            ];
-            $confModel = SystemConfig::where($where)->find();
-            if (!$confModel) {
-                $confModel             = new SystemConfig;
-                $confModel->name       = $field;
-                $confModel->store_id   = $model['store_id'];
-                $confModel->saas_appid = $model['id'];
-            }
-            $confModel->value = $value;
-            $confModel->save();
+        $settingPath = root_path()."plugin/{$this->model['name']}/config/applet.php";
+        if (!file_exists($settingPath)) {
+            throw new Exception('请先创建并配置config/applet');
+        }
+        $where    = [
+            'saas_appid'        => $this->model['id'],
+            'group'             => 'applet'
+        ];
+        $settings = SystemConfig::where($where)->value('value');
+        if (empty($settings)) {
+            $settings = config("plugin.{$this->model['name']}.applet");
+        }
+        # 获取版本信息
+        $versionPath = root_path()."plugin/{$this->model['name']}/version.json";
+        if (!file_exists($versionPath)) {
+            throw new Exception('获取应用版本信息失败');
+        }
+        $version = file_get_contents($versionPath);
+        $version = json_decode($version, true);
+        # 返回数据
+        $modelData = $this->model->toArray();
+        $data      = [
+            'config'            => $settings,
+            'app'               => $modelData,
+            'version'           => $version,
+        ];
+        # 返回视图
+        return JsonMgr::successRes($data);
+    }
+
+    /**
+     * 保存项目系统配置
+     * @return \support\Response
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public function saveData()
+    {
+        # 获取配置数据
+        $post = request()->post();
+        # 验证数据
+        $where    = [
+            'saas_appid'        => $this->model['id'],
+            'group'             => 'applet'
+        ];
+        $settingModel = SystemConfig::where($where)->find();
+        if (empty($settingModel)) {
+            $settingModel = new SystemConfig();
+            $settingModel->saas_appid = $this->model['id'];
+            $settingModel->store_id = $this->model['store_id'];
+            $settingModel->group = 'applet';
+        }
+        if (is_bool($post['applet_state'])) {
+            $post['applet_state'] = $post['applet_state'] ? '20' : '10';
+        }
+        $settingModel->value = $post;
+        if (!$settingModel->save()) {
+            throw new Exception('保存失败');
         }
         # 服务端小程序配置
         if (!empty($post['applet_appid']) && !empty($post['applet_secret']) && !empty($post['applet_privatekey'])) {
             $data = [
-                'appid' => $post['applet_appid'],
-                'secret' => $post['applet_secret'],
-                'privatekey' => $post['applet_privatekey'],
-                'type' => 'wxmp'
+                'appid'         => $post['applet_appid'],
+                'secret'        => $post['applet_secret'],
+                'privatekey'    => $post['applet_privatekey'],
+                'type'          => 'wxmp'
             ];
             CloudServiceRequest::Miniproject()
                 ->setConfig()
@@ -199,6 +232,7 @@ class AppletMgr
                 ->cloud()
                 ->send();
         }
+        # 返回数据
         return JsonMgr::success('保存成功');
     }
 
@@ -224,13 +258,7 @@ class AppletMgr
      */
     private function getConfig()
     {
-        $model = $this->model;
-        $data  = getHpConfig([
-            'applet_appid' => '',
-            'applet_secret' => '',
-            'applet_privatekey' => '',
-            'applet_state' => '',
-        ], $model['id']);
+        $data  = getHpConfig('', $this->model['id'],'applet');
         return empty($data) ? [] : $data;
     }
 }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4b7764b146662ec0ee96c2e39ebf1fd9",
+    "content-hash": "a81782511d0a42da7fa2cc13226bd6e7",
     "packages": [
         {
             "name": "aliyuncs/oss-sdk-php",
@@ -1764,6 +1764,43 @@
                 }
             ],
             "time": "2023-08-05T12:09:49+00:00"
+        },
+        {
+            "name": "loong/oauth",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/uRenlong/oauth.git",
+                "reference": "013573b7c4d595aa989b87d208c5309bd6212073"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/uRenlong/oauth/zipball/013573b7c4d595aa989b87d208c5309bd6212073",
+                "reference": "013573b7c4d595aa989b87d208c5309bd6212073",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "loong\\oauth\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Unknown",
+                    "email": "1016683587@qq.com"
+                }
+            ],
+            "description": "基于TP8, 不同系统之间安全传递信息, 用于用户登录验证, 信息传递等",
+            "support": {
+                "issues": "https://github.com/uRenlong/oauth/issues",
+                "source": "https://github.com/uRenlong/oauth/tree/1.0.1"
+            },
+            "time": "2023-09-22T09:51:34+00:00"
         },
         {
             "name": "monolog/monolog",
