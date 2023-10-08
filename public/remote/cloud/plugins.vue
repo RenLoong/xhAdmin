@@ -1,0 +1,658 @@
+<template>
+  <div class="app-container">
+    <!-- 筛选面板 -->
+    <div class="xh-search-card">
+      <div class="tabs">
+        <div class="item" :class="{ active: '' === category.active }" @click="hanldCategory('')">
+          全部
+        </div>
+        <div class="item" :class="{ active: item?.id === category.active }" v-for="(item, index) in category.list"
+          :key="index" @click="hanldCategory(item?.id)">
+          {{ item.title }}
+        </div>
+      </div>
+      <div class="search">
+        <el-form :inline="true" class="demo-form-inline">
+          <el-form-item>
+            <el-select placeholder="请选择应用类型" @change="hanldPlatform" v-model="platforms.active">
+              <el-option label="全部" value=""></el-option>
+              <el-option :label="item.label" :value="item.value" v-for="(item, index) in platforms.list" :key="index" />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-select placeholder="请选择安装状态" @change="hanldInstalled" v-model="installed.active">
+              <el-option label="全部" value=""></el-option>
+              <el-option :label="item.label" :value="item.value" v-for="(item, index) in installed.list" :key="index" />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-input placeholder="请输入应用名称" v-model="keyword"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="onSubmit">搜索</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
+    <!-- 应用列表 -->
+    <div class="xh-apps-list" v-if="plugins.length">
+      <el-row :gutter="20">
+        <el-col :span="4" v-for="(item, index) in plugins" :key="index" @click="hanldDetail(item)">
+          <el-card class="box-card">
+            <div slot="header" class="clearfix">
+              <el-image style="width: 100%; height: 190px;border-radius: 3px;" :src="item.logo" />
+            </div>
+            <div class="new-update" v-if="item.updateed === 'update'">
+              <AppIcons icon="Bell" :size="13" type="element" />
+              <span class="text">有新版本</span>
+            </div>
+            <div class="content">
+              <div class="title">
+                <el-tag type="primary" v-if="item?.platform_text?.length">
+                  {{ item.platform_text[0] }}
+                </el-tag>
+                <div class="text">{{ item.title }}</div>
+              </div>
+              <div class="foot">
+                <div class="i">
+                  <div class="icon">
+                    <AppIcons color="#909399" type="element" icon="Download" :size="14" />
+                  </div>
+                  <div class="number">{{ item.down }}</div>
+                </div>
+                <div class="i">
+                  <div class="icon">
+                    <AppIcons color="#909399" type="element" icon="View" :size="14" />
+                  </div>
+                  <div class="number">{{ item.view }}</div>
+                </div>
+                <div class="i">
+                  <div class="price" v-if="item.installed === 'install'">￥{{ item.money }}</div>
+                  <el-button size="small" type="success" v-else-if="item.updateed === 'update'">
+                    有更新
+                  </el-button>
+                  <el-button size="small" type="info" v-else>
+                    已安装
+                  </el-button>
+                </div>
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+    </div>
+    <!-- 分页 -->
+    <div class="pagination" v-if="plugins.length">
+      <el-pagination background layout="prev, pager, next" :total="pagination.total" />
+    </div>
+    <div class="project-empty" v-else>
+      <el-empty description="没有更多的应用" />
+    </div>
+    <!-- 应用详情弹窗 -->
+    <div class="xh-apps-dialog" v-if="dialogData.dialog.show">
+      <el-dialog model-value="true" title="项目详情" width="40%" top="5%" :show-close="true" :close-on-click-modal="false" :before-close="handleClose">
+        <div class="apps">
+          <div class="left">
+            <div class="apps-info">
+              <div class="banner">
+                <el-carousel indicator-position="outside" height="240px">
+                  <el-carousel-item v-for="item in 4" :key="item">
+                    <el-image style="width: 240px; height: 240px;border-radius: 3px;"
+                      src="https://kfadmin.net/upload/apps_logo/0618c7528b974de0f9cd0309e2e8c813.png" />
+                  </el-carousel-item>
+                </el-carousel>
+              </div>
+              <div class="detail">
+                <div class="items title">
+                  <el-tag type="danger">微信小程序</el-tag>
+                  <div class="text">视频号分销助手</div>
+                </div>
+                <div class="items">
+                  <div class="label">发布时间：</div>
+                  <div class="value">2023-10-07</div>
+                </div>
+                <div class="items">
+                  <div class="label">项目价格：</div>
+                  <div class="value price">￥198.00</div>
+                </div>
+                <div class="items">
+                  <div class="label">最新版本：</div>
+                  <div class="value">v3.0.0</div>
+                </div>
+                <div class="items">
+                  <div class="label">当前版本：</div>
+                  <div class="value">v3.0.0</div>
+                </div>
+                <div class="items">
+                  <div class="label">项目分类：</div>
+                  <div class="value">
+                    <el-tag>工具应用</el-tag>
+                  </div>
+                </div>
+                <div class="items">
+                  <div class="label">下载次数：</div>
+                  <div class="value">258</div>
+                </div>
+                <div class="items">
+                  <el-row class="apps-button">
+                    <!--                                    <el-button type="success">购买</el-button>-->
+                    <el-button :disabled="true" plain type="info">已安装v3.0.0</el-button>
+                    <el-button type="danger">卸载</el-button>
+                    <el-button type="success">更新</el-button>
+                  </el-row>
+                </div>
+              </div>
+            </div>
+            <div class="alert">
+              <el-alert :closable="false" title="购买项目和当前域名、IP、云账户关联，不支持更换！" type="error">
+              </el-alert>
+            </div>
+            <div class="apps-card">
+              <div class="title">
+                项目简介
+              </div>
+              <div class="content">
+                流量大爆发，超级连接器驱动超级增长，视频号直播带货规模飞速提升。
+              </div>
+            </div>
+            <div class="apps-card">
+              <div class="title">
+                更新日志
+              </div>
+              <div class="content">
+                <el-timeline>
+                  <el-timeline-item icon="MoreFilled" type="primary" color="#0bbd87" size="large"
+                    timestamp="2018-04-12 20:46">
+                    内容
+                  </el-timeline-item>
+                  <el-timeline-item icon="MoreFilled" type="primary" color="#0bbd87" size="large"
+                    timestamp="2018-04-12 20:46">
+                    内容
+                  </el-timeline-item>
+                  <el-timeline-item icon="MoreFilled" type="primary" color="#0bbd87" size="large"
+                    timestamp="2018-04-12 20:46">
+                    内容
+                  </el-timeline-item>
+                </el-timeline>
+              </div>
+            </div>
+          </div>
+          <div class="right">
+            <div class="user">
+              <div class="avatar">
+                <el-avatar :size="51" src="https://kfadmin.net/upload/avatar/09a0efe540a430b02e733727ee351618.jpg" />
+              </div>
+              <div class="info">
+                <div class="nickname">18786709420</div>
+                <div class="date">注册时间：2023-10-7</div>
+              </div>
+            </div>
+            <div class="bill">
+              <div class="header">
+                <div class="title">账单流水</div>
+                <div class="more">
+                  <el-text type="primary">查看更多</el-text>
+                </div>
+              </div>
+              <div class="record">
+                <div class="item">
+                  <div class="content">
+                    <div class="text">
+                      <div>购买项目消费</div>
+                      <div class="price">-￥198.00</div>
+                    </div>
+                    <div class="date">2023-10-07 00:00:00</div>
+                  </div>
+                </div>
+                <div class="item">
+                  <div class="content">
+                    <div class="text">
+                      <div>购买项目消费</div>
+                      <div class="price">
+                        -￥198.00
+                      </div>
+                    </div>
+                    <div class="date">2023-10-07 00:00:00</div>
+                  </div>
+                </div>
+              </div>
+              <el-empty description="暂无更多数据" />
+            </div>
+          </div>
+        </div>
+        <template #footer>
+        </template>
+      </el-dialog>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      // 分类选项
+      category: {
+        active: '',
+        list: []
+      },
+      // 平台类型选项
+      platforms: {
+        active: '',
+        list: []
+      },
+      // 是否安装选项
+      installed: {
+        active: '',
+        list: []
+      },
+      // 搜索筛选
+      keyword: '',
+      // 分页数据
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 0,
+      },
+      // 应用列表
+      plugins: [],
+      // 应用详情
+      dialogData: {
+        dialog: {
+          show: false,
+        },
+        detail: {}
+      },
+    };
+  },
+  methods: {
+    // 搜索
+    onSubmit() {
+      this.getList();
+    },
+    // 关闭弹窗
+    handleClose() {
+      this.dialogData.dialog.show = false;
+    },
+    // 打开详情弹窗
+    hanldDetail(e) {
+      this.dialogData.detail = e;
+      this.dialogData.dialog.show = true
+    },
+    // 选择平台
+    hanldPlatform(e) {
+      this.platforms.active = e;
+      this.getList();
+    },
+    // 选择安装状态
+    hanldInstalled(e) {
+      this.installed.active = e;
+      this.getList();
+    },
+    // 选择分类
+    hanldCategory(e) {
+      this.category.active = e;
+      this.getList();
+    },
+    // 获取插件其他数据
+    getPluginData() {
+      const _this = this;
+      _this.$http.usePut("admin/Plugin/getPluginData").then((res) => {
+        _this.category.list = res?.data?.category ?? [];
+        _this.platforms.list = res?.data?.platforms ?? [];
+        _this.installed.list = res?.data?.installed ?? [];
+      })
+    },
+    // 获取列表
+    getList() {
+      const _this = this;
+      const params = {
+        page: _this.pagination.page,
+        limit: _this.pagination.limit,
+        category: _this.category.active,
+        platform: _this.platforms.active,
+        installed: _this.installed.active,
+        keyword: _this.keyword
+      }
+      _this.$http.useGet("admin/Plugin/index", params).then((res) => {
+        _this.pagination.total = res?.data?.total ?? 0;
+        _this.pagination.page = res?.data?.current_page ?? 1;
+        _this.pagination.limit = res?.data?.per_page ?? 20;
+        _this.plugins = res.data.data;
+      })
+    },
+    // 初始化数据
+    async initify() {
+      await this.getPluginData();
+      await this.getList();
+    }
+  },
+  mounted() {
+    this.initify();
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.app-container {
+  height: 100%;
+}
+
+.xh-apps-dialog {
+  .el-dialog__body {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+
+  .el-dialog__footer {
+    padding: 0px;
+  }
+
+  .apps {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .right {
+      width: 25%;
+      border-left: 1px solid #F5F7FA;
+      padding-left: 15px;
+
+      .bill {
+        background-color: #FAFAFA;
+        padding: 15px;
+        border-radius: 5px;
+
+        .record {
+          display: flex;
+          flex-direction: column;
+
+          .content {
+
+            width: 100%;
+          }
+
+          .item {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            width: 100%;
+
+            .text {
+              width: 100%;
+              font-weight: 600;
+              margin-bottom: 5px;
+              font-size: 12px;
+              display: flex;
+              flex-direction: row;
+              justify-content: space-between;
+
+              .price {
+                color: #F56C6C;
+              }
+            }
+
+            .date {
+              font-size: 12px;
+              color: #606266;
+            }
+          }
+        }
+
+        .header {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          font-size: 14px;
+          font-weight: bolder;
+          margin-bottom: 15px;
+          border-bottom: 1px solid #F0F2F5;
+          padding-bottom: 15px;
+
+          .title {
+            font-weight: bolder;
+          }
+        }
+      }
+
+      .user {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        border-bottom: 1px solid #F5F7FA;
+        padding-bottom: 15px;
+        margin-bottom: 10px;
+
+        .avatar {
+          margin-right: 10px;
+        }
+
+        .info {
+          .nickname {
+            font-size: 16px;
+            font-weight: bolder;
+          }
+
+          .date {
+            color: #909399;
+            font-size: 12px;
+          }
+        }
+      }
+    }
+
+    .left {
+      width: 75%;
+
+      .alert {
+        border-top: 1px solid #F5F7FA;
+        margin: 15px 0px;
+        padding-top: 15px;
+        width: 95%;
+      }
+
+      .apps-card {
+        margin-right: 15px;
+        border-top: 1px solid #F5F7FA;
+
+        .title {
+          font-size: 16px;
+          font-weight: bolder;
+          margin-top: 15px;
+        }
+
+        .content {
+          padding: 15px;
+        }
+      }
+
+      .apps-info {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+
+        .banner {
+          width: 50%;
+        }
+
+        .detail {
+          width: 50%;
+
+          .items {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-bottom: 10px;
+
+            .label {
+              color: #909399;
+            }
+
+            .value {
+              color: #606266;
+            }
+
+            .price {
+              color: #f56c6c;
+              font-size: 16px;
+              font-weight: bolder;
+            }
+          }
+
+          .apps-button {
+            margin-top: 5px;
+          }
+
+          .title {
+            .text {
+              margin-left: 5px;
+              font-weight: bold;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.pagination {
+  background-color: #fff;
+  padding: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.project-empty {
+  background-color: #fff;
+  padding: 50px 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.xh-apps-list {
+  background-color: #fff;
+  padding: 20px;
+  margin-top: 10px;
+  padding-bottom: 30px;
+  border-radius: 3px;
+
+  .box-card {
+    transition: all .3s ease;
+    cursor: pointer;
+    position: relative;
+
+    .new-update {
+      position: absolute;
+      top: 10px;
+      right: 0px;
+      background-color: #f56c6c;
+      font-size: 8px;
+      color: #fff;
+      padding: 5px 8px;
+      border-radius: 0px 5px 0px 10px;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      .text{
+        padding-left:5px;
+      }
+    }
+
+    .content {
+      .foot {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 10px;
+
+        .i {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+
+          .number {
+            font-size: 14px;
+            color: #909399;
+            margin-left: 5px;
+          }
+
+          .price {
+            color: #f56c6c;
+            font-size: 16px;
+            font-weight: bolder;
+          }
+
+          .already {
+            font-size: 14px;
+            color: #606266;
+          }
+        }
+      }
+
+      .title {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .text {
+          margin-left: 5px;
+          font-size: 14px;
+          flex: 1;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+    }
+  }
+
+  .box-card:hover {
+    -webkit-transform: translateY(-4px) scale(1.02);
+    -moz-transform: translateY(-4px) scale(1.02);
+    -ms-transform: translateY(-4px) scale(1.02);
+    -o-transform: translateY(-4px) scale(1.02);
+    transform: translateY(-4px) scale(1.02);
+    -webkit-box-shadow: 0 14px 24px rgba(0, 0, 0, .2);
+    box-shadow: 0 14px 24px #0003;
+    z-index: 999;
+    border-radius: 6px
+  }
+}
+
+.xh-search-card {
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+
+  .tabs {
+    display: flex;
+    flex-direction: row;
+
+    .item {
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .active {
+      color: #0d84ff;
+    }
+  }
+
+  .search {
+    .el-form-item {
+      margin-bottom: 0px !important;
+    }
+  }
+}</style>

@@ -8,7 +8,8 @@ use Psr\Http\Message\ResponseInterface;
 class Request
 {
     const API_VERSION_V2 = 'v2/';
-    protected $baseUrl = 'https://cloud.kfadmin.net/';
+    const API_VERSION_V3 = 'v3/';
+    protected $baseUrl = 'https://cloud.kfadmin.net/v3/';
     protected $version = '';
     protected $siteinfo_file;
     protected $url;
@@ -44,6 +45,14 @@ class Request
         $baseUrl = yc_env('YC_CLOUD_SERVICE_BASE_URL');
         if ($baseUrl) {
             $this->baseUrl = $baseUrl;
+        }
+        # 判断是否为渠道商
+        $channelsAuthFile = root_path('config') . 'channels_authorization.json';
+        if (file_exists($channelsAuthFile)) {
+            $channelsAuth = json_decode(file_get_contents($channelsAuthFile), true);
+            if ($channelsAuth) {
+                $this->setHeader('channels-token', $channelsAuth['token']);
+            }
         }
         $this->setVersion($version);
     }

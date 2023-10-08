@@ -45,6 +45,16 @@ namespace YcOpen\CloudService {
             return $instance;
         }
         /**
+         * 应用插件分类相关接口
+         * @access public
+         * @return \YcOpen\CloudService\Request\PluginCateRequest
+         */
+        public static function PluginCate()
+        {
+            /** @var \YcOpen\CloudService\Request\PluginCateRequest $instance */
+            return $instance;
+        }
+        /**
          * 网站相关接口
          * @access public
          * @return \YcOpen\CloudService\Request\SiteRequest

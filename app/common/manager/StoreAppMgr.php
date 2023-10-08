@@ -100,15 +100,64 @@ class StoreAppMgr
     }
 
     /**
+     * 获取已授权的租户应用详情
+     * @param int $store_id
+     * @param string $name
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function getAuthAppDetail(int $store_id,string $name)
+    {
+        $list = self::getAuthApp($store_id);
+        foreach ($list as $value) {
+            if ($value['name'] == $name) {
+                return $value;
+            }
+        }
+        return null;
+    }
+
+    /**
      * 获取已授权的租户应用选项列表
      * @param int $store_id
+     * @param bool $isLabel
+     * @return array
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function getAuthAppOptions(int $store_id,bool $isLabel = true)
+    {
+        # 获取已授权的租户应用
+        $list = self::getAuthApp($store_id);
+        $data = [];
+        foreach ($list as $key => $value) {
+            $title = $value['title'];
+            if ($isLabel) {
+                $title .= "（{$value['version_name']}）";
+            }
+            $data[$key] = [
+                'label'         => $title,
+                'value'         => $value['name'],
+                'platform'      => $value['platform'],
+            ];
+        }
+        return $data;
+    }
+
+    /**
+     * 根据应用类型获取已授权的租户应用选项列表
+     * @param int $store_id
      * @param string $platform
+     * @param bool $isLabel
      * @return array<array>
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public static function getAuthAppOptions(int $store_id,string $platform)
+    public static function getAuthAppPlatformOptions(int $store_id,string $platform,bool $isLabel = true)
     {
         # 获取已授权的租户应用
         $list = self::getAuthApp($store_id);
@@ -117,9 +166,14 @@ class StoreAppMgr
             if (!in_array($platform, $value['platform'])) {
                 continue;
             }
+            $title = $value['title'];
+            if ($isLabel) {
+                $title .= "（{$value['version_name']}）";
+            }
             $data[$key] = [
-                'label'         => $value['title'],
-                'value'         => $value['name']
+                'label'         => $title,
+                'value'         => $value['name'],
+                'platform'      => $value['platform'],
             ];
         }
         return $data;
@@ -146,7 +200,7 @@ class StoreAppMgr
     }
 
     /**
-     * 获取应用数据
+     * 获取项目数据
      * @param array $where
      * @return array
      * @author 贵州猿创科技有限公司

@@ -158,7 +158,7 @@ class PublicsController extends BaseController
             'headimg'           => $user['logo'],
             'plugins'           => $user['plugins_name'],
             'role'              => [
-                'title'         => "权益：{$expireDate}"
+                'title'         => "到期时间：{$expireDate}"
             ],
             'menus'             => $this->getMenus(),
             // 主题配置（待扩展）

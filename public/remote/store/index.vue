@@ -1,98 +1,114 @@
 <template>
-    <div class="page-container">
-        <!-- 头部 -->
-        <div class="header-container">
-            <div class="left-title">项目数据统计</div>
-            <div class="right-tip">
-                <AppIcons icon="QuestionCircleOutlined" :size="16" />
-                <span class="text-tip">点击看板块，可创建对应的项目</span>
-            </div>
-        </div>
-        <!-- 项目操作块 -->
-        <div class="project-block">
-            <div class="item-block" v-for="(item, index) in platformApp" :key="index"
-                @click="hanldOepn('/StoreApp/create', { platform: item.key, isBack: 1 })">
-                <div class="logo-container">
-                    <img :src="item.logo" class="logo-block">
+    <div class="app-container">
+        <el-row :gutter="24">
+            <el-col :md="24">
+                <div class="user">
+                    <div class="info">
+                        <div class="avatar">
+                            <el-avatar :size="51" :src="user?.headimg" />
+                        </div>
+                        <div class="nickname">
+                            <div class="title">{{ user?.nickname }}</div>
+                            <div class="date">{{ user?.role?.title }}</div>
+                        </div>
+                    </div>
+                    <div class="platform">
+                        <div class="item" v-for="(item, index) in platformApp" :key="index">
+                            <div class="icon">
+                                <el-image style="width:41px;height:41px;" :src="item.logo" />
+                            </div>
+                            <div class="content">
+                                <div class="number">{{ item.created }}/{{ item.num }}</div>
+                                <div class="title">{{ item.label }}</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="project-block-info">
-                    <div class="project-block-title">{{ item.label }}</div>
-                    <div class="project-block-num">{{ item.created }} / {{ item.num }}个</div>
+            </el-col>
+            <el-col :md="24">
+                <div class="category">
+                    <div class="tabs">
+                        <el-tabs :model-value="projects.platformActive" @tab-change="hanldTabs">
+                            <el-tab-pane :label="item.label" :name="item.key" v-for="(item, index) in platforms"
+                                :key="index" />
+                        </el-tabs>
+                    </div>
+                    <div class="created">
+                        <el-button type="primary" class="develop-btn" color="#626aef" v-if="isDeveloper"
+                            @click="hanldOepn('/Develop/create', { isBack: 1 })">
+                            创建开发者项目
+                        </el-button>
+                        <el-dropdown @command="createPlatformProject">
+                            <el-button type="primary">
+                                新增项目
+                            </el-button>
+                            <template #dropdown>
+                                <el-dropdown-menu>
+                                    <el-dropdown-item v-for="(item, index) in platformApp" :key="index" :command="item">
+                                        {{ item.label }}
+                                    </el-dropdown-item>
+                                </el-dropdown-menu>
+                            </template>
+                        </el-dropdown>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <!-- 项目看板 -->
-        <div class="project-content-container">
-            <div class="project-title-container">
-                <div class="project-title">
-                    项目看板
-                </div>
-                <div class="project-action">
-                    <button class="action-btn create-project" v-if="isDeveloper" @click="hanldOepn('/Develop/create',{isBack:1})">
-                        <AppIcons icon="Compass" type="element" :size="16" />
-                        <span class="title">创建开发者项目</span>
-                    </button>
-                    <el-dropdown @command="handleSelectPlatform">
-                        <button class="action-btn all-project">
-                            <AppIcons icon="CaretDownOutlined" :size="16" />
-                            <span class="title">{{ selectPlatform }}</span>
-                        </button>
-                        <template #dropdown>
-                            <el-dropdown-menu>
-                                <el-dropdown-item v-for="(item, index) in platforms" :key="index" :command="item">
-                                    {{ item.label }}
-                                </el-dropdown-item>
-                            </el-dropdown-menu>
-                        </template>
-                    </el-dropdown>
-                </div>
-            </div>
-            <div class="project-list" v-if="projects.list.length">
-                <div class="project-item" v-for="(item, index) in projects.list" :key="index">
-                    <img :src="item.logo" class="logo" />
-                    <div class="pro-title-container">
-                        <div class="pro-title">{{ item.title }}</div>
-                        <div class="pro-type">
-                            <el-tag :type="projects.paltformType[item.platform]">
+            </el-col>
+            <el-col :md="24" v-if="projects.list.length">
+                <div class="xh-project">
+                    <div class="item" v-for="(item, index) in projects.list" :key="index">
+                        <div @click="hanldAdmin(item)">
+                            <div class="tags">
                                 {{ item.platformTitle }}
-                            </el-tag>
+                            </div>
+                            <div class="icon">
+                                <el-image style="width: 100%; height: 197px;border-radius: 3px;" :src="item.logo" />
+                            </div>
+                            <div class="title">
+                                {{ item.title }}
+                            </div>
+                            <div class="desc">
+                                基于视频号的第三方的独立分销平台
+                            </div>
                         </div>
-                    </div>
-                    <div class="pro-action-container">
-                        <div class="action-item" @click="hanldAdmin(item)">
-                            登录后台
-                        </div>
-                        <div class="action-item" @click="hanldOepn('/StoreApp/edit', { id: item.id, isBack: 1 })">
-                            编辑项目
-                        </div>
-                        <div class="action-item" @click="hanldDel(item)">
-                            删除项目
+                        <div class="btns">
+                            <el-button type="primary" size="small"
+                                @click="hanldOepn('/StoreApp/edit', { id: item.id, isBack: 1 })">
+                                编辑项目
+                            </el-button>
+                            <el-button type="danger" size="small" @click="hanldDel(item)">
+                                删除项目
+                            </el-button>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="project-empty" v-else>
-                <el-empty description="当前没有更多的项目" />
-            </div>
-        </div>
+            </el-col>
+            <!-- 分页 -->
+            <el-col :md="24" v-if="projects.list.length">
+                <div class="pagination">
+                    <el-pagination background layout="prev, pager, next" :total="projects.paginate.total" />
+                </div>
+            </el-col>
+            <el-col :md="24" v-else>
+                <div class="project-empty">
+                    <el-empty description="当前没有更多的项目" />
+                </div>
+            </el-col>
+        </el-row>
     </div>
 </template>
+
 <script>
 export default {
     data() {
         return {
             isDeveloper: false,
+            user: {},
             platformApp: [],
             platforms: [
                 {
                     label: '全部项目',
                     key: ''
                 },
-            ],
-            // 支持小程序工具栏显示
-            appletType: [
-                'mini_wechat',
-                'douyin'
             ],
             projects: {
                 platformActive: '',
@@ -104,18 +120,21 @@ export default {
                     'app': '',
                     'other': 'info',
                 },
+                paginate: {
+                    page: 1,
+                    limit: 10,
+                    total: 0,
+                },
                 list: [],
             },
-        };
-    },
-    computed: {
-        selectPlatform() {
-            const { platformActive } = this.projects;
-            const platform = this.platforms[platformActive];
-            return platform ? platform.label : '全部项目';
-        },
+        }
     },
     methods: {
+        // 创建项目
+        createPlatformProject(e) {
+            const detail = this.platforms.find((item) => item.key === e?.key);
+            this.hanldOepn('/StoreApp/create', { platform: detail?.key, isBack: 1 });
+        },
         // 执行删除项目
         actionDelProject(e) {
             const _this = this;
@@ -153,12 +172,6 @@ export default {
                 }
             })
         },
-        // 选择平台
-        handleSelectPlatform(e) {
-            const platformIndex = this.platforms.findIndex((item) => item.key === e?.key);
-            this.projects.platformActive = platformIndex;
-            this.getList();
-        },
         // 跳转页面
         hanldOepn(path, item = {}) {
             this.$routerApp.push({
@@ -166,16 +179,23 @@ export default {
                 query: item
             });
         },
+        hanldTabs(name) {
+            this.projects.platformActive = name;
+            this.getList();
+        },
         // 获取项目列表
         getList() {
             const _this = this;
-            const platform = _this.platforms[_this.projects.platformActive];
             const params = {
-                platform: platform?.key,
+                platform: _this.projects.platformActive,
             }
             _this.$http.useGet('store/StoreApp/index', params).then((res) => {
-                const { data } = res;
-                _this.projects.list = data;
+                // 列表
+                _this.projects.list = res?.data?.data ?? [];
+                // 分页
+                _this.projects.paginate.total = res?.data?.total ?? 0;
+                _this.projects.paginate.page = res?.data?.current_page ?? 1;
+                _this.projects.paginate.limit = res?.data?.per_page ?? 10;
             })
         },
         // 获取首页数据
@@ -191,239 +211,198 @@ export default {
         },
     },
     mounted() {
+        this.user = this.$userApp.userInfo;
+        console.log(this.user);
         this.getIndex();
         this.getList();
     }
-}
+};
 </script>
-<style lang="scss" scoped>
-.page-container {
-    height: 100%;
+
+<style lang="scss">
+.xhadmin-header-pro {
+    padding: 0 338px !important;
+}
+
+.xhadmin-main {
+    padding: 20px 338px !important;
+}
+
+.el-tabs {
+    .el-tabs__header {
+        margin: 0;
+
+        .el-tabs__nav-wrap::after {
+            display: none;
+        }
+    }
+}
+
+.project-empty{
+    background-color: #fff;
+    padding:100px 0;
+    border-radius:8px;
+}
+
+.pagination {
+    padding: 20px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+}
 
-    // 头部
-    .header-container {
-        background: #fff;
-        height: 50px;
-        display: flex;
-        justify-content: space-between;
-        padding: 0 20px;
+.xh-project {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: 0px -10px;
 
-        .left-title {
-            font-size: 20px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-        }
-
-        .right-tip {
-            display: flex;
-            align-items: center;
-            font-size: 14px;
-            color: #006EFF;
-
-            .text-tip {
-                padding-left: 3px;
-            }
-        }
-    }
-
-    // 项目操作块
-    .project-block {
-        display: flex;
-        gap: 20px;
-
-        .item-block {
-            display: flex;
-            background: #fff;
-            margin-top: 10px;
-            padding: 10px;
-            width: 16%;
-            user-select: none;
-            cursor: pointer;
-            border-radius: 5px;
-
-            &:hover {
-                background: #f9f9f9;
-            }
-
-            .logo-container {
-                display: flex;
-                align-items: bottom;
-                .logo-block {
-                    width: 80px;
-                    height: 80px;
-                }
-            }
-
-            .project-block-info {
-                padding-left: 15px;
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-
-                .project-block-title {
-                    font-size: 16px;
-                }
-
-                .project-block-num {
-                    font-size: 20px;
-                    padding-top: 5px;
-                    font-weight: 700;
-                }
-            }
-        }
-    }
-
-    // 项目看板
-    .project-content-container {
-        flex: 1;
-        background: #fff;
-        margin-top: 10px;
+    .item {
+        position: relative;
+        background-color: #fff;
         display: flex;
         flex-direction: column;
+        align-items: center;
+        padding: 15px;
+        border-radius: 5px;
+        width: 16%;
+        min-width: 200px;
         overflow: hidden;
+        cursor: pointer;
+        transition: all .3s ease;
+        margin: 0px 10px;
 
-        .project-title-container {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 20px;
-
-            .project-title {
-                font-size: 20px;
-            }
-
-            .project-action {
-                display: flex;
-                align-items: center;
-                justify-content: flex-end;
-                gap: 20px;
-
-                .action-btn {
-                    padding: 6px 10px;
-                    border-radius: 5px;
-                    background: #fff;
-                    cursor: pointer;
-                    transition: all .3s;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    border: none;
-
-                    .title {
-                        padding-left: 2px;
-                    }
-
-                    &:hover {
-                        color: #fff;
-                    }
-                }
-
-                .all-project {
-                    border: 1px solid #F53F3F !important;
-                    color: #F53F3F;
-
-                    &:hover {
-                        background: #F53F3F;
-                    }
-                }
-
-                .create-project {
-                    border: 1px solid #722ED1;
-                    color: #722ED1;
-
-                    &:hover {
-                        background: #722ED1;
-                    }
-                }
-            }
+        .icon {
+            width: 100%;
         }
 
-        .project-list {
-            flex: 1;
-            padding: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            overflow-y: auto;
-            overflow-x: hidden;
-
-            .project-item {
-                width: 230px;
-                margin: 0 80px 10px 0;
-
-                .logo {
-                    display: block;
-                    width: 100%;
-                    height: 150px;
-                    border-radius: 5px;
-                    border: solid 1px #f0f0f0;
-                    object-fit: cover;
-                }
-
-                .pro-title-container {
-                    display: flex;
-                    justify-content: space-between;
-                    margin-top: 10px;
-                    padding-left: 8px;
-
-                    .pro-title {
-                        flex: 1;
-                        font-size: 16px;
-                        font-weight: 700;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        white-space: nowrap;
-                    }
-
-                    .pro-type {
-                        padding-left: 10px;
-                    }
-                }
-
-                .pro-action-container {
-                    display: flex;
-                    cursor: pointer;
-                    padding: 8px 0;
-
-                    .action-item {
-                        padding: 0 8px;
-                        border-radius: 5px;
-                        transition: all .3s;
-                        color: #4b90eb;
-                        font-size: 12px;
-                        position: relative;
-
-                        &:hover {
-                            color: #016EFF;
-                            background: #f9f9f9;
-                        }
-
-                        &::after {
-                            position: absolute;
-                            right: 0px;
-                            top: 25%;
-                            content: '';
-                            display: block;
-                            width: 1px;
-                            height: 50%;
-                            background: #000;
-                        }
-                    }
-
-                    .action-item:last-child::after {
-                        display: none;
-                    }
-                }
-            }
+        .desc {
+            color: #666;
+            font-size: 12px;
+            min-height: 34px;
+            /* 固定宽度 */
+            width: 100%;
+            /* 将溢出的部分隐藏 */
+            overflow: hidden;
+            /* 把盒子作为弹性盒子显示 */
+            display: -webkit-box;
+            /* 让子元素垂直排列 */
+            -webkit-box-orient: vertical;
+            /* 设置元素显示的行数 */
+            -webkit-line-clamp: 2;
         }
 
-        .project-empty {
-            flex: 1;
+        .title {
+            color: rgba(0, 0, 0, .85);
+            margin: 10px 0px;
+            font-weight: bold;
+        }
+
+        .btns {
+            margin: 10px 0px;
+        }
+
+        .tags {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            background-color: #67C23A;
+            font-size: 8px;
+            color: #fff;
+            padding: 5px;
+            border-radius: 0px 5px 0px 10px;
+            z-index: 999;
+        }
+    }
+
+    .item:hover {
+        -webkit-transform: translateY(-4px) scale(1.02);
+        -moz-transform: translateY(-4px) scale(1.02);
+        -ms-transform: translateY(-4px) scale(1.02);
+        -o-transform: translateY(-4px) scale(1.02);
+        transform: translateY(-4px) scale(1.02);
+        -webkit-box-shadow: 0 14px 24px rgba(0, 0, 0, .2);
+        box-shadow: 0 14px 24px #0003;
+        z-index: 999;
+        border-radius: 6px
+    }
+}
+
+.category {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 15px 0px;
+
+    .created {
+        .develop-btn {
+            margin-right: 10px;
+        }
+    }
+}
+
+.user {
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 15px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    .platform {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .item {
             display: flex;
-            justify-content: center;
+            flex-direction: row;
             align-items: center;
+            margin: 10px 0px;
+            justify-content: center;
+
+            .icon {
+                padding-top: 15px;
+            }
+
+            .content {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin: 0px 10px;
+
+                .number {
+                    color: #252631;
+                    font-size: 20px
+                }
+
+                .title {
+                    color: #98a9bc;
+                    font-size: 12px
+                }
+            }
+        }
+    }
+
+    .info {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .nickname {
+            margin-left: 10px;
+
+            .title {
+                font-weight: bolder;
+            }
+
+            .date {
+                font-size: 12px;
+                color: #606266;
+            }
         }
     }
 }

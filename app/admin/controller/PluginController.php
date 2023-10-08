@@ -3,6 +3,8 @@
 namespace app\admin\controller;
 
 use app\common\builder\ListBuilder;
+use app\common\enum\InstallEnum;
+use app\common\enum\PlatformTypes;
 use app\common\manager\PluginInstallMgr;
 use app\common\manager\PluginMgr;
 use app\common\manager\PluginUpdateMgr;
@@ -237,6 +239,33 @@ class PluginController extends BaseController
     }
 
     /**
+     * 应用详情
+     * @param \support\Request $request
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function getPluginData(Request $request)
+    {
+        # 获取分类
+        $cate = CloudServiceRequest::PluginCate()
+            ->index()
+            ->response()
+            ->toArray();
+        # 获取是否安装
+        $installed = InstallEnum::getOptions();
+        # 应用类型
+        $pluginType = PlatformTypes::getOptions();
+        $data       = [
+            'category'      => $cate,
+            'installed'     => $installed,
+            'platforms'     => $pluginType,
+        ];
+        return $this->successRes($data);
+    }
+
+    /**
      * 列表
      * @param Request $request
      * @return \support\Response
@@ -247,17 +276,23 @@ class PluginController extends BaseController
     public function index(Request $request)
     {
         $page   = (int) $request->get('page', 1);
-        $active = $request->get('active', '0');
+        $installed = $request->get('installed', '');
+        $platform = $request->get('platform', '');
+        $category = $request->get('category', '');
+        $keyword = $request->get('keyword', '');
 
-        $installed  = PluginMgr::getLocalPlugins();
+        $installData  = PluginMgr::getLocalPlugins();
         $systemInfo = SystemInfoService::info();
         $query      = [
-            'active' => $active,
-            'page' => $page,
-            'plugins' => $installed,
-            'saas_version' => $systemInfo['system_version']
+            'title'         => $keyword,
+            'cate_top_id'   => $category,
+            'installed'     => $installed,
+            'platform'      => $platform,
+            'page'          => $page,
+            'plugins'       => $installData,
+            'saas_version'  => $systemInfo['system_version']
         ];
-        $res        = CloudServiceRequest::Plugin(CloudServiceRequest::API_VERSION_V2)
+        $res        = CloudServiceRequest::Plugin()
             ->list($query)
             ->response();
         $data       = $res->toArray();

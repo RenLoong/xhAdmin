@@ -51,7 +51,7 @@ INSERT INTO `__PREFIX__system_auth_rule` VALUES (36, '2022-11-15 02:49:00', '202
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (37, '2022-11-15 02:49:46', '2023-04-21 12:00:09', 'SystemAdmin/del', 14, '删除账户', 0, '[\"GET\",\"DELETE\"]', '20', 'none/index', '', '', '10', '20', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (38, '2022-11-15 09:23:53', '2023-04-21 11:59:32', 'SystemAdminRole/auth', 13, '设置权限', 0, '[\"GET\",\"PUT\"]', '20', 'form/index', '', '', '10', '20', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (40, '2022-11-16 15:36:42', '2023-04-16 17:16:04', 'SystemConfigGroup/indexGetTable', 11, '配置分组列表', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '20', '10');
-INSERT INTO `__PREFIX__system_auth_rule` VALUES (41, '2022-11-16 19:33:49', '2023-09-28 14:22:47', 'System/updateTabs', 0, '系统更新', 0, '[\"GET\"]', '10', 'none/index', '', '', '20', '20', '20');
+INSERT INTO `__PREFIX__system_auth_rule` VALUES (41, '2022-11-16 19:33:49', '2023-09-28 14:22:47', 'System/updateTabs', 0, '服务', 100, '[\"GET\"]', '10', 'none/index', '', 'UploadFilled', '20', '20', '20');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (42, '2022-11-16 19:34:37', '2023-08-03 23:19:40', 'SystemUpload/index', 182, '附件管理', 0, '[\"GET\"]', '20', 'table/index', '', '', '10', '20', '20');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (43, '2022-11-16 19:35:31', '2023-04-21 11:51:04', 'SystemUpload/upload', 42, '上传附件', 0, '[\"GET\",\"POST\"]', '20', 'none/index', '', '', '10', '20', '20');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (44, '2022-11-16 19:36:17', '2023-04-21 11:51:13', 'SystemUpload/del', 42, '删除附件', 0, '[\"GET\",\"DELETE\"]', '20', 'none/index', '', '', '10', '20', '10');
@@ -124,4 +124,4 @@ INSERT INTO `__PREFIX__system_auth_rule` VALUES (188, '2023-07-01 14:05:29', '20
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (189, '2023-07-01 14:08:42', '2023-07-01 14:09:16', 'Curd/indexGetTable', 185, 'CURD数据列表', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (190, '2023-09-28 14:26:34', '2023-09-28 17:40:17', 'Updated/empower', 41, '授权信息', 0, '[\"GET\",\"POST\",\"PUT\"]', '20', 'remote/index', 'remote/update/empower', '', '20', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (191, '2023-09-28 14:28:15', '2023-09-28 14:28:15', 'Updated/index', 41, '更新日志', 0, '[\"GET\"]', '20', 'remote/index', 'remote/update/log', '', '20', '10', '10');
-INSERT INTO `__PREFIX__system_auth_rule` VALUES (192, '2023-10-02 16:43:43', '2023-10-02 16:43:43', 'SystemAuthRule/addResource', '', 12, '添加资源菜单', 0, '[\"GET\",\"POST\"]', '20', 'form/index', '', '', '10', '10', '10');
+INSERT INTO `__PREFIX__system_auth_rule` VALUES (192, '2023-10-02 16:43:43', '2023-10-02 16:43:43', 'SystemAuthRule/addResource', 12, '添加资源菜单', 0, '[\"GET\",\"POST\"]', '20', 'form/index', '', '', '10', '10', '10');

@@ -63,12 +63,12 @@ class StoreAppController extends BaseController
             $where[] = ['platform', '=', $platformType];
         }
         $web_url = getHpConfig('web_url');
-        $data = $model->where($where)
+        $data    = $model->where($where)
             ->order(['id' => 'desc'])
-            ->select()
+            ->paginate()
             ->each(function ($item) use ($web_url) {
                 # 是否有配置文件
-                $setting = false;
+                $setting     = false;
                 $settingPath = base_path("plugin/{$item['name']}/config/settings.php");
                 $settings = config("plugin.{$item['name']}.settings");
                 if (file_exists($settingPath) && !empty($settings)) {
@@ -76,18 +76,17 @@ class StoreAppController extends BaseController
                 }
                 $item->isSetting = $setting;
                 # 应用类型
-                $platform = PlatformTypes::getValue($item['platform']);
-                $icon = empty($platform['icon']) ? '' : "{$web_url}{$platform['icon']}";
+                $platform           = PlatformTypes::getValue($item['platform']);
+                $icon               = empty($platform['icon']) ? '' : "{$web_url}{$platform['icon']}";
                 $item->platformLogo = $icon;
-                
+
                 # 应用类型名称
-                $platformTitle = empty($platform['text']) ? '类型错误' : $platform['text'];
+                $platformTitle       = empty($platform['text']) ? '类型错误' : $platform['text'];
                 $item->platformTitle = $platformTitle;
 
                 # 返回数据
                 return $item;
-            })
-            ->toArray();
+            });
         return parent::successRes($data);
     }
 
@@ -114,7 +113,6 @@ class StoreAppController extends BaseController
         if ($request->method() === 'POST') {
             # 获取数据
             $post = $request->post();
-            $store = $request->user;
 
             # 重组数据
             $post['store_id']   = $store['id'];
@@ -131,7 +129,7 @@ class StoreAppController extends BaseController
             return $this->success('项目创建成功');
         }
         try {
-            $platformList = StoreAppMgr::getAuthAppOptions($store['id'], $platform);
+            $platformList = StoreAppMgr::getAuthAppPlatformOptions($store['id'], $platform);
         } catch (\Throwable $e) {
             return $this->failRedirect($e->getMessage(), '/#/Index/index');
         }
@@ -151,8 +149,9 @@ class StoreAppController extends BaseController
             'col' => 12,
         ]);
         $builder->addRow('name', 'select', '所属应用', '', [
-            'col' => 12,
-            'options' => $platformList
+            'col'           => 12,
+            'noDataText'    => '您还没有更多的已授权应用',
+            'options'       => $platformList
         ]);
         $builder->addComponent('logo', 'uploadify', '项目图标', '', [
             'col' => 12,
