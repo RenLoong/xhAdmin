@@ -20,8 +20,8 @@ class XhAdmin extends Command
         // 指令配置
         $this->setName('xhadmin')
             ->addArgument('action', Argument::OPTIONAL, "操作：start|stop|status")
-            ->addOption('-d',null, Option::VALUE_NONE, '启动守护进程:-d')
-            ->addOption('-force',null, Option::VALUE_NONE, '强制停止进程:-force')
+            ->addOption('d','-d', Option::VALUE_NONE, '启动守护进程:-d')
+            ->addOption('f','-f', Option::VALUE_NONE, '强制停止进程:-f')
             ->setDescription('the xhadmin command');
     }
 
@@ -29,11 +29,7 @@ class XhAdmin extends Command
     {
         $EasyTask = new Task;
         # 开启守护进程
-        print_r($input->getOptions());
-        exit;
-        if ($input->hasArgument('-d')) {
-            $EasyTask->setDaemon(true);
-        }
+        $EasyTask->setDaemon($input->hasOption('d'));
         $EasyTask->setPrefix('XhAdmin');
         $EasyTask->setRunTimePath(runtime_path());
         switch (trim($input->getArgument('action'))) {
@@ -75,11 +71,7 @@ class XhAdmin extends Command
                 }
                 break;
             case 'stop':
-                $force = false;
-                if ($input->hasOption('force')) {
-                    $force = true;
-                }
-                $EasyTask->stop($force);
+                $EasyTask->stop($input->hasOption('force'));
                 break;
             default:
                 $EasyTask->status();
