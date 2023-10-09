@@ -145,11 +145,8 @@
                 </div>
                 <div class="items">
                   <el-row class="apps-button">
-                    <el-button type="info" v-if="detail?.bindsite">
-                      <template #icon>
-                        <AppIcons icon="Pointer" />
-                      </template>
-                      绑定站点，剩余{{ detail?.bindsite }}个
+                    <el-button type="info" v-if="detail?.bindsite" @click="hanldBindSite">
+                      (剩余{{ detail?.bindsite }}个) 去绑定
                     </el-button>
                     <el-button type="warning" v-if="detail?.installed === '' && detail?.updateed === ''" @click="onBuy">
                       <template #icon>
@@ -285,6 +282,27 @@ export default {
     };
   },
   methods: {
+    // 去绑定站点
+    hanldBindSite() {
+      const _this = this;
+      const loading = _this.$useLoading('打开中...', {
+        background: 'rgba(0, 0, 0, 0.7)',
+      });
+      const queryParams = {
+        type:'bindsite'
+      }
+      _this.$http.useGet("admin/Plugin/getLink", queryParams).then((res) => {
+        if (!res?.data?.url) {
+          _this.$useNotify('未能成功获取跳转连接', 'error', '温馨提示');         
+          return; 
+        }
+        window.open(res?.data?.url);
+      }).catch((err) => {
+        _this.$useNotify(err?.msg || '异常错误', 'error', '温馨提示');
+      }).finally(() => {
+        loading.close();
+      })
+    },
     // 卸载应用
     toUnInstall() {
       const _this = this;
@@ -815,6 +833,6 @@ export default {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 10;
   font-size: 14px;
-  color:#606266;
+  color: #606266;
 }
 </style>

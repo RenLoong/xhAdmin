@@ -341,7 +341,8 @@ class PluginController extends BaseController
                 break;
             # 绑定站点
             case 'bindsite':
-                $url = 'http://www.kfadmin.net/#/control/apps';
+                $info = SystemInfoService::info();
+                $url = isset($info['public_api']['bindsite']) ? $info['public_api']['bindsite'] : '';
                 break;
         }
         return $this->successRes(['url' => $url]);
