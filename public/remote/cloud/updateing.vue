@@ -85,30 +85,16 @@ export default {
                         window.location.reload();
                     }, 2000);
                     _this.stepData.stepText = res.msg;
-                        _this.$useNotify(res?.msg || "操作成功", 'success', '温馨提示');
+                    _this.$useNotify(res?.msg || "操作成功", 'success', '温馨提示');
                 } else {
                     _this.exceStep(res.data.next);
                 }
             }).catch((err) => {
-                if (err?.response?.status === 502) {
-                    step = 'ping';
-                    setTimeout(() => {
-                        _this.exceStep(step);
-                    }, 1000)
-                    return;
-                }
-                if (step === 'reload') {
-                    step = 'ping';
-                    setTimeout(() => {
-                        _this.exceStep(step);
-                    }, 1000)
-                } else {
-                    console.log('error', err);
-                    setTimeout(() => {
-                        _this.$emit("update:closeWin");
-                    }, 2000);
-                    _this.$useNotify(err?.msg || "获取失败", 'error', '温馨提示');
-                }
+                setTimeout(() => {
+                    _this.$emit("update:closeWin");
+                }, 2000);
+                _this.$useNotify(err?.msg || "应用更新失败", 'error', '温馨提示');
+                console.log('error', err);
             })
         },
         detail() {

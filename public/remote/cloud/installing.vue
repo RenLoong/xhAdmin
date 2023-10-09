@@ -86,9 +86,11 @@ export default {
                     })
                 }
             }).catch((err) => {
-                if ([404, 502].includes(err?.code)) {
+                setTimeout(() => {
                     _this.$emit("update:closeWin");
-                }
+                }, 2000);
+                _this.$useNotify(err?.msg || "应用更新失败", 'error', '温馨提示');
+                console.log('error', err);
             })
         },
         detail() {
