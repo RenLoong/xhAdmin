@@ -2,6 +2,8 @@
 
 namespace loong\oauth;
 
+use loong\oauth\exception\TokenExpireException;
+use loong\oauth\exception\SingleException;
 use loong\oauth\utils\CreatePem;
 use loong\oauth\utils\Redis;
 use loong\oauth\utils\Rsa;
@@ -121,12 +123,12 @@ class Auth
     {
         $decryptData = Rsa::decrypt($token, $this->rsa_privatekey);
         if (!Redis::get($decryptData['key'])) {
-            throw new \Exception('token已过期');
+            throw new TokenExpireException('token已过期');
         }
         if ($this->single) {
             $singleKey = Redis::get('OAUTH::' . $this->prefix . '::' . $decryptData['data'][$this->singleKey]);
             if ($singleKey != $decryptData['key']) {
-                throw new \Exception('已在其他地方登录');
+                throw new SingleException('已在其他地方登录');
             }
         }
         if ($this->expire > 0) {
