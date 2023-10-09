@@ -155,37 +155,37 @@ if (!function_exists('getAssetsCheck')) {
         if (empty($staticSuffix)) {
             throw new Exception("配置项plugins.static_suffix不能为空");
         }
-        // 检测是否资源文件
+        # 检测是否资源文件
         $extension = pathinfo($request->pathinfo(), PATHINFO_EXTENSION);
         if (in_array($extension, $staticSuffix)) {
             $mimeContentTypes = [
-                'xml' => 'application/xml,text/xml,application/x-xml',
-                'json' => 'application/json,text/x-json,application/jsonrequest,text/json',
-                'js' => 'text/javascript,application/javascript,application/x-javascript',
-                'css' => 'text/css',
-                'rss' => 'application/rss+xml',
-                'yaml' => 'application/x-yaml,text/yaml',
-                'atom' => 'application/atom+xml',
-                'pdf' => 'application/pdf',
-                'text' => 'text/plain',
+                'xml'   => 'application/xml,text/xml,application/x-xml',
+                'json'  => 'application/json,text/x-json,application/jsonrequest,text/json',
+                'js'    => 'text/javascript,application/javascript,application/x-javascript',
+                'css'   => 'text/css',
+                'rss'   => 'application/rss+xml',
+                'yaml'  => 'application/x-yaml,text/yaml',
+                'atom'  => 'application/atom+xml',
+                'pdf'   => 'application/pdf',
+                'text'  => 'text/plain',
                 'image' => 'image/png,image/jpg,image/jpeg,image/pjpeg,image/gif,image/webp,image/*',
-                'csv' => 'text/csv',
-                'html' => 'text/html,application/xhtml+xml,*/*',
-                'vue' => 'application/octet-stream',
-                'svg' => 'image/svg+xml',
+                'csv'   => 'text/csv',
+                'html'  => 'text/html,application/xhtml+xml,*/*',
+                'vue'   => 'application/octet-stream',
+                'svg'   => 'image/svg+xml',
             ];
-            // 检测文件媒体类型
+            # 检测文件媒体类型
             $mimeContentType = 'text/plain';
             if (isset($mimeContentTypes[$extension])) {
                 $mimeContentType = $mimeContentTypes[$extension];
             }
-            // 检测是否框架资源
+            # 检测是否框架GZ资源
             $file = public_path().$request->pathinfo();
             if (file_exists($file)) {
                 $content  = file_get_contents($file);
                 return response()->code(200)->contentType($mimeContentType)->content($content);
             }
-            // 检测是否插件资源
+            # 检测是否插件资源
             $pluginRoute = explode('/',$request->pathinfo());
             if (isset($pluginRoute[1])) {
                 $plugin = $pluginRoute[1];
@@ -198,7 +198,16 @@ if (!function_exists('getAssetsCheck')) {
                     return response()->code(200)->contentType($mimeContentType)->content($content);
                 }
             }
-            // 插件文件资源不存在则找官方库
+            # 文件资源不存在则找官方库
+            $file = root_path()."view/{$request->pathinfo()}.gz";
+            if (file_exists($file)) {
+                $content  = file_get_contents($file);
+                return response()->code(200)->header([
+                    'Content-Type'      => $mimeContentType,
+                    'Content-Encoding'  => 'gzip'
+                ])->content($content);
+            }
+            # 普通文件
             $file = root_path()."view/{$request->pathinfo()}";
             if (file_exists($file)) {
                 $content  = file_get_contents($file);
