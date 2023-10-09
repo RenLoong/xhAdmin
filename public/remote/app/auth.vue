@@ -53,6 +53,15 @@ export default {
       }
     }
   },
+  watch: {
+    modelValue: {
+      handler(val) {
+        console.log(this.modelValue);
+        this.modalDialogActive = val;
+      },
+      deep: true,
+    },
+  },
   computed: {
     // 获取已选择授权
     getAuthPlugins() {
@@ -60,22 +69,19 @@ export default {
         return [];
       }
       return this.plugin_list.filter((item) => {
-        if (this.modelValue.find((e) => e === item?.name)) {
+        if (this.modelValue.find((name) => name === item?.name)) {
           return item;
         }
       })
     },
   },
+  mounted() {
+    this.modalDialogActive = this.modelValue
+  },
   methods: {
     // 确认选择
     hanldConfirm() {
-      let active = this.modelValue;
-      this.modalDialogActive.map(item => {
-        if (!active.includes(item)) {
-          active.push(item);
-        }
-      })
-      this.$emit('update:modelValue', active);
+      this.$emit('update:modelValue', this.modalDialogActive);
       this.modalDialog.show = false;
     },
     // 设置选中
@@ -86,6 +92,8 @@ export default {
       }
       if (!this.modalDialogActive.includes(name)) {
         this.modalDialogActive.push(name)
+      } else {
+        this.modalDialogActive.splice(this.modalDialogActive.indexOf(name), 1);
       }
     },
     // 显示模态框

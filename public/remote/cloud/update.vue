@@ -124,9 +124,7 @@ export default {
     },
     getUser() {
       var _this = this;
-      _this.$http
-        .useGet("/admin/PluginCloud/index")
-        .then((e) => {
+      _this.$http.useGet("/admin/PluginCloud/index").then((e) => {
           const { data } = e;
           _this.user = data;
           _this.getDetail();

@@ -66,9 +66,9 @@
                             <div class="title">
                                 {{ item.title }}
                             </div>
-                            <div class="desc">
+                            <!-- <div class="desc">
                                 基于视频号的第三方的独立分销平台
-                            </div>
+                            </div> -->
                         </div>
                         <div class="btns">
                             <el-button type="primary" size="small"

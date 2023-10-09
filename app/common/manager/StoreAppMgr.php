@@ -41,7 +41,7 @@ class StoreAppMgr
         $installed  = PluginMgr::getLocalPlugins();
         $systemInfo = SystemInfoService::info();
         $query      = [
-            'active'            => '20',
+            'installed'         => '20',
             'limit'             => 1000,
             'is_buy'            => '20',
             'plugins'           => $installed,

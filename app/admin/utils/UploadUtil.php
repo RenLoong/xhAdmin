@@ -54,7 +54,7 @@ class UploadUtil
         $domain   = request()->domain();
         $rootPath = "uploads";
         return [
-            Elm::input('url', '访问域名', "{$domain}/{$rootPath}")->disabled(true),
+            Elm::input('url', '访问域名', $domain)->disabled(true),
             Elm::input('root', '储存路径', $rootPath)->disabled(true)
                 ->appendRule('suffix', [
                     'type' => 'prompt-tip',
