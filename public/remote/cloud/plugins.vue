@@ -67,10 +67,13 @@
                   <div class="number">{{ item.view }}</div>
                 </div>
                 <div class="i">
+                  <!-- 购买/安装 -->
                   <div class="price" v-if="item.installed === 'install'">￥{{ item.money }}</div>
+                  <!-- 可更新 -->
                   <el-button size="small" type="success" v-else-if="item.updateed === 'update'">
                     有更新
                   </el-button>
+                  <!-- 无操作 -->
                   <el-button size="small" type="info" v-else>
                     已安装
                   </el-button>
@@ -89,56 +92,85 @@
       <el-empty description="没有更多的应用" />
     </div>
     <!-- 应用详情弹窗 -->
-    <div class="xh-apps-dialog" v-if="dialogData.dialog.show">
-      <el-dialog model-value="true" title="项目详情" width="40%" top="5%" :show-close="true" :close-on-click-modal="false" :before-close="handleClose">
+    <div class="xh-apps-dialog" v-if="dialogData.show">
+      <el-dialog model-value="true" title="项目详情" width="850px" top="5%" :show-close="true" :close-on-click-modal="false"
+        :before-close="handleClose">
         <div class="apps">
           <div class="left">
             <div class="apps-info">
               <div class="banner">
                 <el-carousel indicator-position="outside" height="240px">
                   <el-carousel-item v-for="item in 4" :key="item">
-                    <el-image style="width: 240px; height: 240px;border-radius: 3px;"
+                    <el-image style="width: 280px; height: 280px;border-radius: 3px;"
                       src="https://kfadmin.net/upload/apps_logo/0618c7528b974de0f9cd0309e2e8c813.png" />
                   </el-carousel-item>
                 </el-carousel>
               </div>
               <div class="detail">
                 <div class="items title">
-                  <el-tag type="danger">微信小程序</el-tag>
-                  <div class="text">视频号分销助手</div>
+                  <el-tag type="primary" v-if="detail?.platform_text?.length">
+                    {{ detail?.platform_text[0] }}
+                  </el-tag>
+                  <div class="text">{{ detail?.title }}</div>
                 </div>
                 <div class="items">
                   <div class="label">发布时间：</div>
-                  <div class="value">2023-10-07</div>
+                  <div class="value">{{ detail?.title }}</div>
                 </div>
                 <div class="items">
                   <div class="label">项目价格：</div>
-                  <div class="value price">￥198.00</div>
+                  <div class="value price">￥{{ detail?.money }}</div>
                 </div>
                 <div class="items">
                   <div class="label">最新版本：</div>
-                  <div class="value">v3.0.0</div>
+                  <div class="value">{{ detail?.version_name }}</div>
                 </div>
-                <div class="items">
+                <div class="items" v-if="detail?.localVersion > 999">
                   <div class="label">当前版本：</div>
-                  <div class="value">v3.0.0</div>
+                  <div class="value">已安装 {{ detail?.localVersionName }} 版本</div>
                 </div>
                 <div class="items">
                   <div class="label">项目分类：</div>
                   <div class="value">
-                    <el-tag>工具应用</el-tag>
+                    <el-tag>{{ detail?.cate_title }}</el-tag>
                   </div>
                 </div>
                 <div class="items">
                   <div class="label">下载次数：</div>
-                  <div class="value">258</div>
+                  <div class="value">{{ detail?.down }}次</div>
                 </div>
                 <div class="items">
                   <el-row class="apps-button">
-                    <!--                                    <el-button type="success">购买</el-button>-->
-                    <el-button :disabled="true" plain type="info">已安装v3.0.0</el-button>
-                    <el-button type="danger">卸载</el-button>
-                    <el-button type="success">更新</el-button>
+                    <el-button type="info" v-if="detail?.updateed === 'bindsite'">
+                      <template #icon>
+                        <AppIcons icon="Pointer" />
+                      </template>
+                      绑定站点
+                    </el-button>
+                    <el-button type="warning" v-if="detail?.installed === '' && detail?.updateed === ''" @click="onBuy">
+                      <template #icon>
+                        <AppIcons icon="Present" />
+                      </template>
+                      购买
+                    </el-button>
+                    <el-button type="primary" v-if="detail?.installed === 'install'" @click="toInstall">
+                      <template #icon>
+                        <AppIcons icon="Lightning" />
+                      </template>
+                      安装
+                    </el-button>
+                    <el-button type="success" v-if="detail?.updateed === 'update'" @click="toUpdate">
+                      <template #icon>
+                        <AppIcons icon="Compass" />
+                      </template>
+                      更新
+                    </el-button>
+                    <el-button type="danger" v-if="detail?.installed === 'uninstall'" @click="toUnInstall">
+                      <template #icon>
+                        <AppIcons icon="Delete" />
+                      </template>
+                      卸载
+                    </el-button>
                   </el-row>
                 </div>
               </div>
@@ -152,10 +184,10 @@
                 项目简介
               </div>
               <div class="content">
-                流量大爆发，超级连接器驱动超级增长，视频号直播带货规模飞速提升。
+                {{ detail?.desc }}
               </div>
             </div>
-            <div class="apps-card">
+            <!-- <div class="apps-card">
               <div class="title">
                 更新日志
               </div>
@@ -175,53 +207,41 @@
                   </el-timeline-item>
                 </el-timeline>
               </div>
-            </div>
+            </div> -->
           </div>
           <div class="right">
             <div class="user">
               <div class="avatar">
-                <el-avatar :size="51" src="https://kfadmin.net/upload/avatar/09a0efe540a430b02e733727ee351618.jpg" />
+                <el-avatar :size="51" :src="user?.headimg" />
               </div>
               <div class="info">
-                <div class="nickname">18786709420</div>
-                <div class="date">注册时间：2023-10-7</div>
+                <div class="nickname">{{ user?.nickname ?? '暂无昵称' }}</div>
+                <div class="date">余额：{{ user?.money }}</div>
               </div>
             </div>
             <div class="bill">
               <div class="header">
                 <div class="title">账单流水</div>
-                <div class="more">
+                <!-- <div class="more">
                   <el-text type="primary">查看更多</el-text>
-                </div>
+                </div> -->
               </div>
-              <div class="record">
-                <div class="item">
+              <div class="record" ref="billListRef" v-if="bill.length">
+                <div class="item" v-for="(item, index) in bill" :key="index">
                   <div class="content">
                     <div class="text">
-                      <div>购买项目消费</div>
-                      <div class="price">-￥198.00</div>
+                      <div>{{ item?.remarks }}</div>
+                      <div class="price" v-if="item?.bill_type === 0">-￥{{ item?.money }}</div>
+                      <div class="price" v-if="item?.bill_type === 1">+￥{{ item?.money }}</div>
                     </div>
-                    <div class="date">2023-10-07 00:00:00</div>
-                  </div>
-                </div>
-                <div class="item">
-                  <div class="content">
-                    <div class="text">
-                      <div>购买项目消费</div>
-                      <div class="price">
-                        -￥198.00
-                      </div>
-                    </div>
-                    <div class="date">2023-10-07 00:00:00</div>
+                    <div class="date">{{ item?.create_at }}</div>
                   </div>
                 </div>
               </div>
-              <el-empty description="暂无更多数据" />
+              <el-empty v-else description="暂无更多账单" />
             </div>
           </div>
         </div>
-        <template #footer>
-        </template>
       </el-dialog>
     </div>
   </div>
@@ -256,28 +276,171 @@ export default {
       },
       // 应用列表
       plugins: [],
+      // 用户信息
+      user: {},
       // 应用详情
+      detail: {},
+      // 账单列表
+      bill: [],
+      // 弹窗信息
       dialogData: {
-        dialog: {
-          show: false,
-        },
-        detail: {}
+        show: false,
       },
     };
   },
   methods: {
+    // 卸载应用
+    toUnInstall() {
+      const _this = this;
+      _this.$useConfirm('是否确认卸载该应用？', '温馨提示', 'error').then(() => {
+        const loading = _this.$useLoading('正在卸载中...',{
+          background: 'rgba(0, 0, 0, 0.7)',
+        });
+        const queryParams = {
+            name: _this.detail?.name,
+            version: _this.detail?.version
+        };
+        _this.$http.usePost("admin/Plugin/uninstall", queryParams).then((res) => {
+          _this.$useNotify(res?.msg || '操作成功', 'success', '温馨提示');
+          _this.dialogData.show = false;
+          _this.getList();
+        }).catch((err) => {
+          _this.$useNotify.useNotify(err?.msg || '异常错误', 'error', '温馨提示');
+        }).finally(() => { 
+          loading.close();
+        })
+      })
+    },
+    // 跳转更新
+    toUpdate() {
+      const _this = this;
+      _this.$useConfirm('是否确认开始更新？', '温馨提示', 'success').then(() => {
+        const queryParams = {
+          ajaxParams: {
+            name: _this.detail?.name,
+            version: _this.detail?.version
+          },
+        };
+        _this.dialogData.show = false;
+        _this.$useRemote('remote/cloud/updateing', queryParams)
+      })
+    },
+    // 跳转安装
+    toInstall() {
+      const _this = this;
+      _this.$useConfirm('是否确认开始安装？', '温馨提示', 'warning').then(() => {
+        const queryParams = {
+          ajaxParams: {
+            name: _this.detail?.name,
+            version: _this.detail?.version
+          },
+        };
+        _this.dialogData.show = false;
+        _this.$useRemote('remote/cloud/installing', queryParams)
+      })
+    },
+    // 发送购买请求
+    sendBuy() {
+      const _this = this;
+      _this.$http.usePost("admin/Plugin/buy", this.form).then((res) => {
+        _this.$useNotify(res?.msg || '操作成功', 'success', '温馨提示');
+        _this.getDetail();
+        _this.getList();
+      }).catch((err) => {
+        _this.$useNotify.useNotify(err?.msg || '异常错误', 'error', '温馨提示');
+      })
+    },
+    // 购买
+    onBuy() {
+      const _this = this;
+      _this.$useConfirm('是否确认购买该应用？', '温馨提示', 'warning').then(() => {
+        _this.sendBuy();
+      })
+    },
     // 搜索
     onSubmit() {
       this.getList();
     },
     // 关闭弹窗
     handleClose() {
-      this.dialogData.dialog.show = false;
+      this.dialogData.show = false;
+    },
+    // 获取用户信息
+    getUser(e) {
+      var _this = this;
+      _this.$http
+        .useGet("/admin/PluginCloud/index")
+        .then((res) => {
+          _this.user = res?.data;
+        })
+        .catch((err) => {
+          if ([11000, 666, 600].includes(err?.code)) {
+            _this.toLogin();
+          }
+        });
+    },
+    // 获取应用详情
+    getDetail(e) {
+      const _this = this;
+      _this.detail = {};
+      const queryParams = {
+        name: e?.name,
+        version: e?.version
+      };
+      _this.$http
+        .useGet("admin/Plugin/detail", queryParams)
+        .then((res) => {
+          _this.detail = res?.data ?? {};
+          _this.dialogData.show = true;
+        })
+        .catch((err) => {
+          if ([11000, 666, 600].includes(err?.code)) {
+            _this.toLogin();
+          }
+        });
+    },
+    getBill() {
+      var _this = this;
+      _this.$http.useGet("/admin/PluginCloud/bill", { page: this.page })
+        .then((e) => {
+          const { data } = e;
+          if (data.current_page >= data.last_page) {
+            _this.ob.unobserve(this.$refs.bottomRef);
+          }
+          _this.page++;
+          const pageData = data.data;
+          for (let index = 0; index < pageData.length; index++) {
+            const element = pageData[index];
+            _this.bill.push(element);
+          }
+          // _this.$nextTick(()=>{
+          //   if(_this.$refs.billListRef.scrollHeight <= _this.$refs.billListRef.clientHeight){
+          //     setTimeout(() => {
+          //       _this.getBill();
+          //     }, 300);
+          //   }
+          // })
+        })
+        .catch((err) => {
+          if ([11000, 666, 600].includes(err?.code)) {
+            _this.toLogin();
+          }
+        });
     },
     // 打开详情弹窗
-    hanldDetail(e) {
-      this.dialogData.detail = e;
-      this.dialogData.dialog.show = true
+    async hanldDetail(e) {
+      await this.getUser(e);
+      await this.getBill();
+      await this.getDetail(e);
+    },
+    // 打开页面
+    openWin(path) {
+      this.$emit("update:openWin", path);
+    },
+    // 跳转登录页
+    toLogin() {
+      _thi.dialogData.show = false;
+      _this.$useRemote('remote/cloud/login')
     },
     // 选择平台
     hanldPlatform(e) {
@@ -342,6 +505,9 @@ export default {
   .el-dialog__body {
     padding-top: 0px;
     padding-bottom: 0px;
+    height: 650px;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 
   .el-dialog__footer {
@@ -413,6 +579,10 @@ export default {
 
           .title {
             font-weight: bolder;
+          }
+
+          .more {
+            cursor: pointer;
           }
         }
       }
@@ -549,8 +719,8 @@ export default {
 
     .new-update {
       position: absolute;
-      top: 10px;
-      right: 0px;
+      top: 0;
+      right: 0;
       background-color: #f56c6c;
       font-size: 8px;
       color: #fff;
@@ -559,8 +729,9 @@ export default {
       z-index: 999;
       display: flex;
       align-items: center;
-      .text{
-        padding-left:5px;
+
+      .text {
+        padding-left: 5px;
       }
     }
 
@@ -655,4 +826,5 @@ export default {
       margin-bottom: 0px !important;
     }
   }
-}</style>
+}
+</style>

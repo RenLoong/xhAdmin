@@ -52,16 +52,12 @@ export default {
                         title: '解压更新包',
                     },
                     {
-                        step: 'reload',
-                        title: '重启服务',
-                    },
-                    {
-                        step: 'ping',
-                        title: '检测服务状态',
-                    },
-                    {
                         step: 'updateData',
-                        title: '更新数据同步',
+                        title: '更新数据',
+                    },
+                    {
+                        step: 'success',
+                        title: '更新完成',
                     },
                 ],
             },
@@ -81,17 +77,15 @@ export default {
             _this.stepData.stepText = item.title;
             _this.stepData.step = _this.stepData.list.findIndex(item => item.step === step) + 1;
             _this.$http.usePost(`admin/Plugin/update?step=${step}`, queryParams).then((res) => {
-                if (res.data.next === 'success') {
-                    const stepIndex = _this.stepData.list.findIndex(item => item.step === res.data.next) + 1;
+                if (res.data.next === '') {
+                    const stepIndex = _this.stepData.list.findIndex(item => item.step === 'success');
                     _this.stepData.step = stepIndex
                     setTimeout(() => {
                         _this.$emit("update:closeWin");
+                        window.location.reload();
                     }, 2000);
                     _this.stepData.stepText = res.msg;
-                    _this.$useNotification?.success({
-                        title: res?.msg ?? "操作成功",
-                        duration: 1500,
-                    });
+                        _this.$useNotify(res?.msg || "操作成功", 'success', '温馨提示');
                 } else {
                     _this.exceStep(res.data.next);
                 }
@@ -113,13 +107,7 @@ export default {
                     setTimeout(() => {
                         _this.$emit("update:closeWin");
                     }, 2000);
-                    _this.$useNotification?.error({
-                        title: err?.msg ?? "获取失败",
-                        duration: 1500,
-                        onPositiveClick() {
-                            _this.$emit("update:closeWin");
-                        },
-                    });
+                    _this.$useNotify(err?.msg || "获取失败", 'error', '温馨提示');
                 }
             })
         },
@@ -135,13 +123,7 @@ export default {
                         _this.pageData = res?.data ?? {};
                         _this.exceStep('download')
                     } else {
-                        _this.$useNotification?.error({
-                            title: res?.msg ?? "获取失败",
-                            duration: 1500,
-                            onAfterLeave: () => {
-                                _this.$emit("update:closeWin");
-                            }
-                        });
+                        _this.$useNotify(res?.msg || "获取失败", 'error', '温馨提示');
                     }
                 })
                 .catch((err) => {

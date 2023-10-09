@@ -9,8 +9,8 @@ class Request
 {
     const API_VERSION_V2 = 'v2/';
     const API_VERSION_V3 = 'v3/';
-    protected $baseUrl = 'https://cloud.kfadmin.net/v3/';
-    protected $version = '';
+    protected $baseUrl = 'https://cloud.kfadmin.net/';
+    protected $version = 'v3/';
     protected $siteinfo_file;
     protected $url;
     protected $params = [];
@@ -54,7 +54,10 @@ class Request
                 $this->setHeader('channels-token', $channelsAuth['token']);
             }
         }
-        $this->setVersion($version);
+        if ($version) {
+            $this->version = $version;
+        }
+        $this->setVersion();
     }
     /**
      * 发送请求
@@ -111,10 +114,9 @@ class Request
      */
     public function setVersion(string $version = null)
     {
-        if (!$version) {
-            return $this;
+        if ($version) {
+            $this->version = $version;
         }
-        $this->version = $version;
         $this->baseUrl = $this->baseUrl . $this->version;
         return $this;
     }

@@ -67,10 +67,11 @@ export default {
             _this.$http.usePost(`admin/Plugin/install?step=${step}`, queryParams).then((res) => {
                 if (res?.code === 200) {
                     if (res.data.next === '') {
-                        const stepIndex = _this.stepData.list.findIndex(item => item.step === res.data.next) + 1;
+                        const stepIndex = _this.stepData.list.findIndex(item => item.step === 'success');
                         _this.stepData.step = stepIndex
                         setTimeout(() => {
                             _this.$emit("update:closeWin");
+                            window.location.reload();
                         }, 2000);
                         _this.stepData.stepText = res.msg;
                         _this.$useNotify(res?.msg || "操作成功", 'success', '温馨提示');
@@ -95,8 +96,7 @@ export default {
             const queryParams = {
                 ...this.ajaxParams,
             };
-            _this.$http
-                .useGet("admin/Plugin/detail", queryParams)
+            _this.$http.useGet("admin/Plugin/detail", queryParams)
                 .then((res) => {
                     if (res.code === 200) {
                         _this.pageData = res?.data ?? {};

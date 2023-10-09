@@ -212,7 +212,6 @@ export default {
     },
     mounted() {
         this.user = this.$userApp.userInfo;
-        console.log(this.user);
         this.getIndex();
         this.getList();
     }

@@ -84,7 +84,7 @@ class PluginInstallMgr
         }
         # 获取下载KEY
         $systemInfo = SystemInfoService::info();
-        $res        = CloudServiceRequest::Plugin(CloudServiceRequest::API_VERSION_V2)->getKey()->setQuery([
+        $res        = CloudServiceRequest::Plugin()->getKey()->setQuery([
             'name' => $this->name,
             'version' => $this->version,
             'saas_version' => $systemInfo['system_version'],

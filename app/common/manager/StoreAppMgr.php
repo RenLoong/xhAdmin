@@ -47,7 +47,7 @@ class StoreAppMgr
             'plugins'           => $installed,
             'saas_version'      => $systemInfo['system_version']
         ];
-        $res        = \YcOpen\CloudService\Request::Plugin()->list($query)->v2()->response();
+        $res        = \YcOpen\CloudService\Request::Plugin()->list($query)->response();
         $data       = $res->data;
         return $data;
     }

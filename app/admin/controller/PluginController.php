@@ -385,16 +385,23 @@ class PluginController extends BaseController
      */
     public function detail(Request $request)
     {
-        $name    = $request->get('name');
-        $version = $request->get('version');
+        $name    = $request->get('name','');
+        $version = $request->get('version','');
 
         $systemInfo           = SystemInfoService::info();
-        $installed_version    = PluginMgr::getPluginVersion($name);
-        $res                  = CloudServiceRequest::Plugin(CloudServiceRequest::API_VERSION_V2)
-            ->detail(['name' => $name, 'version' => $version, 'saas_version' => $systemInfo['system_version'], 'local_version' => $installed_version])
+        $localVersion         = PluginMgr::getPluginVersion($name);
+        $localVersionName     = PluginMgr::getPluginVersion($name,'version_name');
+        $res                  = CloudServiceRequest::Plugin()
+            ->detail([
+                'name'          => $name,
+                'version'       => $version,
+                'saas_version'  => $systemInfo['system_version'],
+                'local_version' => $localVersion
+            ])
             ->response();
         $data                 = $res->toArray();
-        $data['localVersion'] = $installed_version;
+        $data['localVersion'] = $localVersion;
+        $data['localVersionName'] = $localVersionName;
         return $this->successRes($data);
     }
 

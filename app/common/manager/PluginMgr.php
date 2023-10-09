@@ -25,7 +25,7 @@ class PluginMgr
         # 获取本地应用版本
         $installedVersion = self::getPluginVersion($name);
         # 获取云端应用详情
-        $data = Request::Plugin(Request::API_VERSION_V2)->detail([
+        $data = Request::Plugin()->detail([
             'name' => $name,
             'version' => $installedVersion,
             'saas_version' => $systemInfo['system_version'],

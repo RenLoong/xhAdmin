@@ -97,7 +97,7 @@ class PluginUpdateMgr
                 'version'           => $this->version,
                 'saas_version'      => $systemInfo['system_version'],
                 'local_version'     => $installedVersion,
-            ])->v2()->response();
+            ])->response();
             # 下载应用包
             $request = new CloudServiceRequest();
             # 通过获取下载密钥接口获得
@@ -258,7 +258,7 @@ class PluginUpdateMgr
     }
 
     /**
-     * 安装成功
+     * 更新成功
      * @return \support\Response
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
