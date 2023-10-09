@@ -29,7 +29,12 @@
             <el-input placeholder="请输入应用名称" v-model="keyword"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="onSubmit">搜索</el-button>
+            <el-button type="primary" @click="onSubmit">
+              <template #icon>
+                <AppIcons icon="Search" :size="15" />
+              </template>
+              搜索
+            </el-button>
           </el-form-item>
         </el-form>
       </div>

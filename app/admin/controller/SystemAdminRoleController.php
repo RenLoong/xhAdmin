@@ -44,14 +44,12 @@ class SystemAdminRoleController extends BaseController
                 'path'          => '/SystemAdminRole/auth',
             ], [], [
                 'type'          => 'warning',
-                'link'          => true
             ])
             ->addRightButton('edit', '修改', [
                 'api'           => 'admin/SystemAdminRole/edit',
                 'path'          => '/SystemAdminRole/edit',
             ], [], [
                 'type'          => 'primary',
-                'link'          => true
             ])
             ->addRightButton('del', '删除', [
                 'type'          => 'confirm',
@@ -62,7 +60,6 @@ class SystemAdminRoleController extends BaseController
                 'content'       => '是否确认删除该数据',
             ], [
                 'type'          => 'danger',
-                'link'          => true
             ])
             ->addColumn('id', '序号', [
                 'width'         => 90,

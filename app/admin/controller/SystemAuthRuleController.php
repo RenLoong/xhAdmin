@@ -42,7 +42,7 @@ class SystemAuthRuleController extends BaseController
         $builder = new ListBuilder;
         $data    = $builder
             ->addActionOptions('操作', [
-                'width' => 150
+                'width' => 180
             ])
             ->treeConfig([
                 'rowField' => 'id',
@@ -64,7 +64,6 @@ class SystemAuthRuleController extends BaseController
                 'path' => '/SystemAuthRule/edit'
             ], [], [
                 'type' => 'primary',
-                'link' => true
             ])
             ->addRightButton('del', '删除', [
                 'type'      => 'confirm',
@@ -76,7 +75,6 @@ class SystemAuthRuleController extends BaseController
                 'content'   => '是否确认删除该数据',
             ], [
                 'type' => 'danger',
-                'link' => true
             ])
             ->addColumn('path_text', '权限地址', [
                 'treeNode' => true

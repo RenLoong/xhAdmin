@@ -34,7 +34,7 @@ class SystemAdminController extends BaseController
         $builder = new ListBuilder;
         $data = $builder
             ->addActionOptions('操作', [
-                'width'         => 150
+                'width'         => 180
             ])
             ->pageConfig()
             ->addTopButton('add', '添加', [
@@ -48,7 +48,6 @@ class SystemAdminController extends BaseController
                 'path'          => '/SystemAdmin/edit',
             ], [], [
                 'type'          => 'primary',
-                'link'          => true
             ])
             ->addRightButton('del', '删除', [
                 'type'          => 'confirm',
@@ -59,7 +58,6 @@ class SystemAdminController extends BaseController
                 'content'       => '是否确认删除该数据',
             ], [
                 'type'          => 'danger',
-                'link'          => true
             ])
             ->addColumn('username', '登录账号')
             ->addColumn('nickname', '用户昵称')

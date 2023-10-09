@@ -14,10 +14,8 @@ use app\common\enum\AuthRuleMethods;
 use app\common\enum\AuthRuleRuleType;
 use app\common\enum\ShowStatus;
 use app\common\enum\YesNoEumStyle;
-use app\common\service\AuthRuleService;
 use support\Request;
 use FormBuilder\Factory\Elm;
-use think\App;
 
 /**
  * 权限菜单
@@ -60,7 +58,7 @@ class StoreMenusController extends BaseController
         $builder = new ListBuilder;
         $data    = $builder
             ->addActionOptions('操作', [
-                'width' => 150
+                'width' => 180
             ])
             ->treeConfig([
                 'rowField' => 'id',
@@ -76,7 +74,6 @@ class StoreMenusController extends BaseController
                 'path' => '/StoreMenus/edit'
             ], [], [
                     'type' => 'primary',
-                    'link' => true
                 ])
             ->addRightButton('del', '删除', [
                 'type'   => 'confirm',
@@ -87,7 +84,6 @@ class StoreMenusController extends BaseController
                     'content' => '是否确认删除该数据',
                 ], [
                     'type' => 'danger',
-                    'link' => true
                 ])
             ->addColumn('path_text', '权限地址', [
                 'treeNode' => true

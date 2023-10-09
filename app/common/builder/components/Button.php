@@ -67,7 +67,7 @@ trait Button
                 'buttonGroupIconType'   => '',
                 # 按钮样式，参考element-plug
                 'buttonStyle'           => [
-                    'link'              => true,
+                    'link'              => false,
                 ],
             ],
         ], $extra);
@@ -148,8 +148,6 @@ trait Button
             $message,
             $button
         );
-        # 设置右侧按钮默认为文字类型
-        $btnData['button']['link'] = true;
         # 别名参数，仅右侧按钮
         $btnData['pageData']['aliasParams'] = [];
         $btnData['pageData']                = array_merge($btnData['pageData'], $pageData);

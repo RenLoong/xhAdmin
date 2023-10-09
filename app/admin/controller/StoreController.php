@@ -60,7 +60,7 @@ class StoreController extends BaseController
         $builder = new ListBuilder;
         $data    = $builder
             ->addActionOptions('操作',[
-                'width'     => 270
+                'width'     => 380
             ])
             ->pageConfig()
             ->editConfig()

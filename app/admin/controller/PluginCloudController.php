@@ -67,8 +67,7 @@ class PluginCloudController extends BaseController
         $site  = new SiteRequest;
         $site->install();
         $site->domain = $post['host'];
-        // $site->title  = getHpConfig('web_name');
-        $site->title  = 'XHAdmin';
+        $site->title  = getHpConfig('web_name');
         $cloud        = new Cloud($site);
         $cloud->send();
         return $this->successFul('登录成功', $data->toArray());
