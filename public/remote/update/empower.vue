@@ -42,6 +42,7 @@
                     </div> 
                 </div>
             </div>
+            <el-empty v-else description="未获取授权版本，或许未登录云服务" />
         </div>
     </div>
 </template>

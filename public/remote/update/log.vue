@@ -2,7 +2,7 @@
     <div class="log-container">
         <div class="log-title">框架更新日志</div>
         <div class="log-content">
-            <el-timeline>
+            <el-timeline v-if="datalist.length">
                 <el-timeline-item
                 :timestamp="`${item?.create_at} --- ${item.version_name}（${item.version}）`"
                 placement="top"
@@ -15,6 +15,7 @@
                     </el-card>
                 </el-timeline-item>
             </el-timeline>
+            <el-empty v-else description="未获取授权版本，或许未登录云服务" />
         </div>
     </div>
 </template>

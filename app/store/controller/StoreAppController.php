@@ -187,7 +187,7 @@ class StoreAppController extends BaseController
         # 检测应用对SAAS版本支持
         try {
             if (!PluginMgr::checkPluginSaasVersion($model['name'])) {
-                throw new RedirectException('请先更新应用', "/#/Index/index");
+                throw new Exception('请先更新应用');
             }
         } catch (\Throwable $e) {
             throw new RedirectException($e->getMessage(), "/#/Index/index");

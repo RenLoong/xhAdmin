@@ -93,7 +93,7 @@
     </div>
     <!-- 应用详情弹窗 -->
     <div class="xh-apps-dialog" v-if="dialogData.show">
-      <el-dialog model-value="true" title="项目详情" width="850px" top="5%" :show-close="true" :close-on-click-modal="false"
+      <el-dialog model-value="true" title="应用详情" width="850px" top="5%" :show-close="true" :close-on-click-modal="false"
         :before-close="handleClose">
         <div class="apps">
           <div class="left">
@@ -118,7 +118,7 @@
                   <div class="value">{{ detail?.title }}</div>
                 </div>
                 <div class="items">
-                  <div class="label">项目价格：</div>
+                  <div class="label">应用价格：</div>
                   <div class="value price">￥{{ detail?.money }}</div>
                 </div>
                 <div class="items">
@@ -130,7 +130,7 @@
                   <div class="value">已安装 {{ detail?.localVersionName }} 版本</div>
                 </div>
                 <div class="items">
-                  <div class="label">项目分类：</div>
+                  <div class="label">应用分类：</div>
                   <div class="value">
                     <el-tag>{{ detail?.cate_title }}</el-tag>
                   </div>
@@ -176,12 +176,12 @@
               </div>
             </div>
             <div class="alert">
-              <el-alert :closable="false" title="购买项目和当前域名、IP、云账户关联，不支持更换！" type="error">
+              <el-alert :closable="false" title="购买应用和当前域名、IP、云账户关联，不支持更换！" type="error">
               </el-alert>
             </div>
             <div class="apps-card">
               <div class="title">
-                项目简介
+                应用简介
               </div>
               <div class="content">
                 {{ detail?.desc }}
@@ -364,6 +364,7 @@ export default {
     // 关闭弹窗
     handleClose() {
       this.dialogData.show = false;
+      this.getList();
     },
     // 获取用户信息
     getUser(e) {
@@ -373,11 +374,6 @@ export default {
         .then((res) => {
           _this.user = res?.data;
         })
-        .catch((err) => {
-          if ([11000, 666, 600].includes(err?.code)) {
-            _this.toLogin();
-          }
-        });
     },
     // 获取应用详情
     getDetail(e) {
@@ -393,11 +389,6 @@ export default {
           _this.detail = res?.data ?? {};
           _this.dialogData.show = true;
         })
-        .catch((err) => {
-          if ([11000, 666, 600].includes(err?.code)) {
-            _this.toLogin();
-          }
-        });
     },
     getBill() {
       var _this = this;
@@ -421,11 +412,6 @@ export default {
           //   }
           // })
         })
-        .catch((err) => {
-          if ([11000, 666, 600].includes(err?.code)) {
-            _this.toLogin();
-          }
-        });
     },
     // 打开详情弹窗
     async hanldDetail(e) {
@@ -436,11 +422,6 @@ export default {
     // 打开页面
     openWin(path) {
       this.$emit("update:openWin", path);
-    },
-    // 跳转登录页
-    toLogin() {
-      _thi.dialogData.show = false;
-      _this.$useRemote('remote/cloud/login')
     },
     // 选择平台
     hanldPlatform(e) {

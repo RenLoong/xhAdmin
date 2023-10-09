@@ -9,9 +9,13 @@ use think\exception\HttpResponseException;
 use think\exception\ValidateException;
 use think\Response;
 use Throwable;
+use app\common\exception\RedirectException;
 
 /**
- * 应用异常处理类
+ * 全局异常处理类
+ * @author 贵州猿创科技有限公司
+ * @copyright 贵州猿创科技有限公司
+ * @email 416716328@qq.com
  */
 class ExceptionHandle extends Handle
 {

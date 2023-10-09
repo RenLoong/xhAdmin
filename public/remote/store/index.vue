@@ -42,7 +42,7 @@
                             <el-button type="primary">
                                 新增项目
                             </el-button>
-                            <template #dropdown>
+                            <template v-if="platformApp.length" #dropdown>
                                 <el-dropdown-menu>
                                     <el-dropdown-item v-for="(item, index) in platformApp" :key="index" :command="item">
                                         {{ item.label }}
@@ -168,8 +168,10 @@ export default {
                         _this.$useNotify('登录项目管理失败', 'error', '温馨提示')
                     }
                 } else {
-                    _this.$useNotify('获取数据失败', 'error', '温馨提示')
+                    _this.$useNotify('操作数据失败', 'error', '温馨提示')
                 }
+            }).catch((err) => {
+                _this.$useNotify(err?.msg ?? '操作数据失败', 'error', '温馨提示')
             })
         },
         // 跳转页面
