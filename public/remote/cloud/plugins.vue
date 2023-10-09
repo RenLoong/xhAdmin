@@ -100,9 +100,8 @@
             <div class="apps-info">
               <div class="banner">
                 <el-carousel indicator-position="outside" height="240px">
-                  <el-carousel-item v-for="item in 4" :key="item">
-                    <el-image style="width: 280px; height: 280px;border-radius: 3px;"
-                      src="https://kfadmin.net/upload/apps_logo/0618c7528b974de0f9cd0309e2e8c813.png" />
+                  <el-carousel-item v-for="item in detail?.thumb" :key="item">
+                    <el-image style="width: 280px; height: 280px;border-radius: 3px;" :src="item?.url" />
                   </el-carousel-item>
                 </el-carousel>
               </div>
@@ -115,7 +114,7 @@
                 </div>
                 <div class="items">
                   <div class="label">发布时间：</div>
-                  <div class="value">{{ detail?.title }}</div>
+                  <div class="value">{{ detail?.create_at }}</div>
                 </div>
                 <div class="items">
                   <div class="label">应用价格：</div>
@@ -141,11 +140,11 @@
                 </div>
                 <div class="items">
                   <el-row class="apps-button">
-                    <el-button type="info" v-if="detail?.updateed === 'bindsite'">
+                    <el-button type="info" v-if="detail?.bindsite">
                       <template #icon>
                         <AppIcons icon="Pointer" />
                       </template>
-                      绑定站点
+                      绑定站点，剩余{{ detail?.bindsite }}个
                     </el-button>
                     <el-button type="warning" v-if="detail?.installed === '' && detail?.updateed === ''" @click="onBuy">
                       <template #icon>
@@ -184,30 +183,22 @@
                 应用简介
               </div>
               <div class="content">
-                {{ detail?.desc }}
+                <pre class="pre-line" v-html="detail?.desc"></pre>
               </div>
             </div>
-            <!-- <div class="apps-card">
+            <div class="apps-card">
               <div class="title">
                 更新日志
               </div>
               <div class="content">
-                <el-timeline>
+                <el-timeline v-if="detail?.version_log?.length">
                   <el-timeline-item icon="MoreFilled" type="primary" color="#0bbd87" size="large"
-                    timestamp="2018-04-12 20:46">
-                    内容
-                  </el-timeline-item>
-                  <el-timeline-item icon="MoreFilled" type="primary" color="#0bbd87" size="large"
-                    timestamp="2018-04-12 20:46">
-                    内容
-                  </el-timeline-item>
-                  <el-timeline-item icon="MoreFilled" type="primary" color="#0bbd87" size="large"
-                    timestamp="2018-04-12 20:46">
-                    内容
+                    :timestamp="item.create_at" v-for="(item, index) in detail?.version_log" :key="index">
+                    <pre class="pre-line">{{ item?.remarks }}</pre>
                   </el-timeline-item>
                 </el-timeline>
               </div>
-            </div> -->
+            </div>
           </div>
           <div class="right">
             <div class="user">
@@ -293,12 +284,12 @@ export default {
     toUnInstall() {
       const _this = this;
       _this.$useConfirm('是否确认卸载该应用？', '温馨提示', 'error').then(() => {
-        const loading = _this.$useLoading('正在卸载中...',{
+        const loading = _this.$useLoading('正在卸载中...', {
           background: 'rgba(0, 0, 0, 0.7)',
         });
         const queryParams = {
-            name: _this.detail?.name,
-            version: _this.detail?.version
+          name: _this.detail?.name,
+          version: _this.detail?.version
         };
         _this.$http.usePost("admin/Plugin/uninstall", queryParams).then((res) => {
           _this.$useNotify(res?.msg || '操作成功', 'success', '温馨提示');
@@ -306,7 +297,7 @@ export default {
           _this.getList();
         }).catch((err) => {
           _this.$useNotify.useNotify(err?.msg || '异常错误', 'error', '温馨提示');
-        }).finally(() => { 
+        }).finally(() => {
           loading.close();
         })
       })
@@ -807,5 +798,18 @@ export default {
       margin-bottom: 0px !important;
     }
   }
+}
+
+.pre-line {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  word-break: break-all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 10;
+  font-size: 14px;
+  color:#606266;
 }
 </style>
