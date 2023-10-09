@@ -33,8 +33,12 @@ class SystemInfoService
             'url'  => 'http://www.kfadmin.net/wx',
         ],
     ];
-    // 咨询微信
-    public static $service_wx = '18786709420（微信同号）';
+    # 咨询微信
+    public static $wechat = '18786709420（微信同号）';
+    # 微信链接
+    public static $wechat_url = '';
+    # 微信二维码地址
+    public static $wechat_qrcode_url = '';
 
     /**
      * 获取系统信息
@@ -45,6 +49,53 @@ class SystemInfoService
      */
     public static function info()
     {
+        $data                = [
+            'about_name'            => '',
+            'system_name'           => '',
+            'system_version_name'   => '',
+            'system_version'        => '',
+            'ecology'               => self::$ecology,
+            'service_wx'            => self::$wechat,
+            'wechat_url'            => self::$wechat_url,
+            'wechat_qrcode_url'     => self::$wechat_qrcode_url,
+            'site_encrypt'          => '',
+            'privatekey'            => '',
+        ];
+        $versionData                    = self::version();
+        $data['system_version_name']    = $versionData['version_name'];
+        $data['system_version']         = $versionData['version'];
+        # 获取新版授权文件
+        $authFilePath = config_path() . 'authorization.json';
+        if (!file_exists($authFilePath)) {
+            # 获取旧版本授权文件
+            $tokenFilePath = root_path().'token.pem';
+            $authFilePath = root_path().'private_key.pem';
+            if (file_exists($tokenFilePath) && file_exists($authFilePath)) {
+                $data['site_encrypt'] = file_get_contents($tokenFilePath);
+                $data['privatekey'] = file_get_contents($authFilePath);
+            }
+            $data['about_name']             = self::$about_name;
+            $data['system_name']            = self::$system_name;
+        } else {
+            $authData = json_decode(file_get_contents($authFilePath),true);
+            $data     = array_merge($data, $authData);
+            $data['system_name'] = $data['name'];
+            $data['about_name'] = $data['copyright'];           
+        }
+        return $data;
+    }
+    
+    /**
+     * 获取版本信息
+     * @param string $name
+     * @throws \Exception
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function version(string $name = '')
+    {
         $packPath            = root_path().'config/version.json';
         if (!file_exists($packPath)) {
             $packPath       = root_path().'version.json';
@@ -54,28 +105,12 @@ class SystemInfoService
         }
         $content             = file_get_contents($packPath);
         $packInfo            = json_decode($content, true);
-        if (!isset($packInfo['version_name'])) {
-            throw new Exception('获取版本名称错误');
+        if ($name && !isset($packInfo[$name])) {
+            throw new Exception('框架版本获取错误');
         }
-        if (!isset($packInfo['version'])) {
-            throw new Exception('获取版本号错误');
+        if (!$name) {
+            return $packInfo;
         }
-        $system_name         = self::$system_name;
-        $system_version_name = isset($packInfo['version_name']) ? $packInfo['version_name'] : '';
-        $system_version = isset($packInfo['version']) ? (int)$packInfo['version'] : 0;
-        $freamVersion        = [
-            'name' => "{$system_name} {$system_version_name}",
-            'url'  => self::$system_doc,
-        ];
-        $data                = [
-            'about_name'          => self::$about_name,
-            'fream_version'       => [$freamVersion],
-            'system_name'         => $system_name,
-            'system_version_name' => $system_version_name,
-            'system_version'      => $system_version,
-            'ecology'             => self::$ecology,
-            'service_wx'          => self::$service_wx,
-        ];
-        return $data;
+        return $packInfo[$name];
     }
 }

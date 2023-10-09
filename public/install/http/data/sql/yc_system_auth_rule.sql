@@ -82,7 +82,7 @@ INSERT INTO `__PREFIX__system_auth_rule` VALUES (83, '2023-03-12 20:02:14', '202
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (84, '2023-03-12 20:11:14', '2023-04-16 17:16:04', 'Index/lock', 1, '解除锁定', 0, '[\"POST\"]', '20', 'none/index', '', '', '10', '20', '20');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (137, '2023-04-30 18:48:45', '2023-04-30 19:06:45', 'pluginGroup/group', 0, '应用', 0, '[\"GET\"]', '10', 'none/index', '', 'AppstoreOutlined', '20', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (138, '2023-04-30 18:54:39', '2023-04-30 18:54:39', 'pluginGroup/tabs', 137, '应用插件', 0, '[\"GET\"]', '10', 'none/index', '', '', '20', '10', '10');
-INSERT INTO `__PREFIX__system_auth_rule` VALUES (139, '2023-04-30 19:05:31', '2023-04-30 19:05:31', 'Plugin/index', 138, '应用中心', 0, '[\"GET\"]', '20', 'table/index', '', '', '20', '10', '10');
+INSERT INTO `__PREFIX__system_auth_rule` VALUES (139, '2023-04-30 19:05:31', '2023-04-30 19:05:31', 'Plugin/index', 138, '应用中心', 0, '[\"GET\"]', '20', 'table/index', 'remote/cloud/plugins', '', '20', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (140, '2023-04-30 19:23:50', '2023-04-30 19:33:18', 'Plugin/buy', 139, '购买应用', 0, '[\"GET\",\"POST\"]', '20', 'none/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (141, '2023-04-30 19:24:28', '2023-04-30 19:33:06', 'Plugin/install', 139, '安装应用', 0, '[\"GET\",\"POST\"]', '20', 'none/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (142, '2023-04-30 19:32:16', '2023-04-30 19:32:56', 'Plugin/update', 139, '更新应用', 0, '[\"GET\",\"PUT\"]', '20', 'none/index', '', '', '10', '10', '10');

@@ -62,7 +62,7 @@ function getAdminView($plugin = '')
     if (!file_exists($viewPath)) {
         throw new Exception('官方后台视图模板文件不存在');
     }
-    $content = file_get_contents($viewPath);
+    $content  = file_get_contents($viewPath);
     $response = Response::create()->content($content);
     return $response;
 }
@@ -77,47 +77,58 @@ function getAdminView($plugin = '')
  * @copyright 贵州猿创科技有限公司
  * @email 416716328@qq.com
  */
- function getHpConfig(string|array $key = '', $appid = null,string $group = '')
- {
-     $model = new \app\common\model\SystemConfig;
-     if ($appid) {
-         # 应用级配置
-         $appModel = StoreAppMgr::detail(['id' => $appid]);
-         if ($appModel) {
-             $model = $model->where('store_id',$appModel['store_id']);
-             $model = $model->where('saas_appid',$appModel['id']);
-         }
-     } else {
-         # 系统级配置
-         $model = $model->where('store_id',NULL);
-         $model = $model->where('saas_appid',NULL);
-         $model = $model->where('group','system');
-     }
-     # 读取分组
-     if ($group) {
-        $model = $model->where('group',$group);
-     }
-     $data = $model->field('value')->column('value');
-     $list = [];
-     foreach ($data as $value) {
-         $item = json_decode($value, true);
-         if (is_array($item)) {
-             foreach ($item as $name => $rowValue) {
-                 $list[$name] = $rowValue;
-             }
-         }
-     }
-     if (empty($list)) {
-         return $list;
-     }
-     if (is_array($key)) {
-         return $list;
-     }
-     if (empty($key)) {
+function getHpConfig(string|array $fields = '', $appid = null, string $group = '')
+{
+    $model = new \app\common\model\SystemConfig;
+    if ($appid) {
+        # 应用级配置
+        $appModel = StoreAppMgr::detail(['id' => $appid]);
+        if ($appModel) {
+            $model = $model->where('store_id', $appModel['store_id']);
+            $model = $model->where('saas_appid', $appModel['id']);
+        }
+    } else {
+        # 系统级配置
+        $model = $model->where('store_id', NULL);
+        $model = $model->where('saas_appid', NULL);
+        $model = $model->where('group', 'system');
+    }
+    # 读取分组
+    if ($group) {
+        $model = $model->where('group', $group);
+    }
+    $data = $model->field('value')->column('value');
+    # 取出部分数据
+    if ($fields && is_array($fields)) {
+        $list = [];
+        foreach ($data as $value) {
+            $item = json_decode($value, true);
+            if (is_array($item)) {
+                foreach ($item as $name => $rowValue) {
+                    if (is_array($fields) && in_array($name, $fields)) {
+                        $list[$name] = $rowValue;
+                    }
+                }
+            }
+        }
         return $list;
-     }
-     return $list[$key] ?? '';
- }
+    }
+    # 字符串处理
+    if ($fields && is_string($fields)) {
+        $list = [];
+        foreach ($data as $value) {
+            $item = json_decode($value, true);
+            if (is_array($item)) {
+                foreach ($item as $name => $rowValue) {
+                    $list[$name] = $rowValue;
+                }
+            }
+        }
+        return $list[$fields] ?? '';
+    }
+    # 取出失败
+    return null;
+}
 
 /**
  * 获取管理员数据
@@ -351,7 +362,7 @@ function p($str, string $remarks = '日志：', bool $type = false)
  */
 function empowerFile(string $fileName, $default = '')
 {
-    $path = root_path()."/{$fileName}.pem";
+    $path = root_path() . "/{$fileName}.pem";
     if (!file_exists($path)) {
         return $default;
     }
@@ -371,10 +382,10 @@ function empowerFile(string $fileName, $default = '')
  * @author 贵州猿创科技有限公司
  * @copyright 贵州猿创科技有限公司
  */
-function renderCustomView(string $file,$plugin = '',string $suffix = 'vue')
+function renderCustomView(string $file, $plugin = '', string $suffix = 'vue')
 {
     # 根目录官方视图文件
-    $filePath = public_path().$file.".".$suffix;
+    $filePath = public_path() . $file . "." . $suffix;
     if ($plugin) {
         $filePath = root_path("plugin/{$plugin}/public/");
     }

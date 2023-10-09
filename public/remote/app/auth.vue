@@ -18,7 +18,7 @@
     <!-- 选择组件弹窗 -->
     <el-dialog v-bind="modalDialog" v-model="modalDialog.show">
       <div class="app-select-list">
-        <div class="item" v-for="(item, index) in ajaxParams.plugin_list" :key="index">
+        <div class="item" v-for="(item, index) in plugin_list" :key="index">
           <div class="app-item" :class="{ 'active': modalDialogActive.includes(item.name) }"
             @click="hanldSelect(item?.name ?? '')">
             <img :src="item?.logo ?? ''" class="logo" alt="" />
@@ -39,10 +39,8 @@
 <script>
 export default {
   props: {
-    modelValue: Array,
-    ajaxParams: {
-      plugin_list: Array
-    },
+    modelValue: Object,
+    plugin_list: Array,
   },
   data() {
     return {
@@ -58,10 +56,10 @@ export default {
   computed: {
     // 获取已选择授权
     getAuthPlugins() {
-      if (!this.ajaxParams?.plugin_list) {
+      if (!this?.plugin_list) {
         return [];
       }
-      return this.ajaxParams.plugin_list.filter((item) => {
+      return this.plugin_list.filter((item) => {
         if (this.modelValue.find((e) => e === item?.name)) {
           return item;
         }
@@ -93,7 +91,7 @@ export default {
     // 显示模态框
     hanldShowDialog() {
       // 检测是否存在安装应用
-      if (!this.ajaxParams?.plugin_list) {
+      if (!this?.plugin_list) {
           this.$useNotify("请先安装应用", 'error', '温馨提示')
         return;
       }

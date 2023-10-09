@@ -62,11 +62,6 @@ class StoreAppController extends BaseController
             return $this->success('授权成功');
         }
         $systemInfo = SystemInfoService::info();
-        $query = [
-            'active' => '2',
-            'limit' => 1000,
-            'saas_version' => $systemInfo['system_version']
-        ];
         $plugins = [];
         try {
             $plugins = StoreAppMgr::getBuyInstallApp();
@@ -93,9 +88,9 @@ class StoreAppController extends BaseController
                     'span' => 24
                 ],
                 'props' => [
-                    'file' => 'remote/app/auth',
-                    'ajaxParams' => [
-                        'plugin_list' => $plugins
+                    'file'                  => 'remote/app/auth',
+                    'ajaxParams'            => [
+                        'plugin_list'       =>$plugins
                     ],
                 ],
             ])

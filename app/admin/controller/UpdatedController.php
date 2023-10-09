@@ -54,7 +54,7 @@ class UpdatedController extends BaseController
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public function __construct(App $app)
+    public function initialize()
     {
         $data = SystemInfoService::info();
         if (!isset($data['system_version'])) {
@@ -68,7 +68,6 @@ class UpdatedController extends BaseController
             'client_version_name' => $this->version_name,
             'client_version' => $this->system_version,
         ];
-        parent::__construct($app);
     }
     
     /**
