@@ -24,10 +24,10 @@
                 <div class="item">
                     <div class="label">版本描述</div>
                     <div class="value">
-                        <el-input type="textarea" placeholder="版本描述（选填）" rows="8" :clearable="true" :value="pageData?.desc" />
+                        <el-input v-model="pageData.desc" type="textarea" placeholder="版本描述（选填）" rows="8" />
                     </div>
                 </div>
-                <div class="item">
+                <!-- <div class="item">
                     <div class="label">发布预览</div>
                     <div class="value">
                         <el-switch v-model="formData.applet_state" inactive-value="10" active-value="20">
@@ -39,7 +39,7 @@
                             </template>
                         </el-switch>
                     </div>
-                </div>
+                </div> -->
                 <div class="item">
                     <div class="label"></div>
                     <div class="value">
@@ -132,9 +132,6 @@ export default {
             const api = this.$moduleName + '/Applet/config'
             this.$http.usePut(api, this.formData).then((res) => {
                 _this.$useNotify(res?.msg ?? '操作成功','success','温馨提示')
-                setTimeout(() => {
-                    window.location.reload()
-                }, 1500);
             }).finally(() => {
                 _this.submitStatus = false;
             })
@@ -149,6 +146,7 @@ export default {
             const api = this.$moduleName + '/Applet/publish'
             const params = {
                 preview: this.formData.applet_state,
+                desc:this.pageData.desc,
             };
             this.$http.usePost(api, params).then((res) => {
                 if (res?.data?.preview) {

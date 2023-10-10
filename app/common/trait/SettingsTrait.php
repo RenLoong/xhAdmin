@@ -1,7 +1,6 @@
 <?php
 namespace app\common\trait;
 
-use app\common\enum\ConfigGroupCol;
 use app\common\manager\StoreAppMgr;
 use app\common\model\SystemConfig;
 use app\common\enum\CustomComponent;
@@ -334,6 +333,9 @@ trait SettingsTrait
     {
         $configValue = [];
         foreach ($data as $field => $value) {
+            if (is_array($value)) {
+                $value = current($value);
+            }
             if (strrpos($field, '.') !== false) {
                 # 解析层级键值
                 $configValue  = $this->configValue($field, $value);

@@ -138,20 +138,16 @@ class StoreAppController extends BaseController
         $builder->addRow('title', 'input', '项目名称', '', [
             'col' => 12,
         ]);
-        $builder->addRow('url', 'input', '项目域名', '', [
-            'col' => 12,
-            'placeholder' => '不带结尾的网址域名，示例：http://www.xhadmin.cn',
+        $builder->addRow('name', 'select', '所属应用', '', [
+            'col'           => 12,
+            'noDataText'    => '您还没有更多的已授权应用',
+            'options'       => $platformList
         ]);
         $builder->addRow('username', 'input', '超管账号', '', [
             'col' => 12,
         ]);
         $builder->addRow('password', 'input', '登录密码', '', [
             'col' => 12,
-        ]);
-        $builder->addRow('name', 'select', '所属应用', '', [
-            'col'           => 12,
-            'noDataText'    => '您还没有更多的已授权应用',
-            'options'       => $platformList
         ]);
         $builder->addComponent('logo', 'uploadify', '项目图标', '', [
             'col' => 12,
@@ -234,14 +230,14 @@ class StoreAppController extends BaseController
             ->addRow('title', 'input', '项目名称', '', [
                 'col' => 12,
             ])
-            ->addRow('url', 'input', '项目域名', '', [
-                'col' => 12,
-                'placeholder' => '不带结尾的网址域名，示例：http://www.kfadmin.com',
-            ])
-            ->addComponent('name', 'info', '绑定应用', '', [
-                'col' => 12,
+            ->addRow('status', 'radio', '项目状态', '10', [
+                'col' => 6,
+                'options' => StatusEnum::getOptions()
             ])
             ->addComponent('platform', 'info', '项目类型', '', [
+                'col' => 12,
+            ])
+            ->addComponent('name', 'info', '绑定应用', '', [
                 'col' => 12,
             ])
             ->addRow('username', 'input', '超管账号', '', [
@@ -256,10 +252,6 @@ class StoreAppController extends BaseController
                     'type' => 'image',
                     'format' => ['jpg', 'jpeg', 'png']
                 ],
-            ])
-            ->addRow('status', 'radio', '项目状态', '10', [
-                'col' => 6,
-                'options' => StatusEnum::getOptions()
             ]);
         $builder->setFormData($formData);
         $data = $builder->create();

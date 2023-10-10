@@ -2,6 +2,7 @@
 
 namespace app\store\controller;
 
+use app\common\manager\StoreMgr;
 use app\common\service\SystemInfoService;
 use app\common\model\Store;
 use app\store\model\StoreMenus;
@@ -27,22 +28,20 @@ class PublicsController extends BaseController
      * @Email 416716328@qq.com
      * @DateTime 2023-04-29
      */
-    public function site()
+    public function site(Request $request)
     {
-        $web_logo = getHpConfig('web_logo');
+        $web_logo = getHpConfig('admin_logo');
         $systemInfo = SystemInfoService::info();
-        $empower_token = empowerFile('token');
-        $private_key = empowerFile('private_key');
         $data = [
             'web_name' => getHpConfig('web_name'),
-            'web_title' => '渠道商登录',
+            'web_title' => '后台登录',
             'web_logo' => empty($web_logo) ? '' : $web_logo,
             'version_name' => $systemInfo['system_version_name'],
             'version' => $systemInfo['system_version'],
             // 版权token
-            'empower_token' => $empower_token,
+            'empower_token' => $systemInfo['site_encrypt'],
             // 版权私钥
-            'empower_private_key' => $private_key,
+            'empower_private_key' => $systemInfo['privatekey'],
             // 登录页链接
             'login_link' => [
                 'register' => '',

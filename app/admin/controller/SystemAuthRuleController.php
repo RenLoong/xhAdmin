@@ -180,11 +180,15 @@ class SystemAuthRuleController extends BaseController
     {
         if ($request->method() === 'POST') {
             $post = $request->post();
-            // 数据验证
+            # 数据验证
             hpValidate(ValidateSystemAuthRule::class, $post, 'add');
-            // 额外验证
+            # 额外验证
             if (strpos($post['path'], '/') !== false) {
                 throw new Exception('权限路由仅需输入控制器名');
+            }
+            # 菜单图标
+            if (isset($post['icon']) && is_array($post['icon'])) {
+                $post['icon'] = $post['icon']['icon'];
             }
             Db::startTrans();
             try {
@@ -343,10 +347,10 @@ class SystemAuthRuleController extends BaseController
         if ($request->method() == 'PUT') {
             $post = $request->post();
 
-            // 数据验证
+            # 数据验证
             hpValidate(ValidateSystemAuthRule::class, $post, 'edit');
 
-            // 额外验证
+            # 额外验证
             if ($post['component'] !== 'remote/index') {
                 if (!isset($post['path']) || !$post['path'] && $post['is_api'] === '1') {
                     return parent::fail('请输入权限路由');
@@ -354,6 +358,10 @@ class SystemAuthRuleController extends BaseController
                 if (!isset($post['method']) || empty($post['method'])) {
                     return parent::fail('至少选择一个请求类型');
                 }
+            }
+            # 菜单图标
+            if (isset($post['icon']) && is_array($post['icon'])) {
+                $post['icon'] = $post['icon']['icon'];
             }
 
             if (!$model->save($post)) {
