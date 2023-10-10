@@ -102,6 +102,8 @@ class SystemUpdateService
         'public/upload',
         'plugin',
         'runtime',
+        'kfadmin-backup.sql',
+        'kfadmin-backup.zip',
     ];
 
     /**
