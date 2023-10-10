@@ -146,6 +146,7 @@ class StoreController extends BaseController
                 'type' => 'danger',
                 'icon' => 'RestOutlined'
             ])
+            ->addScreen('keyword','input','渠道名称')
             ->addColumn('title', '名称')
             ->addColumn('username', '账号')
             ->addColumnEle('logo', '图标', [
@@ -201,8 +202,14 @@ class StoreController extends BaseController
      */
     public function index(Request $request)
     {
+        $keyword = $request->get('keyword','');
+        $where   = [];
+        if ($keyword) {
+            $where[]        = ['title','like', '%' . $keyword . '%'];
+        }
         $model = $this->model;
-        $data  = $model->order(['id' => 'desc'])
+        $data  = $model->where($where)
+            ->order(['id' => 'desc'])
             ->paginate()
             ->each(function ($e) {
                 return $e;
