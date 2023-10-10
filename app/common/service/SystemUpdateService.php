@@ -127,11 +127,11 @@ class SystemUpdateService
         $this->request = $Request;
 
         # 本地版本信息
-        $clientSystemVersion = SystemInfoService::info();
+        $systemInfo = SystemInfoService::info();
         # 客户端版本号
-        $this->clientVersion = $clientSystemVersion['system_version'];
+        $this->clientVersion = $systemInfo['system_version'];
         # 客户端版本名称
-        $this->clientVersionName = $clientSystemVersion['system_version_name'];
+        $this->clientVersionName = $systemInfo['system_version_name'];
 
         # 下载框架更新包临时地址
         $this->tempZipFilePath = runtime_path() . "core/xhadmin-update.zip";
@@ -178,6 +178,7 @@ class SystemUpdateService
         $req = new SystemUpdateRequest;
         $req->getKey();
         $req->target_version = $version;
+        $req->version        = $this->clientVersion;
         $cloud               = new Cloud($req);
         $data                = $cloud->send();
         $downUrl             = $data->url;

@@ -157,7 +157,7 @@ class UpdatedController extends BaseController
             # 开始进行版本回滚
             return (new SystemRollbackService($request))->startRollback();
         } catch (\Throwable $e) {
-            return $this->fail($e->getMessage());
+            throw $e;
         }
     }
 

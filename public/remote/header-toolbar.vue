@@ -27,13 +27,10 @@
             </div>
         </Teleport>
         <!-- 工具栏 -->
-        <div v-if="toolbar.length" class="h-100% flex justify-start items-center">
-            <el-tooltip v-for="(item, index) in toolbar" :key="index" effect="dark" :content="item?.title"
-                placement="bottom">
-                <div class="item-container" @click="item.hanlder">
-                    <AppIcons :icon="item.icon" :size="15" :color="item.isUpdate ? '#ff0000' : '#555'" />
-                </div>
-            </el-tooltip>
+        <div v-if="toolbar.length" class="xhadmin-header-tools">
+            <div class="item" v-for="(item, index) in toolbar" :key="index" @click="item.hanlder">
+                <AppIcons class="icon" :icon="item.icon" :size="17" :color="item.isUpdate ? '#ff0000' : '#555'" />
+            </div>
         </div>
     </div>
 </template>
@@ -58,9 +55,17 @@ export default {
             // 工具栏
             toolbar: [
                 {
-                    title: '打开渠道中心',
+                    title: '刷新页面',
+                    name: 'refresh',
+                    icon: 'Refresh',
+                    hanlder: () => {
+                        window.location.reload()
+                    },
+                },
+                {
+                    title: '渠道中心',
                     name: 'home',
-                    icon: 'HomeOutlined',
+                    icon: 'Monitor',
                     hanlder: () => {
                         window.open('/')
                     },
@@ -151,14 +156,14 @@ export default {
                     status: true,
                     detail: data
                 }
-            }).catch((err) => { 
+            }).catch((err) => {
                 // 未登录
                 if (err?.code === 666) {
                     _this.$useRemote('remote/cloud/login', {}, {
-                        title:'云服务登录',
+                        title: '云服务登录',
                         customStyle: {
                             width: '480px',
-                            height:'430px',
+                            height: '430px',
                         },
                     })
                 }
@@ -262,14 +267,16 @@ export default {
 
             .to-btn {
                 background: #722ED1;
-                &:hover{
+
+                &:hover {
                     background: #a065e9;
                 }
             }
 
             .cancel-btn {
                 background: #FF7D00;
-                &:hover{
+
+                &:hover {
                     background: #ff9d00;
                 }
             }
@@ -277,16 +284,44 @@ export default {
     }
 }
 
-.item-container {
-    height: 100%;
-    padding: 0 0.8rem;
-    display: flex;
-    align-items: center;
-    user-select: none;
-    cursor: pointer;
+@keyframes logo-animation {
+    0% {
+        -webkit-transform: scale(0);
+        transform: scale(0)
+    }
+
+    80% {
+        -webkit-transform: scale(1.2);
+        transform: scale(1.2)
+    }
+
+    to {
+        -webkit-transform: scale(1);
+        transform: scale(1)
+    }
 }
 
-.item-container:hover {
-    background: #f3f3f3;
+.xhadmin-header-tools {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .item {
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        user-select: none;
+        cursor: pointer;
+        padding: 0 10px;
+
+        &:hover {
+            .icon {
+                -webkit-animation: logo-animation .3s ease-in-out;
+                animation: logo-animation .3s ease-in-out;
+            }
+        }
+    }
 }
 </style>

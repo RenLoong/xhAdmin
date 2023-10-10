@@ -1,6 +1,6 @@
 <template>
   <div class="update-container" v-if="updated.version">
-    <div class="title">本地当前版本 {{updated.client_version_name}}（{{updated.client_version}}）</div>
+    <div class="title">本地当前版本 {{ updated.client_version_name }}（{{ updated.client_version }}）</div>
     <div class="content">
       <div class="main-tabs">
         <div class="item" :class="{ active: stepData.step === item?.step }" v-for="(item, index) in stepData.list"
@@ -11,20 +11,21 @@
       </div>
       <!-- 更新中 -->
       <div class="update-desc-container" v-if="stepData.lock">
-        <div class="update-desc-title">更新中，请勿刷新或离开当前页面</div>
-        <div class="update-desc">
-          {{ stepData?.updateText }}
+        <div class="update-desc-title">
+          <div class="next-title">更新中，请勿刷新或离开当前页面...</div>
+        </div>
+        <div class="update-ing">
+          <AppIcons class="update-loading" icon="Refresh" />
+          <span class="update-loading-text">{{ stepData?.updateText }}</span>
         </div>
       </div>
       <!-- 准备更新 -->
       <div class="update-desc-container" v-else>
         <div class="update-desc-title">
           版本更新内容
-          <span class="next-version">{{updated.version_name}}（{{updated.version}}）</span>
+          <span class="next-version">{{ updated.version_name }}（{{ updated.version }}）</span>
         </div>
-        <div class="update-desc">
-          <pre class="version-pre">{{ updated?.content }}</pre>
-        </div>
+        <pre class="update-desc">{{ updated?.content }}</pre>
         <div class="update-buttons">
           <button class="update-btn submit-btn" @click="hanldUpdate">
             立即更新
@@ -32,17 +33,17 @@
         </div>
       </div>
       <!-- 温馨提示 -->
-          <div class="update-tip">
-            <el-alert title="更新小提示" type="error" :closable="false">
-              <div class="update-line-content">
-                <div>1、无论更新成功与否，都会在更新前备份代码与数据库，可放心更新</div>
-                <div>2、备份的代码与数据库会在站点根目录下的backup目录下</div>
-                <div>3、切记，backup目录下的备份文件，相同版本备份文件会覆盖</div>
-                <div>4、更新过程中，会出现更新中的提示，不要刷新页面或离开当前页面</div>
-                <div>5、更新前，请确保站点根目录下的.env文件里的APP_DEBUG为false</div>
-              </div>
-            </el-alert>
+      <div class="update-tip">
+        <el-alert title="更新小提示" type="error" :closable="false">
+          <div class="update-line-content">
+            <div>1、无论更新成功与否，都会在更新前备份代码与数据库，可放心更新</div>
+            <div>2、备份的代码与数据库会在站点根目录下的backup目录下</div>
+            <div>3、切记，backup目录下的备份文件，相同版本备份文件会覆盖</div>
+            <div>4、更新过程中，会出现更新中的提示，不要刷新页面或离开当前页面</div>
+            <div>5、更新前，请确保站点根目录下的.env文件里的APP_DEBUG为false</div>
           </div>
+        </el-alert>
+      </div>
     </div>
   </div>
 </template>
@@ -169,13 +170,13 @@ export default {
   flex-direction: column;
 
   .title {
-    padding: 30px;
+    padding: 20px 30px;
     font-size: 18px;
   }
 
   .content {
     flex: 1;
-    margin-top: 20px;
+    margin: 20px 0;
     padding: 0 30px;
     overflow-y: auto;
     overflow-x: hidden;
@@ -222,31 +223,49 @@ export default {
     }
 
     .update-desc-container {
-      padding: 30px 0;
+      padding: 20px 0;
 
       .update-desc-title {
         font-size: 20px;
         font-weight: 700;
-        .next-version{
+        display: flex;
+        .next-title{
+          color:red;
+        }
+
+        .next-version {
           padding-left: 10px;
+        }
+      }
+      .update-ing{
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        line-height: 26px;
+        color: #70767E;
+        white-space: pre-wrap;
+        word-break: break-word;
+        padding: 20px 0;
+        margin:0;
+        .update-loading{
+          animation: update-ing 1s linear infinite;
+        }
+        .update-loading-text{
+          padding-left:5px;
         }
       }
 
       .update-desc {
+        height: 200px;
+        font-size: 14px;
+        line-height: 26px;
         color: #70767E;
+        white-space: pre-wrap;
+        word-break: break-word;
+        margin: 0;
         padding: 20px 0;
-        height: 320px;
         overflow-x: hidden;
         overflow-y: auto;
-
-        .version-pre {
-          display: block;
-          width: 100%;
-          font-size: 14px;
-          color: #555;
-          white-space: pre-wrap;
-          word-break: break-word;
-        }
       }
 
       .update-buttons {
@@ -254,9 +273,9 @@ export default {
         gap: 30px;
 
         .update-btn {
-          width: 180px;
-          height: 45px;
-          border-radius: 8px;
+          width: 150px;
+          height: 40px;
+          border-radius: 4px;
           border: 0;
           cursor: pointer;
         }
@@ -283,14 +302,26 @@ export default {
         }
       }
     }
+
     .update-tip {
       margin-top: 10px;
     }
   }
 }
-.update-line-content{
+
+.update-line-content {
   line-height: 36px;
-  font-size:16px;
+  font-size: 16px;
+}
+@keyframes update-ing {
+ from {
+  -webkit-animation: rotate(0deg);
+    transform: rotate(0deg);
+ }
+ to {
+  -webkit-animation: rotate(360deg);
+   transform: rotate(360deg);
+ }
 }
 </style>
   
