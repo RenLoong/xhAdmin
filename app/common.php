@@ -82,11 +82,7 @@ function getHpConfig(string|array $fields = '', $appid = null, string $group = '
     $model = new \app\common\model\SystemConfig;
     if ($appid) {
         # 应用级配置
-        $appModel = StoreAppMgr::detail(['id' => $appid]);
-        if ($appModel) {
-            $model = $model->where('store_id', $appModel['store_id']);
-            $model = $model->where('saas_appid', $appModel['id']);
-        }
+        $model = $model->where('saas_appid', $appid);
     } else {
         # 系统级配置
         $model = $model->where('store_id', NULL);
