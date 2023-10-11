@@ -47,6 +47,7 @@ class PhpZipArchiveMgr
      */
     public function build(string $zipFilePath, string $extractTo, array $ignoreFiles = [])
     {
+        print_r($ignoreFiles);
         $zip        = $this->zipCls;
         $openStatus = $zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
         if ($openStatus !== true) {
@@ -66,7 +67,7 @@ class PhpZipArchiveMgr
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      */
-    public function buildFiles(string $zipFilePath,string $extractTo, array $files)
+    public function buildFiles(string $zipFilePath, string $extractTo, array $files)
     {
         $zip        = $this->zipCls;
         $openStatus = $zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
@@ -78,7 +79,7 @@ class PhpZipArchiveMgr
             $filePath = "{$extractTo}/{$file}";
             if (is_file($filePath) && file_exists($filePath)) {
                 $zip->addFile($filePath, $file);
-            }else if(is_dir($filePath)){
+            } else if (is_dir($filePath)) {
                 $this->addFileToZip($zip, $filePath, "{$file}/");
             }
         }
@@ -96,17 +97,24 @@ class PhpZipArchiveMgr
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      */
-    private function addFileToZip(ZipArchive $zip, string $sourcePath, string $zipPath = '/', array $ignoreFiles = [])
+    private function addFileToZip(ZipArchive $zip, string $extractTo, string $zipPath = '/', array $ignoreFiles = [],$local_parent_path = null)
     {
-        $files = scandir($sourcePath);
+        $files = scandir($extractTo);
         foreach ($files as $file) {
             if ($file != "." && $file != "..") {
-                $path = $sourcePath . DIRECTORY_SEPARATOR . $file;
-                if (!in_array($path, $ignoreFiles)) {
-                    if (is_dir($path)) {
+                if ($local_parent_path) {
+                    $local_path = trim("$local_parent_path/$file", '/'); // 相对zip资源内的路径
+                } else {
+                    $local_path = trim("$file", '/'); // 相对zip资源内的路径
+                }
+                $path = $extractTo . DIRECTORY_SEPARATOR . $file;
+                if (is_dir($path)) {
+                    if (!in_array(rtrim($local_path, '/'), $ignoreFiles)) {
                         $zip->addEmptyDir($zipPath . $file);
-                        $this->addFileToZip($zip, $path, $zipPath . $file . DIRECTORY_SEPARATOR);
-                    } else if(is_file($path) && file_exists($path)){
+                        $this->addFileToZip($zip, $path, $zipPath . $file . DIRECTORY_SEPARATOR,$ignoreFiles,$local_path);
+                    }
+                } else if (is_file($path) && file_exists($path)) {
+                    if (!in_array($path, $ignoreFiles)) {
                         $zip->addFile($path, $zipPath . $file);
                     }
                 }

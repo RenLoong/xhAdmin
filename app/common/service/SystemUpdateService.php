@@ -97,9 +97,11 @@ class SystemUpdateService
      * @email 416716328@qq.com
      */
     protected $ignoreList = [
+        '.git',
         'backup',
         'update',
         'public/upload',
+        'public/uploads',
         'plugin',
         'runtime',
         'kfadmin-backup.sql',
@@ -218,8 +220,6 @@ class SystemUpdateService
             }
             # 备份原始代码
             ZipMgr::build($this->backupCodePath, $this->targetPath, $this->ignoreList);
-            # 备份覆盖代码
-            // ZipMgr::buildFiles($this->backCoverPath, $this->targetPath, $this->backCoverList);
         } catch (\Throwable $e) {
             Log::write(
                 "备份代码失败：{$e->getMessage()}，Line：{$e->getFile()}，File：{$e->getFile()}",
