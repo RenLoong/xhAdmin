@@ -113,18 +113,24 @@ function getHpConfig(string|array $fields = '', $appid = null, string $group = '
         }
         return $list;
     }
-    # 字符串处理
-    if ($fields && is_string($fields)) {
-        $list = [];
-        foreach ($data as $value) {
-            $item = json_decode($value, true);
-            if (is_array($item)) {
-                foreach ($item as $name => $rowValue) {
-                    $list[$name] = $rowValue;
-                }
+    # 组装所需数据
+    $list = [];
+    foreach ($data as $value) {
+        $item = json_decode($value, true);
+        if (is_array($item)) {
+            foreach ($item as $name => $rowValue) {
+                $list[$name] = $rowValue;
             }
         }
+    }
+    # 字符串处理
+    if ($fields && is_string($fields)) {
+        # 取出部分数据
         return $list[$fields] ?? '';
+    }
+    # 取出全部数据
+    if (empty($fields) && is_string($fields)) {
+        return $list;
     }
     # 取出失败
     return null;
