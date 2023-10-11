@@ -76,14 +76,12 @@ trait SettingsTrait
                 # 查询数据
                 $where = [
                     'group'             => $value['name'],
-                    'store_id'          => $storeApp['store_id'],
                     'saas_appid'        => $storeApp['id'],
                 ];
                 $model = SystemConfig::where($where)->find();
                 if (!$model) {
                     $model                  = new SystemConfig;
                     $model->group           = $value['name'];
-                    $model->store_id        = $storeApp['store_id'];
                     $model->saas_appid      = $storeApp['id'];
                 }
                 $saveValue = [];
