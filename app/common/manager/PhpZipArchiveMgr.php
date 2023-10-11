@@ -47,7 +47,6 @@ class PhpZipArchiveMgr
      */
     public function build(string $zipFilePath, string $extractTo, array $ignoreFiles = [])
     {
-        print_r($ignoreFiles);
         $zip        = $this->zipCls;
         $openStatus = $zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
         if ($openStatus !== true) {
