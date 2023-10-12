@@ -67,6 +67,7 @@ class XhAdmin extends Command
                 if ($listNum > 0) {
                     $EasyTask->start();
                 } else {
+                    Cache::set('xhadmin_task', 'no');
                     $output->writeln('没有需要启动的队列或定时任务');
                 }
                 break;

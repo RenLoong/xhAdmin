@@ -7,6 +7,7 @@ use app\common\service\SystemInfoService;
 use app\common\BaseController;
 use app\common\enum\PlatformTypes;
 use support\Request;
+use think\facade\Cache;
 
 /**
  * 首页数据
@@ -100,12 +101,18 @@ class IndexController extends BaseController
                 ],
             ];
         }
+        // 获取队列信息
+        $taskQueue = '';
+        if (!Cache::has('xhadmin_task') || Cache::get('xhadmin_task') == 'no') {
+            $taskQueue = "当前系统未启动队列\n请执行命令：php think xhadmin start -d\n\n如使用 supervisor 管理软件\n请使用该命令：php think xhadmin start";
+        }
 
         $data = [
-            'team' => $team,
-            'product' => $product,
-            'platformApp' => $platformApp,
-            'platform_echarts' => $platform_echarts
+            'team'                  => $team,
+            'product'               => $product,
+            'platformApp'           => $platformApp,
+            'taskQueue'             => $taskQueue,
+            'platform_echarts'      => $platform_echarts
         ];
         return $this->successRes($data);
     }

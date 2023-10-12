@@ -1,5 +1,10 @@
 <template>
   <div class="app-container">
+    <!-- 任务队列检测 -->
+    <div class="task-queue-container" v-if="taskQueue">
+      <div class="task-title">温馨提示</div>
+      <pre class="task-queue">{{ taskQueue }}</pre>
+    </div>
     <!-- 平台应用 -->
     <div class="platform-count">
       <div class="num-container">
@@ -17,7 +22,7 @@
             <img src="/image/mini_wechat-3.png" class="logo" alt="">
           </div>
           <div class="content">
-            <el-statistic title="微信小程序" value-style="font-size:1rem;" :value="platformApp.wechat" />
+            <el-statistic title="微信小程序" value-style="font-size:1rem;" :value="platformApp.mini_wechat" />
           </div>
         </div>
         <div class="item">
@@ -25,7 +30,7 @@
             <img src="/image/douyin-3.png" class="logo" alt="">
           </div>
           <div class="content">
-            <el-statistic title="抖音小程序" value-style="font-size:1rem;" :value="platformApp.wechat" />
+            <el-statistic title="抖音小程序" value-style="font-size:1rem;" :value="platformApp.douyin" />
           </div>
         </div>
         <div class="item">
@@ -33,7 +38,7 @@
             <img src="/image/h5-3.png" class="logo" alt="">
           </div>
           <div class="content">
-            <el-statistic title="网页应用" value-style="font-size:1rem;" :value="platformApp.wechat" />
+            <el-statistic title="网页应用" value-style="font-size:1rem;" :value="platformApp.h5" />
           </div>
         </div>
         <div class="item">
@@ -41,7 +46,7 @@
             <img src="/image/app-3.png" class="logo" alt="">
           </div>
           <div class="content">
-            <el-statistic title="APP应用" value-style="font-size:1rem;" :value="platformApp.wechat" />
+            <el-statistic title="APP应用" value-style="font-size:1rem;" :value="platformApp.app" />
           </div>
         </div>
         <div class="item">
@@ -49,7 +54,7 @@
             <img src="/image/other-3.png" class="logo" alt="">
           </div>
           <div class="content">
-            <el-statistic title="其他应用" value-style="font-size:1rem;" :value="platformApp.wechat" />
+            <el-statistic title="其他应用" value-style="font-size:1rem;" :value="platformApp.other" />
           </div>
         </div>
       </div>
@@ -91,11 +96,13 @@
 export default {
   data() {
     return {
+      taskQueue:'',
       platformApp: {
         wechat: 0,
         mini_wechat: 0,
         douyin: 0,
         h5: 0,
+        app:0,
         other: 0,
       },
       // 团队
@@ -174,6 +181,7 @@ export default {
       _this.$http.useGet('admin/Index/consoleCount').then((res) => {
         const { data } = res;
         _this.platformApp = data.platformApp
+        _this.taskQueue = data?.taskQueue ?? ''
         _this.teamTable = _this.checkTeamRule(data.team)
         _this.httpOptions.series = data.platform_echarts
         _this.echats = this.$echarts.init(this.$refs.httpRef);
@@ -188,8 +196,23 @@ export default {
 .app-container {
   height: 100%;
 
+  .task-queue-container{
+    background: #fff;
+    padding:10px 20px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    .task-title{
+      font-size:14px;
+    }
+    .task-queue{
+      margin:0;
+      color:red;
+      font-size:12px;
+      line-height:26px;
+    }
+  }
   .platform-count {
-    padding: 0 0 20px 0;
+    padding: 0 0 10px 0;
 
     .num-container {
       display: flex;
@@ -197,7 +220,6 @@ export default {
 
       .item {
         width: 16.666%;
-        margin-top: 20px;
         display: flex;
         justify-content: center;
         align-items: center;
