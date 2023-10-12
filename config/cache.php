@@ -28,12 +28,12 @@ return [
         'redis' => [
             // 驱动方式
             'type' => 'Redis',
-            'host' => env('REDIS.REDIS_HOST', '127.0.0.1'),
-            'port' => env('REDIS.REDIS_PORT', '6379'),
-            'password' => env('REDIS.REDIS_PASSWORD', ''),
-            'select' => env('REDIS.REDIS_DB', '0'),
+            'host' => env('REDIS_REDIS_HOST', '127.0.0.1'),
+            'port' => env('REDIS_REDIS_PORT', '6379'),
+            'password' => env('REDIS_REDIS_PASSWORD', ''),
+            'select' => env('REDIS_REDIS_DB', '0'),
             // 缓存前缀
-            'prefix' => env('REDIS.REDIS_PREFIX', 'u_'),
+            'prefix' => env('REDIS_REDIS_PREFIX', 'u_'),
             // 缓存有效期 0表示永久缓存
             'expire' => 0,
             // 缓存标签前缀
