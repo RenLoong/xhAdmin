@@ -103,7 +103,7 @@ class IndexController extends BaseController
         }
         // 获取队列信息
         $taskQueue = '';
-        if (!Cache::has('xhadmin_task') || Cache::get('xhadmin_task') !== 'no') {
+        if (!Cache::has('xhadmin_task')) {
             $taskQueue = "当前系统未启动队列\n请执行命令：php think xhadmin start -d\n\n如使用 supervisor 管理软件\n请使用该命令：php think xhadmin start";
         }
 
