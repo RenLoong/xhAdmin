@@ -20,9 +20,8 @@ return [
         'component'     => 'input',
         'extra'         => [
             'props'     => [
-                'type'  => 'text',
-                'disabled'      => true,
-                'placeholder'   => '请输入网站域名',
+                'type'          => 'text',
+                'placeholder'   => '请输入网站链接，无斜杠结尾，如：https://www.xxxx.com',
             ],
         ],
     ],

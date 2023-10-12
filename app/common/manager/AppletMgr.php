@@ -130,16 +130,24 @@ class AppletMgr
         if (!is_dir($pluginPath)) {
             throw new Exception('项目绑定的应用未安装');
         }
+        $web_url = getHpConfig('web_url', '', 'system');
+        if (empty($web_url)) {
+            throw new Exception('请先配置网站域名');
+        }
+        # 判断链接是否https
+        if (strpos($web_url, 'https://') === false) {
+            throw new Exception('网站域名必须为https');
+        }
         $query = [
-            'appid' => $config['applet_appid'],
-            'name' => $model['name'],
-            'preview_desc' => '',
-            'type' => 'wxmp',
-            'siteinfo' => [
-                'name' => $model['title'],
-                'siteroot' => $model['url'],
-                'app_id' => $model['id'],
-                'wx_appid' => $config['applet_appid'],
+            'appid'             => $config['applet_appid'],
+            'name'              => $model['name'],
+            'preview_desc'      => '',
+            'type'              => 'wxmp',
+            'siteinfo'          => [
+                'name'          => $model['title'],
+                'siteroot'      => $web_url,
+                'app_id'        => $model['id'],
+                'wx_appid'      => $config['applet_appid'],                                      
             ]
         ];
         $data  = CloudServiceRequest::Miniproject()
