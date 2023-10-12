@@ -137,7 +137,6 @@ class DevelopController extends BaseController
      */
     protected function copyTplFile(string $pluginPath, string $pluginName, array $data)
     {
-        print_r(request()->post());exit;
         # 普通文件
         $ordinary = [
             'api/Created.tpl',
@@ -165,7 +164,10 @@ class DevelopController extends BaseController
             'app/admin/controller/OnePageController.tpl',
         ];
         # 系统配置
-        $setting = [];
+        $settings = $data['settings'] ?? [];
+        foreach ($settings as $key => $value) {
+            $settings[$key] = "config/settings/{$value}.tpl";
+        }
         # 权限管理
         $auth   = [
             'app/admin/controller/MenusController.tpl',
@@ -174,7 +176,7 @@ class DevelopController extends BaseController
         ];
 
         # 合并文件
-        $data = [];
+        $data = array_merge($ordinary, $article, $onePage, $settings, $auth);
         foreach ($data as $path) {
             $filePath = $pluginPath . '/' . $path;
             $dirPath  = dirname($filePath);
@@ -219,28 +221,25 @@ class DevelopController extends BaseController
             'col' => 12,
             'options' => YesNoEum::getOptions()
         ]);
-        $builder->addRow('is_system', 'checkbox', '系统配置', ['10'], [
+        $builder->addRow('settings', 'checkbox', '系统配置', ['system'], [
             'col' => 12,
             'options' => SettingsEnum::getOptions()
         ]);
-        $builder->addRow('is_auth', 'radio', '权限管理', '10', [
+        $builder->addRow('is_auth', 'radio', '权限管理', '20', [
             'col' => 12,
-            'options' => YesNoEum::getOptions(),
-            'control' => [
+            'options' => [
                 [
-                    'value' => '20',
-                    'where' => '==',
-                    'rule' => [
-                        Elm::input('auth_params', '超管账号')
-                            ->col([
-                                'span' => 12
-                            ]),
-                        Elm::input('password', '登录密码')->col([
-                            'span' => 12
-                        ]),
-                    ]
+                    'label'     => '必须',
+                    'disabled'  => true,
+                    'value'     => '20',
                 ],
-            ],
+            ]
+        ]);
+        $builder->addRow('username', 'input', '超管账号', '', [
+            'col' => 12,
+        ]);
+        $builder->addRow('password', 'input', '登录密码', '', [
+            'col' => 12,
         ]);
         return $builder;
     }

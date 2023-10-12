@@ -174,11 +174,16 @@ abstract class Enum extends EnumBaseic
     {
         $data = self::toArray();
         $list = [];
+        $i    = 0;
         foreach ($data as $value) {
-            $list[] = [
+            $list[$i] = [
                 'label'     => $value['text'],
                 'value'     => $value['value'],
             ];
+            if (isset($value['disabled'])) {
+                $list[$i]['disabled'] = $value['disabled'];
+            }
+            $i++;
         }
         return $list;
     }
