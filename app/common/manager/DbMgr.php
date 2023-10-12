@@ -26,6 +26,7 @@ class DbMgr
             Db::statement($item);
         }
     }
+
     /**
      * 执行原生SQL
      * @param string $sql
@@ -38,33 +39,6 @@ class DbMgr
     {
         return Db::statement($sql);
     }
-
-    /**
-     * 检测表是否存在
-     * @param string $table
-     * @return bool
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
-     */
-    public static function hasTable(string $table)
-    {
-        return self::schema()->hasTable($table);
-    }
-    
-    /**
-     * 数据库字符串转义
-     * @param mixed $var
-     * @return bool|string
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
-     */
-    public static function pdoQuote($var)
-    {
-        return self::instance()->getPdo()->quote($var, \PDO::PARAM_STR);
-    }
-
     
     /**
      * 检查表名是否合法
@@ -99,20 +73,6 @@ class DbMgr
             }
         });
         return $var;
-    }
-
-    /**
-     * 检测字段是否存在
-     * @param string $table
-     * @param string $field
-     * @return bool
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
-     */
-    public static function hasField(string $table,string $field)
-    {
-        return self::schema()->hasColumn($table,$field);
     }
 
     /**
@@ -176,28 +136,19 @@ class DbMgr
         }
         return $output;
     }
-
-    /**
-     * 获取数据库管理对象
-     * @return \Illuminate\Database\Schema\Builder
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
-     */
-    public static function schema()
-    {
-        return Db::schema();
-    }
-
+    
     /**
      * 获取连接实例
-     * @return \Illuminate\Database\Connection
+     * @return Db
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
     public static function instance()
     {
-        return Db::connection();
+        /** @var \think\facade\Db */
+        $connect = Db::connect();
+        $connect->execute('show tables');
+        return $connect;
     }
 }
