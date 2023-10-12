@@ -120,9 +120,6 @@ class AppletMgr
         if (empty($model['title'])) {
             throw new Exception('请填写项目名称');
         }
-        if (empty($model['url'])) {
-            throw new Exception('请填写项目域名');
-        }
         if (empty($model['name'])) {
             throw new Exception('项目绑定应用错误');
         }
