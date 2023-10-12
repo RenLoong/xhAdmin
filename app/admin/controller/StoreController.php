@@ -17,7 +17,7 @@ use think\facade\Db;
 use think\facade\Session;
 
 /**
- * 租户管理
+ * 渠道管理
  *
  * @author 贵州猿创科技有限公司
  * @Email 416716328@qq.com
@@ -72,7 +72,7 @@ class StoreController extends BaseController
                 'api' => 'admin/Store/add',
                 'path' => '/Store/add',
             ], [
-                'title' => '开通租户',
+                'title' => '开通渠道',
             ], [
                 'type' => 'primary'
             ])
@@ -109,7 +109,7 @@ class StoreController extends BaseController
                 'api'       => 'admin/Store/copyrightSet',
                 'path'      => '/Store/copyrightSet',
             ], [
-                'title' => '租户版权设置',
+                'title' => '渠道版权设置',
             ], [
                 'type' => 'primary',
                 'icon' => 'EditOutlined'
@@ -122,18 +122,18 @@ class StoreController extends BaseController
                 'type' => 'info',
                 'icon' => 'DesktopOutlined'
             ])
-            ->addRightButton('edit', '修改租户', [
+            ->addRightButton('edit', '修改渠道', [
                 'group'     => true,
                 'type' => 'page',
                 'api' => 'admin/Store/edit',
                 'path' => '/Store/edit',
             ], [
-                'title' => '修改租户',
+                'title' => '修改渠道',
             ], [
                 'type' => 'primary',
                 'icon' => 'EditOutlined'
             ])
-            ->addRightButton('del', '删除租户', [
+            ->addRightButton('del', '删除渠道', [
                 'group'     => true,
                 'type' => 'confirm',
                 'api' => 'admin/Store/del',
@@ -170,7 +170,7 @@ class StoreController extends BaseController
                     ]
                 ],
             ])
-            ->addColumnEle('surplusNum', '租户资产：已创建/总数量', [
+            ->addColumnEle('surplusNum', '渠道资产：已创建/总数量', [
                 'width' => 330,
                 'params' => [
                     'type' => 'assets',
@@ -245,7 +245,7 @@ class StoreController extends BaseController
         $builder = new FormBuilder;
         $data    = $builder
             ->setMethod('POST')
-            ->addRow('username', 'input', '租户账号', '', [
+            ->addRow('username', 'input', '渠道账号', '', [
                 'col' => [
                     'span' => 12
                 ],
@@ -255,7 +255,7 @@ class StoreController extends BaseController
                     'span' => 12
                 ],
             ])
-            ->addRow('title', 'input', '租户名称', '', [
+            ->addRow('title', 'input', '渠道名称', '', [
                 'col' => [
                     'span' => 12
                 ],
@@ -277,7 +277,7 @@ class StoreController extends BaseController
                     'span' => 12
                 ],
             ])
-            ->addComponent('logo', 'uploadify', '租户图标', '', [
+            ->addComponent('logo', 'uploadify', '渠道图标', '', [
                 'col' => [
                     'span' => 6
                 ],
@@ -286,7 +286,7 @@ class StoreController extends BaseController
                     'format' => ['jpg', 'png', 'gif']
                 ],
             ])
-            ->addRow('remarks', 'textarea', '租户备注', '', [
+            ->addRow('remarks', 'textarea', '渠道备注', '', [
                 'col' => [
                     'span' => 18
                 ],
@@ -365,7 +365,7 @@ class StoreController extends BaseController
         $builder                 = new FormBuilder;
         $data                    = $builder
             ->setMethod('PUT')
-            ->addRow('username', 'input', '租户账号', '', [
+            ->addRow('username', 'input', '渠道账号', '', [
                 'col' => [
                     'span' => 12
                 ],
@@ -375,7 +375,7 @@ class StoreController extends BaseController
                     'span' => 12
                 ],
             ])
-            ->addRow('title', 'input', '租户名称', '', [
+            ->addRow('title', 'input', '渠道名称', '', [
                 'col' => [
                     'span' => 12
                 ],
@@ -397,7 +397,7 @@ class StoreController extends BaseController
                     'span' => 12
                 ],
             ])
-            ->addComponent('logo', 'uploadify', '租户图标', '', [
+            ->addComponent('logo', 'uploadify', '渠道图标', '', [
                 'col' => [
                     'span' => 6
                 ],
@@ -406,7 +406,7 @@ class StoreController extends BaseController
                     'format' => ['jpg', 'png', 'gif']
                 ],
             ])
-            ->addRow('remarks', 'textarea', '租户备注', '', [
+            ->addRow('remarks', 'textarea', '渠道备注', '', [
                 'col' => [
                     'span' => 18
                 ],
@@ -476,19 +476,19 @@ class StoreController extends BaseController
         $builder  = new FormBuilder;
         $data     = $builder
             ->setMethod('PUT')
-            ->addRow('title', 'input', '租户名称', '', [
+            ->addRow('title', 'input', '渠道名称', '', [
                 'col' => [
                     'span' => 12
                 ],
             ])
             ->addRow('copyright_service', 'input', '专属客服', '', [
-                'placeholder' => '租户首页展示的专属客服，如不填写，则按照系统配置中的显示',
+                'placeholder' => '渠道首页展示的专属客服，如不填写，则按照系统配置中的显示',
                 'col' => [
                     'span' => 12
                 ],
             ])
             ->addRow('copyright_tutorial', 'textarea', '系统教程', '', [
-                'placeholder' => '租户首页展示的系统教程，如不填写，则按照系统配置中的显示',
+                'placeholder' => '渠道首页展示的系统教程，如不填写，则按照系统配置中的显示',
             ])
             ->setFormData($formData)
             ->create();
@@ -511,7 +511,7 @@ class StoreController extends BaseController
         # 开启事务
         Db::startTrans();
         try {
-            # 查询租户信息
+            # 查询渠道信息
             $where = [
                 'id' => $id
             ];
@@ -519,23 +519,23 @@ class StoreController extends BaseController
             if (!$model) {
                 throw new Exception('该数据不存在');
             }
-            # 删除租户下的所有用户
+            # 删除渠道下的所有用户
             $users = Users::where($where)->select();
             foreach ($users as $userModel) {
                 if (!$userModel->delete()) {
-                    throw new Exception('删除租户用户失败');
+                    throw new Exception('删除渠道用户失败');
                 }
             }
             # 删除平台下应用
             $apps = StoreApp::where($where)->select();
             foreach ($apps as $appModel) {
                 if (!$appModel->delete()) {
-                    throw new Exception('删除租户应用失败');
+                    throw new Exception('删除渠道应用失败');
                 }
             }
-            # 删除租户
+            # 删除渠道
             if (!$model->delete()) {
-                throw new Exception('删除租户失败');
+                throw new Exception('删除渠道失败');
             }
             Db::commit();
             return $this->success('删除成功');
@@ -546,7 +546,7 @@ class StoreController extends BaseController
     }
 
     /**
-     * 登录租户平台
+     * 登录渠道平台
      * @param Request $request
      * @return \support\Response
      * @copyright 贵州猿创科技有限公司

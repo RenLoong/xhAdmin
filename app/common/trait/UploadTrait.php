@@ -4,7 +4,6 @@ namespace app\common\trait;
 use app\common\builder\FormBuilder;
 use app\common\model\SystemUpload;
 use app\common\service\UploadService;
-use Exception;
 use app\common\utils\Json;
 use support\Request;
 
