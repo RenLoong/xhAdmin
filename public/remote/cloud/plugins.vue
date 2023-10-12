@@ -289,12 +289,12 @@ export default {
         background: 'rgba(0, 0, 0, 0.7)',
       });
       const queryParams = {
-        type:'bindsite'
+        type: 'bindsite'
       }
       _this.$http.useGet("admin/Plugin/getLink", queryParams).then((res) => {
         if (!res?.data?.url) {
-          _this.$useNotify('未能成功获取跳转连接', 'error', '温馨提示');         
-          return; 
+          _this.$useNotify('未能成功获取跳转连接', 'error', '温馨提示');
+          return;
         }
         window.open(res?.data?.url);
       }).catch((err) => {
@@ -319,7 +319,7 @@ export default {
           _this.dialogData.show = false;
           _this.getList();
         }).catch((err) => {
-          _this.$useNotify.useNotify(err?.msg || '异常错误', 'error', '温馨提示');
+          _this.$useNotify(err?.msg || '异常错误', 'error', '温馨提示');
         }).finally(() => {
           loading.close();
         })
@@ -356,12 +356,16 @@ export default {
     // 发送购买请求
     sendBuy() {
       const _this = this;
-      _this.$http.usePost("admin/Plugin/buy", this.form).then((res) => {
+      const queryParams = {
+        name: _this.detail?.name,
+        version: _this.detail?.version
+      }
+      _this.$http.usePost("admin/Plugin/buy", queryParams).then((res) => {
         _this.$useNotify(res?.msg || '操作成功', 'success', '温馨提示');
-        _this.getDetail();
         _this.getList();
+        _this.dialogData.show = false;
       }).catch((err) => {
-        _this.$useNotify.useNotify(err?.msg || '异常错误', 'error', '温馨提示');
+        _this.$useNotify(err?.msg || '异常错误', 'error', '温馨提示');
       })
     },
     // 购买

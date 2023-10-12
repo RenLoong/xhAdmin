@@ -137,7 +137,9 @@ class DevelopController extends BaseController
      */
     protected function copyTplFile(string $pluginPath, string $pluginName, array $data)
     {
-        $data = [
+        print_r(request()->post());exit;
+        # 普通文件
+        $ordinary = [
             'api/Created.tpl',
             'api/Install.tpl',
             'api/Login.tpl',
@@ -153,6 +155,26 @@ class DevelopController extends BaseController
             'package/remarks.txt',
             'public/remarks.txt',
         ];
+        # 文章系统
+        $article = [
+            'app/admin/controller/ArtCategoryController.tpl',
+            'app/admin/controller/ArticlesController.tpl',
+        ];
+        # 单页应用
+        $onePage = [
+            'app/admin/controller/OnePageController.tpl',
+        ];
+        # 系统配置
+        $setting = [];
+        # 权限管理
+        $auth   = [
+            'app/admin/controller/MenusController.tpl',
+            'app/admin/controller/RolesController.tpl',
+            'app/admin/controller/AdminController.tpl',
+        ];
+
+        # 合并文件
+        $data = [];
         foreach ($data as $path) {
             $filePath = $pluginPath . '/' . $path;
             $dirPath  = dirname($filePath);
