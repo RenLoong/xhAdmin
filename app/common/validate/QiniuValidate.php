@@ -12,8 +12,8 @@ use think\Validate;
 class QiniuValidate extends Validate
 {
     protected $rule =   [
-        'accessKey'                 => 'require',
-        'secretKey'                 => 'require',
+        'access_key'                => 'require',
+        'secret_key'                => 'require',
         'bucket'                    => 'require',
         'domain'                    => 'require',
     ];

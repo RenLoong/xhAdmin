@@ -123,8 +123,8 @@ class UploadUtil
     private static function qiniu()
     {
         return [
-            Elm::input('accessKey', 'access_key')->col(12),
-            Elm::input('secretKey', 'secret_key')->col(12),
+            Elm::input('access_key', 'access_key')->col(12),
+            Elm::input('secret_key', 'secret_key')->col(12),
 
             Elm::input('bucket', '存储空间名称：Bucket')->appendRule('suffix', [
                 'type' => 'prompt-tip',

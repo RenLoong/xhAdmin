@@ -9,7 +9,6 @@ use app\common\enum\SettingsEnum;
 use app\common\enum\YesNoEum;
 use app\store\model\StoreApp;
 use app\store\validate\Develop;
-use FormBuilder\Factory\Elm;
 use support\Request;
 use think\facade\Db;
 
@@ -155,25 +154,37 @@ class DevelopController extends BaseController
             'public/remarks.txt',
         ];
         # 文章系统
-        $article = [
-            'app/admin/controller/ArtCategoryController.tpl',
-            'app/admin/controller/ArticlesController.tpl',
-        ];
+        $article = [];
+        if ($data['is_article'] == '20') {
+            $article = [
+                'app/admin/controller/ArtCategoryController.tpl',
+                'app/admin/controller/ArticlesController.tpl',
+            ];
+        }
         # 单页应用
-        $onePage = [
-            'app/admin/controller/OnePageController.tpl',
-        ];
+        $onePage = [];
+        if ($data['is_page'] == '20') {
+            $onePage = [
+                'app/admin/controller/OnePageController.tpl',
+            ];
+        }
         # 系统配置
-        $settings = $data['settings'] ?? [];
-        foreach ($settings as $key => $value) {
-            $settings[$key] = "config/settings/{$value}.tpl";
+        $settings = [];
+        if ($data['settings'] == '20') {
+            $settings = $data['settings'] ?? [];
+            foreach ($settings as $key => $value) {
+                $settings[$key] = "config/settings/{$value}.tpl";
+            }
         }
         # 权限管理
-        $auth   = [
-            'app/admin/controller/MenusController.tpl',
-            'app/admin/controller/RolesController.tpl',
-            'app/admin/controller/AdminController.tpl',
-        ];
+        $auth = [];
+        if ($data['is_auth'] == '20') {
+            $auth   = [
+                'app/admin/controller/MenusController.tpl',
+                'app/admin/controller/RolesController.tpl',
+                'app/admin/controller/AdminController.tpl',
+            ];
+        }
 
         # 合并文件
         $data = array_merge($ordinary, $article, $onePage, $settings, $auth);
@@ -184,8 +195,6 @@ class DevelopController extends BaseController
                 mkdir($dirPath, 0755, true);
             }
             if (file_exists($this->pluginTplPath . $path)) {
-                print_r(basename($filePath));
-                exit;
                 copy($this->pluginTplPath . $path, $filePath);
             }
         }
@@ -213,11 +222,11 @@ class DevelopController extends BaseController
         $builder->addRow('name', 'input', '应用标识', '', [
             'col' => 12,
         ]);
-        $builder->addRow('is_page', 'radio', '单页管理', '10', [
+        $builder->addRow('is_page', 'radio', '单页管理', '20', [
             'col' => 12,
             'options' => YesNoEum::getOptions()
         ]);
-        $builder->addRow('is_article', 'radio', '文章系统', '10', [
+        $builder->addRow('is_article', 'radio', '文章系统', '20', [
             'col' => 12,
             'options' => YesNoEum::getOptions()
         ]);
