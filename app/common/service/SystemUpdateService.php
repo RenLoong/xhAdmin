@@ -220,6 +220,8 @@ class SystemUpdateService
             }
             # 备份原始代码
             ZipMgr::build($this->backupCodePath, $this->targetPath, $this->ignoreList);
+            # 备份覆盖代码
+            ZipMgr::buildFiles($this->backCoverPath, $this->targetPath, $this->backCoverList);
         } catch (\Throwable $e) {
             Log::write(
                 "备份代码失败：{$e->getMessage()}，Line：{$e->getFile()}，File：{$e->getFile()}",
@@ -280,7 +282,7 @@ class SystemUpdateService
             # 解压更新包
             ZipMgr::unzip($this->tempZipFilePath, $this->targetPath);
             # 解压覆盖文件
-            // ZipMgr::unzip($this->backCoverPath, $this->targetPath);
+            ZipMgr::unzip($this->backCoverPath, $this->targetPath);
             # 解压成功，删除临时文件
             file_exists($this->tempZipFilePath) && unlink($this->tempZipFilePath);
             # 返回成功

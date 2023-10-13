@@ -79,18 +79,18 @@ trait UploadConfigTrait
         }
         $uploadify  = getHpConfig('', null, 'upload');
         $drive      = isset($uploadify['upload_drive']) ? $uploadify['upload_drive'] : 'local';
-        $setings    = isset($uploadify['children']) ? $uploadify['children'] : $uploadify;
+        $setings    = isset($uploadify['children']) ? $uploadify['children'] : [];
         
         # 获取模板数据
         $setingsTpl = config('settings.upload');
         foreach ($setingsTpl as $key => $value) {
             foreach ($value['children'] as $childKey => $children) {
-                if (isset($setings['children'])) {
+                if (isset($setings[$value['name']])) {
                     $fieldKey   = str_replace($prefixs, '', $children['field']);
                     $valueData  = isset($setings[$value['name']][$fieldKey]) ? $setings[$value['name']][$fieldKey] : '';
                 } else {
                     $fieldKey   = str_replace($prefixs, '', $children['field']);
-                    $valueData  = isset($setings[$fieldKey]) ? $setings[$fieldKey] : '';
+                    $valueData  = isset($setings[$value['name']][$fieldKey]) ? $setings[$value['name']][$fieldKey] : '';
                 }
                 $setingsTpl[$key]['children'][$childKey]['name']      = $children['field'];
                 $setingsTpl[$key]['children'][$childKey]['value']     = $valueData;
