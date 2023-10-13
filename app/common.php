@@ -87,7 +87,6 @@ function getHpConfig(string|array $fields = '', $appid = null, string $group = '
         # 系统级配置
         $model = $model->where('store_id', NULL);
         $model = $model->where('saas_appid', NULL);
-        $model = $model->where('group', 'system');
     }
     # 读取分组
     if ($group) {

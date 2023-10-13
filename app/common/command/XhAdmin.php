@@ -64,12 +64,7 @@ class XhAdmin extends Command
                 $EasyTask->addFunc(function () {
                     Cache::set('xhadmin_task', time(), 60);
                 }, 'TaskRunState', 1, 1);
-                if ($listNum > 0) {
-                    $EasyTask->start();
-                } else {
-                    Cache::set('xhadmin_task', 'no');
-                    $output->writeln('没有需要启动的队列或定时任务');
-                }
+                $EasyTask->start();
                 break;
             case 'stop':
                 $EasyTask->stop($input->hasOption('force'));

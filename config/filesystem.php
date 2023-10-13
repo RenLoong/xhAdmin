@@ -30,8 +30,8 @@ return [
         ],
         'qiniu' => [
             'type' => 'qiniu',
-            'accessKey' => '******',
-            'secretKey' => '******',
+            'access_key' => '******',
+            'secret_key' => '******',
             'bucket' => '',
             'domain' => '',
         ],

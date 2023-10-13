@@ -12,18 +12,21 @@ trait TabsFormBuilder
 
     /**
      * 初始化选项卡
+     * @param string $field
      * @param string $active
      * @param array $extra
-     * @return FormBuilder
+     * @return \app\common\builder\FormBuilder
+     * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-04-29
+     * @email 416716328@qq.com
      */
-    public function initTabs(string $active, array $extra = []): FormBuilder
+    public function initTabs(string $field,string $active, array $extra = []): FormBuilder
     {
-        // 选项卡组件
+        # 选项卡组件
         $component = new CustomComponent('el-tabs');
-        // 设置默认选中
+        # 设置默认选中
+        $component->field($field)->value($active);
+        # 设置选项卡组件属性
         $component->props([
             'modelValue'    => $active,
             'type'          => 'border-card'

@@ -17,8 +17,10 @@ use support\Request;
  */
 trait SettingsTrait
 {
-    // 使用JSON工具类
+    # 使用JSON工具类
     use Json;
+    # 使用附件库配置
+    use UploadConfigTrait;
 
     /**
      * 请求对象
@@ -69,20 +71,20 @@ trait SettingsTrait
         } else {
             $config = config('settings');
         }
-        $storeApp = StoreAppMgr::detail(['id'=> $this->saas_appid]);
+        $storeApp = StoreAppMgr::detail(['id' => $this->saas_appid]);
         if ($request->isPut()) {
             $post = $request->post();
             foreach ($config as $value) {
                 # 查询数据
                 $where = [
-                    'group'             => $value['name'],
-                    'saas_appid'        => $storeApp['id'],
+                    'group' => $value['name'],
+                    'saas_appid' => $storeApp['id'],
                 ];
                 $model = SystemConfig::where($where)->find();
                 if (!$model) {
-                    $model                  = new SystemConfig;
-                    $model->group           = $value['name'];
-                    $model->saas_appid      = $storeApp['id'];
+                    $model             = new SystemConfig;
+                    $model->group      = $value['name'];
+                    $model->saas_appid = $storeApp['id'];
                 }
                 $saveValue = [];
                 # 取出子项
@@ -105,32 +107,35 @@ trait SettingsTrait
             # 保存成功
             return $this->success('保存成功');
         }
+        # 设置默认选中
+        $first  = current($config);
+        $active = empty($first['name']) ? '' : $first['name'];
         # 获取渲染视图
-        $data = $this->getConfigView($config);
+        $data = $this->getConfigView('system_settings', $active, $config);
         return $this->successRes($data);
     }
 
     /**
      * 获取Tabs视图
+     * @param string $field
+     * @param string $active
      * @param array $data
-     * @return array
+     * @throws \Exception
+     * @return \app\common\builder\FormBuilder
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    protected function getConfigView(array $data)
+    protected function getConfigView(string $field, string $active, array $data): FormBuilder
     {
-        # 设置默认选中
-        $first  = current($data);
-        $actvie = empty($first['name']) ? '' : $first['name'];
         # 实例表单构建器
         $builder = new FormBuilder;
         $builder = $builder->setMethod('PUT');
-        $builder = $builder->initTabs($actvie, [
+        $builder = $builder->initTabs($field, $active, [
             'props' => [
                 // 选项卡样式
-                'type'          => 'line',
-                'tabPosition'   => 'top',
+                'type' => 'line',
+                'tabPosition' => 'top',
             ],
         ]);
         foreach ($data as $value) {
@@ -153,7 +158,7 @@ trait SettingsTrait
                 $configs
             );
         }
-        $data = $builder->endTabs()->create();
+        $data = $builder->endTabs();
         # 获取配置数据
         return $data;
     }
@@ -172,13 +177,9 @@ trait SettingsTrait
     protected function getConfigData(array $list, array $group, $saas_appid): array
     {
         # 查询数据
-        $where       = [
-            ['group', '=', $group['name']],
-            ['saas_appid', '=', $saas_appid],
-        ];
-        $dataValue   = SystemConfig::where($where)->value('value') ?? [];
-        $config      = [];
-        $builder     = new FormBuilder;
+        $dataValue = getHpConfig('', $saas_appid, $group['name']);
+        $config    = [];
+        $builder   = new FormBuilder;
         foreach ($list as $value) {
             # 数据验证
             hpValidate(\app\admin\validate\SystemConfig::class, $value);
@@ -274,7 +275,7 @@ trait SettingsTrait
             $this->save($group, $data);
             return Json::success('保存成功');
         }
-        $data = $this->parseViews($group,$settings);
+        $data = $this->parseViews($group, $settings);
         return Json::successRes($data);
     }
 
@@ -285,7 +286,7 @@ trait SettingsTrait
      * @return array
      * @author John
      */
-    protected function parseViews(string $group,array $data)
+    protected function parseViews(string $group, array $data)
     {
         $custComponent = CustomComponent::getColumn('value');
         $builder       = new FormBuilder;
@@ -311,11 +312,11 @@ trait SettingsTrait
             }
         }
         $where    = [
-            'group'      => $group,
+            'group' => $group,
         ];
         $formData = SystemConfig::where($where)->value('value');
         $formData = $formData ?? [];
-        $views = $builder->setFormData($formData)->create();
+        $views    = $builder->setFormData($formData)->create();
         return $views;
     }
 
@@ -331,19 +332,16 @@ trait SettingsTrait
     {
         $configValue = [];
         foreach ($data as $field => $value) {
-            if (is_array($value)) {
-                $value = current($value);
-            }
             if (strrpos($field, '.') !== false) {
                 # 解析层级键值
-                $configValue  = $this->configValue($field, $value);
+                $configValue = $this->configValue($field, $value);
             } else {
                 $configValue[$field] = $value;
             }
         }
         $where = [
-            'group'         => $group,
-            'saas_appid'    => $this->saas_appid,
+            'group' => $group,
+            'saas_appid' => $this->saas_appid,
         ];
         $model = SystemConfig::where($where)->find();
         if (!$model) {

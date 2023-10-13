@@ -108,8 +108,8 @@ class PclZipMgr
     public function unzip(string $zipFilePath, string $tarGetPath)
     {
         # 检测压缩包是否存在
-        if (!is_file($zipFilePath)) {
-            throw new Exception('压缩包不存在');
+        if (!file_exists($zipFilePath)) {
+            throw new Exception('压缩包不存在'. $zipFilePath);
         }
         # 检测目录不存在则创建
         if (!is_dir($tarGetPath)) {

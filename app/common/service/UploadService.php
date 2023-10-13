@@ -2,7 +2,6 @@
 
 namespace app\common\service;
 
-use app\common\manager\SettingsMgr;
 use app\common\manager\StoreAppMgr;
 use app\common\manager\UsersMgr;
 use app\common\model\SystemUpload;
@@ -349,7 +348,7 @@ class UploadService
      */
     public static function getConfig()
     {
-        return (new SettingsMgr)->group('upload');
+        return getHpConfig('',null,'upload');
     }
 
     /**
@@ -379,34 +378,42 @@ class UploadService
         if (empty($config['upload_drive'])) {
             throw new Exception('请先设置附件驱动');
         }
-        # 阿里云驱动验证
-        if ($config['upload_drive'] === 'aliyun') {
-            hpValidate(AliyunValidate::class, $config);
-        }
-        # 腾讯云驱动
-        if ($config['upload_drive'] === 'qcloud') {
-            hpValidate(QcloudValidate::class, $config);
-        }
-        # 七牛云驱动
-        if ($config['upload_drive'] === 'qiniu') {
-            hpValidate(QiniuValidate::class, $config);
-        }
+        # 当前使用驱动
+        $drive = $config['upload_drive'];
+        $settings = isset($config['children'][$drive]) ? $config['children'][$drive] : [];
         # 删除驱动配置项
         unset($config['upload_drive']);
-
-        $uploadDrive = self::getDrive();
+        if (empty($settings)) {
+            $settings = $config;
+        }
+        if (empty($settings)) {
+            throw new Exception('请先设置附件库');
+        }
+        # 阿里云驱动验证
+        if ($drive === 'aliyun') {
+            hpValidate(AliyunValidate::class, $settings);
+        }
+        # 腾讯云驱动
+        if ($drive === 'qcloud') {
+            hpValidate(QcloudValidate::class, $settings);
+        }
+        # 七牛云驱动
+        if ($drive === 'qiniu') {
+            hpValidate(QiniuValidate::class, $settings);
+        }
 
         # 合并配置
-        $config = array_merge(config("filesystem.disks.{$uploadDrive}", []), $config);
+        $settings = array_merge(config("filesystem.disks.{$drive}", []), $settings);
 
         # 动态设置配置
         Config::set([
-            'disks' => [
-                $uploadDrive => $config,
+            'default'       => $drive,
+            'disks'         => [
+                $drive      => $settings,
             ]
         ], 'filesystem');
 
         # 获取驱动SDK
-        return Filesystem::disk($uploadDrive);
+        return Filesystem::disk($drive);
     }
 }
