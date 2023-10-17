@@ -2,7 +2,6 @@
 
 namespace app\store\controller;
 
-use app\common\manager\StoreMgr;
 use app\common\service\SystemInfoService;
 use app\common\model\Store;
 use app\common\service\UploadService;
@@ -31,7 +30,9 @@ class PublicsController extends BaseController
      */
     public function site(Request $request)
     {
-        $web_logo = UploadService::url(getHpConfig('admin_logo'));
+        $admin_logo = getHpConfig('admin_logo');
+        $admin_logo = is_array($admin_logo) ? current($admin_logo) : $admin_logo;
+        $web_logo = UploadService::url($admin_logo);
         $systemInfo = SystemInfoService::info();
         $data = [
             'web_name' => getHpConfig('web_name'),

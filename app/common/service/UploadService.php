@@ -183,16 +183,20 @@ class UploadService
 
     /**
      * 获取外链地址
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-04
-     * @param  string $path
-     * @return string
+     * @param string|array $path
+     * @return array|string
+     * @author John
      */
-    public static function url(string $path): string
+    public static function url(string|array $path)
     {
         $disk = self::getDisk();
+        if (is_array($path)) {
+            $data = [];
+            foreach ($path as $key => $value) {
+                $data[$key] = $disk->url($value);
+            }
+            return $data;
+        }
         $url  = $disk->url($path);
         return $url;
     }
