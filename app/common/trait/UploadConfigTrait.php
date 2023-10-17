@@ -79,20 +79,12 @@ trait UploadConfigTrait
         }
         $uploadify  = getHpConfig('', null, 'upload');
         $drive      = isset($uploadify['upload_drive']) ? $uploadify['upload_drive'] : 'local';
-        $setings    = isset($uploadify['children']) ? $uploadify['children'] : $uploadify;
         
         # 获取模板数据
         $setingsTpl = config('settings.upload');
         foreach ($setingsTpl as $key => $value) {
             foreach ($value['children'] as $childKey => $children) {
-                $fieldKey   = str_replace($prefixs, '', $children['field']);
-                if (isset($setings[$fieldKey])) {
-                    $valueData  = isset($setings[$fieldKey]) ? $setings[$fieldKey] : '';
-                } else {
-                    $valueData  = isset($setings[$value['name']][$fieldKey]) ? $setings[$value['name']][$fieldKey] : '';
-                }
                 $setingsTpl[$key]['children'][$childKey]['name']      = $children['field'];
-                $setingsTpl[$key]['children'][$childKey]['value']     = $valueData;
                 $setingsTpl[$key]['children'][$childKey]['component'] = $children['type'];
                 $setingsTpl[$key]['children'][$childKey]['extra']     = json_decode(json_encode($children['props']), true);
             }
@@ -143,14 +135,23 @@ trait UploadConfigTrait
      */
     private function uploadifyValue(array $data,array $group)
     {
+        # 当前分组
+        $drive = request()->get('group','');
         # 查询数据
+        $settings = getHpConfig('', $this->saas_appid, $drive);
+        $dataValue = isset($settings['children']) ? $settings['children'] : $settings;
         $config    = [];
         $builder   = new FormBuilder;
         foreach ($data as $value) {
             # 数据验证
             hpValidate(\app\admin\validate\SystemConfig::class, $value);
+            # 取字段名
+            $fieldKey = str_replace($group['name'] . '_', '', $value['name']);
             # 设置数据
-            $configValue = empty($value['value']) ? '' : $value['value'];
+            if (!empty($dataValue[$group['name']][$fieldKey])) {
+                $value['value'] = $dataValue[$group['name']][$fieldKey];
+            }
+            $configValue = $value['value'];
             # 验证扩展组件
             if (in_array($value['component'], $this->extraOptions)) {
                 if (empty($value['extra'])) {
