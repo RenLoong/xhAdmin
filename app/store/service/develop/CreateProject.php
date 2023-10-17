@@ -30,6 +30,7 @@ trait CreateProject
             'platform'      => $data['platform'],
             'username'      => $data['username'],
             'password'      => $data['password'],
+            'logo'          => $data['logo']
         ];
         # 创建项目
         StoreAppMgr::created($data);

@@ -201,6 +201,12 @@ class DevelopController extends BaseController
         $builder->addRow('name', 'input', '应用标识', '', [
             'col' => 12,
         ]);
+        $builder->addRow('username', 'input', '超管账号', '', [
+            'col' => 12,
+        ]);
+        $builder->addRow('password', 'input', '登录密码', '', [
+            'col' => 12,
+        ]);
         $builder->addRow('is_system', 'radio', '基本配置', '20', [
             'col'       => 12,
             'options'   => [
@@ -238,14 +244,15 @@ class DevelopController extends BaseController
             'options' => YesNoEum::getOptions()
         ]);
         $builder->addRow('is_sms', 'radio', '短信配置', '10', [
-            'col' => 24,
+            'col' => 12,
             'options' => YesNoEum::getOptions()
         ]);
-        $builder->addRow('username', 'input', '超管账号', '', [
+        $builder->addComponent('logo', 'uploadify', '项目图标', '', [
             'col' => 12,
-        ]);
-        $builder->addRow('password', 'input', '登录密码', '', [
-            'col' => 12,
+            'props' => [
+                'type' => 'image',
+                'format' => ['jpg', 'jpeg', 'png']
+            ],
         ]);
         return $builder;
     }

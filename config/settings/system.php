@@ -2,7 +2,7 @@
 
 return [
     [
-        'field'         => 'web_name',
+        'name'         => 'web_name',
         'title'         => '网站名称',
         'value'         => '',
         'component'     => 'input',
@@ -14,7 +14,7 @@ return [
         ],
     ],
     [
-        'field'         => 'web_url',
+        'name'         => 'web_url',
         'title'         => '网站域名',
         'value'         => '',
         'component'     => 'input',
@@ -26,7 +26,7 @@ return [
         ],
     ],
     [
-        'field'         => 'admin_logo',
+        'name'         => 'admin_logo',
         'title'         => '后台LOGO',
         'value'         => '',
         'component'     => 'uploadify',

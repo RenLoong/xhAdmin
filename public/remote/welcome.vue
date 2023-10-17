@@ -11,7 +11,7 @@
         <!-- 平台统计组 -->
         <div class="item">
           <div class="logo-container">
-            <img src="/image/wechat-3.png" class="logo" alt="">
+            <img src="/image/welcome/1-wechat.png" class="logo" alt="">
           </div>
           <div class="content">
             <el-statistic title="微信公众号" value-style="font-size:1rem;" :value="platformApp.wechat" />
@@ -19,7 +19,7 @@
         </div>
         <div class="item">
           <div class="logo-container">
-            <img src="/image/mini_wechat-3.png" class="logo" alt="">
+            <img src="/image/welcome/2-wechat-mini.png" class="logo" alt="">
           </div>
           <div class="content">
             <el-statistic title="微信小程序" value-style="font-size:1rem;" :value="platformApp.mini_wechat" />
@@ -27,7 +27,7 @@
         </div>
         <div class="item">
           <div class="logo-container">
-            <img src="/image/douyin-3.png" class="logo" alt="">
+            <img src="/image/welcome/3-douyin.png" class="logo" alt="">
           </div>
           <div class="content">
             <el-statistic title="抖音小程序" value-style="font-size:1rem;" :value="platformApp.douyin" />
@@ -35,7 +35,7 @@
         </div>
         <div class="item">
           <div class="logo-container">
-            <img src="/image/h5-3.png" class="logo" alt="">
+            <img src="/image/welcome/4-h5.png" class="logo" alt="">
           </div>
           <div class="content">
             <el-statistic title="网页应用" value-style="font-size:1rem;" :value="platformApp.h5" />
@@ -43,7 +43,7 @@
         </div>
         <div class="item">
           <div class="logo-container">
-            <img src="/image/app-3.png" class="logo" alt="">
+            <img src="/image/welcome/5-app.png" class="logo" alt="">
           </div>
           <div class="content">
             <el-statistic title="APP应用" value-style="font-size:1rem;" :value="platformApp.app" />
@@ -51,7 +51,7 @@
         </div>
         <div class="item">
           <div class="logo-container">
-            <img src="/image/other-3.png" class="logo" alt="">
+            <img src="/image/welcome/6-other.png" class="logo" alt="">
           </div>
           <div class="content">
             <el-statistic title="其他应用" value-style="font-size:1rem;" :value="platformApp.other" />

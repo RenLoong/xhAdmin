@@ -24,7 +24,7 @@ class StoreAppMgr
     {
         $model = modelStoreApp::where($where)->find();
         if (!$model) {
-            throw new Exception('找不到该应用数据');
+            throw new Exception('找不到该项目数据');
         }
         return $model;
     }

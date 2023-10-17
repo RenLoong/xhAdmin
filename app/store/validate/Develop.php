@@ -14,6 +14,7 @@ class Develop extends Validate
         'is_auth'               => 'require',
         'username'              => 'require',
         'password'              => 'require',
+        'logo'                  => 'require',
     ];
 
     protected $message          =   [
@@ -24,5 +25,6 @@ class Develop extends Validate
         'is_auth.require'       => '是否需要权限管理',
         'username.require'      => '请输入超管账号',
         'password.require'      => '请输入登录密码',
+        'logo.require'          => '请选择项目LOGO',
     ];
 }

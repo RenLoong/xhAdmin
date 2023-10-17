@@ -365,6 +365,9 @@ class UploadService
         # 当前使用驱动
         $drive = $config['upload_drive'];
         $settings = isset($config['children'][$drive]) ? $config['children'][$drive] : [];
+        if (empty($settings) && !isset($settings['children'])) {
+            $settings = $config;
+        }
         return $settings;
     }
 

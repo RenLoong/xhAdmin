@@ -55,6 +55,7 @@ class StoreAppController extends BaseController
      */
     public function index(Request $request)
     {
+        $limit = $request->get('limit', 12);
         $store_id     = $request->user['id'];
         $platformType = $request->get('platform', '');
         $model = $this->model;
@@ -67,7 +68,7 @@ class StoreAppController extends BaseController
         $web_url = getHpConfig('web_url');
         $data    = $model->where($where)
             ->order(['id' => 'desc'])
-            ->paginate()
+            ->paginate($limit)
             ->each(function ($item) use ($web_url) {
                 # 是否有配置文件
                 $setting     = false;

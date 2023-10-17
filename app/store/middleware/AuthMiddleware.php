@@ -84,11 +84,6 @@ class AuthMiddleware
         if ($user['status'] === '10') {
             throw new \Exception('该渠道已被禁用，请联系管理员', 12000);
         }
-        # 验证渠道是否过期
-        $expire_time = strtotime($user['expire_time']);
-        if (time() > $expire_time) {
-            throw new \Exception('渠道权益已过期，请联系管理员', 12000);
-        }
         return true;
     }
 }

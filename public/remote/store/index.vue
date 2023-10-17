@@ -1,60 +1,57 @@
 <template>
     <div class="app-container">
-        <el-row :gutter="24">
-            <el-col :md="24">
-                <div class="user">
-                    <div class="info">
-                        <div class="avatar">
-                            <el-avatar :size="51" :src="user?.headimg" />
-                        </div>
-                        <div class="nickname">
-                            <div class="title">{{ user?.nickname }}</div>
-                            <div class="date">{{ user?.role?.title }}</div>
-                        </div>
+        <!-- 用户信息 -->
+        <div class="user-container">
+            <div class="info">
+                <div class="avatar">
+                    <el-avatar :size="51" :src="user?.headimg" />
+                </div>
+                <div class="nickname">
+                    <div class="title">{{ user?.nickname }}</div>
+                    <div class="date">{{ user?.username }}</div>
+                </div>
+            </div>
+            <div class="platform">
+                <div class="item" v-for="(item, index) in platformApp" :key="index">
+                    <div class="icon">
+                        <el-image style="width:41px;height:41px;" :src="item.logo" />
                     </div>
-                    <div class="platform">
-                        <div class="item" v-for="(item, index) in platformApp" :key="index">
-                            <div class="icon">
-                                <el-image style="width:41px;height:41px;" :src="item.logo" />
-                            </div>
-                            <div class="content">
-                                <div class="number">{{ item.created }}/{{ item.num }}</div>
-                                <div class="title">{{ item.label }}</div>
-                            </div>
-                        </div>
+                    <div class="content">
+                        <div class="number">{{ item.created }}/{{ item.num }}</div>
+                        <div class="title">{{ item.label }}</div>
                     </div>
                 </div>
-            </el-col>
-            <el-col :md="24">
-                <div class="category">
-                    <div class="tabs">
-                        <el-tabs :model-value="projects.platformActive" @tab-change="hanldTabs">
-                            <el-tab-pane :label="item.label" :name="item.key" v-for="(item, index) in platforms"
-                                :key="index" />
-                        </el-tabs>
-                    </div>
-                    <div class="created">
-                        <el-button type="primary" class="develop-btn" color="#626aef" v-if="isDeveloper"
-                            @click="hanldOepn('/Develop/create', { isBack: 1 })">
-                            创建开发者项目
+            </div>
+        </div>
+        <!-- 项目 -->
+        <div class="project-container">
+            <div class="category">
+                <div class="tabs">
+                    <el-tabs :model-value="projects.platformActive" @tab-change="hanldTabs">
+                        <el-tab-pane :label="item.label" :name="item.key" v-for="(item, index) in platforms" :key="index" />
+                    </el-tabs>
+                </div>
+                <div class="created">
+                    <el-button type="primary" class="develop-btn" color="#626aef" v-if="isDeveloper"
+                        @click="hanldOepn('/Develop/create', { isBack: 1 })">
+                        创建开发者项目
+                    </el-button>
+                    <el-dropdown @command="createPlatformProject">
+                        <el-button type="primary">
+                            新增项目
                         </el-button>
-                        <el-dropdown @command="createPlatformProject">
-                            <el-button type="primary">
-                                新增项目
-                            </el-button>
-                            <template v-if="platformApp.length" #dropdown>
-                                <el-dropdown-menu>
-                                    <el-dropdown-item v-for="(item, index) in platformApp" :key="index" :command="item">
-                                        {{ item.label }}
-                                    </el-dropdown-item>
-                                </el-dropdown-menu>
-                            </template>
-                        </el-dropdown>
-                    </div>
+                        <template v-if="platformApp.length" #dropdown>
+                            <el-dropdown-menu>
+                                <el-dropdown-item v-for="(item, index) in platformApp" :key="index" :command="item">
+                                    {{ item.label }}
+                                </el-dropdown-item>
+                            </el-dropdown-menu>
+                        </template>
+                    </el-dropdown>
                 </div>
-            </el-col>
-            <el-col :md="24" v-if="projects.list.length">
-                <div class="xh-project">
+            </div>
+            <div class="xh-project" v-if="projects.list.length">
+                <div class="project-list">
                     <div class="item" v-for="(item, index) in projects.list" :key="index">
                         <div @click="hanldAdmin(item)">
                             <div class="tags">
@@ -81,19 +78,14 @@
                         </div>
                     </div>
                 </div>
-            </el-col>
-            <!-- 分页 -->
-            <el-col :md="24" v-if="projects.list.length">
-                <div class="pagination">
-                    <el-pagination background layout="prev, pager, next" :total="projects.paginate.total" />
+                <div class="xh-paginate">
+                    <el-pagination background layout="prev, pager, next" v-model:current-page="projects.paginate.page"  :total="projects.paginate.total" :page-size="projects.paginate.limit" @current-change="hanldChangePage" />
                 </div>
-            </el-col>
-            <el-col :md="24" v-else>
-                <div class="project-empty">
-                    <el-empty description="当前没有更多的项目" />
-                </div>
-            </el-col>
-        </el-row>
+            </div>
+            <div class="project-empty" v-else>
+                <el-empty description="当前没有更多的项目" />
+            </div>
+        </div>
     </div>
 </template>
 
@@ -181,6 +173,10 @@ export default {
                 query: item
             });
         },
+        hanldChangePage(value) {
+            this.projects.paginate.page = value;
+            this.getList();
+        },
         hanldTabs(name) {
             this.projects.platformActive = name;
             this.getList();
@@ -190,6 +186,8 @@ export default {
             const _this = this;
             const params = {
                 platform: _this.projects.platformActive,
+                page: _this.projects.paginate.page,
+                limit: _this.projects.paginate.limit,
             }
             _this.$http.useGet('store/StoreApp/index', params).then((res) => {
                 // 列表
@@ -203,6 +201,12 @@ export default {
         // 获取首页数据
         getIndex() {
             const _this = this;
+            _this.platforms = [
+                {
+                    label: '全部项目',
+                    key: ''
+                },
+            ];
             _this.$http.useGet('store/Index/indexData').then((res) => {
                 const { data } = res;
                 const { platformApp, isDeveloper } = data;
@@ -221,189 +225,188 @@ export default {
 </script>
 
 <style lang="scss">
-.xhadmin-header-pro {
-    padding: 0 338px !important;
-}
-
-.xhadmin-main {
-    padding: 20px 338px !important;
-}
-
-.el-tabs {
-    .el-tabs__header {
-        margin: 0;
-
-        .el-tabs__nav-wrap::after {
-            display: none;
-        }
-    }
-}
-
-.project-empty{
-    background-color: #fff;
-    padding:100px 0;
-    border-radius:8px;
-}
-
-.pagination {
-    padding: 20px;
+.app-container {
+    height: 100%;
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-end;
-}
+    flex-direction: column;
+    box-sizing: border-box;
 
-.xh-project {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    margin: 0px -10px;
-
-    .item {
-        position: relative;
+    .user-container {
         background-color: #fff;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 15px;
         border-radius: 5px;
-        width: 16%;
-        min-width: 200px;
-        overflow: hidden;
-        cursor: pointer;
-        transition: all .3s ease;
-        margin: 0px 10px;
-
-        .icon {
-            width: 100%;
-        }
-
-        .desc {
-            color: #666;
-            font-size: 12px;
-            min-height: 34px;
-            /* 固定宽度 */
-            width: 100%;
-            /* 将溢出的部分隐藏 */
-            overflow: hidden;
-            /* 把盒子作为弹性盒子显示 */
-            display: -webkit-box;
-            /* 让子元素垂直排列 */
-            -webkit-box-orient: vertical;
-            /* 设置元素显示的行数 */
-            -webkit-line-clamp: 2;
-        }
-
-        .title {
-            color: rgba(0, 0, 0, .85);
-            margin: 10px 0px;
-            font-weight: bold;
-        }
-
-        .btns {
-            margin: 10px 0px;
-        }
-
-        .tags {
-            position: absolute;
-            top: 0px;
-            right: 0px;
-            background-color: #67C23A;
-            font-size: 8px;
-            color: #fff;
-            padding: 5px;
-            border-radius: 0px 5px 0px 10px;
-            z-index: 999;
-        }
-    }
-
-    .item:hover {
-        -webkit-transform: translateY(-4px) scale(1.02);
-        -moz-transform: translateY(-4px) scale(1.02);
-        -ms-transform: translateY(-4px) scale(1.02);
-        -o-transform: translateY(-4px) scale(1.02);
-        transform: translateY(-4px) scale(1.02);
-        -webkit-box-shadow: 0 14px 24px rgba(0, 0, 0, .2);
-        box-shadow: 0 14px 24px #0003;
-        z-index: 999;
-        border-radius: 6px
-    }
-}
-
-.category {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin: 15px 0px;
-
-    .created {
-        .develop-btn {
-            margin-right: 10px;
-        }
-    }
-}
-
-.user {
-    background-color: #fff;
-    border-radius: 5px;
-    padding: 15px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-
-    .platform {
+        padding: 15px;
         display: flex;
         flex-direction: row;
         align-items: center;
+        justify-content: space-between;
 
-        .item {
+        .info {
             display: flex;
             flex-direction: row;
             align-items: center;
-            margin: 10px 0px;
-            justify-content: center;
 
-            .icon {
-                padding-top: 15px;
-            }
-
-            .content {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                margin: 0px 10px;
-
-                .number {
-                    color: #252631;
-                    font-size: 20px
-                }
+            .nickname {
+                margin-left: 10px;
 
                 .title {
-                    color: #98a9bc;
-                    font-size: 12px
+                    font-weight: bolder;
+                }
+
+                .date {
+                    font-size: 12px;
+                    color: #606266;
+                }
+            }
+        }
+
+        .platform {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+
+            .item {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                margin: 10px 0px;
+                justify-content: center;
+
+                .icon {
+                    padding-top: 15px;
+                }
+
+                .content {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    margin: 0px 10px;
+
+                    .number {
+                        color: #252631;
+                        font-size: 20px
+                    }
+
+                    .title {
+                        color: #98a9bc;
+                        font-size: 12px
+                    }
                 }
             }
         }
     }
 
-    .info {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
+    .project-container {
+        flex: 1;
 
-        .nickname {
-            margin-left: 10px;
+        .category {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0px;
 
-            .title {
-                font-weight: bolder;
+            .created {
+                .develop-btn {
+                    margin-right: 10px;
+                }
+            }
+        }
+
+        .xh-project {
+            flex: 1;
+
+            .project-list {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                margin: 0px -10px;
+                overflow-y: auto;
+                overflow-x: hidden;
+
+                .item {
+                    position: relative;
+                    background-color: #fff;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    padding: 15px;
+                    border-radius: 5px;
+                    width: 16%;
+                    min-width: 245px;
+                    overflow: hidden;
+                    cursor: pointer;
+                    transition: all .3s ease;
+                    margin: 0 10px 20px 10px;
+
+                    .icon {
+                        width: 100%;
+                    }
+
+                    .desc {
+                        color: #666;
+                        font-size: 12px;
+                        min-height: 34px;
+                        /* 固定宽度 */
+                        width: 100%;
+                        /* 将溢出的部分隐藏 */
+                        overflow: hidden;
+                        /* 把盒子作为弹性盒子显示 */
+                        display: -webkit-box;
+                        /* 让子元素垂直排列 */
+                        -webkit-box-orient: vertical;
+                        /* 设置元素显示的行数 */
+                        -webkit-line-clamp: 2;
+                    }
+
+                    .title {
+                        color: rgba(0, 0, 0, .85);
+                        margin: 10px 0px;
+                        font-weight: bold;
+                    }
+
+                    .btns {
+                        margin: 10px 0px;
+                    }
+
+                    .tags {
+                        position: absolute;
+                        top: 0px;
+                        right: 0px;
+                        background-color: #67C23A;
+                        font-size: 8px;
+                        color: #fff;
+                        padding: 5px;
+                        border-radius: 0px 5px 0px 10px;
+                        z-index: 999;
+                    }
+                }
+
+                .item:hover {
+                    -webkit-transform: translateY(-4px) scale(1.02);
+                    -moz-transform: translateY(-4px) scale(1.02);
+                    -ms-transform: translateY(-4px) scale(1.02);
+                    -o-transform: translateY(-4px) scale(1.02);
+                    transform: translateY(-4px) scale(1.02);
+                    -webkit-box-shadow: 0 14px 24px rgba(0, 0, 0, .2);
+                    box-shadow: 0 14px 24px #0003;
+                    z-index: 999;
+                    border-radius: 6px
+                }
             }
 
-            .date {
-                font-size: 12px;
-                color: #606266;
+            .xh-paginate {
+                padding: 20px;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-end;
             }
+        }
+
+        .project-empty {
+            background-color: #fff;
+            padding: 100px 0;
+            border-radius: 8px;
         }
     }
 }

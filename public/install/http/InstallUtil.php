@@ -116,8 +116,12 @@ class InstallUtil
             'group'             => 'upload',
             'value'             => json_encode([
                 'upload_drive'  => 'local',
-                'url'           => $site['web_url'],
-                'root'          => 'uploads'
+                'children'      => [
+                    'local'     => [
+                        'url'   => $site['web_url'],
+                        'root'  => 'uploads'
+                    ]
+                ],
             ], JSON_UNESCAPED_UNICODE),
         ];
         Db::name('system_config')->save($configData);

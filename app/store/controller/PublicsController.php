@@ -5,6 +5,7 @@ namespace app\store\controller;
 use app\common\manager\StoreMgr;
 use app\common\service\SystemInfoService;
 use app\common\model\Store;
+use app\common\service\UploadService;
 use app\store\model\StoreMenus;
 use app\common\utils\Password;
 use Exception;
@@ -30,7 +31,7 @@ class PublicsController extends BaseController
      */
     public function site(Request $request)
     {
-        $web_logo = getHpConfig('admin_logo');
+        $web_logo = UploadService::url(getHpConfig('admin_logo'));
         $systemInfo = SystemInfoService::info();
         $data = [
             'web_name' => getHpConfig('web_name'),
@@ -119,10 +120,6 @@ class PublicsController extends BaseController
         if ($adminModel->status === '10') {
             return $this->fail('该用户已被冻结');
         }
-        // 判断是否受限过期租户
-        if (time() > strtotime($adminModel['expire_time'])) {
-            return $this->fail('该用户使用权益已过期');
-        }
 
         // 更新登录信息
         $ip = $request->ip();
@@ -163,6 +160,7 @@ class PublicsController extends BaseController
             // 主题配置（待扩展）
             'theme'             => [
                 'layout'        => 'top',
+                'layoutSize'    => false,
             ],
         ];
         return $this->successRes($data);

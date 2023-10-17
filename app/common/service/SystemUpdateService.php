@@ -141,7 +141,7 @@ class SystemUpdateService
         $this->tempZipFilePath = runtime_path() . "core/xhadmin-update.zip";
         # 检测核心目录不存在则创建
         if (!is_dir(dirname($this->tempZipFilePath))) {
-            mkdir(dirname($this->tempZipFilePath), 0755, true);
+            mkdir(dirname($this->tempZipFilePath), 0777, true);
         }
         # 解压至目标地址(根据环境变量设置)
         if (!env('APP_DEBUG', true)) {
@@ -152,7 +152,7 @@ class SystemUpdateService
             # 开发环境
             $this->targetPath = runtime_path() . 'web';
             if (!is_dir($this->targetPath)) {
-                mkdir($this->targetPath, 0755, true);
+                mkdir($this->targetPath, 0777, true);
             }
         }
         # 备份当前版本代码地址
@@ -210,7 +210,7 @@ class SystemUpdateService
         try {
             # 打包至目标压缩包
             if (!is_dir(dirname($this->backupCodePath))) {
-                mkdir(dirname($this->backupCodePath), 0755, true);
+                mkdir(dirname($this->backupCodePath), 0777, true);
             }
             # 目标目录为空，直接备份走下一步
             if (DirUtil::isDirEmpty($this->targetPath)) {

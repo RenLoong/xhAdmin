@@ -10,7 +10,6 @@ use app\common\model\Users;
 use app\admin\validate\Store as ValidateStore;
 use app\common\BaseController;
 use app\common\enum\PlatformTypes;
-use app\common\service\UploadService;
 use Exception;
 use support\Request;
 use think\facade\Db;
@@ -177,17 +176,6 @@ class StoreController extends BaseController
                     'resource' => $platformAssets,
                 ]
             ])
-            ->addColumnEdit('expire_time', '过期时间', [
-                'params' => [
-                    'api' => '/admin/Store/rowEdit'
-                ],
-                'editRender' => [
-                    'attrs' => [
-                        'type' => 'date',
-                        'transfer' => true,
-                    ],
-                ],
-            ])
             ->create();
         return parent::successRes($data);
     }
@@ -242,87 +230,7 @@ class StoreController extends BaseController
             }
             return parent::success('保存成功');
         }
-        $builder = new FormBuilder;
-        $data    = $builder
-            ->setMethod('POST')
-            ->addRow('username', 'input', '渠道账号', '', [
-                'col' => [
-                    'span' => 12
-                ],
-            ])
-            ->addRow('password', 'input', '登录密码', '', [
-                'col' => [
-                    'span' => 12
-                ],
-            ])
-            ->addRow('title', 'input', '渠道名称', '', [
-                'col' => [
-                    'span' => 12
-                ],
-            ])
-            ->addRow('expire_time', 'input', '过期时间', '', [
-                'col' => [
-                    'span' => 12
-                ],
-                'type' => 'date',
-                'placeholder' => ''
-            ])
-            ->addRow('contact', 'input', '联系人姓名', '', [
-                'col' => [
-                    'span' => 12
-                ],
-            ])
-            ->addRow('mobile', 'input', '联系电话', '', [
-                'col' => [
-                    'span' => 12
-                ],
-            ])
-            ->addComponent('logo', 'uploadify', '渠道图标', '', [
-                'col' => [
-                    'span' => 6
-                ],
-                'props' => [
-                    'type' => 'image',
-                    'format' => ['jpg', 'png', 'gif']
-                ],
-            ])
-            ->addRow('remarks', 'textarea', '渠道备注', '', [
-                'col' => [
-                    'span' => 18
-                ],
-            ])
-            ->addRow('wechat', 'input', '公众号数量', '', [
-                'col' => [
-                    'span' => 12
-                ],
-            ])
-            ->addRow('mini_wechat', 'input', '微信小程序', '', [
-                'col' => [
-                    'span' => 12
-                ],
-            ])
-            ->addRow('douyin', 'input', '抖音小程序', '', [
-                'col' => [
-                    'span' => 12
-                ],
-            ])
-            ->addRow('h5', 'input', '网页应用', '', [
-                'col' => [
-                    'span' => 12
-                ],
-            ])
-            ->addRow('app', 'input', 'APP应用', '', [
-                'col' => [
-                    'span' => 12
-                ],
-            ])
-            ->addRow('other', 'input', '其他应用', '', [
-                'col' => [
-                    'span' => 12
-                ],
-            ])
-            ->formValidate($validate)
-            ->create();
+        $data = $this->formView()->setMethod('POST')->create();
         return parent::successRes($data);
     }
 
@@ -360,90 +268,59 @@ class StoreController extends BaseController
             }
             return parent::success('保存成功');
         }
-        $formData                = $model->toArray();
-        $formData['expire_time'] = date('Y-m-d', strtotime($formData['expire_time']));
+        $formData   = $model->toArray();
+        $data       = $this->formView()->setMethod('PUT')->setFormData($formData)->create();
+        return parent::successRes($data);
+    }
+
+    /**
+     * 获取表单视图
+     * @return FormBuilder
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    private function formView()
+    {
         $builder                 = new FormBuilder;
-        $data                    = $builder
+        $builder = $builder
             ->setMethod('PUT')
             ->addRow('username', 'input', '渠道账号', '', [
-                'col' => [
-                    'span' => 12
-                ],
+                'col' => 12,
             ])
             ->addRow('password', 'input', '登录密码', '', [
-                'col' => [
-                    'span' => 12
-                ],
+                'col' => 12,
             ])
             ->addRow('title', 'input', '渠道名称', '', [
-                'col' => [
-                    'span' => 12
-                ],
-            ])
-            ->addRow('expire_time', 'input', '过期时间', '', [
-                'col' => [
-                    'span' => 12
-                ],
-                'type' => 'date',
-                'placeholder' => ''
-            ])
-            ->addRow('contact', 'input', '联系人姓名', '', [
-                'col' => [
-                    'span' => 12
-                ],
-            ])
-            ->addRow('mobile', 'input', '联系电话', '', [
-                'col' => [
-                    'span' => 12
-                ],
+                'col' => 12,
             ])
             ->addComponent('logo', 'uploadify', '渠道图标', '', [
-                'col' => [
-                    'span' => 6
-                ],
+                'col' => 12,
                 'props' => [
                     'type' => 'image',
                     'format' => ['jpg', 'png', 'gif']
                 ],
             ])
-            ->addRow('remarks', 'textarea', '渠道备注', '', [
-                'col' => [
-                    'span' => 18
-                ],
-            ])
             ->addRow('wechat', 'input', '公众号数量', '', [
-                'col' => [
-                    'span' => 12
-                ],
+                'col' => 12,
             ])
             ->addRow('mini_wechat', 'input', '微信小程序', '', [
-                'col' => [
-                    'span' => 12
-                ],
+                'col' => 12,
             ])
             ->addRow('douyin', 'input', '抖音小程序', '', [
-                'col' => [
-                    'span' => 12
-                ],
+                'col' => 12,
             ])
             ->addRow('h5', 'input', '网页应用', '', [
-                'col' => [
-                    'span' => 12
-                ],
+                'col' => 12,
             ])
             ->addRow('app', 'input', 'APP应用', '', [
-                'col' => [
-                    'span' => 12
-                ],
+                'col' => 12,
             ])
             ->addRow('other', 'input', '其他应用', '', [
-                'col' => [
-                    'span' => 12
-                ],
+                'col' => 12,
             ])
-            ->setFormData($formData)
-            ->create();
-        return parent::successRes($data);
+            ->addRow('remarks', 'textarea', '渠道备注（可选）', '');
+        return $builder;
     }
 
     /**
