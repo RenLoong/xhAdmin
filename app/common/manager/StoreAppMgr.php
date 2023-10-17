@@ -231,6 +231,12 @@ class StoreAppMgr
             # 创建项目
             $model = new StoreApp;
             $model->save($data);
+            # 检测并引入安装类
+            $preatedPath = root_path() . "plugin/{$model['name']}/api/Created.php";
+            if (!file_exists($preatedPath)) {
+                throw new Exception("项目【{$model['name']}】安装类不存在");
+            }
+            require_once $preatedPath;
             # 执行项目插件方法
             $class = "\\plugin\\{$model['name']}\\api\\Created";
             if (method_exists($class, 'createAdmin')) {
@@ -241,7 +247,6 @@ class StoreAppMgr
             # 创建附件库分类
             $cateData = [
                 'saas_appid'        => $model->id,
-                'store_id'          => $model['store_id'],
                 'title'             => '默认分类',
                 'dir_name'          => $model['name'],
                 'sort'              => 100,
@@ -280,7 +285,6 @@ class StoreAppMgr
         try {
             $whereMap           = [
                 'saas_appid'    => $model['id'],
-                'store_id'      => $model['store_id'],
             ];
             # 删除项目配置
             SystemConfig::where($whereMap)->delete();

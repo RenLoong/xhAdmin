@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
     <!-- 任务队列检测 -->
-    <div class="task-queue-container" v-if="taskQueue">
+    <!-- <div class="task-queue-container" v-if="taskQueue">
       <div class="task-title">温馨提示</div>
       <pre class="task-queue">{{ taskQueue }}</pre>
-    </div>
+    </div> -->
     <!-- 平台应用 -->
     <div class="platform-count">
       <div class="num-container">

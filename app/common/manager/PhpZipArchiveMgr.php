@@ -140,9 +140,9 @@ class PhpZipArchiveMgr
             mkdir($tarGetPath, 0755, true);
         }
         $zip        = $this->zipCls;
-        $openStatus = $zip->open($zipFilePath);
-        if ($openStatus !== true) {
-            throw new Exception('解压失败');
+        $errCode = $zip->open($zipFilePath, ZipArchive::CHECKCONS);
+        if ($errCode !== true) {
+            throw new Exception('解压失败，错误吗:'.$errCode);
         }
         # 解压至目标目录
         $zip->extractTo($tarGetPath);

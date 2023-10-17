@@ -111,7 +111,99 @@ trait SettingsTrait
         $first  = current($config);
         $active = empty($first['name']) ? '' : $first['name'];
         # 获取渲染视图
-        $data = $this->getConfigView('system_settings', $active, $config);
+        $data = $this->getConfigView('system_settings', $active, $config)->setMethod('PUT')->create();
+        return $this->successRes($data);
+    }
+
+    /**
+     * Tabs配置项
+     * @param \support\Request $request
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function tabs(Request $request)
+    {
+        $group  = $request->get('group','');
+        $plugin = $request->plugin;
+        if ($plugin && !$this->saas_appid) {
+            throw new Exception('请在控制器内设置saas_appid');
+        }
+        if ($plugin && $this->saas_appid) {
+            $config = config('plugin.' . $plugin . '.tabsconfig');
+        } else {
+            $config = config('tabsconfig');
+        }
+        if (empty($config)) {
+            throw new Exception('找不到Tabs配置文件');
+        }
+        if (empty($config[$group])) {
+            throw new Exception('找不到标准的配置文件');
+        }
+        # 获取配置项
+        $settings = $config[$group];
+        if ($request->isPut()) {
+            $post = $request->post();
+            $active = $post['system_settings'];
+            unset($post['system_settings']);
+            $saveValue = [
+                'active'        => $active,
+                'children'      => []
+            ];
+            foreach ($settings as $value) {
+                # 查询数据
+                $where = [
+                    'group'         => $group,
+                    'saas_appid'    => $this->saas_appid,
+                ];
+                $model = SystemConfig::where($where)->find();
+                if (!$model) {
+                    $model             = new SystemConfig;
+                    $model->group      = $group;
+                    $model->saas_appid = $this->saas_appid;
+                }
+                foreach ($value['children'] as $item) {
+                    if (isset($post[$item['name']])) {
+                        $dataValue = empty($post[$item['name']]) ? '' : $post[$item['name']];
+                        # 验证是否附件库
+                        if ($dataValue && $item['component'] === 'uploadify') {
+                            $dataValue = UploadService::path($dataValue);
+                        }
+                        $saveValue['children'][$value['name']][$item['name']] = $dataValue;
+                    }
+                }
+            }
+            $model->value = $saveValue;
+            # 保存数据
+            if (!$model->save()) {
+                throw new Exception("保存分组[{$value['title']}]失败");
+            }
+            # 保存成功
+            return $this->success('保存成功');
+        }
+        # 设置默认选中
+        $active = '';
+        $first  = current($settings);
+        $active = empty($first['name']) ? '' : $first['name'];
+        # 获取数据
+        $configDaa = getHpConfig('', $this->saas_appid, $group);
+        if (isset($configDaa['active'])) {
+            $active = $configDaa['active'];
+        }
+        $formData = [];
+        if (isset($configDaa['children'])) {
+            foreach ($configDaa['children'] as $value) {
+                $formData = array_merge($formData, $value);
+            }
+        }
+        # 获取渲染视图
+        $data = $this->getConfigView('system_settings', $active, $settings)
+        ->setMethod('PUT')
+        ->setFormData($formData)
+        ->create();
+
+        # 获取配置视图
         return $this->successRes($data);
     }
 
@@ -130,7 +222,6 @@ trait SettingsTrait
     {
         # 实例表单构建器
         $builder = new FormBuilder;
-        $builder = $builder->setMethod('PUT');
         $builder = $builder->initTabs($field, $active, [
             'props' => [
                 // 选项卡样式
@@ -184,7 +275,7 @@ trait SettingsTrait
             # 数据验证
             hpValidate(\app\admin\validate\SystemConfig::class, $value);
             # 设置数据
-            $configValue = empty($dataValue[$value['name']]) ? '' : $dataValue[$value['name']];
+            $configValue = empty($dataValue[$value['name']]) ? $value['value'] : $dataValue[$value['name']];
             # 验证扩展组件
             if (in_array($value['component'], $this->extraOptions)) {
                 if (empty($value['extra'])) {
@@ -295,7 +386,7 @@ trait SettingsTrait
             $extra = $value['extra'] ?? [];
             if (in_array($value['component'], $custComponent)) {
                 $builder->addComponent(
-                    $value['field'],
+                    $value['name'],
                     $value['component'],
                     $value['title'],
                     $value['value'],
@@ -303,7 +394,7 @@ trait SettingsTrait
                 );
             } else {
                 $builder->addRow(
-                    $value['field'],
+                    $value['name'],
                     $value['component'],
                     $value['title'],
                     $value['value'],
@@ -340,13 +431,14 @@ trait SettingsTrait
             }
         }
         $where = [
-            'group' => $group,
-            'saas_appid' => $this->saas_appid,
+            'group'         => $group,
+            'saas_appid'    => $this->saas_appid,
         ];
         $model = SystemConfig::where($where)->find();
         if (!$model) {
-            $model        = new SystemConfig;
-            $model->group = $group;
+            $model                  = new SystemConfig;
+            $model->group           = $group;
+            $model->saas_appid      = $this->saas_appid;
         }
         $model->value = $configValue;
         if (!$model->save()) {

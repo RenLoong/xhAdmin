@@ -5,10 +5,15 @@ namespace app\store\controller;
 use app\common\BaseController;
 use app\common\builder\FormBuilder;
 use app\common\enum\PlatformTypes;
-use app\common\enum\SettingsEnum;
 use app\common\enum\YesNoEum;
+use app\common\utils\DirUtil;
 use app\store\model\StoreApp;
+use app\store\service\develop\CopyFiles;
+use app\store\service\develop\CreateProject;
+use app\store\service\develop\DataCheck;
+use app\store\service\develop\PluginInstall;
 use app\store\validate\Develop;
+use Exception;
 use support\Request;
 use think\facade\Db;
 
@@ -19,6 +24,15 @@ use think\facade\Db;
  */
 class DevelopController extends BaseController
 {
+    # 复制文件
+    use CopyFiles;
+    # 菜单数据处理
+    use DataCheck;
+    # 应用插件安装
+    use PluginInstall;
+    # 创建项目
+    use CreateProject;
+    
     /**
      * 模型
      * @var StoreApp
@@ -32,6 +46,54 @@ class DevelopController extends BaseController
     protected $pluginTplPath = null;
 
     /**
+     * 插件目标路径
+     * @var string|null
+     * @author 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    protected $pluginPath = null;
+
+    /**
+     * 插件标识（带团队标识）
+     * @var string|null
+     * @author 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    protected $teamPluginName = null;
+
+    /**
+     * 插件标识（不带团队标识，开头大写）
+     * @var string|null
+     * @author 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    protected $pluginName = null;
+
+    /**
+     * 插件标识（不带团队标识，开头小写）
+     * @var string|null
+     * @author 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    protected $pluginComplete = null;
+
+    /**
+     * 项目名称
+     * @var string|null
+     * @author 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    protected $projectName = null;
+
+    /**
+     * 数据库配置
+     * @var array|null
+     * @author 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    protected $_mysql = null;
+
+    /**
      * 构造函数
      * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
@@ -39,15 +101,27 @@ class DevelopController extends BaseController
      */
     public function initialize()
     {
+        parent::initialize();
         $this->model         = new StoreApp;
         $this->pluginTplPath = base_path() . 'common/template/plugin/';
+        $_config = config('database');
+        if (empty($_config['default']) || empty($_config['connections'])) {
+            throw new Exception("数据库链接配置错误");
+        }
+        $_mysql = $_config['connections'][$_config['default']];
+        if (empty($_mysql)) {
+            throw new Exception($_config['default'] . "链接配置错误");
+        }
+        $this->_mysql = $_mysql;
     }
 
     /**
      * 创建开发者应用
      * @param \support\Request $request
      * @return mixed
-     * @author John
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
     public function create(Request $request)
     {
@@ -67,138 +141,42 @@ class DevelopController extends BaseController
             if (is_dir($pluginPath)) {
                 return $this->fail("该应用【{$pluginName}】已存在");
             }
+            # 应用完整目录
+            $this->pluginPath       = $pluginPath;
+            # 团队名称+应用插件名称
+            $this->teamPluginName   = $pluginName;
+            # 应用插件名称（开头大写）
+            $this->pluginName       = $appName;
+            # 应用插件名称（开头小写）
+            $this->pluginComplete   = $post['name'];
+            # 项目名称
+            $this->projectName      = $post['title'];
 
             Db::startTrans();
             try {
                 # 复制应用文件
-                $this->copyTplFile($pluginPath, $pluginName, $post);
-                # 替换文件内容
-                $this->strReplaceTpl($pluginPath, $pluginName, $post);
-                # 创建应用数据库
-                $this->createPluginTable($pluginPath, $pluginName, $post);
-                # 创建应用数据
-                $this->createPluginData($pluginPath, $pluginName, $post);
+                $this->copyTplFile($post);
+                # 处理菜单数据
+                $this->checkMenuData($post);
+                # 安装应用
+                $this->pluginInstall($post);
+                # 创建项目
+                $this->createProject($post);
                 Db::commit();
             } catch (\Throwable $e) {
                 Db::rollback();
-                return $this->fail($e->getMessage());
+                # 安装失败，删除插件目录
+                if (is_dir($this->pluginPath)) {
+                    DirUtil::delDir($this->pluginPath);
+                }
+                throw $e;
             }
             return $this->success('操作成功');
         }
-        $builder = $this->formView();
-        $data    = $builder->create();
-        return parent::successRes($data);
+        $data = $this->formView()->create();
+        return $this->successRes($data);
     }
 
-    /**
-     * 创建插件数据
-     * @param string $pluginPath
-     * @param string $pluginName
-     * @param array $data
-     * @return void
-     * @author John
-     */
-    protected function createPluginData(string $pluginPath, string $pluginName, array $data)
-    {
-    }
-
-    /**
-     * 创建插件数据库
-     * @param string $pluginPath
-     * @param string $pluginName
-     * @param array $data
-     * @return void
-     * @author John
-     */
-    protected function createPluginTable(string $pluginPath, string $pluginName, array $data)
-    {
-    }
-
-    /**
-     * 替换文件内容
-     * @param string $pluginPath
-     * @param string $pluginName
-     * @param array $data
-     * @return void
-     * @author John
-     */
-    protected function strReplaceTpl(string $pluginPath, string $pluginName, array $data)
-    {
-    }
-
-    /**
-     * 复制应用文件
-     * @param string $pluginPath
-     * @param string $pluginName
-     * @param array $data
-     * @return void
-     * @author John
-     */
-    protected function copyTplFile(string $pluginPath, string $pluginName, array $data)
-    {
-        # 普通文件
-        $ordinary = [
-            'api/Created.tpl',
-            'api/Install.tpl',
-            'api/Login.tpl',
-            'app/admin/controller/IndexController.tpl',
-            'app/admin/controller/PublicsController.tpl',
-            'app/admin/controller/SettingsController.tpl',
-            'app/admin/controller/UploadCateController.tpl',
-            'app/admin/controller/UploadController.tpl',
-            'app/controller/IndexController.tpl',
-            'config/middleware.tpl',
-            'config/settings.tpl',
-            'config/task.tpl',
-            'package/remarks.txt',
-            'public/remarks.txt',
-        ];
-        # 文章系统
-        $article = [];
-        if ($data['is_article'] == '20') {
-            $article = [
-                'app/admin/controller/ArtCategoryController.tpl',
-                'app/admin/controller/ArticlesController.tpl',
-            ];
-        }
-        # 单页应用
-        $onePage = [];
-        if ($data['is_page'] == '20') {
-            $onePage = [
-                'app/admin/controller/OnePageController.tpl',
-            ];
-        }
-        # 系统配置
-        $settings = [];
-        if ($data['settings'] == '20') {
-            $settings = $data['settings'] ?? [];
-            foreach ($settings as $key => $value) {
-                $settings[$key] = "config/settings/{$value}.tpl";
-            }
-        }
-        # 权限管理
-        $auth = [];
-        if ($data['is_auth'] == '20') {
-            $auth   = [
-                'app/admin/controller/MenusController.tpl',
-                'app/admin/controller/RolesController.tpl',
-                'app/admin/controller/AdminController.tpl',
-            ];
-        }
-
-        # 合并文件
-        $data = array_merge($ordinary, $article, $onePage, $settings, $auth);
-        foreach ($data as $path) {
-            $filePath = $pluginPath . '/' . $path;
-            $dirPath  = dirname($filePath);
-            if (!is_dir($dirPath)) {
-                mkdir($dirPath, 0755, true);
-            }
-            if (file_exists($this->pluginTplPath . $path)) {
-                copy($this->pluginTplPath . $path, $filePath);
-            }
-        }
-    }
 
     /**
      * 表单视图
@@ -213,14 +191,35 @@ class DevelopController extends BaseController
             'col' => 12,
         ]);
         $builder->addRow('platform', 'select', '项目类型', '', [
-            'col' => 12,
-            'options' => PlatformTypes::getOptions()
+            'col'       => 12,
+            'multiple'  => true,
+            'options'   => PlatformTypes::getOptions()
         ]);
         $builder->addRow('team', 'input', '团队标识', '', [
             'col' => 12,
         ]);
         $builder->addRow('name', 'input', '应用标识', '', [
             'col' => 12,
+        ]);
+        $builder->addRow('is_system', 'radio', '基本配置', '20', [
+            'col'       => 12,
+            'options'   => [
+                [
+                    'label' => '必须',
+                    'disabled' => true,
+                    'value' => '20',
+                ],
+            ]
+        ]);
+        $builder->addRow('is_auth', 'radio', '权限管理', '20', [
+            'col' => 12,
+            'options' => [
+                [
+                    'label' => '必须',
+                    'disabled' => true,
+                    'value' => '20',
+                ],
+            ]
         ]);
         $builder->addRow('is_page', 'radio', '单页管理', '20', [
             'col' => 12,
@@ -230,19 +229,17 @@ class DevelopController extends BaseController
             'col' => 12,
             'options' => YesNoEum::getOptions()
         ]);
-        $builder->addRow('settings', 'checkbox', '系统配置', ['system'], [
+        $builder->addRow('is_pay', 'radio', '支付配置', '10', [
             'col' => 12,
-            'options' => SettingsEnum::getOptions()
+            'options' => YesNoEum::getOptions()
         ]);
-        $builder->addRow('is_auth', 'radio', '权限管理', '20', [
+        $builder->addRow('is_ad', 'radio', '流量主配置', '10', [
             'col' => 12,
-            'options' => [
-                [
-                    'label'     => '必须',
-                    'disabled'  => true,
-                    'value'     => '20',
-                ],
-            ]
+            'options' => YesNoEum::getOptions()
+        ]);
+        $builder->addRow('is_sms', 'radio', '短信配置', '10', [
+            'col' => 24,
+            'options' => YesNoEum::getOptions()
         ]);
         $builder->addRow('username', 'input', '超管账号', '', [
             'col' => 12,

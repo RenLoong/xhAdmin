@@ -56,7 +56,8 @@ class SystemAdmin extends Validate
                 'password',
                 'nickname',
                 'headimg',
-            ]);
+            ])
+            ->remove('username', ['verifyAdd']);
     }
 
     /**

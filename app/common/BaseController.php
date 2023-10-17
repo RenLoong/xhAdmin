@@ -53,10 +53,10 @@ class BaseController extends Controller
      */
     public function __construct(App $app)
     {
+        parent::__construct($app);
         # 请求信息
         $request    = $app->request;
         $this->moduleName = trim($request->root(), '/');
-        parent::__construct($app);
     }
 
     /**
@@ -135,9 +135,13 @@ class BaseController extends Controller
      */
     public function rowEdit(Request $request)
     {
+        # 主键名称
         $keyField = $request->post('keyField');
+        # 主键值
         $id = $request->post($keyField);
+        # 字段名
         $field = $request->post('field');
+        # 数据值
         $value = $request->post('value');
         $where = [
             $keyField => $id

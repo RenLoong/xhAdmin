@@ -80,7 +80,7 @@ class SystemInfoService
             $authData = json_decode(file_get_contents($authFilePath),true);
             $data     = array_merge($data, $authData);
             $data['system_name'] = $data['name'];
-            $data['about_name'] = $data['copyright'];           
+            $data['about_name'] = $data['copyright'];
         }
         return $data;
     }

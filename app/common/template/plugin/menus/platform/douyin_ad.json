@@ -1,0 +1,19 @@
+[
+    {
+        "path": "Settings/tabs",
+        "title": "抖音流量主",
+        "method": [
+            "GET"
+        ],
+        "component": "form/index",
+        "auth_params": "group=douyin_ad",
+        "show": "20",
+        "icon": "FolderOpened",
+        "is_system": "10",
+        "is_api": "10",
+        "id": 16400,
+        "pid": 16000,
+        "is_default": "10",
+        "children": []
+    }
+]

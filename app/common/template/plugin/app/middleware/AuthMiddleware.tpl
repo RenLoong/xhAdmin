@@ -1,17 +1,24 @@
 <?php
-namespace plugin\ycMini\app\middleware;
+namespace plugin\{TEAM_PLUGIN_NAME}\app\middleware;
 
-use loong\oauth\facade\Auth;
-use think\facade\Session;
 use think\Request;
 use think\Response;
+use loong\oauth\facade\Auth;
 
 /**
- * 权限中间件
+ * 根模块权限中间件
  * @author 贵州猿创科技有限公司
+ * @Email 416716328@qq.com
+ * @DateTime 2023-03-11
  */
 class AuthMiddleware
 {
+    /**
+    * 中间件入口
+    * @author 贵州猿创科技有限公司
+    * @Email 416716328@qq.com
+    * @DateTime 2023-03-11
+    */
     public function handle(Request $request, callable $handler): Response
     {
         // 鉴权检测
@@ -23,44 +30,54 @@ class AuthMiddleware
         }
         return $response;
     }
+
+    /**
+    * 业务逻辑
+    * @author 贵州猿创科技有限公司
+    * @Email 416716328@qq.com
+    * @DateTime 2023-03-11
+    */
     public function canAccess(Request $request): bool
     {
-        $saas_appid = $request->header('Appid') ?? $request->get('appid');
-        $request->saas_appid = $saas_appid;
-        if (!$request->controller()) {
+        # 无控制器地址
+        if (!$request->control) {
             return true;
         }
-        // 获取控制器鉴权信息
+        # 获取控制器鉴权信息
         $namespace = app()->getNamespace();
-        $class = new \ReflectionClass("{$namespace}\\{$request->control}");
+        $classNameSpace = "{$namespace}\\{$request->control}";
+        $class = new \ReflectionClass($classNameSpace);
         $properties = $class->getDefaultProperties();
+        # 无需登录方法
         $noNeedLogin = $properties['noNeedLogin'] ?? [];
-        $noValidate = $properties['noValidate'] ?? [];
-        Session::set('RecordSaasAppid', $saas_appid);
-        if (in_array($request->action(), $noValidate)) {
-            $user = Session::get('filingUser');
-            if ($user) {
-                $request->uid = $user['id'];
-                if ($user['saas_appid'] != $saas_appid) {
-                    throw new \Exception("应用ID错误,请重新登录", 12000);
-                }
+        # 无需鉴权方法
+        $noNeedAuth = $properties['noNeedAuth'] ?? [];
+        # 无需验证APPID方法
+        $noIdentifyApp = $properties['noNeedAppid'] ?? [];
+        # 设置全局Appid
+        $request->appid = $request->header('Appid');
+        if (!in_array($request->action(), $noIdentifyApp)) {
+            if (!$request->appid) {
+                throw new \Exception('访问应用不存在', 404);
             }
-            return true;
         }
-
-        // 不需要登录
+        # 不需要登录
         if (in_array($request->action(), $noNeedLogin)) {
             return true;
         }
-        // 获取登录信息
+        # 令牌验证
         $user = Auth::decrypt($request->header('Authorization'));
-        if (!$user) {
-            throw new \Exception("获取用户信息失败,请重新登录", 12000);
+        if(!$user){
+            throw new \Exception('登录已过期，请重新登录', 12000);
         }
-        if ($user['saas_appid'] != $saas_appid) {
-            throw new \Exception("应用ID错误,请重新登录", 12000);
+        $request->userModel             = $user;
+        $request->userId                = $user['id'];
+        $request->saas_appid            = $user['saas_appid'];
+
+        # 不需要鉴权
+        if (in_array($request->action(), $noNeedAuth)) {
+            return true;
         }
-        $request->uid = $user['id'];
         return true;
     }
 }

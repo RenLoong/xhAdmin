@@ -12,7 +12,6 @@ class SystemAuthRule extends Validate
         'component' => 'verifyComponet',
         'path'      => 'require',
         'method'    => 'require',
-        'sort'      => 'require',
     ];
 
     protected $message = [
@@ -20,7 +19,6 @@ class SystemAuthRule extends Validate
         'pid.require'       => '请选择父级菜单',
         'path.require'      => '请输入权限路由',
         'method.require'    => '请选择请求类型',
-        'sort.require'      => '请输入菜单排序',
     ];
 
     protected $scene = [
@@ -29,14 +27,12 @@ class SystemAuthRule extends Validate
             'title',
             'component',
             'path',
-            'sort',
         ],
         'edit' => [
             'pid',
             'title',
             'component',
             'path',
-            'sort',
         ],
     ];
 

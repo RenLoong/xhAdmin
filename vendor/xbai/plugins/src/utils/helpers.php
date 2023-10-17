@@ -148,7 +148,7 @@ if (!function_exists('getAssetsCheck')) {
      */
     function getAssetsCheck(\think\Request $request)
     {
-        $staticSuffix = config('plugins.static_suffix');
+        $staticSuffix = config('plugins.static_suffix',[]);
         if (!is_array($staticSuffix)) {
             throw new Exception("配置项plugins.static_suffix必须为数组");
         }

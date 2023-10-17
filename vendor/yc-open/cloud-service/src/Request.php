@@ -47,7 +47,7 @@ class Request
             $this->baseUrl = $baseUrl;
         }
         # 判断是否为渠道商
-        $channelsAuthFile = root_path('config') . 'channels_authorization.json';
+        $channelsAuthFile = root_path('config') . 'authorization.json';
         if (file_exists($channelsAuthFile)) {
             $channelsAuth = json_decode(file_get_contents($channelsAuthFile), true);
             if ($channelsAuth) {

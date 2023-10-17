@@ -223,7 +223,7 @@ class SystemAdminController extends BaseController
                 'col'       => [
                     'span'  => 12
                 ],
-                'options'   => SystemAdminRole::getOptions($admin_id)
+                'options'   => SystemAdmin::selectRoleOptions($admin_id)
             ])
             ->addRow('status', 'radio', '用户状态', '1', [
                 'col'       => [

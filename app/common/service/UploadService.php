@@ -101,7 +101,7 @@ class UploadService
         $dirName = $category['dir_name'] ?? 'default';
 
         # 获取当前所有配置项
-        $config = self::getConfig();
+        $config = self::getCurrentConfig();
         # 获取当前使用驱动
         $uploadDrive = self::getDrive();
 
@@ -348,7 +348,24 @@ class UploadService
      */
     public static function getConfig()
     {
-        return getHpConfig('',null,'upload');
+        return getHpConfig('', null, 'upload');
+    }
+
+    /**
+     * 获取当前使用配置项
+     * @return mixed
+     * @author John
+     */
+    public static function getCurrentConfig()
+    {
+        $config = self::getConfig();
+        if (empty($config['upload_drive'])) {
+            throw new Exception('请先设置附件驱动');
+        }
+        # 当前使用驱动
+        $drive = $config['upload_drive'];
+        $settings = isset($config['children'][$drive]) ? $config['children'][$drive] : [];
+        return $settings;
     }
 
     /**

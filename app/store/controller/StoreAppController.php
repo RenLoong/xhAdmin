@@ -17,6 +17,8 @@ use Exception;
 use think\facade\Log;
 use support\Request;
 use think\facade\Db;
+use YcOpen\CloudService\Cloud;
+use YcOpen\CloudService\Request\UserRequest;
 
 /**
  * 应用管理
@@ -272,92 +274,6 @@ class StoreAppController extends BaseController
         # 删除项目
         StoreAppMgr::del($saas_appid);
         return $this->success('操作成功');
-    }
-
-    /**
-     * 项目配置
-     * @param \support\Request $request
-     * @return \support\Response
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     */
-    public function config(Request $request)
-    {
-        $app_id = $request->get('id', '');
-        $model = $this->model;
-        $where = [
-            ['id', '=', $app_id],
-        ];
-        $model = $model->where($where)->find();
-        if (!$model) {
-            return $this->fail('项目数据错误');
-        }
-        $pluginPath = base_path("plugin/{$model->name}");
-        if (!is_dir($pluginPath)) {
-            throw new RedirectException('该项目绑定应用已卸载', "/#/Index/index");
-        }
-        $settingPath = "{$pluginPath}/config/settings.php";
-        if (!file_exists($settingPath)) {
-            throw new RedirectException('该应用插件没有系统配置文件', "/#/Index/index");
-        }
-        # 检测应用对SAAS版本支持
-        try {
-            if (!PluginMgr::checkPluginSaasVersion($model['name'])) {
-                throw new RedirectException('请先更新应用', "/#/Index/index");
-            }
-        } catch (\Throwable $e) {
-            throw new RedirectException($e->getMessage(), "/#/Index/index");
-        }
-        $systemConfig = new StoreAppConfigMgr($request, $model);
-        $methodFun = 'list';
-        if ($request->method() === 'PUT') {
-            $methodFun = 'saveData';
-        }
-        return call_user_func([$systemConfig, $methodFun]);
-    }
-
-    /**
-     * 小程序配置与发布
-     * @param \support\Request $request
-     * @return mixed
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     */
-    public function applet(Request $request)
-    {
-        $app_id = $request->get('id', '');
-        $model = $this->model;
-        $where = [
-            ['id', '=', $app_id],
-        ];
-        $model = $model->where($where)->find();
-        if (!$model) {
-            throw new RedirectException('项目数据错误', "/#/Index/index");
-        }
-        # 检测应用对SAAS版本支持
-        try {
-            if (!PluginMgr::checkPluginSaasVersion($model['name'])) {
-                throw new RedirectException('请先更新应用', "/#/Index/index");
-            }
-        } catch (\Throwable $e) {
-            throw new RedirectException($e->getMessage(), "/#/Index/index");
-        }
-        $methodFun = 'detail';
-        switch ($request->method()) {
-            # 小程序发布
-            case 'POST':
-                $methodFun = 'publish';
-                break;
-            # 小程序配置
-            case 'PUT':
-                $methodFun = 'config';
-                break;
-        }
-        $class = new AppletMgr($request, $model);
-        if (!method_exists($class, $methodFun)) {
-            throw new RedirectException("未实现项目方法---{$methodFun}", "/#/Index/index");
-        }
-        return call_user_func([$class, $methodFun]);
     }
 
     /**

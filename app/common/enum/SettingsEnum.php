@@ -25,6 +25,22 @@ class SettingsEnum extends Enum
     ];
     const WEIXIN_AD = [
         'text'      => '微信流量主',
-        'value'     => 'advertisement',
+        'value'     => 'weixin_ad',
+    ];
+    const DOUYIN_AD = [
+        'text'      => '抖音流量主',
+        'value'     => 'douyin_ad',
+    ];
+    const SMS_CONFIG = [
+        'text'      => '短信配置',
+        'value'     => 'sms',
+    ];
+    const WECHAT_TPL = [
+        'text'      => '微信公众号通知',
+        'value'     => 'wechat_tpl',
+    ];
+    const WX_TPL = [
+        'text'      => '微信小程序消息',
+        'value'     => 'wxtpl',
     ];
 }

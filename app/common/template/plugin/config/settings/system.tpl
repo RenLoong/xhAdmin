@@ -3,7 +3,7 @@
 # 基本配置
 return [
     [
-        'field'         => 'web_name',
+        'name'          => 'web_name',
         'title'         => '应用名称',
         'value'         => '',
         'component'     => 'input',
@@ -15,8 +15,8 @@ return [
         ],
     ],
     [
-        'field'         => 'web_logo',
-        'title'         => '应用LOGO',
+        'name'          => 'web_logo',
+        'title'         => '应用图标',
         'value'         => '',
         'component'     => 'uploadify',
         'extra'         => [],

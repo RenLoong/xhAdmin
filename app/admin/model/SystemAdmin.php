@@ -49,7 +49,7 @@ class SystemAdmin extends ModelSystemAdmin
      * @param  integer $admin_id
      * @return array
      */
-    public static function getOptions(int $admin_id): array
+    public static function selectOptions(int $admin_id): array
     {
         $where = [
             ['pid', '=', $admin_id],
@@ -62,6 +62,25 @@ class SystemAdmin extends ModelSystemAdmin
             ->field($field)
             ->select()
             ->toArray();
+        return $list;
+    }
+
+    /**
+     * 获取角色组件选项
+     * @param int $admin_id
+     * @return array
+     * @author John
+     */
+    public static function selectRoleOptions(int $admin_id): array
+    {
+        $where = [
+            ['pid', '=', $admin_id],
+        ];
+        $field = [
+            'id as value',
+            'username as label'
+        ];
+        $list  = SystemAdminRole::selectOptions($admin_id);
         return $list;
     }
 }

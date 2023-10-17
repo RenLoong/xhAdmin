@@ -1,0 +1,19 @@
+[
+    {
+        "path": "Applet/index",
+        "title": "微信小程序",
+        "method": [
+            "GET"
+        ],
+        "component": "vue/index",
+        "auth_params": "",
+        "show": "20",
+        "icon": "",
+        "is_system": "10",
+        "is_api": "10",
+        "id": 16100,
+        "pid": 16000,
+        "is_default": "10",
+        "children": []
+    }
+]

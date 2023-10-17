@@ -1,0 +1,19 @@
+[
+    {
+        "path": "Settings/tabs",
+        "title": "短信设置",
+        "method": [
+            "GET"
+        ],
+        "component": "form/index",
+        "auth_params": "group=sms",
+        "show": "20",
+        "icon": "",
+        "is_system": "10",
+        "is_api": "10",
+        "id": 10008,
+        "pid": 10,
+        "is_default": "10",
+        "children": []
+    }
+]

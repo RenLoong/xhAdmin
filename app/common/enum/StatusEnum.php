@@ -14,7 +14,7 @@ use app\common\Enum;
 class StatusEnum extends Enum
 {
     const STATUS_NO = [
-        'text'      => '冻结',
+        'text'      => '禁用',
         'value'     => '10',
     ];
     const STATUS_YES = [

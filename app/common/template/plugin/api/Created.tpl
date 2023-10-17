@@ -1,9 +1,9 @@
 <?php
 
-namespace plugin\{PLUGIN_NAME}\api;
+namespace plugin\{TEAM_PLUGIN_NAME}\api;
 
-use plugin\{PLUGIN_NAME}\app\model\{PLUGIN_NAME}Admin;
-use plugin\{PLUGIN_NAME}\app\model\{PLUGIN_NAME}AdminRole;
+use plugin\{TEAM_PLUGIN_NAME}\app\model\PluginAdmin;
+use plugin\{TEAM_PLUGIN_NAME}\app\model\PluginRoles;
 use think\facade\Db;
 
 class Created
@@ -16,7 +16,7 @@ class Created
      */
     public function read(int $appid)
     {
-        $adminModel = {PLUGIN_NAME}Admin::with(['role'])->where(['saas_appid' => $appid, 'pid' => 0])->find();
+        $adminModel = PluginAdmin::with(['role'])->where(['saas_appid' => $appid, 'pid' => 0])->find();
         if (!$adminModel) {
             throw new \Exception("管理员不存在，请联系站长");
         }
@@ -36,19 +36,29 @@ class Created
         }
         Db::startTrans();
         try {
-            $SystemAdmin = {PLUGIN_NAME}Admin::where(['saas_appid' => $data['id'], 'pid' => 0])->find();
+            $where       = [
+                'saas_appid'        => $data['id'],
+                'pid'               => 0,
+                'is_system'         => '20'
+            ];
+            $SystemAdmin = PluginAdmin::where($where)->find();
             if (!$SystemAdmin) {
                 if(empty($data['password'])){
                     throw new \Exception("请设置管理员密码");
                 }
-                $SystemAdmin = new {PLUGIN_NAME}Admin;
+                $SystemAdmin = new PluginAdmin;
             }
-            $SystemAdminRole = {PLUGIN_NAME}AdminRole::where(['saas_appid' => $data['id'], 'pid' => 0, 'is_system' => 1])->find();
+            $where = [
+                'saas_appid'        => $data['id'],
+                'pid'               => 0,
+                'is_system'         => '20',
+            ];
+            $SystemAdminRole = PluginRoles::where($where)->find();
             if (!$SystemAdminRole) {
-                $SystemAdminRole = new {PLUGIN_NAME}AdminRole;
+                $SystemAdminRole = new PluginRoles;
                 $SystemAdminRole->saas_appid = $data['id'];
                 $SystemAdminRole->pid = 0;
-                $SystemAdminRole->is_system = 1;
+                $SystemAdminRole->is_system = '20';
                 $SystemAdminRole->title = '系统管理员';
                 $SystemAdminRole->rule = null;
             }
@@ -60,14 +70,14 @@ class Created
             if(!empty($data['password'])){
                 $SystemAdmin->password = $data['password'];
             }
-            $SystemAdmin->status = 1;
-            $SystemAdmin->nickname = '超级管理员默认账户';
-            $SystemAdmin->is_system = 1;
+            $SystemAdmin->status = '20';
+            $SystemAdmin->nickname = '超级管理员';
+            $SystemAdmin->is_system = '20';
             $SystemAdmin->save();
             Db::commit();
-        } catch (\Throwable $th) {
+        } catch (\Throwable $e) {
             Db::rollback();
-            throw $th;
+            throw $e;
         }
     }
 }
