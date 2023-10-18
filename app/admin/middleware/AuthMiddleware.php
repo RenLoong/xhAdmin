@@ -2,7 +2,6 @@
 
 namespace app\admin\middleware;
 
-use app\admin\model\SystemAdmin;
 use app\common\manager\AuthMgr;
 use Closure;
 use support\Request;
@@ -99,9 +98,9 @@ class AuthMiddleware
         $rule = AuthMgr::getAdminRoleColumn($user->toArray());
         // 检测是否有操作权限
         $ctrlName = str_replace('Controller', '', basename(str_replace('\\', '/', $control)));
-        $path = "{$ctrlName}/{$control}";
+        $path = "{$ctrlName}/{$action}";
         if (!in_array($path, $rule)) {
-            throw new \Exception('没有该操作权限', 404);
+            throw new \Exception('没有该操作权限', 600);
         }
         return true;
     }

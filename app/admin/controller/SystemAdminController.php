@@ -41,7 +41,7 @@ class SystemAdminController extends BaseController
                 'api'           => 'admin/SystemAdmin/add',
                 'path'          => '/SystemAdmin/add',
             ], [], [
-                'type'          => 'success'
+                'type'          => 'primary'
             ])
             ->addRightButton('edit', '修改', [
                 'api'           => 'admin/SystemAdmin/edit',
@@ -146,7 +146,7 @@ class SystemAdminController extends BaseController
                 'col'       => [
                     'span'  => 12
                 ],
-                'options'   => SystemAdminRole::getOptions($admin_id)
+                'options'   => SystemAdminRole::selectOptions($admin_id)
             ])
             ->addRow('status', 'radio', '用户状态', '10', [
                 'col'       => [

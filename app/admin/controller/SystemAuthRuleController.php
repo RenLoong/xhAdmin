@@ -51,7 +51,7 @@ class SystemAuthRuleController extends BaseController
                 'api' => 'admin/SystemAuthRule/add',
                 'path' => '/SystemAuthRule/add'
             ], [], [
-                'type' => 'success'
+                'type' => 'primary'
             ])
             ->addTopButton('add', '添加资源菜单', [
                 'api' => 'admin/SystemAuthRule/addResource',

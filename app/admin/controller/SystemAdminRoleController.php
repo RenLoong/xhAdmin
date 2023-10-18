@@ -37,7 +37,7 @@ class SystemAdminRoleController extends BaseController
                 'api'           => 'admin/SystemAdminRole/add',
                 'path'          => '/SystemAdminRole/add',
             ], [], [
-                'type'          => 'success'
+                'type'          => 'primary'
             ])
             ->addRightButton('auth', '授权', [
                 'api'           => 'admin/SystemAdminRole/auth',
