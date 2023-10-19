@@ -1,8 +1,8 @@
 {
-    "name": "xhadmin",
-    "title": "基于xhadmin快速创建属于自己的多应用Saas框架",
-    "tab_title": "xhadmin多应用Saas框架系统",
-    "description": "xhadmin 是一套基于最新技术的研发的多应用 Saas 框架，支持在线升级和安装模块及模板拥有良好的底层架构、成熟稳定的技术解决方案、提供丰富的扩展功能。",
+    "name": "XHAdmin",
+    "title": "基于XHAdmin快速创建属于自己的多应用Saas框架",
+    "tab_title": "XHAdmin多应用Saas框架系统",
+    "description": "XHAdmin 是一套基于最新技术的研发的多应用 Saas 框架，支持在线升级和安装模块及模板拥有良好的底层架构、成熟稳定的技术解决方案、提供丰富的扩展功能。",
     "copyright": "贵州猿创科技有限公司",
     "icp": "黔ICP备15002534号-19",
     "beian_code": "52010302003421",
@@ -17,11 +17,11 @@
         "download": "https://www.kfadmin.net/downloads?origin=https%3A%2F%2Fwww.xhadmin.cn",
         "kfurl_after": "https://work.weixin.qq.com/kfid/kfcd7f9bb79b025a549",
         "kfurl_before": "https://work.weixin.qq.com/kfid/kfcd7f9bb79b025a549",
-        "base": "https://www.xhadmin.net/",
-        "register": "https://www.xhadmin.net/#/register",
-        "login": "https://www.xhadmin.net/#/login",
-        "forgot": "https://www.xhadmin.net/#/forgot",
-        "bindsite": "https://www.xhadmin.net/#/control/apps"
+        "base": "https://www.xhadmin.cn/",
+        "register": "https://www.xhadmin.cn/#/register",
+        "login": "https://www.xhadmin.cn/#/login",
+        "forgot": "https://www.xhadmin.cn/#/forgot",
+        "bindsite": "https://www.xhadmin.cn/#/control/apps"
     },
     "update_at": "2023-10-09 18:34:57",
     "readme": null,
@@ -38,7 +38,7 @@
         {
             "name": "在线社区",
             "target": "_blank",
-            "url": "https://www.xhadmin.net/#/apps"
+            "url": "https://www.xhadmin.cn/#/apps"
         }
     ],
     "logo_white_url": "//kfadmin.net/upload/channels/logo_white/262a72a9ef1447d1a2f9e898b08d25b0.png",

@@ -16,8 +16,8 @@
           </el-input>
         </el-form-item>
         <div class="action-btn">
-          <a href="http://xhadmin.cn/#/register" target="_blank">注册账号</a>
-          <!-- <a href="http://xhadmin.cn/#/forgot" target="_blank">忘记密码</a> -->
+          <a :href="system_info?.public_api?.register ?? ''" target="_blank">注册账号</a>
+          <!-- <a :href="system_info?.public_api?.forgot ?? ''" target="_blank">忘记密码</a> -->
         </div>
         <div class="submit-button">
           <el-button type="primary" class="cls-button" @click="onSubmit">
@@ -38,6 +38,7 @@ export default {
         password: "",
         scode: "",
       },
+      system_info: {},
       scodeSrc: "/admin/PluginCloud/captcha",
       captcha: '',
     };
@@ -71,9 +72,18 @@ export default {
         _this.form.token = data.token
       })
     },
+    getEmpower() {
+      const _this = this;
+      _this.$http.usePut("admin/Updated/empower", {'service':1}).then((res) => {
+        const { data } = res;
+        _this.system_info = data?.system_info || {};
+      })
+    },
     init() {
       // 检测是否已登录
       this.getCaptcha();
+      // 获取系统信息
+      this.getEmpower();
     },
   },
 };

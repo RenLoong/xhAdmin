@@ -71,6 +71,7 @@ class ExceptionHandle extends Handle
             if (env('APP_DEBUG',false)) {
                 $json['trace']['line'] = $e->getLine();
                 $json['trace']['file'] = $e->getFile();
+                $json['trace']['trace'] = $e->getTrace();
             }
             $json = json_encode($json, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
             return response($json, 200, ['Content-Type' => 'application/json']);

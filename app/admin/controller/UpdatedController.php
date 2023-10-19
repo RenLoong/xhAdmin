@@ -92,13 +92,16 @@ class UpdatedController extends BaseController
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      */
-    public function empower()
+    public function empower(Request $request)
     {
-        $req = new SiteRequest;
-        $req->getInfo();
-        $cloud             = new Cloud($req);
-        $response              = $cloud->send();
-        $data     = $response->toArray();
+        $data = [];
+        if (!$request->post('service','')) {
+            $req = new SiteRequest;
+            $req->getInfo();
+            $cloud             = new Cloud($req);
+            $response              = $cloud->send();
+            $data     = $response->toArray();
+        }
         $info = SystemInfoService::info();
         $data['system_info'] = $info;
         return $this->successRes($data);
