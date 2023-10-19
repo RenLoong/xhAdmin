@@ -333,7 +333,8 @@ class SystemUpdateService
             }
         } catch (\Throwable $e) {
             # 报错异常，记录日志
-            Log::write("框架更新数据出错：{$e->getMessage()}，Line：{$e->getFile()}，File：{$e->getFile()}", 'xhadmin_update_error');
+            Log::write("框架更新数据出错：{$e->getMessage()}，Line：{$e->getLine()}，File：{$e->getFile()}", 'xhadmin_update_error');
+            throw $e;
         }
         return JsonMgr::successRes([
             'next' => 'success'

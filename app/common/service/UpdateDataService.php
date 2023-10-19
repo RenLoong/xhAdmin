@@ -41,7 +41,7 @@ class UpdateDataService extends SystemUpdateService
     public function beforeUpdate()
     {
         # sql目录
-        $sqlDir = root_path().'/update';
+        $sqlDir = root_path().'update';
         if (!is_dir($sqlDir)) {
             return [];
         }
@@ -93,8 +93,7 @@ class UpdateDataService extends SystemUpdateService
                     Log::error("系统更新SQL错误，继续执行：{$e->getMessage()}，Line：{$e->getLine()}，File：{$e->getFile()}");
                 }
                 # 执行后，无论成功失败，删除文件
-                $filePath = root_path()."/update/{$value['file']}";
-                file_exists($filePath) && unlink($filePath);
+                file_exists($value['file']) && unlink($value['file']);
             }
             # 检测目录是否为空，为空则删除
             $updateDir = root_path().'/update';
