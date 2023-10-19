@@ -98,9 +98,9 @@ class UpdatedController extends BaseController
         if (!$request->post('service','')) {
             $req = new SiteRequest;
             $req->getInfo();
-            $cloud             = new Cloud($req);
-            $response              = $cloud->send();
-            $data     = $response->toArray();
+            $cloud      = new Cloud($req);
+            $response   = $cloud->send();
+            $data       = $response->toArray();
         }
         $info = SystemInfoService::info();
         $data['system_info'] = $info;

@@ -99,8 +99,8 @@ class AuthMiddleware
         // 检测是否有操作权限
         $ctrlName = str_replace('Controller', '', basename(str_replace('\\', '/', $control)));
         $path = "{$ctrlName}/{$action}";
-        if (!in_array($path, $rule)) {
-            throw new \Exception('没有该操作权限', 600);
+        if (!in_array($path, $rule) && $path !== 'Updated/updateCheck') {
+            throw new \Exception('没有该操作权限', 404);
         }
         return true;
     }

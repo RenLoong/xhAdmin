@@ -60,66 +60,46 @@ trait UploadConfigTrait
     public function uploadify(Request $request)
     {
         $prefixs = UploadUtil::getPrefixs();
+        # 获取表单数据
+        $uploadify  = getHpConfig('', null, 'upload');
         if ($request->isPut()) {
-            $drive = $request->post('system_uploadify');
+            $drive = $request->post('upload_drive','');
             $post  = $request->post();
-            unset($post['system_uploadify']);
+            unset($post['upload_drive']);
             $children = [];
             foreach ($post as $field => $value) {
                 list($prefixName)              = explode('_', $field);
                 $field                         = str_replace($prefixs, '', $field);
                 $children[$prefixName][$field] = $value;
             }
+            if (!empty($uploadify['children'])) {
+                $children = array_merge($uploadify['children'], $children);
+            }
             $data = [
-                'upload_drive' => $drive,
-                'children' => $children
+                'upload_drive'  => $drive,
+                'children'      => $children
             ];
             $this->save('upload', $data);
             return Json::success('附件库保存成功');
         }
-        $uploadify  = getHpConfig('', null, 'upload');
+        # 获取当前使用驱动
         $drive      = isset($uploadify['upload_drive']) ? $uploadify['upload_drive'] : 'local';
-        
-        # 获取模板数据
-        $setingsTpl = config('settings.upload');
-        foreach ($setingsTpl as $key => $value) {
-            foreach ($value['children'] as $childKey => $children) {
-                $setingsTpl[$key]['children'][$childKey]['name']      = $children['field'];
-                $setingsTpl[$key]['children'][$childKey]['component'] = $children['type'];
-                $setingsTpl[$key]['children'][$childKey]['extra']     = json_decode(json_encode($children['props']), true);
+        $children   = isset($uploadify['children']) ? $uploadify['children'] : [];
+        $formData   = [];
+        foreach ($children as $forDrive => $item) {
+            foreach ($item as $field => $value) {
+                $formData[$forDrive . '_' . $field] = $value;
             }
-        }        
+        }
         # 实例表单构建器
         $builder = new FormBuilder;
         $builder = $builder->setMethod('PUT');
-        $builder = $builder->initTabs('system_uploadify', $drive, [
-            'props' => [
-                // 选项卡样式
-                'type' => 'line',
-                'tabPosition' => 'top',
-            ],
+        $builder->addRow('upload_drive','radio','默认上传方式',$drive,[
+            'options'       => UploadUtil::options(),
+            'control'       => UploadUtil::controlOptions(),
         ]);
-        foreach ($setingsTpl as $value) {
-            if (empty($value['name'])) {
-                throw new Exception('分组标识不能为空');
-            }
-            if (empty($value['title'])) {
-                throw new Exception('分组名称不能为空');
-            }
-            if (empty($value['children'])) {
-                throw new Exception('配置项数据错误');
-            }
-            if (empty($value['layout_col'])) {
-                $value['layout_col'] = 24;
-            }
-            $configs = $this->uploadifyValue($value['children'], $value);
-            $builder = $builder->addTab(
-                $value['name'],
-                $value['title'],
-                $configs
-            );
-        }
-        $data = $builder->endTabs()->create();
+        $builder->setFormData($formData);
+        $data = $builder->create();
         return $this->successRes($data);
     }
 

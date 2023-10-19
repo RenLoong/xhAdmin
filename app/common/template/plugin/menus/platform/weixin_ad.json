@@ -10,7 +10,7 @@
         "show": "20",
         "icon": "FolderOpened",
         "is_system": "10",
-        "is_api": "10",
+        "is_api": "20",
         "id": 16300,
         "pid": 16000,
         "is_default": "10",

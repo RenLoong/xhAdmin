@@ -325,7 +325,7 @@
                                 "title": "角色管理-授权",
                                 "pid": 17,
                                 "component": "form/index",
-                                "is_api": "10",
+                                "is_api": "20",
                                 "path": "Roles/auth",
                                 "show": "10",
                                 "method": [

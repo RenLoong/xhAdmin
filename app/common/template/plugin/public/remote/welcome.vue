@@ -1,6 +1,6 @@
 <template>
     <div>
-        Welcome，这是一个远程组件
+        Welcome，这是【{TEAM_PLUGIN_NAME}】远程组件
     </div>
   </template>
   

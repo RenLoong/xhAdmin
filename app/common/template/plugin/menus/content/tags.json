@@ -10,7 +10,7 @@
         "show": "20",
         "icon": "",
         "is_system": "10",
-        "is_api": "10",
+        "is_api": "20",
         "id": 14000,
         "pid": 11000,
         "is_default": "10",
