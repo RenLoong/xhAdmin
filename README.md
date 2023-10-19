@@ -74,7 +74,7 @@ Swoole
 
 > 温馨提示：虚拟空间不支持，推荐使用 bt 宝塔面板，服务器推荐阿里云 ecs 或腾讯云 cvm 云服务器，不建议使用windows服务器。。
 
-### 官方导航
+### 🔨官方导航
 
 [官网](https://kfadmin.net/) |
 [在线体验](https://demo.kfadmin.net/admin/) |
@@ -82,7 +82,7 @@ Swoole
 [安装教程](https://www.kancloud.cn/me_coder/kfadmin/3169582) |
 [应用市场](https://kfadmin.net/)
 
-### 系统演示
+### ⚡ 系统演示
 
 ![xhadmin租户后台](https://img.alicdn.com/imgextra/i4/2064565174/O1CN017FqDVa1o5k8DHfOBx_!!2064565174.jpg)
 
@@ -90,7 +90,7 @@ Swoole
 
 租户后台： http://demo.kfadmin.net/store 账号：15185081324 密码：123456
 
-### 部分页面展示
+### 📖 部分页面展示
 
 ![输入图片说明](https://img.alicdn.com/imgextra/i4/2064565174/O1CN01F3qh271o5k8LCWqwu_!!2064565174.jpg)
 ![输入图片说明](https://img.alicdn.com/imgextra/i3/2064565174/O1CN017oLpYw1o5k8NCycQV_!!2064565174.jpg)
