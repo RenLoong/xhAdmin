@@ -72,7 +72,7 @@ class UpdateDataService extends SystemUpdateService
     public function update($data)
     {
         $prefix     = config('database.connections.mysql.prefix');
-        $prefixs    = ['`php_', '`yc_'];
+        $prefixs    = ['`php_', '`yc_','__PREFIX__'];
         try {
             # 连接原生PDO
             $pdo = DbMgr::instance()->getPdo();

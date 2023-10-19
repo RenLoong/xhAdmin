@@ -56,6 +56,7 @@ class SystemAdminRoleController extends BaseController
                 'api'           => 'admin/SystemAdminRole/del',
                 'method'        => 'delete',
             ], [
+                'type'          => 'error',
                 'title'         => '温馨提示',
                 'content'       => '是否确认删除该数据',
             ], [
@@ -168,6 +169,9 @@ class SystemAdminRoleController extends BaseController
         if (!$model) {
             return parent::fail('数据不存在');
         }
+        if ($model['is_system'] === '20') {
+            return parent::fail('系统内置数据无法删除');
+        }
         $adminModels = SystemAdmin::where(['role_id' => $id])->select();
         if (!empty($adminModels)) {
             foreach ($adminModels as $adminModel) {
@@ -263,7 +267,11 @@ class SystemAdminRoleController extends BaseController
      */
     private static function getDefaultRule(): array
     {
-        return SystemAuthRule::where(['is_default' => '1'])->column('id');
+        $where = [
+            'is_default' => '20',
+            'is_system'  => '20'
+        ];
+        return SystemAuthRule::where($where)->column('path');
     }
 
     /**
@@ -280,8 +288,7 @@ class SystemAdminRoleController extends BaseController
         $i = 0;
         foreach ($rule as $value) {
             // 默认选选中
-            $disabled = false;
-            $disabled = $value['is_default'] === '1';
+            $disabled = $value['is_default'] === '20' && $value['is_system'] === '20' ? true : false;
             // 组装树状格式数据
             $label                = $value['title'];
             if ($value['path']) {

@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS `__PREFIX__plugin_roles`;
+DROP TABLE IF EXISTS `yc_plugin_roles`;
 
-CREATE TABLE `__PREFIX__plugin_roles` (
+CREATE TABLE `yc_plugin_roles` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '序号',
   `create_at` datetime DEFAULT NULL COMMENT '创建时间',
   `update_at` datetime DEFAULT NULL COMMENT '更新时间',

@@ -391,7 +391,7 @@ class UploadService
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public static function getDisk($drive = null)
+    public static function getDisk($drive = '')
     {
         # 获取配置项
         $config = self::getConfig();

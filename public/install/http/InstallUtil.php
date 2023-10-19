@@ -137,7 +137,7 @@ class InstallUtil
             'username'      => $username,
             'password'      => $password,
             'role_id'       => 1,
-            'nickname'      => 'XHAdmin',
+            'nickname'      => '系统管理员',
             'status'        => '20',
             'is_system'     => '20'
         ];
