@@ -2,18 +2,18 @@
 
 <div align="center">
 
-基于**KFadmin**快速创建属于你自己的多应用**Saas**系统
+基于**XHAdmin**快速创建属于你自己的多应用**Saas**系统
 
 </div>
 
 <div align="center" >
-    <a href="https://kfadmin.net/">
+    <a href="https://xhadmin.cn/">
         <img src="https://img.shields.io/badge/license-Apache%202-blue.svg" />
     </a>
-    <a href="https://kfadmin.net/">
+    <a href="https://xhadmin.cn/">
         <img src="https://img.shields.io/badge/Edition-4.5-blue.svg" />
     </a>
-     <a href="https://kfadmin.net/">
+     <a href="https://xhadmin.cn/">
         <img src="https://img.shields.io/badge/Download-150m-red.svg" />
     </a>
 </div>
@@ -22,11 +22,11 @@
 
 <div align="center">
 
-[官网](https://kfadmin.net/) |
-[在线体验](https://demo.kfadmin.net/admin/) |
-[帮助文档](https://www.kancloud.cn/me_coder/kfadmin/3169580) |
-[安装教程](https://www.kancloud.cn/me_coder/kfadmin/3169582) |
-[应用市场](https://kfadmin.net/)
+[官网](https://xhadmin.cn/) |
+[在线体验](https://demo.xhadmin.cn/admin/) |
+[帮助文档](https://www.kancloud.cn/me_coder/XHAdmin/3169580) |
+[安装教程](https://www.kancloud.cn/me_coder/XHAdmin/3169582) |
+[应用市场](https://xhadmin.cn/)
 
 </div>
 <div align="center" >
@@ -35,7 +35,7 @@
 
 ### 介绍
 
-KFadmin 是一套基于最新技术的研发的多应用 Saas 框架，支持在线升级和安装模块及模板，拥有良好的开发框架、成熟稳定的技术解决方案、提供丰富的扩展功能。为开发者赋能，助力企业发展、国家富强，致力于打造最受欢迎的多应用 Saas 系统。
+XHAdmin 是一套基于最新技术的研发的多应用 Saas 框架，支持在线升级和安装模块及模板，拥有良好的开发框架、成熟稳定的技术解决方案、提供丰富的扩展功能。为开发者赋能，助力企业发展、国家富强，致力于打造最受欢迎的多应用 Saas 系统。
 
 ### 系统亮点
 
@@ -66,11 +66,11 @@ Swoole
 
 ### 官方导航
 
-[官网](https://kfadmin.net/) |
-[在线体验](https://demo.kfadmin.net/admin/) |
-[帮助文档](https://www.kancloud.cn/me_coder/kfadmin/3169580) |
-[安装教程](https://www.kancloud.cn/me_coder/kfadmin/3169582) |
-[应用市场](https://kfadmin.net/)
+[官网](https://xhadmin.cn/) |
+[在线体验](https://demo.xhadmin.cn/admin/) |
+[帮助文档](https://www.kancloud.cn/me_coder/XHAdmin/3169580) |
+[安装教程](https://www.kancloud.cn/me_coder/XHAdmin/3169582) |
+[应用市场](https://xhadmin.cn/)
 
 ### 官方社区
 
@@ -78,7 +78,7 @@ Swoole
 
 ### 系统演示
 
-![KFadmin租户后台](https://img.alicdn.com/imgextra/i1/2064565174/O1CN01dfDrWp1o5k5Wbcbii_!!2064565174.png)
+![XHAdmin租户后台](https://img.alicdn.com/imgextra/i1/2064565174/O1CN01dfDrWp1o5k5Wbcbii_!!2064565174.png)
 
 管理后台： http://demo.kfadmin.net/admin 账号：demo 密码：123456
 
@@ -102,15 +102,15 @@ Swoole
 | 视频号分销助手 | ★★★★★  | 基于视频号生态的第三方分销平台         |
 | 素材抓取大师   | ★★★★★  | 万能的素材下载助手，批量采集，一键下载 |
 | ChatGPT 分销版 | ★★★★★  | GPT 的元老级产品，功能强大到无法想象   |
-| 未来更多...... | ★★★★★  | 关注 KFadmin 未来生态                  |
+| 未来更多...... | ★★★★★  | 关注 XHAdmin 未来生态                  |
 
 ### 商业版购买
 
 开源不易，以下如果有需要，请支持一下，感谢您的支持，让我们更多动力！
 
-欢迎反馈问题 [反馈问题](https://gitee.com/yc_open/kfadmin-cloud/issues)。
+欢迎反馈问题 [反馈问题](https://gitee.com/yc_open/XHAdmin-cloud/issues)。
 
-欢迎提交代码 [提交代码](https://gitee.com/yc_open/kfadmin-cloud/pulls)。
+欢迎提交代码 [提交代码](https://gitee.com/yc_open/XHAdmin-cloud/pulls)。
 
 ### 特别鸣谢
 
@@ -136,8 +136,8 @@ UI：Hmm、林深见灵鹿`
 
 本项目包含的第三方源码和二进制文件之版权信息另行标注。
 
-版权所有 Copyright © 2019-2023 by KFadmin (https://kfadmin.net)
+版权所有 Copyright © 2019-2023 by XHAdmin (https://xhadmin.cn)
 
 All rights reserved。
 
-KFadmin® 商标和著作权所有者为贵州猿创科技有限责任公司。
+XHAdmin® 商标和著作权所有者为贵州猿创科技有限责任公司。
