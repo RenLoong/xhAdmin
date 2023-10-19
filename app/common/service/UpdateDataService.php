@@ -49,8 +49,8 @@ class UpdateDataService extends SystemUpdateService
         $sqlFiles = glob("{$sqlDir}/*.sql");
         $data      = [];
         foreach ($sqlFiles as $file) {
-            $sqlContent = file_get_contents("{$sqlDir}/{$file}");
-            if (empty($sqlContent) && file_exists("{$sqlDir}/{$file}")) {
+            $sqlContent = file_get_contents($file);
+            if (empty($sqlContent) && file_exists($file)) {
                 unlink("{$sqlDir}/{$file}");
                 continue;
             }
