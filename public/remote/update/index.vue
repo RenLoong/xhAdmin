@@ -4,7 +4,7 @@
       <div class="xhadmin-version">
         <el-image class="system-logo" src="/image/logo.png" />
         <div class="system-name">
-          XHAdmin
+          {{ system_info?.system_name }}
         </div>
         <div class="system-version">
           版本 {{ updated.client_version_name }}（{{ updated.client_version }}）
@@ -30,6 +30,7 @@ export default {
         client_version: "",
         content: "",
       },
+      system_info: {},
     }
   },
   methods: {
@@ -42,7 +43,7 @@ export default {
           data.update = data.version > data.client_version;
           _this.updated = data;
           if (data.update) {
-            _this.$emit('update:openWin','remote/update/update')
+            _this.$emit('update:openWin', 'remote/update/update')
           }
         }).catch((err) => {
           if ([600, 666].includes(err?.code)) {
@@ -51,9 +52,17 @@ export default {
           }
         })
     },
+    getEmpower() {
+      const _this = this;
+      _this.$http.usePut("admin/Updated/empower").then((res) => {
+        const { data } = res;
+        _this.system_info = data?.system_info || {};
+      })
+    }
   },
   mounted() {
     this.getDetail()
+    this.getEmpower()
   },
 }
 </script>
@@ -85,11 +94,12 @@ export default {
       .system-name {
         padding-top: 20px;
         font-weight: 700;
-        font-size:26px;
+        font-size: 26px;
       }
+
       .system-version {
         padding-top: 10px;
-        font-size:14px;
+        font-size: 14px;
       }
     }
   }

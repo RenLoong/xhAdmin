@@ -1,7 +1,6 @@
 <?php
 
 namespace app\store\middleware;
-use app\common\model\Store;
 use Closure;
 use support\Request;
 use think\facade\Session;

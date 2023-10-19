@@ -136,17 +136,6 @@ class UploadService
         if ($uploadDrive === 'local') {
             $localPath = "{$config['root']}/{$path}";
         }
-        # 根据用户重设应用ID
-        if ($uid) {
-            $user = UsersMgr::detail(['id'=> $uid]);
-            $store_id = empty($user['store_id']) ? null : $user['store_id'];
-            $appid = empty($user['saas_appid']) ? null : $user['saas_appid'];
-        }
-        # 根据项目ID重设渠道ID
-        if ($appid) {
-            $store = StoreAppMgr::detail(['id'=> $appid]);
-            $store_id = empty($store['store_id']) ? null : $store['store_id'];
-        }
         # 组装数据
         $data['cid']            = $category['id'];
         $data['saas_appid']     = $appid;
@@ -187,16 +176,23 @@ class UploadService
      * @return array|string
      * @author John
      */
-    public static function url(string|array $path)
+    public static function url(mixed $path)
     {
-        $disk = self::getDisk();
         if (is_array($path)) {
             $data = [];
             foreach ($path as $key => $value) {
-                $data[$key] = $disk->url($value);
+                $data[$key] = self::url($value);
             }
             return $data;
         }
+        if (is_null($path)) {
+            return null;
+        }
+        $file = self::model($path);
+        if (!$file) {
+            return '';
+        }
+        $disk = self::getDisk($file['adapter']);
         $url  = $disk->url($path);
         return $url;
     }
@@ -220,28 +216,28 @@ class UploadService
 
     /**
      * 查询模型数据
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-09
-     * @param  string $path
-     * @return array
+     * @param string $path
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
-    public static function model(string $path): array|string
+    public static function model(string $path)
     {
         $where = [
-            ['path', '=', $path],
+            'path'      => $path,
         ];
         $field = [
             'path',
             'format',
             'size',
+            'adapter',
         ];
         $model = SystemUpload::where($where)->field($field)->find();
         if (!$model) {
             return '';
         }
-        return $model->toArray();
+        return $model;
     }
 
     /**
@@ -395,12 +391,16 @@ class UploadService
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public static function getDisk()
+    public static function getDisk($drive = null)
     {
         # 获取配置项
         $config = self::getConfig();
         if (empty($config['upload_drive'])) {
             throw new Exception('请先设置附件驱动');
+        }
+        # 设置参数驱动
+        if ($drive) {
+            $config['upload_drive'] = $drive;
         }
         # 当前使用驱动
         $drive = $config['upload_drive'];
