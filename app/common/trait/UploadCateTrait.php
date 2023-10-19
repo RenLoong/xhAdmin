@@ -50,16 +50,9 @@ trait UploadCateTrait
     public function index(Request $request)
     {
         $order = $request->get('order', 'asc');
-        $where   = [];
-        if ($this->saas_appid) {
-            $where[] = ['saas_appid', '=', $this->saas_appid];
-        }
-        if ($this->store_id) {
-            $where[] = ['store_id', '=', $this->store_id];
-        }
-        if ($this->uid) {
-            $where[] = ['uid', '=', $this->uid];
-        }
+        $where[] = ['saas_appid', '=', $this->saas_appid];
+        $where[] = ['store_id', '=', $this->store_id];
+        $where[] = ['uid', '=', $this->uid];
         $data = SystemUploadCate::where($where)
         ->order("sort {$order},id {$order}")
         ->select()

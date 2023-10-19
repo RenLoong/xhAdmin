@@ -297,8 +297,7 @@ class StoreController extends BaseController
             ->addComponent('logo', 'uploadify', '渠道图标', '', [
                 'col' => 12,
                 'props' => [
-                    'type' => 'image',
-                    'format' => ['jpg', 'png', 'gif']
+                    'suffix'    => ['jpg','jpeg', 'png', 'gif']
                 ],
             ])
             ->addRow('wechat', 'input', '公众号数量', '', [
