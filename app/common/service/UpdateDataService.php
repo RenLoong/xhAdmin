@@ -41,7 +41,7 @@ class UpdateDataService extends SystemUpdateService
     public function beforeUpdate()
     {
         # sql目录
-        $sqlDir = base_path().'/update';
+        $sqlDir = root_path().'/update';
         if (!is_dir($sqlDir)) {
             return [];
         }
