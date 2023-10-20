@@ -50,8 +50,8 @@ class SystemInfoService
     public static function info()
     {
         $data                = [
-            'about_name'            => '',
-            'system_name'           => '',
+            'about_name'            => self::$about_name,
+            'system_name'           => self::$system_name,
             'system_version_name'   => '',
             'system_version'        => '',
             'ecology'               => self::$ecology,
@@ -61,20 +61,18 @@ class SystemInfoService
             'site_encrypt'          => '',
             'privatekey'            => '',
         ];
+        # 设置系统版本
         $versionData                    = self::version();
         $data['system_version_name']    = $versionData['version_name'];
         $data['system_version']         = $versionData['version'];
         # 优先读取旧版授权文件
         $tokenFilePath = root_path().'token.pem';
-        $authFilePath = root_path().'private_key.pem';
+        $privateFilePath = root_path().'private_key.pem';
         # 新版授权文件
         $authFilePath = config_path() . 'authorization.json';
-        if (file_exists($tokenFilePath) && file_exists($authFilePath)) {
+        if (file_exists($tokenFilePath) && file_exists($privateFilePath)) {
             $data['site_encrypt'] = file_get_contents($tokenFilePath);
-            $data['privatekey'] = file_get_contents($authFilePath);
-            # 设置系统名称
-            $data['about_name']             = self::$about_name;
-            $data['system_name']            = self::$system_name;
+            $data['privatekey'] = file_get_contents($privateFilePath);
         }else if(file_exists($authFilePath)){
             # 设置渠道商版权
             $authData = json_decode(file_get_contents($authFilePath),true);
