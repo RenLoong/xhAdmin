@@ -58,7 +58,7 @@ trait Config
         if (empty($settings)) {
             throw new Exception('找不到标准的配置文件');
         }
-        if ($request->method() == 'PUT') {
+        if ($request->isPut()) {
             $post = $request->post();
             $where = [
                 'group'         => $group,
@@ -96,7 +96,7 @@ trait Config
                     $formData[$value['name']] = UploadService::url($formData[$value['name']]);
                 }
             }
-            $views    = $builder->setFormData($formData)->create();
+            $views    = $builder->setMethod('PUT')->setFormData($formData)->create();
             return Json::successRes($views);
         }
     }
