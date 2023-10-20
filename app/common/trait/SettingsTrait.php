@@ -222,7 +222,7 @@ trait SettingsTrait
     {
         # 实例表单构建器
         $builder = new FormBuilder;
-        $builder = $builder->initTabs($field, $active, [
+        $builder = $builder->initTabsActive($field, $active, [
             'props' => [
                 // 选项卡样式
                 'type' => 'line',
