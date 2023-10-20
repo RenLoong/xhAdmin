@@ -165,8 +165,9 @@ trait MenusTrait
             $data = PluginMgr::getMenuList($request->plugin);
             $menuEnd         = end($data);
             $menuId = $menuEnd['id'] + 1;
-            $menuData['id']  = $menuId;
-            $menuData['is_default']    = '10';
+            $menuData['icon']       = isset($menuData['icon']['icon']) ? $menuData['icon']['icon'] : '';
+            $menuData['id']         = $menuId;
+            $menuData['is_default'] = '10';
             array_push($data,$menuData);
             $this->saveData($data);
             return $this->success('添加成功');
@@ -210,11 +211,17 @@ trait MenusTrait
                 $post['method'] = ['GET'];
             }
             $menuData = $post;
-            $menuData['id']    = $detail['id'];
-            $menuData['is_default']    = $detail['is_default'];
+            $menuData['icon']       = isset($menuData['icon']['icon']) ? $menuData['icon']['icon'] : '';
+            $menuData['id']         = $detail['id'];
+            $menuData['is_default'] = $detail['is_default'];
             $data[$arrayIndex] = $menuData;
             $this->saveData($data);
             return $this->success('修改成功');
+        }
+        if (is_string($detail['icon']) && !empty($detail['icon'])) {
+            $detail['icon'] = [
+                'icon' => $detail['icon'],
+            ];
         }
         $view = $this->formView()->setMethod('PUT')->setFormData($detail)->create();
         return $this->successRes($view);
