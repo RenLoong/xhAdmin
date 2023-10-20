@@ -402,6 +402,11 @@ class UploadService
         if ($drive) {
             $config['upload_drive'] = $drive;
         }
+        # 验证是否旧版本驱动
+        $oldDrive = ['oss'=>'aliyun','cos'=> 'qcloud'];
+        if (isset($oldDrive[$config['upload_drive']])) {
+            $drive = $oldDrive[$config['upload_drive']];
+        }
         # 当前使用驱动
         $drive = $config['upload_drive'];
         $settings = isset($config['children'][$drive]) ? $config['children'][$drive] : [];

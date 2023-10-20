@@ -9,9 +9,25 @@ use FormBuilder\Driver\CustomComponent;
  */
 trait TabsFormBuilder
 {
+    /**
+     * 初始化选项卡表单
+     * @param string $active
+     * @param array $extra
+     * @return \app\common\builder\FormBuilder
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function initTabs(string $active, array $extra = []): FormBuilder
+    {
+        # 初始化选项卡选中
+        $this->initTabsActive('', $active, $extra);
+        // 返回资源对象
+        return $this;
+    }
 
     /**
-     * 初始化选项卡
+     * 初始化选项卡选中
      * @param string $field
      * @param string $active
      * @param array $extra
@@ -20,12 +36,15 @@ trait TabsFormBuilder
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public function initTabs(string $field,string $active, array $extra = []): FormBuilder
+    public function initTabsActive(string $field,string $active, array $extra = []): FormBuilder
     {
         # 选项卡组件
         $component = new CustomComponent('el-tabs');
+        if ($field) {
+            $component->field($field);
+        }
         # 设置默认选中
-        $component->field($field)->value($active);
+        $component->value($active);
         # 设置选项卡组件属性
         $component->props([
             'modelValue'    => $active,
