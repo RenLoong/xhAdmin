@@ -30,8 +30,6 @@ class PublicsController extends BaseController
     public function site()
     {
         $systemInfo = SystemInfoService::info();
-        $empower_token = empowerFile('token');
-        $private_key = empowerFile('private_key');
         $moduleName = getModule('admin');
         $web_logo = getHpConfig('admin_logo','');
         $web_logo = is_array($web_logo) && !empty($web_logo) ? current($web_logo) : $web_logo;
@@ -42,9 +40,9 @@ class PublicsController extends BaseController
             'version_name'          => $systemInfo['system_version_name'],
             'version'               => $systemInfo['system_version'],
             // 版权token
-            'empower_token'         => $empower_token,
+            'empower_token'         => $systemInfo['site_encrypt'],
             // 版权私钥
-            'empower_private_key'   => $private_key,
+            'empower_private_key'   => $systemInfo['privatekey'],
             // 登录页链接
             'login_link'            => [
                 'register'          => '',

@@ -64,19 +64,19 @@ class SystemInfoService
         $versionData                    = self::version();
         $data['system_version_name']    = $versionData['version_name'];
         $data['system_version']         = $versionData['version'];
-        # 获取新版授权文件
+        # 优先读取旧版授权文件
+        $tokenFilePath = root_path().'token.pem';
+        $authFilePath = root_path().'private_key.pem';
+        # 新版授权文件
         $authFilePath = config_path() . 'authorization.json';
-        if (!file_exists($authFilePath)) {
-            # 获取旧版本授权文件
-            $tokenFilePath = root_path().'token.pem';
-            $authFilePath = root_path().'private_key.pem';
-            if (file_exists($tokenFilePath) && file_exists($authFilePath)) {
-                $data['site_encrypt'] = file_get_contents($tokenFilePath);
-                $data['privatekey'] = file_get_contents($authFilePath);
-            }
+        if (file_exists($tokenFilePath) && file_exists($authFilePath)) {
+            $data['site_encrypt'] = file_get_contents($tokenFilePath);
+            $data['privatekey'] = file_get_contents($authFilePath);
+            # 设置系统名称
             $data['about_name']             = self::$about_name;
             $data['system_name']            = self::$system_name;
-        } else {
+        }else if(file_exists($authFilePath)){
+            # 设置渠道商版权
             $authData = json_decode(file_get_contents($authFilePath),true);
             $data     = array_merge($data, $authData);
             $data['system_name'] = $data['name'];

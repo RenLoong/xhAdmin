@@ -43,34 +43,25 @@ class UploadUtil
     }
 
     /**
-     * 获取分组上传配置
+     * 获取表单模板
+     * @param string $component
      * @return array
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public static function getTabsGroup()
+    public static function geUploadTemplate(string $component)
     {
         return [
             [
-                'name'          => 'local',
-                'title'         => '本地储存',
-                'children'      => self::local(),
-            ],
-            [
-                'name'          => 'aliyun',
-                'title'         => '阿里云储存',
-                'children'      => self::aliyun(),
-            ],
-            [
-                'name'          => 'qcloud',
-                'title'         => '腾讯云储存',
-                'children'      => self::qcloud(),
-            ],
-            [
-                'name'          => 'qiniu',
-                'title'         => '七牛云储存',
-                'children'      => self::qiniu(),
+                'field' => 'upload_drive',
+                'title' => '当前使用存储',
+                'value' => 'local',
+                'component' => 'select',
+                'extra' => [
+                    'options' => self::options(),
+                    'control' => self::controlOptions(),
+                ],
             ],
         ];
     }
