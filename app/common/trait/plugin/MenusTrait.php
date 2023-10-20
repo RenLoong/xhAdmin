@@ -13,9 +13,8 @@ use app\common\enum\YesNoEumStyle;
 use app\common\manager\PluginMgr;
 use app\common\utils\Data;
 use app\common\utils\Json;
-use Exception;
 use FormBuilder\Factory\Elm;
-use plugin\ycSuperseo\utils\enum\AuthRuleMethods;
+use app\common\enum\AuthRuleMethods;
 use support\Request;
 
 /**
