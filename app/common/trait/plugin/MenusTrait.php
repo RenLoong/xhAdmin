@@ -140,7 +140,7 @@ trait MenusTrait
      */
     public function add(Request $request)
     {
-        if ($request->method() == 'POST') {
+        if ($request->isPost()) {
             $post  = $request->post();
             $pluginMenusPath = root_path() . "plugin/{$request->plugin}/menus.json";
             if (!file_exists($pluginMenusPath)) {
@@ -163,6 +163,7 @@ trait MenusTrait
             $menuData = $post;
             $menuData['pid'] = end($menuData['pid']);
             $data = PluginMgr::getMenuList($request->plugin);
+            $data = list_sort_by($data,'id','asc');
             $menuEnd         = end($data);
             $menuId = $menuEnd['id'] + 1;
             $menuData['icon']       = isset($menuData['icon']['icon']) ? $menuData['icon']['icon'] : '';
