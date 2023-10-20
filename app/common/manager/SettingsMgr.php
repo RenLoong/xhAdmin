@@ -14,45 +14,121 @@ class SettingsMgr
      * 获取配置项数据
      * @param int|null $appid
      * @param string $name
-     * @param string $default
+     * @param mixed $default
      * @return mixed
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public static function get(int|null $appid,string $name,string $default=null)
+    public static function get(int|null $appid, string $name, mixed $default = null)
     {
         $where = [
-            'name'      => $name,
-            'appid'     => $appid
+            'saas_appid' => $appid
         ];
-        $value = SystemConfig::where($where)->value('value');
-        if(empty($value)){
+        $value = self::getConfig($where, $default);
+        if (empty($value)) {
             return $default;
         }
-        return $value;
+        $configValue = [];
+        $names = explode(',', $name);
+        foreach ($names as $field) {
+            if (isset($value[$field])) {
+                $configValue[$field] = $value[$field];
+            }
+        }
+        if (isset($configValue['children'])) {
+            $configValue['children'] = self::getConfigValue($configValue['children']);
+        }
+        $data = self::getConfigValue($configValue);
+        return $data;
     }
 
     /**
      * 获取配置分组数据
      * @param int|null $appid
      * @param string $group
-     * @param string $default
+     * @param mixed $default
      * @return mixed
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public static function group(int|null $appid,string $group,string $default=null)
+    public static function group(int|null $appid, string $group, mixed $default = null)
     {
         $where = [
-            'group'     => $group,
-            'appid'     => $appid
+            'group'         => $group,
+            'saas_appid'    => $appid
         ];
-        $value = SystemConfig::where($where)->column('value');
-        if(empty($value)){
+        $value = self::getConfig($where, $default);
+        if (empty($value)) {
+            return $default;
+        }
+        if (isset($value['children'])) {
+            $value['children'] = self::getConfigValue($value['children']);
+        }
+        $value = self::getConfigValue($value);
+        return $value;
+    }
+
+    /**
+     * 获取原始未解析配置项数据
+     * @param array $where
+     * @param mixed $default
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function getConfig(array $where, mixed $default = null)
+    {
+        $value = SystemConfig::where($where)->value('value');
+        if (empty($value)) {
             return $default;
         }
         return $value;
+    }
+
+    /**
+     * 获取配置项数据
+     * @param array $data
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function getConfigValue(array $data)
+    {
+        $configValue = [];
+        foreach ($data as $field => $value) {
+            if (strrpos($field, '.') !== false) {
+                # 解析层级键值
+                $dataField   = explode('.', $field);
+                $resutil     = self::createNestedArray($dataField, $value);
+                $configValue = array_merge_recursive($configValue, $resutil);
+            } else {
+                $configValue[$field] = $value;
+            }
+        }
+        return $configValue;
+    }
+
+    /**
+     * 组装为层级值
+     * @param array $data
+     * @param mixed $value
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    private static function createNestedArray(array $data, mixed $config)
+    {
+        $data2 = [];
+        $current = &$data2;
+        foreach ($data as $field) {
+            $current = &$current[$field];
+        }
+        $current = $config;
+        return $data2;
     }
 }

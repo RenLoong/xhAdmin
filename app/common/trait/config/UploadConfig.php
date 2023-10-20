@@ -1,45 +1,31 @@
 <?php
-namespace app\common\trait;
+namespace app\common\trait\config;
 
 use app\admin\utils\UploadUtil;
 use app\common\builder\FormBuilder;
+use app\common\enum\CustomComponent;
+use app\common\model\SystemConfig;
 use app\common\service\UploadService;
 use Exception;
 use app\common\utils\Json;
 use support\Request;
 
 /**
- * 系统设置管理
+ * 附件库配置
  * @author 贵州猿创科技有限公司
- * @copyright (c) 2023
+ * @copyright 贵州猿创科技有限公司
+ * @email 416716328@qq.com
  */
-trait UploadConfigTrait
+trait UploadConfig
 {
     // 使用JSON工具类
     use Json;
-
-    /**
-     * 请求对象
-     * @var Request
-     */
-    protected $request = null;
 
     /**
      * 应用ID（null则获取系统配置）
      * @var string|null
      */
     protected $saas_appid = null;
-
-    /**
-     * 自定义组件
-     * @var array
-     */
-    protected $customComponent = [
-        'uploadify',
-        'wangEditor',
-        'remote',
-        'info',
-    ];
 
     /**
      * 扩展组件类型
@@ -60,8 +46,10 @@ trait UploadConfigTrait
     public function uploadify(Request $request)
     {
         $prefixs = UploadUtil::getPrefixs();
+        # 当前分组
+        $group = 'upload';
         # 获取表单数据
-        $uploadify  = getHpConfig('', null, 'upload');
+        $uploadify  = getHpConfig('', null, $group);
         if ($request->isPut()) {
             $drive = $request->post('upload_drive','');
             $post  = $request->post();
@@ -75,12 +63,25 @@ trait UploadConfigTrait
             if (!empty($uploadify['children'])) {
                 $children = array_merge($uploadify['children'], $children);
             }
+            $where = [
+                'group'         => $group,
+                'saas_appid'    => $this->saas_appid,
+            ];
+            $model = SystemConfig::where($where)->find();
+            if (!$model) {
+                $model                  = new SystemConfig;
+                $model->group           = $group;
+                $model->saas_appid      = $this->saas_appid;
+            }
             $data = [
                 'upload_drive'  => $drive,
                 'children'      => $children
             ];
-            $this->save('upload', $data);
-            return Json::success('附件库保存成功');
+            $model->value = $data;
+            if (!$model->save()) {
+                throw new Exception('保存失败');
+            }
+            return $this->success('附件库保存成功');
         }
         # 获取当前使用驱动
         $drive      = isset($uploadify['upload_drive']) ? $uploadify['upload_drive'] : 'local';
@@ -152,7 +153,7 @@ trait UploadConfigTrait
                 }
             }
             # 设置组件参数
-            if (in_array($value['component'], $this->customComponent)) {
+            if (in_array($value['component'], CustomComponent::getColumn('value'))) {
                 # 设置底部描述
                 if (!empty($value['placeholder'])) {
                     $value['extra']['props']['prompt']['text'] = $value['placeholder'];
