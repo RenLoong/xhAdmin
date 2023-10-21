@@ -78,6 +78,7 @@ class UploadUtil
         $domain   = request()->domain();
         $rootPath = "uploads";
         return [
+            Elm::hidden('local_type', 'local')->getRule(),
             Elm::input('local_url', '访问域名', $domain)->disabled(true)->getRule(),
             Elm::input('local_root', '储存路径', $rootPath)->disabled(true)
                 ->appendRule('suffix', [
@@ -99,6 +100,7 @@ class UploadUtil
     private static function aliyun()
     {
         return [
+            Elm::hidden('aliyun_type', 'aliyun')->getRule(),
             Elm::input('aliyun_access_id', 'access_id', '')->col(12)->getRule(),
             Elm::input('aliyun_access_secret', 'access_secret', '')->col(12)->getRule(),
             Elm::input('aliyun_bucket', '存储空间名称：Bucket', '')->col(12)->getRule(),
@@ -116,6 +118,7 @@ class UploadUtil
     private static function qcloud()
     {
         return [
+            Elm::hidden('qcloud_type', 'qcloud')->getRule(),
             Elm::input('qcloud_region', '所属地域：Region')->appendRule('suffix', [
                 'type' => 'prompt-tip',
                 'props' => [
@@ -145,6 +148,7 @@ class UploadUtil
     private static function qiniu()
     {
         return [
+            Elm::hidden('qiniu_type', 'qiniu')->getRule(),
             Elm::input('qiniu_access_key', 'access_key')->col(12)->getRule(),
             Elm::input('qiniu_secret_key', 'secret_key')->col(12)->getRule(),
 

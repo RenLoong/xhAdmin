@@ -157,6 +157,84 @@ class UploadService
     }
 
     /**
+     * 上传本地文件
+     * @param \think\file\UploadedFile $file
+     * @param string $dir_name
+     * @param mixed $appid
+     * @param mixed $uid
+     * @param mixed $store_id
+     * @param bool $isCloud
+     * @return array
+     * @author John
+     */
+    public static function uploadLocal(UploadedFile $file, string $dir_name = '', $appid = null, $uid = null,$store_id = null,bool $isCloud = false)
+    {
+        # 获取分类
+        $category = self::getCategory($dir_name, $appid, $store_id, $uid);
+        # 上传子目录
+        $dirName = $category['dir_name'] ?? 'default';
+        # 获取当前所有配置项
+        $config = self::getCurrentConfig();
+        # 固定为本地驱动
+        $uploadDrive = 'local';
+        # 获取驱动SDK
+        $filesystem = self::getDisk($uploadDrive);
+
+        # 组装数据
+        $data['cid']      = $category['id'];
+        $data['title']    = $file->getOriginalName();
+        $data['filename'] = $file->getOriginalName();
+        $data['format']   = $file->extension();
+        $data['adapter']  = $uploadDrive;
+        $data['size']     = '';
+        $data['path']     = '';
+        $data['url']      = '';
+
+        # 检测文件是否已上传
+        $info = self::getFileInfo($data['filename'], $uploadDrive, $appid, $store_id);
+        if (!empty($info)) {
+            $data['size'] = $info['size'];
+            $data['path'] = $info['path'];
+            $data['url']  = $filesystem->url($info['path']);
+            # 返回数据
+            return $data;
+        }
+
+        # 上传文件
+        $path = $filesystem->putFile($dirName, $file);
+
+        # 本地附件库
+        $localPath = $path;
+        if ($uploadDrive === 'local') {
+            $localPath = "{$config['root']}/{$path}";
+        }
+        # 组装数据
+        $data['cid']            = $category['id'];
+        $data['saas_appid']     = $appid;
+        $data['store_id']       = $store_id;
+        $data['title']          = $file->getOriginalName();
+        $data['filename']       = $file->getOriginalName();
+        $data['path']           = $localPath;
+        $data['format']         = $file->extension();
+        $data['size']           = get_size($filesystem->size($path));
+        $data['adapter']        = $uploadDrive;
+        $data['url']            = $filesystem->url($localPath);
+
+        $model = new SystemUpload;
+        if (!$model->save($data)) {
+            throw new Exception('附件上传失败');
+        }
+        # 获取当前正在使用驱动
+        $driveName = self::getDisk();
+        # 是否上传一份至云端
+        if ($isCloud && $driveName !== 'local') {
+            self::upload($file, $dir_name, $appid, $uid,$store_id);
+        }
+        # 返回数据
+        return $data;
+    }
+
+    /**
      * 删除系统附件
      * @param int $id
      * @param mixed $force
@@ -185,7 +263,7 @@ class UploadService
             }
             return $data;
         }
-        if (is_null($path)) {
+        if (empty($path) || is_null($path)) {
             return null;
         }
         $file = self::model($path);
@@ -386,12 +464,42 @@ class UploadService
 
     /**
      * 获取驱动SDK
+     * @param mixed $drive
+     * @return \yzh52521\filesystem\Driver
+     * @author John
+     */
+    public static function getDisk($drive = '')
+    {
+        # 获取配置项
+        $config = self::getConfig();
+        if (empty($config['upload_drive']) || empty($config['children'])) {
+            throw new Exception('请先设置附件驱动');
+        }
+        # 获取全部配置项
+        $settings = $config['children'];
+        # 合并配置
+        $templateConfig = config("filesystem.disks", []);
+        foreach ($settings as $key => $value) {
+            $configSave = array_merge($templateConfig[$key] ?? [], $value);
+            $settings[$key] = $configSave;
+        }
+        # 动态设置配置
+        Config::set([
+            'default'       => $drive,
+            'disks'         => $settings
+        ], 'filesystem');
+        # 获取驱动SDK
+        return Filesystem::disk($drive);
+    }
+
+    /**
+     * 获取驱动SDK（即将废弃）
      * @return \yzh52521\filesystem\Driver
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public static function getDisk($drive = '')
+    public static function getDisk1($drive = '')
     {
         # 获取配置项
         $config = self::getConfig();
