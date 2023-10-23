@@ -1,7 +1,6 @@
 <?php
 namespace app\common\trait\config;
 
-use app\common\builder\FormBuilder;
 use app\common\manager\SettingsMgr;
 use app\common\model\SystemConfig;
 use app\common\service\UploadService;
@@ -103,7 +102,7 @@ trait Config
     }
 
     /**
-     * 获取选项卡配置项
+     * 获取settings文件的选项卡
      * @param \support\Request $request
      * @throws \Exception
      * @return array
@@ -113,65 +112,93 @@ trait Config
      */
     public function config(Request $request)
     {
+        $group  = $request->get('group','');
         $plugin = $request->plugin;
-        if ($plugin && !$this->saas_appid) {
-            throw new Exception('请在控制器内设置saas_appid');
-        }
-        if ($plugin && $this->saas_appid) {
-            $config = config('plugin.' . $plugin . '.settings');
-        } else {
+        if (empty($plugin) && empty($this->saas_appid)) {
             $config = config('settings');
+        } else {
+            $config = config('plugin.' . $plugin . '.settings');
         }
-        # 设置默认选中
-        $first  = current($config);
-        $active = empty($first['name']) ? '' : $first['name'];
-        $data   = $this->tabsFormView($active,$config)->setMethod('PUT')->create();
-        return $data;
-    }
-
-    /**
-     * 获取Tabs视图数据
-     * @param string $active
-     * @param array $config
-     * @throws \Exception
-     * @return FormBuilder
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
-     */
-    private function tabsFormView(string $active, array $config)
-    {
-        # 实例表单构建器
-        $builder = new FormBuilder;
-        $builder = $builder->initTabsActive('system_settings', $active, [
-            'props' => [
-                // 选项卡样式
-                'type' => 'line',
-                'tabPosition' => 'top',
-            ],
-        ]);
-        foreach ($config as $value) {
-            if (empty($value['name'])) {
-                throw new Exception('分组标识不能为空');
-            }
-            if (empty($value['title'])) {
-                throw new Exception('分组名称不能为空');
-            }
-            if (empty($value['children'])) {
-                throw new Exception('配置项数据错误');
-            }
-            if (empty($value['extra']['col'])) {
-                $value['extra']['col'] = 24;
-            }
-            $configs = $this->getConfigData($value['children'], $value, $this->saas_appid);
-            $builder = $builder->addTab(
-                $value['name'],
-                $value['title'],
-                $configs
-            );
+        if (empty($config)) {
+            throw new Exception('找不到Tabs配置文件');
         }
-        $data = $builder->endTabs();
-        # 获取配置数据
-        return $data;
+        if (empty($config[$group])) {
+            throw new Exception('找不到标准的配置文件');
+        }
+        # 获取模板数据
+        $configTemplate = $config[$group];
+        # 保存数据
+        if ($request->isPut()) {
+            $post = $request->post();
+            $active = $post['active'];
+            if (empty($active)) {
+                throw new Exception('请选择选项卡');
+            }
+            unset($post['active']);
+            # 查询数据
+            $where = [
+                'group'         => $group,
+                'saas_appid'    => $this->saas_appid,
+            ];
+            $model = SystemConfig::where($where)->find();
+            if (!$model) {
+                $model              = new SystemConfig;
+                $model->group       = $group;
+                $model->saas_appid  = $this->saas_appid;
+            }
+            foreach ($configTemplate as $item) {
+                foreach ($item['children'] as $children) {
+                    # 处理附件库数据
+                    if ($children['component'] === 'uploadify') {
+                        $post[$children['name']] = UploadService::path($post[$children['name']]);
+                    }
+                }
+            }
+            # 重构数据
+            $data = [
+                'active'        => $active,
+                'children'      => $post
+            ];
+            # 设置保存数据
+            $model->value = $data;
+            # 保存数据
+            if (!$model->save()) {
+                throw new Exception("保存分组[{$item['title']}]失败");
+            }
+            # 保存成功
+            return $this->success('保存成功');
+        }
+        # 默认选中
+        $active = '';
+        # 获取数据
+        $where      = [
+            'group'         => $group,
+            'saas_appid'    => $this->saas_appid,
+        ];
+        $configData = SettingsMgr::getConfig($where,[]);
+        $formData = empty($configData['children']) ? [] : $configData['children'];
+        foreach ($configTemplate as $item) {
+            foreach ($item['children'] as $value) {
+                # 处理附件库数据
+                if (isset($formData[$value['name']]) && $value['component'] === 'uploadify') {
+                    $formData[$value['name']] = UploadService::url($formData[$value['name']]);
+                }
+            }
+        }
+        # 优先使用数据库配置
+        if (isset($configData['active'])) {
+            $active = $configData['active'];
+        }
+        # 使用默认选中项
+        if (empty($active)) {
+            $first  = current($configTemplate);
+            $active = empty($first['name']) ? '' : $first['name'];
+        }
+        # 获取渲染视图
+        $view = $this->getTabsView($active, $configTemplate)
+        ->setMethod('PUT')
+        ->setFormData($formData)
+        ->create();
+        return $this->successRes($view);
     }
 }
