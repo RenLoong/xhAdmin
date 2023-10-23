@@ -3,7 +3,6 @@ namespace app\common\trait\config;
 
 use app\common\manager\SettingsMgr;
 use app\common\model\SystemConfig;
-use app\common\builder\FormBuilder;
 use app\common\service\UploadService;
 use Exception;
 use app\common\utils\Json;

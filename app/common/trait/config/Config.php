@@ -59,16 +59,16 @@ trait Config
             throw new Exception('找不到标准的配置文件');
         }
         if ($request->isPut()) {
-            $post = $request->post();
+            $post  = $request->post();
             $where = [
-                'group'         => $group,
-                'saas_appid'    => $this->saas_appid,
+                'group' => $group,
+                'saas_appid' => $this->saas_appid,
             ];
             $model = SystemConfig::where($where)->find();
             if (!$model) {
-                $model                  = new SystemConfig;
-                $model->group           = $group;
-                $model->saas_appid      = $this->saas_appid;
+                $model             = new SystemConfig;
+                $model->group      = $group;
+                $model->saas_appid = $this->saas_appid;
             }
             foreach ($settings as $value) {
                 # 处理附件库数据
@@ -85,9 +85,9 @@ trait Config
             # 获取表单规则
             $builder = $this->getFormView($settings);
             # 查询配置数据
-            $where = [
-                'group'         => $group,
-                'saas_appid'    => $this->saas_appid
+            $where    = [
+                'group' => $group,
+                'saas_appid' => $this->saas_appid
             ];
             $formData = SettingsMgr::getConfig($where, []);
             foreach ($settings as $value) {
@@ -96,23 +96,22 @@ trait Config
                     $formData[$value['name']] = UploadService::url($formData[$value['name']]);
                 }
             }
-            $views    = $builder->setMethod('PUT')->setFormData($formData)->create();
+            $views = $builder->setMethod('PUT')->setFormData($formData)->create();
             return Json::successRes($views);
         }
     }
 
     /**
-     * 获取settings文件的选项卡
+     * 获取无选中Tabs选项卡
      * @param \support\Request $request
      * @throws \Exception
-     * @return array
+     * @return mixed
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
     public function config(Request $request)
     {
-        $group  = $request->get('group','');
         $plugin = $request->plugin;
         if (empty($plugin) && empty($this->saas_appid)) {
             $config = config('settings');
@@ -122,62 +121,55 @@ trait Config
         if (empty($config)) {
             throw new Exception('找不到Tabs配置文件');
         }
-        if (empty($config[$group])) {
-            throw new Exception('找不到标准的配置文件');
-        }
-        # 获取模板数据
-        $configTemplate = $config[$group];
         # 保存数据
         if ($request->isPut()) {
-            $post = $request->post();
-            $active = $post['active'];
-            if (empty($active)) {
+            $post   = $request->post();
+            if (empty($post['active'])) {
                 throw new Exception('请选择选项卡');
             }
             unset($post['active']);
             # 查询数据
-            $where = [
-                'group'         => $group,
-                'saas_appid'    => $this->saas_appid,
-            ];
-            $model = SystemConfig::where($where)->find();
-            if (!$model) {
-                $model              = new SystemConfig;
-                $model->group       = $group;
-                $model->saas_appid  = $this->saas_appid;
-            }
-            foreach ($configTemplate as $item) {
+            foreach ($config as $item) {
+                $where = [
+                    'group' => $item['name'],
+                    'saas_appid' => $this->saas_appid,
+                ];
+                $model = SystemConfig::where($where)->find();
+                if (!$model) {
+                    $model             = new SystemConfig;
+                    $model->group      = $item['name'];
+                    $model->saas_appid = $this->saas_appid;
+                }
+                # 处理数据
+                $configValue = [];
                 foreach ($item['children'] as $children) {
+                    $configValue[$children['name']] = $post[$children['name']];
                     # 处理附件库数据
                     if ($children['component'] === 'uploadify') {
-                        $post[$children['name']] = UploadService::path($post[$children['name']]);
+                        $configValue[$children['name']] = UploadService::path($post[$children['name']]);
                     }
                 }
-            }
-            # 重构数据
-            $data = [
-                'active'        => $active,
-                'children'      => $post
-            ];
-            # 设置保存数据
-            $model->value = $data;
-            # 保存数据
-            if (!$model->save()) {
-                throw new Exception("保存分组[{$item['title']}]失败");
+                # 设置保存数据
+                $model->value = $configValue;
+                # 保存数据
+                if (!$model->save()) {
+                    throw new Exception("保存分组[{$item['title']}]失败");
+                }
             }
             # 保存成功
             return $this->success('保存成功');
         }
-        # 默认选中
-        $active = '';
+        # 设置默认选中
+        $first  = current($config);
+        $active = empty($first['name']) ? '' : $first['name'];
         # 获取数据
         $where      = [
-            'group'         => $group,
-            'saas_appid'    => $this->saas_appid,
+            'saas_appid' => $this->saas_appid,
         ];
-        $configData = SettingsMgr::getConfig($where,[]);
-        $formData = empty($configData['children']) ? [] : $configData['children'];
-        foreach ($configTemplate as $item) {
+        $configData = getHpConfig('', $this->saas_appid);
+        # 处理数据
+        $formData = empty($configData) ? [] : $configData;
+        foreach ($config as $item) {
             foreach ($item['children'] as $value) {
                 # 处理附件库数据
                 if (isset($formData[$value['name']]) && $value['component'] === 'uploadify') {
@@ -185,20 +177,11 @@ trait Config
                 }
             }
         }
-        # 优先使用数据库配置
-        if (isset($configData['active'])) {
-            $active = $configData['active'];
-        }
-        # 使用默认选中项
-        if (empty($active)) {
-            $first  = current($configTemplate);
-            $active = empty($first['name']) ? '' : $first['name'];
-        }
         # 获取渲染视图
-        $view = $this->getTabsView($active, $configTemplate)
-        ->setMethod('PUT')
-        ->setFormData($formData)
-        ->create();
+        $view = $this->getTabsView($active, $config)
+            ->setMethod('PUT')
+            ->setFormData($formData)
+            ->create();
         return $this->successRes($view);
     }
 }
