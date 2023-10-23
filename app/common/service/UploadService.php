@@ -475,6 +475,10 @@ class UploadService
         if (empty($config['upload_drive']) || empty($config['children'])) {
             throw new Exception('请先设置附件驱动');
         }
+        # 设置驱动
+        if (empty($drive)) {
+            $drive = $config['upload_drive'];
+        }
         # 获取全部配置项
         $settings = $config['children'];
         # 合并配置
