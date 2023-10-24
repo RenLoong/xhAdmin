@@ -5,7 +5,9 @@ namespace app\admin\controller;
 use app\common\builder\FormBuilder;
 use app\common\builder\ListBuilder;
 use app\admin\model\Store;
+use app\common\enum\UploadifyAuthEnum;
 use app\common\model\StoreApp;
+use app\common\model\SystemConfig;
 use app\common\model\Users;
 use app\admin\validate\Store as ValidateStore;
 use app\common\BaseController;
@@ -176,6 +178,21 @@ class StoreController extends BaseController
                     'resource' => $platformAssets,
                 ]
             ])
+            ->addColumnEle('is_uploadify', '附件库权限', [
+                'width'             => 150,
+                'params'            => [
+                    'type'          => 'tags',
+                    'options'       => UploadifyAuthEnum::dictOptions(),
+                    'style'         => [
+                        '10'=>[
+                            'type'  => 'danger',
+                        ],
+                        '20'=>[
+                            'type'  => 'success',
+                        ],
+                    ],
+                ],
+            ])
             ->create();
         return parent::successRes($data);
     }
@@ -263,6 +280,10 @@ class StoreController extends BaseController
             if (empty($post['password']) && isset($post['password'])) {
                 unset($post['password']);
             }
+            # 关闭附件库权限
+            if ($post['is_uploadify'] === '10') {
+                $this->closeUploadifyAuth($id);
+            }
             if (!$model->save($post)) {
                 return parent::fail('保存失败');
             }
@@ -271,6 +292,37 @@ class StoreController extends BaseController
         $formData   = $model->toArray();
         $data       = $this->formView()->setMethod('PUT')->setFormData($formData)->create();
         return parent::successRes($data);
+    }
+
+    /**
+     * 关闭附件库权限
+     * @param mixed $store_id
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    private function closeUploadifyAuth($store_id)
+    {
+        $where = [
+            'store_id'      => $store_id
+        ];
+        $data = StoreApp::where($where)->column('id');
+        foreach ($data as $saas_appid) {
+            $where = [
+                'saas_appid'    => $saas_appid,
+                'group'         => 'upload'
+            ];
+            $model = SystemConfig::where($where)->find();
+            if ($model) {
+                $configValue = $model->value;
+                $configValue['upload_drive'] = 'aliyun';
+                $model->value = $configValue;
+                if (!$model->save()) {
+                    throw new Exception('关闭附件库权限失败');
+                }
+            }
+        }
     }
 
     /**
@@ -295,10 +347,14 @@ class StoreController extends BaseController
                 'col' => 12,
             ])
             ->addComponent('logo', 'uploadify', '渠道图标', '', [
-                'col' => 12,
+                'col' => 6,
                 'props' => [
-                    'suffix'    => ['jpg','jpeg', 'png', 'gif']
+                    'suffix' => ['jpg', 'jpeg', 'png', 'gif']
                 ],
+            ])
+            ->addRow('is_uploadify', 'radio', '附件库权限', '20',[
+                'col'       => 6,
+                'options'   => UploadifyAuthEnum::getOptions(),
             ])
             ->addRow('wechat', 'input', '公众号数量', '', [
                 'col' => 12,

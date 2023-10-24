@@ -79,7 +79,8 @@ class StoreAppController extends BaseController
                 }
                 $item->isSetting = $setting;
                 # 应用类型
-                $platform           = PlatformTypes::getValue($item['platform']);
+                $platformValue = is_array($item['platform']) ? current($item['platform']) : $item['platform'];
+                $platform           = PlatformTypes::getValue($platformValue);
                 $icon               = empty($platform['icon']) ? '' : "{$web_url}{$platform['icon']}";
                 $item->platformLogo = $icon;
 

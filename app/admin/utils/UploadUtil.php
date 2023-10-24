@@ -53,15 +53,13 @@ class UploadUtil
     public static function geUploadTemplate(string $component)
     {
         return [
-            [
-                'field' => 'upload_drive',
-                'title' => '当前使用存储',
-                'value' => 'local',
-                'component' => 'select',
-                'extra' => [
-                    'options' => self::options(),
-                    'control' => self::controlOptions(),
-                ],
+            'field'         => 'upload_drive',
+            'title'         => '默认上传方式',
+            'value'         => 'local',
+            'component'     => $component,
+            'extra'         => [
+                'options'   => self::options(),
+                'control'   => self::controlOptions(),
             ],
         ];
     }
@@ -86,7 +84,10 @@ class UploadUtil
                     'props' => [
                         'text' => '例如：uploads，储存路径：/public/uploads/20230101/xxx.jpg，访问地址：http://www.xxx.com/uploads/20230101/xxx.jpg',
                     ],
-                ])->getRule()
+                ])->getRule(),
+            Elm::createComponent('remote')->title('重设附件库')->props([
+                'file'      => 'remote/uploadify/rest',
+            ])->getRule(),
         ];
     }
 

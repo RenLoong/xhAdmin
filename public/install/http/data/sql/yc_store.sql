@@ -21,5 +21,6 @@ CREATE TABLE `__PREFIX__store`  (
   `h5` int NOT NULL DEFAULT 0 COMMENT '网页应用数量',
   `app` int NOT NULL DEFAULT 0 COMMENT 'APP应用数量',
   `other` int NOT NULL COMMENT '其他应用',
+  `is_uploadify` enum('10','20') NOT NULL DEFAULT '10' COMMENT '附件库权限：10 无本地权限，20有本地权限',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '渠道-记录' ROW_FORMAT = DYNAMIC;

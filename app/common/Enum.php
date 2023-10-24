@@ -164,13 +164,14 @@ abstract class Enum extends EnumBaseic
     }
 
     /**
-     * 获取元素所需数据
+     * 获取选择组件数据
+     * @param bool|null $disabled
      * @return array
+     * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-04-29
+     * @email 416716328@qq.com
      */
-    public static function getOptions(): array
+    public static function getOptions(bool|null $disabled = null): array
     {
         $data = self::toArray();
         $list = [];
@@ -182,6 +183,9 @@ abstract class Enum extends EnumBaseic
             ];
             if (isset($value['disabled'])) {
                 $list[$i]['disabled'] = $value['disabled'];
+            }
+            if ($disabled !== null) {
+                $list[$i]['disabled'] = $disabled;
             }
             $i++;
         }

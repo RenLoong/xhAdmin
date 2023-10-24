@@ -42,7 +42,7 @@ function hpValidate($validate, array $data, string $scene = ''): bool
     }
     $result = $class->check($data);
     if (!$result) {
-        throw new Exception((string) $class->getError());
+        throw new Exception((string) $class->getError(),404);
     }
     return true;
 }

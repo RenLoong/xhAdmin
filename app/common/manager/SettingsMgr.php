@@ -81,7 +81,7 @@ class SettingsMgr
      */
     public static function getConfig(array $where, mixed $default = null)
     {
-        $value = SystemConfig::where($where)->value('value');
+        $value = SystemConfig::where($where)->order('id desc')->value('value');
         if (empty($value)) {
             return $default;
         }

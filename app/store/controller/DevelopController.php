@@ -5,7 +5,9 @@ namespace app\store\controller;
 use app\common\BaseController;
 use app\common\builder\FormBuilder;
 use app\common\enum\PlatformTypes;
+use app\common\enum\UploadifyAuthEnum;
 use app\common\enum\YesNoEum;
+use app\common\manager\StoreMgr;
 use app\common\utils\DirUtil;
 use app\store\model\StoreApp;
 use app\store\service\develop\CopyFiles;
@@ -185,6 +187,8 @@ class DevelopController extends BaseController
      */
     protected function formView(): FormBuilder
     {
+        $store_id = request()->user['id'];
+        $store = StoreMgr::detail(['id'=> $store_id]);
         $builder = new FormBuilder;
         $builder->setMethod('POST');
         $builder->addRow('title', 'input', '项目名称', '', [
@@ -208,7 +212,7 @@ class DevelopController extends BaseController
             'col' => 12,
         ]);
         $builder->addRow('is_system', 'radio', '基本配置', '20', [
-            'col'       => 12,
+            'col'       => 8,
             'options'   => [
                 [
                     'label' => '必须',
@@ -218,7 +222,7 @@ class DevelopController extends BaseController
             ]
         ]);
         $builder->addRow('is_auth', 'radio', '权限管理', '20', [
-            'col' => 12,
+            'col' => 8,
             'options' => [
                 [
                     'label' => '必须',
@@ -226,6 +230,10 @@ class DevelopController extends BaseController
                     'value' => '20',
                 ],
             ]
+        ]);
+        $builder->addRow('is_uploadify', 'radio', '附件库权限', $store['is_uploadify'], [
+            'col' => 8,
+            'options' => UploadifyAuthEnum::getOptions(true)
         ]);
         $builder->addRow('is_page', 'radio', '单页管理', '20', [
             'col' => 12,

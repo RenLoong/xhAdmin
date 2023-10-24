@@ -79,6 +79,7 @@ trait CopyFiles
             'app/model/AppidModel.tpl',
             'config/middleware.tpl',
             'config/settings.tpl',
+            'config/settings/upload.tpl',
             'config/tabsconfig.tpl',
             'config/task.tpl',
             'package/remarks.txt',

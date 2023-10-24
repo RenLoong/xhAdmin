@@ -88,6 +88,14 @@ trait DataCheck
             $menuData = PluginMgr::parseMenus($menuData);
             $mergeMenuData = array_merge($mergeMenuData,$menuData);
         }
+        # 附件库设置
+        $uploadMenuPath = $this->pluginTplPath . "menus/upload.json";
+        if (file_exists($uploadMenuPath)) {
+            $menuData = file_get_contents($uploadMenuPath);
+            $menuData = json_decode($menuData, true);
+            $menuData = PluginMgr::parseMenus($menuData);
+            $mergeMenuData = array_merge($mergeMenuData,$menuData);
+        }
         # 支付设置
         $payMenuPath = $this->pluginTplPath . "menus/tabs/pay.json";
         if ($data['is_pay'] === '20' && file_exists($payMenuPath)) {

@@ -52,6 +52,36 @@ class StoreApp extends Model
     }
 
     /**
+     * 返回JSON格式的平台类型
+     * @param mixed $value
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    protected function getPlatformAttr($value)
+    {
+        $data = json_decode($value, true);
+        if (empty($data)) {
+            return [$value];
+        }
+        return $data;
+    }
+
+    /**
+     * 设置平台类型JSON储存
+     * @param mixed $value
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    protected function setPlatformAttr($value)
+    {
+        return is_array($value) ? json_encode($value, 256) : json_encode([$value], 256);
+    }
+
+    /**
      * 获取select组件值
      * @param array $where
      * @param string|array $field
