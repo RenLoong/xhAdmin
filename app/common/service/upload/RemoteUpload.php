@@ -2,7 +2,6 @@
 
 namespace app\common\service\upload;
 
-use app\common\model\SystemUpload;
 use Exception;
 use think\file\UploadedFile;
 
