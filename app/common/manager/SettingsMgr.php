@@ -25,7 +25,7 @@ class SettingsMgr
         $where = [
             'saas_appid' => $appid
         ];
-        $value = self::getConfig($where, $default);
+        $value = self::getOriginConfig($where, $default);
         if (empty($value)) {
             return $default;
         }
@@ -59,7 +59,7 @@ class SettingsMgr
             'group'         => $group,
             'saas_appid'    => $appid
         ];
-        $value = self::getConfig($where, $default);
+        $value = self::getOriginConfig($where, $default);
         if (empty($value)) {
             return $default;
         }
@@ -71,6 +71,24 @@ class SettingsMgr
     }
 
     /**
+     * 获取子级配置项数据
+     * @param int|null $appid
+     * @param string $group
+     * @param mixed $default
+     * @return mixed
+     * @author John
+     */
+    public static function getChildren(int|null $appid, string $group, mixed $default = null)
+    {
+        $data = self::group($appid, $group, $default);
+        if (empty($data) || !isset($data['children'])) {
+            return $default;
+        }
+        $data = $data['children'];
+        return $data;
+    }
+
+    /**
      * 获取原始未解析配置项数据
      * @param array $where
      * @param mixed $default
@@ -79,7 +97,7 @@ class SettingsMgr
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public static function getConfig(array $where, mixed $default = null)
+    public static function getOriginConfig(array $where, mixed $default = null)
     {
         $value = SystemConfig::where($where)->order('id desc')->value('value');
         if (empty($value)) {
