@@ -196,6 +196,7 @@
                 <el-timeline v-if="detail?.version_log?.length">
                   <el-timeline-item icon="MoreFilled" type="primary" color="#0bbd87" size="large"
                     :timestamp="item.create_at" v-for="(item, index) in detail?.version_log" :key="index">
+                    <div class="version-info">{{ item?.version_name }}（{{item?.version}}）</div>
                     <pre class="pre-line">{{ item?.remarks }}</pre>
                   </el-timeline-item>
                 </el-timeline>
@@ -627,6 +628,9 @@ export default {
 
         .content {
           padding: 15px;
+          .version-info{
+            font-size:14px;
+          }
         }
       }
 
