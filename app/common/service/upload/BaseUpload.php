@@ -198,17 +198,19 @@ trait BaseUpload
             $configSave = array_merge($templateConfig[$key] ?? [], $value);
             $settings[$key] = $configSave;
         }
+        # 取验证数据
+        $settingConf = empty($settings[$drive]) ? [] : $settings[$drive];
         # 阿里云驱动验证
         if ($drive === 'aliyun') {
-            hpValidate(AliyunValidate::class, $settings);
+            hpValidate(AliyunValidate::class, $settingConf);
         }
         # 腾讯云驱动
         if ($drive === 'qcloud') {
-            hpValidate(QcloudValidate::class, $settings);
+            hpValidate(QcloudValidate::class, $settingConf);
         }
         # 七牛云驱动
         if ($drive === 'qiniu') {
-            hpValidate(QiniuValidate::class, $settings);
+            hpValidate(QiniuValidate::class, $settingConf);
         }
         # 动态设置配置
         Config::set([
@@ -256,67 +258,5 @@ trait BaseUpload
     public static function setUid(null|int $id)
     {
         self::$uid = $id;
-    }
-
-    /**
-     * 获取驱动SDK（即将废弃）
-     * @return \yzh52521\filesystem\Driver
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
-     */
-    public static function getDisk1($drive = '')
-    {
-        # 获取配置项
-        $config = self::getConfig();
-        if (empty($config['upload_drive'])) {
-            throw new Exception('请先设置附件驱动');
-        }
-        # 设置参数驱动
-        if ($drive) {
-            $config['upload_drive'] = $drive;
-        }
-        # 验证是否旧版本驱动
-        $oldDrive = ['oss'=>'aliyun','cos'=> 'qcloud'];
-        if (isset($oldDrive[$config['upload_drive']])) {
-            $drive = $oldDrive[$config['upload_drive']];
-        }
-        # 当前使用驱动
-        $drive = $config['upload_drive'];
-        $settings = isset($config['children'][$drive]) ? $config['children'][$drive] : [];
-        # 删除驱动配置项
-        unset($config['upload_drive']);
-        if (empty($settings)) {
-            $settings = $config;
-        }
-        if (empty($settings)) {
-            throw new Exception('请先设置附件库');
-        }
-        # 阿里云驱动验证
-        if ($drive === 'aliyun') {
-            hpValidate(AliyunValidate::class, $settings);
-        }
-        # 腾讯云驱动
-        if ($drive === 'qcloud') {
-            hpValidate(QcloudValidate::class, $settings);
-        }
-        # 七牛云驱动
-        if ($drive === 'qiniu') {
-            hpValidate(QiniuValidate::class, $settings);
-        }
-
-        # 合并配置
-        $settings = array_merge(config("filesystem.disks.{$drive}", []), $settings);
-
-        # 动态设置配置
-        Config::set([
-            'default'       => $drive,
-            'disks'         => [
-                $drive      => $settings,
-            ]
-        ], 'filesystem');
-
-        # 获取驱动SDK
-        return Filesystem::disk($drive);
     }
 }

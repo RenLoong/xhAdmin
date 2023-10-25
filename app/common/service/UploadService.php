@@ -4,7 +4,6 @@ namespace app\common\service;
 
 use app\common\model\SystemUpload;
 use app\common\service\upload\BaseUpload;
-use app\common\service\upload\LocalUpload;
 use app\common\service\upload\RemoteUpload;
 use Exception;
 use think\file\UploadedFile;
@@ -180,13 +179,9 @@ class UploadService
         if (!$file) {
             return '';
         }
-        try {
-            $disk = self::getDisk($file['adapter']);
-            $url  = $disk->url($path);
-            return $url;
-        } catch (\Throwable $e) {
-            return $path;
-        }
+        $disk = self::getDisk($file['adapter']);
+        $url  = $disk->url($path);
+        return $url;
     }
 
     /**
