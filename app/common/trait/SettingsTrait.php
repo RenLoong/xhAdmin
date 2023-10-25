@@ -2,6 +2,7 @@
 namespace app\common\trait;
 
 use app\common\trait\config\Config;
+use app\common\trait\config\DividerConfig;
 use app\common\trait\config\TabsConfig;
 use app\common\trait\config\UploadConfig;
 use app\common\utils\Json;
@@ -11,8 +12,41 @@ use app\common\utils\Json;
  * 对外暴露接口
  * 
  * 1. settings 普通配置项
- * 2. tabs 选项卡配置项
- * 3. uploadify 附件库配置项
+ * 储存数据格式：{"xxxx":"xxx","xxxx":"xxx"}
+ * 
+ * 
+ * 2. config 无默认选中选项卡
+ * 储存数据格式：{"xxxx":"xxx","xxxx":"xxx"}
+ * 
+ * 
+ * 3. divider 虚线配置项
+ * 储存数据格式：{"xxxx":"xxx","xxxx":"xxx"}
+ * 
+ * 
+ * 4. tabs 选项卡配置项
+ * 储存数据格式：
+ * {
+ * "active":"xxx",
+ * "children":{
+ *      "xxxx":{
+ *          "xxx":"xxxx",
+ *          "xxxx":"xxx"
+ *      },
+ *    }
+ * }
+ * 
+ * 
+ * 5. uploadify 附件库配置项
+ * 储存数据格式：
+ * {
+ * "active":"xxx",
+ * "children":{
+ *      "xxxx":{
+ *          "xxx":"xxxx",
+ *          "xxxx":"xxx"
+ *      },
+ *    }
+ * }
  * 
  * @author 贵州猿创科技有限公司
  * @copyright 贵州猿创科技有限公司
@@ -28,6 +62,8 @@ trait SettingsTrait
     use TabsConfig;
     # 使用附件库配置
     use UploadConfig;
+    # 使用虚线配置
+    use DividerConfig;
 
     /**
      * 应用ID（null则获取系统配置）

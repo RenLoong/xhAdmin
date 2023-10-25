@@ -5,6 +5,11 @@ return [
     [
         'title'         => '微信支付',
         'name'          => 'wxpay',
+        # 仅虚线模式有效
+        // 'divider'       => [
+        //     'borderStyle'       => 'dashed',
+        // ],
+        'col'           => 12,
         'children'      => [
             [
                 # 配置项标识(可通过getHpconfig进行读取)
@@ -51,6 +56,7 @@ return [
     [
         'title'         => '支付宝支付',
         'name'          => 'alipay',
+        'col'           => 12,
         'children'      => [
             [
                 # 配置项标识(可通过getHpconfig进行读取)

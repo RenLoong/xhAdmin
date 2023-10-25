@@ -9,12 +9,12 @@ use app\common\utils\Json;
 use support\Request;
 
 /**
- * 选项卡配置
+ * 虚线配置项
  * @author 贵州猿创科技有限公司
  * @copyright 贵州猿创科技有限公司
  * @email 416716328@qq.com
  */
-trait TabsConfig
+trait DividerConfig
 {
     # 使用JSON工具类
     use Json;
@@ -33,7 +33,7 @@ trait TabsConfig
      * @return mixed
      * @author John
      */
-    public function tabs(Request $request)
+    public function divider(Request $request)
     {
         $group  = $request->get('group','');
         $plugin = $request->plugin;
@@ -118,95 +118,10 @@ trait TabsConfig
             $active = empty($first['name']) ? '' : $first['name'];
         }
         # 获取渲染视图
-        $view = $this->getTabsView($active, $configTemplate)
+        $view = $this->getDividerView($configTemplate)
         ->setMethod('PUT')
         ->setFormData($formData)
         ->create();
-        return $this->successRes($view);
-    }
-    
-    
-    /**
-     * 获取无选中Tabs选项卡
-     * @param \support\Request $request
-     * @throws \Exception
-     * @return mixed
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
-     */
-    public function config(Request $request)
-    {
-        $plugin = $request->plugin;
-        if (empty($plugin) && empty($this->saas_appid)) {
-            $config = config('settings');
-        } else {
-            $config = config('plugin.' . $plugin . '.settings');
-        }
-        if (empty($config)) {
-            throw new Exception('找不到Tabs配置文件');
-        }
-        # 保存数据
-        if ($request->isPut()) {
-            $post   = $request->post();
-            if (empty($post['active'])) {
-                throw new Exception('请选择选项卡');
-            }
-            unset($post['active']);
-            # 查询数据
-            foreach ($config as $item) {
-                $where = [
-                    'group' => $item['name'],
-                    'saas_appid' => $this->saas_appid,
-                ];
-                $model = SystemConfig::where($where)->find();
-                if (!$model) {
-                    $model             = new SystemConfig;
-                    $model->group      = $item['name'];
-                    $model->saas_appid = $this->saas_appid;
-                }
-                # 处理数据
-                $configValue = [];
-                foreach ($item['children'] as $children) {
-                    $configValue[$children['name']] = $post[$children['name']];
-                    # 处理附件库数据
-                    if ($children['component'] === 'uploadify') {
-                        $configValue[$children['name']] = UploadService::path($post[$children['name']]);
-                    }
-                }
-                # 设置保存数据
-                $model->value = $configValue;
-                # 保存数据
-                if (!$model->save()) {
-                    throw new Exception("保存分组[{$item['title']}]失败");
-                }
-            }
-            # 保存成功
-            return $this->success('保存成功');
-        }
-        # 设置默认选中
-        $first  = current($config);
-        $active = empty($first['name']) ? '' : $first['name'];
-        # 获取数据
-        $where      = [
-            'saas_appid' => $this->saas_appid,
-        ];
-        $configData = getHpConfig('', $this->saas_appid);
-        # 处理数据
-        $formData = empty($configData) ? [] : $configData;
-        foreach ($config as $item) {
-            foreach ($item['children'] as $value) {
-                # 处理附件库数据
-                if (isset($formData[$value['name']]) && $value['component'] === 'uploadify') {
-                    $formData[$value['name']] = UploadService::url($formData[$value['name']]);
-                }
-            }
-        }
-        # 获取渲染视图
-        $view = $this->getTabsView($active, $config)
-            ->setMethod('PUT')
-            ->setFormData($formData)
-            ->create();
         return $this->successRes($view);
     }
 }

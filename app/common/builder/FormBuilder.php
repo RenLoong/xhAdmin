@@ -169,21 +169,12 @@ class FormBuilder extends Form
      */
     public function addDivider(string $title, array $extra = []): FormBuilder
     {
-        // 创建自定义组件
+        # 创建自定义组件
         $component = new CustomComponent('el-divider');
-        // 设置属性
-        $component
-            ->appendChild($title)
-            ->appendRule('wrap', ['show' => false])
-            ->appendRule('native', false)
-            ->appendRule('_fc_drag_tag', 'n-divider')
-            ->appendRule('_fc_drag_tag', 'n-divider')
-            ->appendRule('hidden', false)
-            ->appendRule('display', true);
-        // 设置组件属性
-        foreach ($extra as $componentType => $componentValue) {
-            $component->$componentType($componentValue);
-        }
+        # 设置标题
+        $component->appendChild($title);
+        # 设置组件属性
+        $component->props($extra);
         $this->builder->append($component);
         return $this;
     }
