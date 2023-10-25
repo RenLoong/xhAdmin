@@ -137,6 +137,10 @@ trait TabsConfig
      */
     public function config(Request $request)
     {
+        $group  = $request->get('group','');
+        if (empty($group)) {
+            throw new Exception('缺少配置分组参数');
+        }
         $plugin = $request->plugin;
         if (empty($plugin) && empty($this->saas_appid)) {
             $config = config('settings');
@@ -146,6 +150,11 @@ trait TabsConfig
         if (empty($config)) {
             throw new Exception('找不到Tabs配置文件');
         }
+        # 获取实际模板数据
+        $configTemplate = isset($config[$group]) ? $config[$group] : [];
+        if (empty($configTemplate)) {
+            throw new Exception('找不到标准的配置文件');
+        }
         # 保存数据
         if ($request->isPut()) {
             $post   = $request->post();
@@ -154,10 +163,10 @@ trait TabsConfig
             }
             unset($post['active']);
             # 查询数据
-            foreach ($config as $item) {
+            foreach ($configTemplate as $item) {
                 $where = [
-                    'group' => $item['name'],
-                    'saas_appid' => $this->saas_appid,
+                    'group'         => $item['name'],
+                    'saas_appid'    => $this->saas_appid,
                 ];
                 $model = SystemConfig::where($where)->find();
                 if (!$model) {
@@ -185,7 +194,7 @@ trait TabsConfig
             return $this->success('保存成功');
         }
         # 设置默认选中
-        $first  = current($config);
+        $first  = current($configTemplate);
         $active = empty($first['name']) ? '' : $first['name'];
         # 获取数据
         $where      = [
@@ -194,7 +203,7 @@ trait TabsConfig
         $configData = getHpConfig('', $this->saas_appid);
         # 处理数据
         $formData = empty($configData) ? [] : $configData;
-        foreach ($config as $item) {
+        foreach ($configTemplate as $item) {
             foreach ($item['children'] as $value) {
                 # 处理附件库数据
                 if (isset($formData[$value['name']]) && $value['component'] === 'uploadify') {
@@ -203,7 +212,7 @@ trait TabsConfig
             }
         }
         # 获取渲染视图
-        $view = $this->getTabsView($active, $config)
+        $view = $this->getTabsView($active, $configTemplate)
             ->setMethod('PUT')
             ->setFormData($formData)
             ->create();
