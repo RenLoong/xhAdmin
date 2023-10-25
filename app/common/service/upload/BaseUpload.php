@@ -3,11 +3,11 @@
 namespace app\common\service\upload;
 
 use app\common\manager\SettingsMgr;
+use app\common\model\SystemUpload;
 use app\common\model\SystemUploadCate;
 use app\common\validate\AliyunValidate;
 use app\common\validate\QcloudValidate;
 use app\common\validate\QiniuValidate;
-use app\store\model\SystemUpload;
 use Exception;
 use think\facade\Config;
 use yzh52521\filesystem\facade\Filesystem;
@@ -137,17 +137,20 @@ trait BaseUpload
 
     /**
      * 获取当前使用配置项
+     * @param mixed $drive
      * @throws \Exception
      * @return mixed
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public static function getCurrentConfig()
+    public static function getCurrentConfig($drive = '')
     {
         $config = self::getConfig();
         # 当前使用驱动
-        $drive = $config['upload_drive'];
+        if (empty($drive)) {
+            $drive = $config['upload_drive'];
+        }
         # 附件库配置
         $settings = isset($config['children'][$drive]) ? $config['children'][$drive] : [];
         if (empty($config['children'])) {

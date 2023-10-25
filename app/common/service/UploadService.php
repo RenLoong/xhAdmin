@@ -4,6 +4,7 @@ namespace app\common\service;
 
 use app\common\model\SystemUpload;
 use app\common\service\upload\BaseUpload;
+use app\common\service\upload\LocalUpload;
 use app\common\service\upload\RemoteUpload;
 use Exception;
 use think\file\UploadedFile;
@@ -69,18 +70,29 @@ class UploadService
         self::setUid($uid);
         # 获取分类
         $category = self::getCategory($dir_name);
+        # 获取文件后缀
+        $extension = $file->extension();
+        # 必须储存本地文件后缀
+        $suffix = config('localsuffix');
+        $suffix = empty($suffix) ? [] : $suffix;
+        # 使用附件驱动
+        $drive    = self::getDrive();
+        # 检测是否必须储存本地
+        if (in_array($extension, $suffix)) {
+            $drive = 'local';
+        }
         # 获取驱动SDK
-        $filesystem = self::getDisk();
+        $filesystem = self::getDisk($drive);
         # 组装数据
-        $data             = [
+        $data               = [
             'cid'           => $category['id'],
             'store_id'      => $store_id,
             'saas_appid'    => $appid,
             'uid'           => $uid,
             'title'         => $file->getOriginalName(),
             'filename'      => $file->getOriginalName(),
-            'format'        => $file->extension(),
-            'adapter'       => self::getDrive(),
+            'format'        => $extension,
+            'adapter'       => $drive,
             'size'          => '',
             'path'          => '',
             'url'           => '',
@@ -101,7 +113,7 @@ class UploadService
         # 本地附件库(重设储存路径)
         $localPath = $path;
         if ($data['adapter'] === 'local') {
-            $config = self::getCurrentConfig();
+            $config = self::getCurrentConfig($drive);
             $localPath = "{$config['root']}/{$path}";
         }
         $data['path']           = $localPath;
