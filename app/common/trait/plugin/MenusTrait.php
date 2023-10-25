@@ -212,6 +212,7 @@ trait MenusTrait
                 $post['method'] = ['GET'];
             }
             $menuData = $post;
+            $menuData['pid']        = end($menuData['pid']);
             $menuData['icon']       = isset($menuData['icon']['icon']) ? $menuData['icon']['icon'] : '';
             $menuData['id']         = $detail['id'];
             $menuData['is_default'] = $detail['is_default'];
