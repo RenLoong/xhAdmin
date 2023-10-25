@@ -318,8 +318,6 @@ export default {
           _this.$useNotify(res?.msg || '操作成功', 'success', '温馨提示');
           _this.dialogData.show = false;
           _this.getList();
-        }).catch((err) => {
-          _this.$useNotify(err?.msg || '异常错误', 'error', '温馨提示');
         }).finally(() => {
           loading.close();
         })
@@ -385,51 +383,46 @@ export default {
       this.getList();
     },
     // 获取用户信息
-    getUser(e) {
+    async getUser(e) {
       var _this = this;
-      _this.$http
-        .useGet("/admin/PluginCloud/index")
-        .then((res) => {
-          _this.user = res?.data;
-        })
+      return await _this.$http.useGet("/admin/PluginCloud/index").then((res) => {
+        _this.user = res?.data;
+      })
     },
     // 获取应用详情
-    getDetail(e) {
+    async getDetail(e) {
       const _this = this;
       _this.detail = {};
       const queryParams = {
         name: e?.name,
         version: e?.version
       };
-      _this.$http
-        .useGet("admin/Plugin/detail", queryParams)
-        .then((res) => {
-          _this.detail = res?.data ?? {};
-          _this.dialogData.show = true;
-        })
+      return await _this.$http.useGet("admin/Plugin/detail", queryParams).then((res) => {
+        _this.detail = res?.data ?? {};
+        _this.dialogData.show = true;
+      })
     },
-    getBill() {
+    async getBill() {
       var _this = this;
-      _this.$http.useGet("/admin/PluginCloud/bill", { page: this.page })
-        .then((e) => {
-          const { data } = e;
-          if (data.current_page >= data.last_page) {
-            _this.ob.unobserve(this.$refs.bottomRef);
-          }
-          _this.page++;
-          const pageData = data.data;
-          for (let index = 0; index < pageData.length; index++) {
-            const element = pageData[index];
-            _this.bill.push(element);
-          }
-          // _this.$nextTick(()=>{
-          //   if(_this.$refs.billListRef.scrollHeight <= _this.$refs.billListRef.clientHeight){
-          //     setTimeout(() => {
-          //       _this.getBill();
-          //     }, 300);
-          //   }
-          // })
-        })
+      return await _this.$http.useGet("/admin/PluginCloud/bill", { page: this.page }).then((e) => {
+        const { data } = e;
+        if (data.current_page >= data.last_page) {
+          _this.ob.unobserve(this.$refs.bottomRef);
+        }
+        _this.page++;
+        const pageData = data.data;
+        for (let index = 0; index < pageData.length; index++) {
+          const element = pageData[index];
+          _this.bill.push(element);
+        }
+        // _this.$nextTick(()=>{
+        //   if(_this.$refs.billListRef.scrollHeight <= _this.$refs.billListRef.clientHeight){
+        //     setTimeout(() => {
+        //       _this.getBill();
+        //     }, 300);
+        //   }
+        // })
+      })
     },
     // 打开详情弹窗
     async hanldDetail(e) {

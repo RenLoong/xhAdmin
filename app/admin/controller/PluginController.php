@@ -239,9 +239,9 @@ class PluginController extends BaseController
     }
 
     /**
-     * 应用详情
+     * 应用物料数据
      * @param \support\Request $request
-     * @return void
+     * @return mixed
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
@@ -311,7 +311,7 @@ class PluginController extends BaseController
     }
 
     /**
-     * 获取文档地址
+     * 获取文档地址（即将废弃）
      * @param Request $request
      * @return \support\Response
      * @copyright 贵州猿创科技有限公司

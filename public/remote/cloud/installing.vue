@@ -86,10 +86,7 @@ export default {
                     })
                 }
             }).catch((err) => {
-                setTimeout(() => {
-                    _this.$emit("update:closeWin");
-                }, 2000);
-                _this.$useNotify(err?.msg || "应用更新失败", 'error', '温馨提示');
+                _this.$emit("update:closeWin");
                 console.log('error', err);
             })
         },

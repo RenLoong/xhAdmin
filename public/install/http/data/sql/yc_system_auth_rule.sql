@@ -111,7 +111,7 @@ INSERT INTO `__PREFIX__system_auth_rule` VALUES (175, '2023-05-06 14:53:49', '20
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (176, '2023-05-06 14:54:35', '2023-05-06 14:54:35', 'PluginCloud/captcha', 174, '云服务验证码', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (177, '2023-05-06 18:18:39', '2023-05-06 18:18:39', 'Plugin/detail', 139, '插件详情', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (178, '2023-05-06 18:20:14', '2023-05-12 16:26:59', 'Index/consoleCount', 2, '控制台数据统计', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '20', '20');
-INSERT INTO `__PREFIX__system_auth_rule` VALUES (179, '2023-05-06 20:21:59', '2023-05-06 20:21:59', 'Plugin/getLink', 139, '获取跳转地址', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');
+INSERT INTO `__PREFIX__system_auth_rule` VALUES (179, '2023-05-06 20:21:59', '2023-05-06 20:21:59', 'Plugin/getPluginData', 139, '应用物料数据', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (180, '2023-05-09 16:14:10', '2023-05-09 16:14:10', 'StoreApp/index', 147, '授权应用', 0, '[\"GET\",\"PUT\"]', '20', 'form/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (181, '2023-05-15 13:04:59', '2023-09-28 14:23:15', 'Updated/updateCheck', 41, '版本更新', 0, '[\"GET\",\"POST\",\"PUT\"]', '20', 'remote/index', 'remote/update/index', '', '20', '20', '20');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (182, '2023-06-12 16:07:52', '2023-08-03 23:21:13', 'SystemConfig/uploadify', 8, '附件设置', 0, '[\"GET\",\"PUT\"]', '20', 'form/index', 'group=upload&type=1', '', '20', '10', '10');
@@ -125,3 +125,4 @@ INSERT INTO `__PREFIX__system_auth_rule` VALUES (189, '2023-07-01 14:08:42', '20
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (190, '2023-09-28 14:26:34', '2023-09-28 17:40:17', 'Updated/empower', 41, '授权信息', 0, '[\"GET\",\"POST\",\"PUT\"]', '20', 'remote/index', 'remote/update/empower', '', '20', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (191, '2023-09-28 14:28:15', '2023-09-28 14:28:15', 'Updated/index', 41, '更新日志', 0, '[\"GET\"]', '20', 'remote/index', 'remote/update/log', '', '20', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (192, '2023-10-02 16:43:43', '2023-10-02 16:43:43', 'SystemAuthRule/addResource', 12, '添加资源菜单', 0, '[\"GET\",\"POST\"]', '20', 'form/index', '', '', '10', '10', '10');
+INSERT INTO `__PREFIX__system_auth_rule` VALUES (193, '2023-10-25 12:37:41', '2023-10-25 12:37:41', 'PluginCloud/bill', 174, '云服务账单', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');
