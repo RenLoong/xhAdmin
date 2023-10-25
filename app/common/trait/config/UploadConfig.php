@@ -63,7 +63,7 @@ trait UploadConfig
             'group'         => $group,
             'saas_appid'    => $this->saas_appid,
         ];
-        $uploadify = SettingsMgr::getConfig($where,[]);
+        $uploadify = SettingsMgr::getOriginConfig($where,[]);
         if ($request->isPut()) {
             $drive = $request->post('upload_drive','');
             $post  = $request->post();

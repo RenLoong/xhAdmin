@@ -98,7 +98,7 @@ trait TabsConfig
             'group'         => $group,
             'saas_appid'    => $this->saas_appid,
         ];
-        $configData = SettingsMgr::getConfig($where,[]);
+        $configData = SettingsMgr::getOriginConfig($where,[]);
         $formData = empty($configData['children']) ? [] : $configData['children'];
         foreach ($configTemplate as $item) {
             foreach ($item['children'] as $value) {

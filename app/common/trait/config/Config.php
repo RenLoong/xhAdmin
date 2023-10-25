@@ -89,7 +89,7 @@ trait Config
                 'group' => $group,
                 'saas_appid' => $this->saas_appid
             ];
-            $formData = SettingsMgr::getConfig($where, []);
+            $formData = SettingsMgr::getOriginConfig($where, []);
             foreach ($settings as $value) {
                 # 处理附件库数据
                 if (isset($formData[$value['name']]) && $value['component'] === 'uploadify') {
