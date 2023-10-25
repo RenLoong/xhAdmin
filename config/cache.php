@@ -33,7 +33,7 @@ return [
             'password' => env('REDIS_REDIS_PASSWORD', ''),
             'select' => env('REDIS_REDIS_DB', '0'),
             // 缓存前缀
-            'prefix' => env('REDIS_REDIS_PREFIX', 'u_'),
+            'prefix' => env('REDIS_REDIS_PREFIX', 'yc_'),
             // 缓存有效期 0表示永久缓存
             'expire' => 0,
             // 缓存标签前缀
