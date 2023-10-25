@@ -61,7 +61,6 @@ class StoreAppController extends BaseController
             }
             return $this->success('授权成功');
         }
-        $systemInfo = SystemInfoService::info();
         $plugins = [];
         try {
             $plugins = StoreAppMgr::getBuyInstallApp();
