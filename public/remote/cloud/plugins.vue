@@ -405,11 +405,8 @@ export default {
     },
     async getBill() {
       var _this = this;
-      return await _this.$http.useGet("/admin/PluginCloud/bill", { page: this.page }).then((e) => {
+      return await _this.$http.useGet("/admin/PluginCloud/bill").then((e) => {
         const { data } = e;
-        if (data.current_page >= data.last_page) {
-          _this.ob.unobserve(this.$refs.bottomRef);
-        }
         _this.page++;
         const pageData = data.data;
         for (let index = 0; index < pageData.length; index++) {
