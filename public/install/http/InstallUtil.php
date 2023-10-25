@@ -192,13 +192,20 @@ class InstallUtil
         if (!$database) {
             throw new Exception('获取安装数据失败');
         }
-        $type         = isset($database['type']) ? $database['type'] : '';
-        $host         = isset($database['host']) ? $database['host'] : '';
-        $databaseName = isset($database['database']) ? trim($database['database']) : '';
-        $port         = isset($database['port']) ? $database['port'] : '';
-        $user         = isset($database['username']) ? trim($database['username']) : '';
-        $password     = isset($database['password']) ? trim($database['password']) : '';
-        $prefix       = isset($database['prefix']) ? trim($database['prefix']) : '';
+        # 数据库参数
+        $type           = isset($database['type']) ? $database['type'] : '';
+        $host           = isset($database['host']) ? $database['host'] : '';
+        $dbName         = isset($database['database']) ? trim($database['database']) : '';
+        $port           = isset($database['port']) ? $database['port'] : '';
+        $user           = isset($database['username']) ? trim($database['username']) : '';
+        $password       = isset($database['password']) ? trim($database['password']) : '';
+        $prefix         = isset($database['prefix']) ? trim($database['prefix']) : '';
+        # redis获取参数
+        $redisForm      = isset($data['redis']) ? $data['redis'] : [];
+        $redisHost      = isset($redisForm['host']) ? $redisForm['host'] : 'localhost';
+        $redisPort      = isset($redisForm['port']) ? $redisForm['port'] : '6379';
+        $redisPass      = isset($redisForm['password']) ? $redisForm['password'] : '';
+        $redisPrefix    = isset($redisForm['prefix']) ? $redisForm['prefix'] : '';
 
         # 拼接配置文件路径
         $envTplPath = XH_INSTALL_HTTP_PATH . "/data/env.tpl";
@@ -215,16 +222,24 @@ class InstallUtil
             "{USERNAME}",
             "{PASSWORD}",
             "{HOSTPORT}",
-            "{PREFIX}"
+            "{PREFIX}",
+            "{REDIS_HOST}",
+            "{REDIS_PORT}",
+            "{REDIS_PASSWORD}",
+            "{REDIS_PREFIX}"
         ];
         $str2      = [
             $type,
             $host,
-            $databaseName,
+            $dbName,
             $user,
             $password,
             $port,
-            $prefix
+            $prefix,
+            $redisHost,
+            $redisPort,
+            $redisPass,
+            $redisPrefix
         ];
         $envConfig = str_replace($str1, $str2, $envConfig);
 
