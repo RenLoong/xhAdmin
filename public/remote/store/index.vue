@@ -55,7 +55,7 @@
                     <div class="item" v-for="(item, index) in projects.list" :key="index">
                         <div @click="hanldAdmin(item)">
                             <div class="tags">
-                                {{ item.platformTitle }}
+                                {{ item.platform_text }}
                             </div>
                             <div class="icon">
                                 <el-image style="width: 100%; height: 197px;border-radius: 3px;" :src="item.logo" />

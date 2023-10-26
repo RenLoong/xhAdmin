@@ -6,6 +6,7 @@ use app\common\model\SystemUpload;
 use app\common\service\upload\BaseUpload;
 use app\common\service\upload\RemoteUpload;
 use Exception;
+use think\facade\Log;
 use think\file\UploadedFile;
 
 /**
@@ -183,7 +184,8 @@ class UploadService
             $disk = self::getDisk($file['adapter']);
             $url  = $disk->url($path);
             return $url;
-        } catch (\Throwable $th) {
+        } catch (\Throwable $e) {
+            Log::error("附件外链获取失败：{$e->getMessage()}");
             return $path;
         }
     }

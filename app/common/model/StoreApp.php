@@ -2,8 +2,10 @@
 
 namespace app\common\model;
 
+use app\common\enum\PlatformTypes;
 use app\common\Model;
 use app\common\service\UploadService;
+use think\facade\Db;
 
 /**
  * 应用模型
@@ -13,6 +15,16 @@ use app\common\service\UploadService;
  */
 class StoreApp extends Model
 {
+	# 设置json类型字段
+	protected $json = ['platform'];
+    # 设置JSON字段的类型
+    protected $jsonAssoc = true;
+
+    # 追加字段显示
+    protected $append = [
+        'platform_text'
+    ];
+
     /**
      * 一对一关联租户
      * @return \think\model\relation\HasOne
@@ -23,6 +35,23 @@ class StoreApp extends Model
     public function store()
     {
         return $this->hasOne(Store::class, 'id', 'store_id');
+    }
+
+    /**
+     * 搜索器：平台类型
+     * @param mixed $query
+     * @param mixed $value
+     * @param mixed $data
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function searchPlatformAttr($query, $value, $data)
+    {
+        if ($value) {
+            $query->where('platform', 'like', "%\"{$value}%");
+        }
     }
 
     /**
@@ -59,13 +88,15 @@ class StoreApp extends Model
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    protected function getPlatformAttr($value)
+    protected function getPlatformAttr($value,$data)
     {
-        $data = json_decode($value, true);
-        if (empty($data)) {
-            return [$value];
+        if (empty($value)) {
+            $platform = Db::name('store_app')
+            ->where(['id'=> $data['id']])
+            ->value('platform');
+            return [$platform];
         }
-        return $data;
+        return $value;
     }
 
     /**
@@ -78,7 +109,39 @@ class StoreApp extends Model
      */
     protected function setPlatformAttr($value)
     {
-        return is_array($value) ? json_encode($value, 256) : json_encode([$value], 256);
+        $value = array_filter($value);
+        if (empty($value)) {
+            return ['other'];
+        }
+        if (!is_array($value)) {
+            return [$value];
+        }
+        return $value;
+    }
+
+    /**
+     * 获取平台类型文本
+     * @param mixed $value
+     * @param mixed $data
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    protected function getPlatformTextAttr($value,$data)
+    {
+        $platform  = '';
+        if (isset($data['platform'])) {
+            $platform = $data['platform'];
+        }
+        if (empty($platform)) {
+            return '请重新编辑项目保存';
+        }
+        $dataText = [];
+        foreach ($platform as $item) {
+            $dataText[] = PlatformTypes::getText($item);
+        }
+        return implode(',', $dataText);
     }
 
     /**
