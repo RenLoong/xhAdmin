@@ -83,7 +83,6 @@ class StoreProjectController extends BaseController
                 'width' => 180,
             ])
             ->addColumn('title', '项目名称')
-            ->addColumn('url', '项目域名')
             ->addColumn('name', '应用标识')
             ->addColumnEle('logo', '图标', [
                 'width' => 80,
@@ -175,12 +174,6 @@ class StoreProjectController extends BaseController
                     'span' => 12
                 ],
             ])
-            ->addRow('url', 'input', '项目域名', '', [
-                'col' => [
-                    'span' => 12
-                ],
-                'placeholder'       => '不带结尾的网址，示例：http://www.kfadmin.net'
-            ])
             ->addComponent('logo', 'uploadify', '项目图标', '', [
                 'col' => [
                     'span' => 12
@@ -229,12 +222,6 @@ class StoreProjectController extends BaseController
                 'col' => [
                     'span' => 12
                 ],
-            ])
-            ->addRow('url', 'input', '项目域名', '', [
-                'col' => [
-                    'span' => 12
-                ],
-                'placeholder'       => '不带结尾的网址，示例：http://www.kfadmin.net'
             ])
             ->addComponent('logo', 'uploadify', '项目图标', '', [
                 'col' => [

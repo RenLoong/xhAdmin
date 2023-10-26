@@ -20,6 +20,7 @@ trait DataCheck
      * @email 416716328@qq.com
      */
     private $mergeMenuData = [];
+
     /**
      * 额外处理
      * @param array $data
@@ -151,9 +152,13 @@ trait DataCheck
         if (!file_exists($tagMenuPath)) {
             throw new Exception("单页系统菜单文件不存在");
         }
+        $adsMenuPath = $this->pluginTplPath . "menus/content/ads.json";
+        if (!file_exists($adsMenuPath)) {
+            throw new Exception("广告系统菜单文件不存在");
+        }
         
         # 内容系统
-        if ($data['is_article'] == '20' || $data['is_page'] == '20') {
+        if ($data['is_article'] == '20' || $data['is_page'] == '20' || $data['is_image'] == '20') {
             $menuData = file_get_contents($contentMenuPath);
             $menuData = json_decode($menuData, true);
             $menuData = PluginMgr::parseMenus($menuData);
@@ -169,6 +174,13 @@ trait DataCheck
         # 单页系统
         if ($data['is_page'] == '20') {
             $menuData = file_get_contents($tagMenuPath);
+            $menuData = json_decode($menuData, true);
+            $menuData = PluginMgr::parseMenus($menuData);
+            $mergeMenuData = array_merge($mergeMenuData,$menuData);
+        }
+        # 广告系统
+        if ($data['is_image'] == '20') {
+            $menuData = file_get_contents($adsMenuPath);
             $menuData = json_decode($menuData, true);
             $menuData = PluginMgr::parseMenus($menuData);
             $mergeMenuData = array_merge($mergeMenuData,$menuData);

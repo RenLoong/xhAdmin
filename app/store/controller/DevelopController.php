@@ -212,7 +212,7 @@ class DevelopController extends BaseController
             'col' => 12,
         ]);
         $builder->addRow('is_system', 'radio', '基本配置', '20', [
-            'col'       => 8,
+            'col'       => 12,
             'options'   => [
                 [
                     'label' => '必须',
@@ -222,7 +222,7 @@ class DevelopController extends BaseController
             ]
         ]);
         $builder->addRow('is_auth', 'radio', '权限管理', '20', [
-            'col' => 8,
+            'col' => 12,
             'options' => [
                 [
                     'label' => '必须',
@@ -232,8 +232,18 @@ class DevelopController extends BaseController
             ]
         ]);
         $builder->addRow('is_uploadify', 'radio', '附件库权限', $store['is_uploadify'], [
-            'col' => 8,
+            'col' => 12,
             'options' => UploadifyAuthEnum::getOptions(true)
+        ]);
+        $builder->addRow('is_image', 'radio', '广告管理', '20', [
+            'col' => 12,
+            'options' => [
+                [
+                    'label' => '必须',
+                    'disabled' => true,
+                    'value' => '20',
+                ],
+            ]
         ]);
         $builder->addRow('is_page', 'radio', '单页管理', '20', [
             'col' => 12,

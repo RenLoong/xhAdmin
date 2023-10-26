@@ -82,6 +82,7 @@ trait CopyFiles
             'config/settings/upload.tpl',
             'config/tabsconfig.tpl',
             'config/task.tpl',
+            'config/advertisement.tpl',
             'package/remarks.txt',
             'public/remarks.txt',
             'public/remote/header-toolbar.vue',
@@ -101,10 +102,15 @@ trait CopyFiles
             $files[] = 'app/model/PluginArticlesCate.tpl';
             $files[] = 'app/model/PluginArticles.tpl';
         }
-        # 单页应用
+        # 单页系统
         if ($data['is_page'] == '20') {
             $files[] = 'app/admin/controller/TagsController.tpl';
             $files[] = 'app/model/PluginTags.tpl';
+        }
+        # 广告系统
+        if ($data['is_image'] == '20') {
+            $files[] = 'app/admin/controller/AdsController.tpl';
+            $files[] = 'app/model/PluginAds.tpl';
         }
         # 基本设置
         if ($data['is_system'] === '20') {
