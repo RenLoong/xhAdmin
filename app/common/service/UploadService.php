@@ -179,9 +179,13 @@ class UploadService
         if (!$file) {
             return '';
         }
-        $disk = self::getDisk($file['adapter']);
-        $url  = $disk->url($path);
-        return $url;
+        try {
+            $disk = self::getDisk($file['adapter']);
+            $url  = $disk->url($path);
+            return $url;
+        } catch (\Throwable $th) {
+            return $path;
+        }
     }
 
     /**
