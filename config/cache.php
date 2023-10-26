@@ -22,7 +22,7 @@ return [
             // 缓存标签前缀
             'tag_prefix' => 'tag:',
             // 序列化机制 例如 ['serialize', 'unserialize']
-            'serialize' => [],
+            'serialize' => ['json_encode', 'json_decode'],
         ],
         // 更多的缓存连接
         'redis' => [
