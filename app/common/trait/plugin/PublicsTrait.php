@@ -45,6 +45,14 @@ trait PublicsTrait
     protected $model = null;
 
     /**
+     * 合并外部数据
+     * @var array
+     * @author 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    protected $appendData = [];
+
+    /**
      * 应用入口
      * @param \support\Request $request
      * @return mixed
@@ -95,7 +103,7 @@ trait PublicsTrait
                 'del'                   => "{$pluginPrefix}/admin/UploadCate/del",
             ],
         ];
-        return $this->successRes($data);
+        return $this->successRes(array_merge($data, $this->appendData));
     }
 
     /**

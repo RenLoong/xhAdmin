@@ -66,7 +66,7 @@ trait MenusTrait
                 'api' => $this->pluginPrefix . '/admin/Menus/addResource',
                 'path' => '/Menus/addResource'
             ], [], [
-                'type' => 'primary'
+                'type' => 'warning'
             ])
             ->addRightButton('edit', '修改', [
                 'api' => $this->pluginPrefix . '/admin/Menus/edit',
@@ -174,6 +174,27 @@ trait MenusTrait
             return $this->success('添加成功');
         }
         $view = $this->formView()->setMethod('POST')->create();
+        return $this->successRes($view);
+    }
+
+    public function addResource(Request $request)
+    {
+        if ($request->isPost()) {
+            $post  = $request->post();
+            print_r($post);
+            exit;
+        }
+        $view = $this->formView()
+        ->setMethod('POST')
+        ->addComponent('tip', 'el-alert', '温馨提示', '', [
+            'props' => [
+                'type'          => 'error',
+                'closable'      => false,
+                'title'         => '温馨提示',
+                'description'   => "资源菜单是指，【权限路由】仅需填写控制器名，则自动创建以下菜单 ---- 列表：index，表格列indexTable，添加：add，编辑：edit，删除：del",
+            ],
+        ])
+        ->create();
         return $this->successRes($view);
     }
 

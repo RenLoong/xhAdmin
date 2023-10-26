@@ -374,6 +374,23 @@
                                 "children": []
                             },
                             {
+                                "path": "Menus/addResource",
+                                "title": "菜单管理-添加资源菜单",
+                                "method": [
+                                    "GET"
+                                ],
+                                "component": "form/index",
+                                "show": "10",
+                                "icon": "",
+                                "auth_params": "",
+                                "is_system": "10",
+                                "is_api": "20",
+                                "id": 23,
+                                "pid": 22,
+                                "is_default": "10",
+                                "children": []
+                            },
+                            {
                                 "path": "Menus/edit",
                                 "title": "菜单管理-修改",
                                 "method": [

@@ -3,9 +3,9 @@
 namespace app\common\builder;
 
 use app\common\builder\components\Button;
+use app\common\builder\components\RealTable;
 use app\common\builder\components\Screen;
 use app\common\builder\components\Table;
-use support\Response;
 
 /**
  * 表格构造器
@@ -22,6 +22,8 @@ class ListBuilder
     use Button;
     # 表格筛选
     use Screen;
+    # 实时表格
+    use RealTable;
 
     // 在每个对象的静态缓存中存储现有属性。
     protected static $cache = [];
@@ -52,13 +54,12 @@ class ListBuilder
 
     /**
      * 获取表格JSON规则
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-02-27
-     * @return Response
+     * @return \think\response\Json
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
-    public function JSONRule(): Response
+    public function JSONRule()
     {
         return json($this->parseRule());
     }
@@ -74,6 +75,11 @@ class ListBuilder
     public function create(): array
     {
         $resutl = $this->parseRule();
+        # 实时表格
+        if (isset($resutl['realTable'])) {
+            $data['realTable'] = $resutl['realTable'];
+            unset($resutl['realTable']);
+        }
         # 筛选查询
         if (!empty($resutl['formConfig'])) {
             array_push(
