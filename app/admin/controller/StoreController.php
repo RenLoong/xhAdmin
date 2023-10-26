@@ -339,7 +339,6 @@ class StoreController extends BaseController
             ->setMethod('PUT')
             ->addRow('username', 'input', '渠道账号', '', [
                 'col' => 12,
-                'prompt' => '请输入渠道账号'
             ])
             ->addRow('password', 'input', '登录密码', '', [
                 'col' => 12,
