@@ -107,16 +107,19 @@ class FormBuilder extends Form
         # 设置字段，默认数据等
         $component->field($field)->title($title)->value($value);
         # 设置后缀提示语
-        if (isset($extra['prompt']) && is_array($extra['prompt'])) {
+        if (isset($extra['prompt'])) {
             $promptData = $extra['prompt'];
             unset($extra['prompt']);
+            $prompt['type'] = 'prompt-tip';
             # 设置默认提示语
-            if (!isset($promptData['text'])) {
-                throw new \Exception('请设置提示词语');
+            if (is_array($promptData) && isset($promptData['text'])) {
+                $prompt['props'] = $promptData;
+                unset($prompt['text']);
             }
-            $prompt['type'] = 'x-prompt';
-            $prompt['props'] = $promptData;
-            unset($prompt['text']);
+            # 设置字符提示语
+            if (is_string($promptData) && !empty($promptData)) {
+                $prompt['props']['text'] = $promptData;
+            }
             # 插入组件
             $component->appendRule('suffix',$prompt);
         }
