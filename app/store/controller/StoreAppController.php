@@ -74,27 +74,33 @@ class StoreAppController extends BaseController
      */
     public function create(Request $request)
     {
-        # 获取创建平台类型
-        $platform = $request->get('platform', '');
         # 获取登录租户信息
         $store = $request->user;
-        # 验证平台数量是否充足
-        $storePlatformNum     = Store::where('id', $store['id'])->value($platform);
-        $storeCreatedPlatform = StoreAppMgr::getStoreCreatedPlatform((int) $store['id'], $platform);
-        if ($storeCreatedPlatform >= $storePlatformNum) {
-            return $this->failRedirect('该平台可用数量不足', '/#/Index/index');
-        }
         if ($request->method() === 'POST') {
             # 获取数据
             $post = $request->post();
 
             # 重组数据
             $post['store_id'] = $store['id'];
-            $post['platform'] = $platform;
             $post['status']   = '20';
 
             # 数据验证
             hpValidate(StoreApp::class, $post, 'add');
+
+            $storeApp = StoreAppMgr::getAuthAppDetail($store['id'], $post['name']);
+            # 取平台类型
+            $platforms = $storeApp['platform'] ?? [];
+
+            # 验证平台数量是否充足
+            foreach ($platforms as $value) {
+                # 验证平台数量是否充足
+                $storePlatformNum     = Store::where('id', $store['id'])->value($value);
+                $storeCreatedPlatform = StoreAppMgr::getStoreCreatedPlatform((int) $store['id'], $value);
+                if ($storeCreatedPlatform >= $storePlatformNum) {
+                    throw new Exception("平台【{$value}】可用数量不足");
+                }
+            }
+            $post['platform'] = $platforms;
 
             # 创建项目
             StoreAppMgr::created($post);
@@ -103,9 +109,9 @@ class StoreAppController extends BaseController
             return $this->success('项目创建成功');
         }
         try {
-            $platformList = StoreAppMgr::getAuthAppPlatformOptions($store['id'], $platform);
+            $platformList = StoreAppMgr::getAuthAppOptions($store['id']);
         } catch (\Throwable $e) {
-            return $this->failRedirect($e->getMessage(), '/#/Index/index');
+            throw new RedirectException($e->getMessage(), "/#/Index/index");
         }
         $builder = new FormBuilder;
         $builder->setMethod('POST');

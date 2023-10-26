@@ -55,8 +55,8 @@ class IndexController extends BaseController
         $platformList = [];
         foreach ($platformApp as $value) {
             $where          = [
-                'platform'  => $value['value'],
-                'store_id'  => $storeModel['id']
+                ['platform','like','%"'.$value['value'].'%'],
+                ['store_id','=',$storeModel['id']]
             ];
             $created        = StoreApp::where($where)->count();
             $num            = $storeModel[$value['value']] ?? 0;

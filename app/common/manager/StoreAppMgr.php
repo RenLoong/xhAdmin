@@ -123,12 +123,13 @@ class StoreAppMgr
      * 获取已授权的租户应用选项列表
      * @param int $store_id
      * @param bool $isLabel
+     * @param bool $isPlatform
      * @return array
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public static function getAuthAppOptions(int $store_id,bool $isLabel = true)
+    public static function getAuthAppOptions(int $store_id,bool $isLabel = true,bool $isPlatform = true)
     {
         # 获取已授权的租户应用
         $list = self::getAuthApp($store_id);
@@ -136,7 +137,11 @@ class StoreAppMgr
         foreach ($list as $key => $value) {
             $title = $value['title'];
             if ($isLabel) {
-                $title .= "（{$value['version_name']}）";
+                $title .= " {$value['version_name']}";
+            }
+            if ($isPlatform) {
+                $platform = implode('、', $value['platform_text']);
+                $title .= "【{$platform}】";
             }
             $data[$key] = [
                 'label'         => $title,
@@ -192,8 +197,8 @@ class StoreAppMgr
     {
         # 获取已创建应用的数量
         $where = [
-            'store_id'      => $store_id,
-            'platform'      => $platform
+            ['store_id','=',$store_id],
+            ['platform','like','%"'.$platform.'"%']
         ];
         $storeAppNum = modelStoreApp::where($where)->count();
         return $storeAppNum;

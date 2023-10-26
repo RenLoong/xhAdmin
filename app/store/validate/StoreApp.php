@@ -9,21 +9,19 @@ class StoreApp extends Validate
 {
     protected $rule =   [
         'store_id'          => 'require',
-        'platform'          => 'require',
         'title'             => 'require|verifyTitle',
+        'name'              => 'require',
         'username'          => 'require',
         'password'          => 'require',
-        'name'              => 'require',
         'logo'              => 'require',
     ];
 
     protected $message  =   [
         'store_id.require'          => '缺少租户参数',
-        'platform.require'          => '缺少项目平台类型',
         'title.require'             => '请输入项目名称',
+        'name.require'              => '请选择应用插件',
         'username.require'          => '请输入管理员账号',
         'password.require'          => '请输入管理员密码',
-        'name.require'              => '请选择应用插件',
         'logo.require'              => '请上传应用图标',
     ];
 

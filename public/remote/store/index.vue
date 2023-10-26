@@ -36,18 +36,9 @@
                         @click="hanldOepn('/Develop/create', { isBack: 1 })">
                         创建开发者项目
                     </el-button>
-                    <el-dropdown @command="createPlatformProject">
-                        <el-button type="primary">
-                            新增项目
-                        </el-button>
-                        <template v-if="platformApp.length" #dropdown>
-                            <el-dropdown-menu>
-                                <el-dropdown-item v-for="(item, index) in platformApp" :key="index" :command="item">
-                                    {{ item.label }}
-                                </el-dropdown-item>
-                            </el-dropdown-menu>
-                        </template>
-                    </el-dropdown>
+                    <el-button type="primary" @click="hanldOepn('/StoreApp/create', { isBack: 1 })">
+                        新增项目
+                    </el-button>
                 </div>
             </div>
             <div class="xh-project" v-if="projects.list.length">
@@ -122,11 +113,6 @@ export default {
         }
     },
     methods: {
-        // 创建项目
-        createPlatformProject(e) {
-            const detail = this.platforms.find((item) => item.key === e?.key);
-            this.hanldOepn('/StoreApp/create', { platform: detail?.key, isBack: 1 });
-        },
         // 执行删除项目
         actionDelProject(e) {
             const _this = this;
