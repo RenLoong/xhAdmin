@@ -109,7 +109,9 @@ class StoreApp extends Model
      */
     protected function setPlatformAttr($value)
     {
-        $value = array_filter($value);
+        if (is_array($value)) {
+            $value = array_filter($value);
+        }
         if (empty($value)) {
             return ['other'];
         }

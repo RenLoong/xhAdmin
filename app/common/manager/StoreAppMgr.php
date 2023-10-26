@@ -226,6 +226,9 @@ class StoreAppMgr
         if (empty($data['platform'])) {
             throw new Exception('缺少参数 -- [项目类型]');
         }
+        if (!is_array($data['platform'])) {
+            $data['platform'] = [$data['platform']];
+        }
         Db::startTrans();
         try {
             # 创建项目
