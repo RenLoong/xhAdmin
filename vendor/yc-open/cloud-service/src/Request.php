@@ -73,6 +73,8 @@ class Request
             'base_uri' => $this->baseUrl,
             'headers' => $this->headers,
             'timeout' => $this->timeout,
+            // 不验证ssl
+            'verify' => false,
         ];
         # 判断url是否为http(s)开头
         if (preg_match('/^http(s)?:\/\//', $this->url)) {
