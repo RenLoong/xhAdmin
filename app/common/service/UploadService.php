@@ -182,7 +182,42 @@ class UploadService
         }
         try {
             $disk = self::getDisk($file['adapter']);
-            $url  = $disk->url($path);
+            # 访问链接
+            $url = '';
+            # 是否私有空间
+            $private_type = config('filesystem.disks.' . $file['adapter'] . '.private_type','10');
+            if ($private_type === '20') {
+                # 过期时间（单位：秒）
+                $expire_time = 600;
+                switch ($file['adapter']) {
+                    case 'aliyun':
+                        /** @var \yzh52521\Flysystem\Oss\OssAdapter */
+                        $cosDisk = $disk->getAdapter();
+                        # 获取临时链接（一个小时有效）
+                        $url = $cosDisk->getTemporaryUrl($path,$expire_time);
+                        break;
+                    case 'qcloud':
+                        /** @var \Overtrue\Flysystem\Cos\CosAdapter */
+                        $cosDisk = $disk->getAdapter();
+                        # 获取临时链接（一个小时有效）
+                        $expire_time = $expire_time / 10;
+                        $url = $cosDisk->getTemporaryUrl($path,"+{$expire_time} minutes");
+                        break;
+                    case 'qiniu':
+                        /** @var \Overtrue\Flysystem\Qiniu\QiniuAdapter */
+                        $qiniuDisk = $disk->getAdapter();
+                        # 获取临时链接（一个小时有效）
+                        $url = $qiniuDisk->getTemporaryUrl($path,$expire_time);
+                        break;
+                    default:
+                        # 驱动错误，尝试换取普通链接
+                        $url  = $disk->url($path);
+                        break;
+                }
+            } else {
+                # 换取普通链接
+                $url  = $disk->url($path);
+            }
             return $url;
         } catch (\Throwable $e) {
             Log::error("附件外链获取失败：{$e->getMessage()}");

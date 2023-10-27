@@ -34,18 +34,11 @@ class ModulesController extends BaseController
             ->rowConfig([
                 'keyField'      => 'TABLE_NAME'
             ])
-            ->addTopButton('add', '新建表', [
+            ->addTopButton('add', '备份数据库', [
                 'api' => 'admin/Modules/add',
                 'path' => '/Modules/add',
             ], [], [
                 'type' => 'primary',
-            ])
-            ->addRightButton('curd', 'CURD', [
-                'api' => 'admin/Curd/index',
-                'path' => '/Curd/index',
-            ], [], [
-                'type' => 'warning',
-                'link' => true
             ])
             ->addRightButton('fields', '字段', [
                 'api'           => 'admin/Fields/index',

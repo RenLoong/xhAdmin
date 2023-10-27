@@ -1,6 +1,7 @@
 <?php
 namespace app\admin\utils;
 
+use app\common\enum\YesNoEum;
 use FormBuilder\Factory\Elm;
 
 class UploadUtil
@@ -76,18 +77,18 @@ class UploadUtil
         $domain   = request()->domain();
         $rootPath = "uploads";
         return [
-            Elm::hidden('local_type', 'local')->getRule(),
-            Elm::input('local_url', '访问域名', $domain)->disabled(true)->getRule(),
+            Elm::hidden('local_type', 'local')->build(),
+            Elm::input('local_url', '访问域名', $domain)->disabled(true)->build(),
             Elm::input('local_root', '储存路径', $rootPath)->disabled(true)
                 ->appendRule('suffix', [
                     'type' => 'prompt-tip',
                     'props' => [
-                        'text' => '例如：uploads，储存路径：/public/uploads/20230101/xxx.jpg，访问地址：http://www.xxx.com/uploads/20230101/xxx.jpg',
+                        'text' => '例如：uploads，储存路径：/public/uploads/20230101/xxx.jpg，访问示例地址：http://www.xxx.com/uploads/20230101/xxx.jpg',
                     ],
-                ])->getRule(),
+                ])->build(),
             Elm::createComponent('remote')->title('重设附件库')->props([
                 'file'      => 'remote/uploadify/rest',
-            ])->getRule(),
+            ])->build(),
         ];
     }
 
@@ -101,11 +102,40 @@ class UploadUtil
     private static function aliyun()
     {
         return [
-            Elm::hidden('aliyun_type', 'aliyun')->getRule(),
-            Elm::input('aliyun_access_id', 'access_id', '')->col(12)->getRule(),
-            Elm::input('aliyun_access_secret', 'access_secret', '')->col(12)->getRule(),
-            Elm::input('aliyun_bucket', '存储空间名称：Bucket', '')->col(12)->getRule(),
-            Elm::input('aliyun_endpoint', 'Bucket 域名', '')->col(12)->getRule(),
+            Elm::hidden('aliyun_type', 'aliyun')->build(),
+            Elm::password('aliyun_access_id', 'access_id', '')->props([
+                'showPassword'      => true
+            ])->appendRule('suffix',[
+                'type'          => 'prompt-tip',
+                'props'         => [
+                    'text'      => '请填写阿里云 AccessID',
+                ],
+            ])->col(12)->build(),
+            Elm::password('aliyun_access_secret', 'access_secret', '')->props([
+                'showPassword'      => true
+            ])
+            ->appendRule('suffix',[
+                'type'          => 'prompt-tip',
+                'props'         => [
+                    'text'      => '请填写阿里云 AccessSecret',
+                ],
+            ])->col(12)->build(),
+            Elm::input('aliyun_bucket', 'Bucket', '')->appendRule('suffix',[
+                'type'          => 'prompt-tip',
+                'props'         => [
+                    'text'      => '请填写阿里云 OSS 储存空间Bucket名称',
+                ]
+            ])->col(12)->build(),
+            Elm::input('aliyun_endpoint', 'Bucket域名', '')->appendRule('suffix',[
+                'type'          => 'prompt-tip',
+                'props'         => [
+                    'text'      => '请填写不用带协议的域名，例如：oss-cn-hangzhou.aliyuncs.com',
+                ],
+            ])->col(12)->build(),
+            Elm::radio('aliyun_private_type', '是否私有空间','10')
+            ->options(YesNoEum::getOptions())
+            ->col(24)
+            ->build(),
         ];
     }
 
@@ -119,23 +149,33 @@ class UploadUtil
     private static function qcloud()
     {
         return [
-            Elm::hidden('qcloud_type', 'qcloud')->getRule(),
+            Elm::hidden('qcloud_type', 'qcloud')->build(),
             Elm::input('qcloud_region', '所属地域：Region')->appendRule('suffix', [
                 'type' => 'prompt-tip',
                 'props' => [
                     'text' => '请填写地域简称，例如：ap-beijing、ap-hongkong、eu-frankfurt',
                 ],
-            ])->col(12)->getRule(),
+            ])->col(12)->build(),
             Elm::input('qcloud_domain', '空间域名：Domain')->appendRule('suffix', [
                 'type' => 'prompt-tip',
                 'props' => [
                     'text' => '请填写不用带协议的域名，例如：static.cloud.com',
                 ],
-            ])->col(12)->getRule(),
-            Elm::input('qcloud_app_id', 'APPID')->col(12)->getRule(),
-            Elm::input('qcloud_bucket', '存储空间名称：Bucket')->col(12)->getRule(),
-            Elm::input('qcloud_secret_id', 'SECRET_ID')->col(12)->getRule(),
-            Elm::input('qcloud_secret_key', 'SECRET_KEY')->col(12)->getRule(),
+            ])->col(12)->build(),
+            Elm::input('qcloud_app_id', 'APPID')->col(12)->build(),
+            Elm::input('qcloud_bucket', '存储空间名称：Bucket')->col(12)->build(),
+            Elm::password('qcloud_secret_id', 'SECRET_ID')
+            ->props([
+                'showPassword'      => true
+            ])->col(12)->build(),
+            Elm::password('qcloud_secret_key', 'SECRET_KEY')
+            ->props([
+                'showPassword'      => true
+            ])->col(12)->build(),
+            Elm::radio('qcloud_private_type', '是否私有空间','10')
+            ->options(YesNoEum::getOptions())
+            ->col(24)
+            ->build(),
         ];
     }
 
@@ -149,22 +189,27 @@ class UploadUtil
     private static function qiniu()
     {
         return [
-            Elm::hidden('qiniu_type', 'qiniu')->getRule(),
-            Elm::input('qiniu_access_key', 'access_key')->col(12)->getRule(),
-            Elm::input('qiniu_secret_key', 'secret_key')->col(12)->getRule(),
-
-            Elm::input('qiniu_bucket', '存储空间名称：Bucket')->appendRule('suffix', [
-                'type' => 'prompt-tip',
-                'props' => [
-                    'text' => '',
-                ],
-            ])->col(12)->getRule(),
+            Elm::hidden('qiniu_type', 'qiniu')->build(),
+            Elm::input('qiniu_bucket', '存储空间名称：Bucket')->col(12)->build(),
             Elm::input('qiniu_domain', '空间域名：Domain')->appendRule('suffix', [
-                'type' => 'prompt-tip',
-                'props' => [
-                    'text' => '请补全http:// 或 https://，例如：http://static.cloud.com',
+                'type'          => 'prompt-tip',
+                'props'         => [
+                    'text'      => '请填写不用带协议的域名，例如：static.xadmin.com',
                 ],
-            ])->col(12)->getRule(),
+            ])->col(12)->build(),
+            Elm::password('qiniu_access_key', 'access_key')
+            ->props([
+                'showPassword'      => true
+            ])->col(12)->build(),
+            Elm::password('qiniu_secret_key', 'secret_key')
+            ->props([
+                'showPassword'      => true
+            ])
+            ->col(12)->build(),
+            Elm::radio('qiniu_private_type', '是否私有空间','10')
+            ->options(YesNoEum::getOptions())
+            ->col(24)
+            ->build(),
         ];
     }
 

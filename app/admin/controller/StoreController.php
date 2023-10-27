@@ -451,13 +451,6 @@ class StoreController extends BaseController
             if (!$model) {
                 throw new Exception('该数据不存在');
             }
-            # 删除渠道下的所有用户
-            $users = Users::where($where)->select();
-            foreach ($users as $userModel) {
-                if (!$userModel->delete()) {
-                    throw new Exception('删除渠道用户失败');
-                }
-            }
             # 删除平台下应用
             $apps = StoreApp::where($where)->select();
             foreach ($apps as $appModel) {

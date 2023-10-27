@@ -1,6 +1,6 @@
 <template>
     <div class="h-100% app-container">
-        <el-button type="primary" @click="hanldRest">重设附件库</el-button>
+        <el-button type="primary" @click="hanldRest">重置所有上传设置</el-button>
     </div>
 </template>
   
