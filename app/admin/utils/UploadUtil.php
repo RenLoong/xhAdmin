@@ -134,7 +134,7 @@ class UploadUtil
             ])->col(12)->build(),
             Elm::radio('aliyun_private_type', '是否私有空间','10')
             ->options(YesNoEum::getOptions())
-            ->col(24)
+            ->col(12)
             ->build(),
         ];
     }
@@ -190,13 +190,6 @@ class UploadUtil
     {
         return [
             Elm::hidden('qiniu_type', 'qiniu')->build(),
-            Elm::input('qiniu_bucket', '存储空间名称：Bucket')->col(12)->build(),
-            Elm::input('qiniu_domain', '空间域名：Domain')->appendRule('suffix', [
-                'type'          => 'prompt-tip',
-                'props'         => [
-                    'text'      => '请填写不用带协议的域名，例如：static.xadmin.com',
-                ],
-            ])->col(12)->build(),
             Elm::password('qiniu_access_key', 'access_key')
             ->props([
                 'showPassword'      => true
@@ -206,6 +199,13 @@ class UploadUtil
                 'showPassword'      => true
             ])
             ->col(12)->build(),
+            Elm::input('qiniu_bucket', '存储空间名称：Bucket')->col(12)->build(),
+            Elm::input('qiniu_domain', '空间域名：Domain')->appendRule('suffix', [
+                'type'          => 'prompt-tip',
+                'props'         => [
+                    'text'      => "请填写不用带协议的域名，例如：static.xadmin.com\n如您的站点是HTTPS，七牛云必须开启HTTPS才能使用",
+                ],
+            ])->col(12)->build(),
             Elm::radio('qiniu_private_type', '是否私有空间','10')
             ->options(YesNoEum::getOptions())
             ->col(24)
