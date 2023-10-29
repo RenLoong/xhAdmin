@@ -216,7 +216,10 @@ class SystemDataController extends BaseController
      */
     private function getSql(string $tableName, array $fieldData)
     {
-        $sqlFile = public_path('install/http/data/sql').$tableName.'.sql';
+        # 表前缀
+        $prefix = config('database.connections.mysql.prefix', '');
+        $fileName = str_replace($prefix, 'yc_', $tableName);
+        $sqlFile = public_path('install/http/data/sql').$fileName.'.sql';
         if (!file_exists($sqlFile)) {
             throw new Exception('SQL文件不存在');
         }
