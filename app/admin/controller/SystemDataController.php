@@ -120,7 +120,7 @@ class SystemDataController extends BaseController
         # 重构表部分数据
         if ($tables) {
             # 获取系统表结构
-            $tablesFields = require base_path() . 'common/template/database/tables.php';
+            $tablesFields  = $this->getTableFields();
             # 使用系统表名称作为键分组
             $tableFields = array_column($tablesFields, null,'name');
             foreach ($tables as $key=>$value) {
@@ -147,6 +147,8 @@ class SystemDataController extends BaseController
                     }
                 }
             }
+            # 对数据重新排序
+            $tables = list_sort_by($tables,'TABLE_NAME');
         }
         # 返回数据
         $data = [
@@ -178,7 +180,7 @@ class SystemDataController extends BaseController
         # 获取无表前缀的表名
         $nonePrefixTableName    = str_replace($prefix, '', $tableName);
         # 获取系统表结构
-        $allTable = require base_path() . 'common/template/database/tables.php';
+        $allTable = $this->getTableFields();
         # 使用系统表名称作为键分组
         $tableGroup = array_column($allTable, null,'name');
         # 当前表字段
@@ -198,10 +200,72 @@ class SystemDataController extends BaseController
         if (empty($data)) {
             return $this->fail('表结构无需修复');
         }
-        foreach ($data as $field => $sql) {
+        foreach ($data as $sql) {
             Db::query($sql);
         }
         return $this->success('表结构修复成功');
+    }
+
+    /**
+     * 获取表名称与字段
+     * @return array
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    private function getTableFields()
+    {
+        $files = glob(public_path().'install/http/data/sql/*.sql');
+        $data  = [];
+        foreach ($files as $key => $path) {
+            # 文件名称
+            $fileName = basename($path,'.sql');
+            # 表名称
+            $tableName = str_replace('yc_','',$fileName);
+            # 获取字段名称
+            $fields = $this->getFields($path);
+            $fields = array_keys($fields);
+            $fields = array_filter($fields);
+            # 组装数据
+            $data[$key] = [
+                'name'          => $tableName,
+                'fields'        => $fields
+            ];
+        }
+        return $data;
+    }
+
+    /**
+     * 获取文件字段名称
+     * @param string $path
+     * @throws \Exception
+     * @return array
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    private function getFields(string $path)
+    {
+        if (!file_exists($path)) {
+            throw new Exception('SQL文件不存在');
+        }
+        $sqlContent = file_get_contents($path);
+        $sqlContent = explode("\n", $sqlContent);
+        $data    = [];
+        foreach ($sqlContent as $value) {
+            # 判断内容是否存在,
+            if (strpos($value, ',') !== false) {
+                # 移除多余字符串
+                $newValue = trim($value," \n\r\t\v\x00,");
+                # 匹配字符串中``之间内容
+                preg_match_all('/`(.*)` /', $newValue, $matches);
+                $fieldName = $matches[1][0] ?? '';
+                if (strpos($fieldName,'__PREFIX__') === false) {
+                    $data[$fieldName] = "{$newValue};";
+                }
+            }
+        }
+        return $data;
     }
 
     /**
@@ -219,24 +283,10 @@ class SystemDataController extends BaseController
         # 表前缀
         $prefix = config('database.connections.mysql.prefix', '');
         $fileName = str_replace($prefix, 'yc_', $tableName);
+        # SQL文件路径
         $sqlFile = public_path('install/http/data/sql').$fileName.'.sql';
-        if (!file_exists($sqlFile)) {
-            throw new Exception('SQL文件不存在');
-        }
-        $sqlContent = file_get_contents($sqlFile);
-        $sqlContent = explode("\n", $sqlContent);
-        $sqlData    = [];
-        foreach ($sqlContent as $value) {
-            # 判断内容是否存在,
-            if (strpos($value, ',') !== false) {
-                # 移除多余字符串
-                $newValue = trim($value," \n\r\t\v\x00,");
-                # 匹配字符串中``之间内容
-                preg_match_all('/`(.*)` /', $newValue, $matches);
-                $fieldName = $matches[1][0] ?? '';
-                $sqlData[$fieldName] = "{$newValue};";
-            }
-        }
+        # 获取字段+SQL列表
+        $sqlData    = $this->getFields($sqlFile);
         $data = [];
         foreach ($fieldData as $field) {
             $sql = $sqlData[$field] ?? '';
