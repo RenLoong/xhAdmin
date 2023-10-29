@@ -10,6 +10,10 @@ namespace plugin\{TEAM_PLUGIN_NAME}\app\model;
  */
 class PluginArticles extends AppidModel
 {
+    public $append = [
+        'link'
+    ];
+
     /**
      * 关联分类
      * @return \think\model\relation\HasOne
@@ -35,10 +39,25 @@ class PluginArticles extends AppidModel
             'id as value',
             'title as label'
         ];
-        $where  = [
-            'status'    => '20',
-        ];
+        $where  = [];
         $data = PluginArticlesCate::where($where)->field($fields)->select()->toArray();
         return $data;
+    }
+
+    /**
+     * 获取文章链接
+     * @param mixed $value
+     * @param mixed $data
+     * @return string
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function getLinkAttr($value,$data)
+    {
+        $request = request();
+        $url     = $request->domain();
+        $link    = "{$url}/Articles/detail/?appid={$data['saas_appid']}&aid={$data['id']}";
+        return $link;
     }
 }

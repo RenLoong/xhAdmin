@@ -81,6 +81,15 @@ trait TagsTrait
             ->addColumn('name', '标签名称',[
                 'width'         => 280
             ])
+            ->addColumnEle('link', 'H5链接',[
+                'params'        => [
+                    'type'      => 'link',
+                    'props'     => [
+                        'copy'  => true,
+                        'text'  => '点击打开'
+                    ]
+                ]
+            ])
             ->addColumnEle('status', '状态', [
                 'width' => 100,
                 'params' => [

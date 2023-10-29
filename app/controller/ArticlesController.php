@@ -49,10 +49,10 @@ class ArticlesController extends BaseController
         ];
         $model = $model->where($where)->find();
         if (empty($model)) {
-            throw new Exception('单页内容不存在');
+            throw new Exception('文章内容不存在');
         }
         if ($model->status !== '20') {
-            throw new Exception('单页内容已禁用');
+            throw new Exception('文章已被禁用');
         }
         # 浏览数+1
         $model->setInc('view');

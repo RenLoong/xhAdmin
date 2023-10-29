@@ -16,14 +16,6 @@ use think\Response;
  */
 class XhMiddleware
 {
-    // gzip开启对应文件返回类型
-    private static $mimeContentType = [
-        'js'        => 'application/javascript',
-        'json'      => 'application/json',
-        'css'       => 'text/css',
-        'vue'       => 'application/octet-stream',
-    ];
-
     /**
      * 应用实例
      * @var \think\App

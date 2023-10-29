@@ -82,8 +82,17 @@ trait AriclesTrait
                 'width'         => 150
             ])
             ->addColumn('title', '标题名称')
+            ->addColumnEle('link', 'H5链接',[
+                'params'        => [
+                    'type'      => 'link',
+                    'props'     => [
+                        'copy'  => true,
+                        'text'  => '点击打开'
+                    ]
+                ]
+            ])
             ->addColumn('view', '文章热度',[
-                'width'         => 280
+                'width'         => 100
             ])
             ->addColumnEle('status', '状态', [
                 'width' => 150,
