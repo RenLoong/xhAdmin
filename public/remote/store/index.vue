@@ -216,7 +216,6 @@ export default {
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
-
     .user-container {
         background-color: #fff;
         border-radius: 5px;
