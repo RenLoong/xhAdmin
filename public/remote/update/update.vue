@@ -22,8 +22,12 @@
       <!-- 准备更新 -->
       <div class="update-desc-container" v-else>
         <div class="update-desc-title">
-          版本更新内容
-          <span class="next-version">{{ updated.version_name }}（{{ updated.version }}）</span>
+          <div class="update-desc-version">
+              发现新版本更新 {{ updated.version_name }}（{{ updated.version }}）
+          </div>
+          <div class="update-desc-time">
+            发布时间：{{ updated.created_at }}
+          </div>
         </div>
         <pre class="update-desc">{{ updated?.content }}</pre>
         <div class="update-buttons">
@@ -229,12 +233,13 @@ export default {
         font-size: 20px;
         font-weight: 700;
         display: flex;
+        justify-content: space-between;
+        .update-desc-version{
+
+        }
+        .update-desc-time{}
         .next-title{
           color:red;
-        }
-
-        .next-version {
-          padding-left: 10px;
         }
       }
       .update-ing{

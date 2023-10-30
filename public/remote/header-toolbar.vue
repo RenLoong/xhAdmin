@@ -6,7 +6,7 @@
                 <div class="updated-box">
                     <img src="/image/updated-bg.png" class="updated-bg" />
                     <div class="updated-title">
-                        发现新版本更新
+                        发现新版本更新，发布时间：{{ updateInfo.detail.created_at }}
                     </div>
                     <div class="updated-content-box">
                         <div class="version-box">
@@ -225,8 +225,9 @@ export default {
             }
 
             .updated-content {
+                line-height: 25px;
                 font-size: 12px;
-                color: #555;
+                color: #666;
                 display: block;
                 width: 100%;
                 white-space: pre-wrap;
