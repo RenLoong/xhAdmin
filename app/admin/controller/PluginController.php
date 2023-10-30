@@ -8,6 +8,7 @@ use app\common\enum\PlatformTypes;
 use app\common\manager\PluginInstallMgr;
 use app\common\manager\PluginMgr;
 use app\common\manager\PluginUpdateMgr;
+use app\common\model\StoreApp;
 use app\common\service\SystemInfoService;
 use app\common\BaseController;
 use app\common\enum\PluginType;
@@ -482,6 +483,10 @@ class PluginController extends BaseController
         $path = root_path()."plugin/{$name}";
         if (!is_dir($path)) {
             return $this->success('卸载成功');
+        }
+        # 检测是否存在项目
+        if (StoreApp::where(['name'=> $name])->count()) {
+            return $this->fail('该应用存在项目，请先删除');
         }
         # 执行uninstall卸载
         $install_class = "\\plugin\\{$name}\\api\\Install";

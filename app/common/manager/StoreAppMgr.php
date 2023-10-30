@@ -291,15 +291,27 @@ class StoreAppMgr
         # 开始事务
         Db::startTrans();
         try {
-            $whereMap           = [
+            $where          = [
                 'saas_appid'    => $model['id'],
             ];
             # 删除项目配置
-            SystemConfig::where($whereMap)->delete();
+            SystemConfig::where($where)->delete();
             # 删除项目附件
-            SystemUpload::where($whereMap)->delete();
+            SystemUpload::where($where)->delete();
             # 删除附件库分类
-            SystemUploadCate::where($whereMap)->delete();
+            SystemUploadCate::where($where)->delete();
+            # 删除管理员
+            Db::name('plugin_admin')->where($where)->delete();
+            # 删除角色内容
+            Db::name('plugin_roles')->where($where)->delete();
+            # 删除广告内容
+            Db::name('plugin_ads')->where($where)->delete();
+            # 删除文章分类
+            Db::name('plugin_articles_cate')->where($where)->delete();
+            # 删除文章内容
+            Db::name('plugin_articles')->where($where)->delete();
+            # 删除单页内容
+            Db::name('plugin_tags')->where($where)->delete();
             # 删除项目
             if (!$model->delete()) {
                 throw new Exception('删除项目失败');
