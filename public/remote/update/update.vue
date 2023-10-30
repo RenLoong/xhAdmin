@@ -271,7 +271,7 @@ export default {
         margin: 10px 0;
         overflow-x: hidden;
         overflow-y: auto;
-        border-bottom: 1px solid #f5f5f5;
+        border-bottom: 1px solid #e5e5e5;
       }
 
       .update-buttons {
