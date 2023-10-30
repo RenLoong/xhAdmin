@@ -26,7 +26,7 @@
               发现新版本更新 {{ updated.version_name }}（{{ updated.version }}）
           </div>
           <div class="update-desc-time">
-            发布时间：{{ updated.created_at }}
+            发布时间：{{ updated.create_at }}
           </div>
         </div>
         <pre class="update-desc">{{ updated?.content }}</pre>
