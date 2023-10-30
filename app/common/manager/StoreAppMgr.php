@@ -1,6 +1,7 @@
 <?php
 namespace app\common\manager;
 
+use app\admin\utils\UploadUtil;
 use app\common\model\Store;
 use app\common\model\StoreApp as modelStoreApp;
 use app\common\model\StoreApp;
@@ -263,6 +264,36 @@ class StoreAppMgr
             $uploadCateModel = new SystemUploadCate;
             if (!$uploadCateModel->save($cateData)) {
                 throw new Exception('创建项目默认分类失败');
+            }
+            # 创建默认附件库配置
+            $store        = StoreMgr::detail(['id'=> $data['store_id']]);
+            $request = request();
+            $upload_drive = $store['is_uploadify'] === '20' ? 'local' : 'aliyun';
+            $data = [
+                'saas_appid'            => $model->id,
+                'group'                 => 'upload',
+                'value'                 => [
+                    'upload_drive'      => $upload_drive,
+                    'children'          => [
+                        'local'         => [
+                            'type'      => 'local',
+                            'root'      => 'uploads',
+                            'url'       => $request->domain()
+                        ],
+                        'aliyun'            => [
+                            'type'          => 'aliyun',
+                            'access_id'     => '',
+                            'access_secret' => '',
+                            'bucket'        => '',
+                            'endpoint'      => '',
+                            'isCName'       => true,
+                        ]
+                    ]
+                ]
+            ];
+            $model        = new SystemConfig;
+            if (!$model->save($data)) {
+                throw new Exception('创建默认附件库配置失败');
             }
             # 提交事务
             Db::commit();

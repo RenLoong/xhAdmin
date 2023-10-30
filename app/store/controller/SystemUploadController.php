@@ -6,10 +6,10 @@ use app\common\trait\UploadTrait;
 use app\common\BaseController;
 
 /**
- * @title 附件管理
- * @desc 默认使用插件：https://github.com/shopwwi/webman-filesystem
- * 在线手册:https://www.workerman.net/plugin/19
- * @author 楚羽幽 <admin@hangpu.net>
+ * 附件管理
+ * @author 贵州猿创科技有限公司
+ * @copyright 贵州猿创科技有限公司
+ * @email 416716328@qq.com
  */
 class SystemUploadController extends BaseController
 {
@@ -30,6 +30,7 @@ class SystemUploadController extends BaseController
      */
     public function initialize()
     {
+        parent::initialize();
         $this->store_id = $this->request->user['id'];
     }
 }

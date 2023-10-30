@@ -8,7 +8,8 @@ use app\admin\model\Store;
 use app\common\enum\UploadifyAuthEnum;
 use app\common\model\StoreApp;
 use app\common\model\SystemConfig;
-use app\common\model\Users;
+use app\common\model\SystemUpload;
+use app\common\model\SystemUploadCate;
 use app\admin\validate\Store as ValidateStore;
 use app\common\BaseController;
 use app\common\enum\PlatformTypes;
@@ -38,8 +39,9 @@ class StoreController extends BaseController
      * @Email 416716328@qq.com
      * @DateTime 2023-05-03
      */
-    public function __construct()
+    public function initialize()
     {
+        parent::initialize();
         $this->model = new Store;
     }
 
@@ -60,8 +62,8 @@ class StoreController extends BaseController
         }
         $builder = new ListBuilder;
         $data    = $builder
-            ->addActionOptions('操作',[
-                'width'     => 380
+            ->addActionOptions('操作', [
+                'width' => 380
             ])
             ->pageConfig()
             ->editConfig()
@@ -81,9 +83,9 @@ class StoreController extends BaseController
                 'toStore',
                 '管理',
                 [
-                    'type'          => 'link',
-                    'api'           => 'admin/Store/login',
-                    'aliasParams'   => [
+                    'type' => 'link',
+                    'api' => 'admin/Store/login',
+                    'aliasParams' => [
                         'id' => 'store_id'
                     ],
                 ],
@@ -105,10 +107,10 @@ class StoreController extends BaseController
                 'icon' => 'CompassOutlined'
             ])
             ->addRightButton('copyrightSet', '版权设置', [
-                'group'     => true,
-                'type'      => 'page',
-                'api'       => 'admin/Store/copyrightSet',
-                'path'      => '/Store/copyrightSet',
+                'group' => true,
+                'type' => 'page',
+                'api' => 'admin/Store/copyrightSet',
+                'path' => '/Store/copyrightSet',
             ], [
                 'title' => '渠道版权设置',
             ], [
@@ -124,7 +126,7 @@ class StoreController extends BaseController
                 'icon' => 'DesktopOutlined'
             ])
             ->addRightButton('edit', '修改渠道', [
-                'group'     => true,
+                'group' => true,
                 'type' => 'page',
                 'api' => 'admin/Store/edit',
                 'path' => '/Store/edit',
@@ -135,7 +137,7 @@ class StoreController extends BaseController
                 'icon' => 'EditOutlined'
             ])
             ->addRightButton('del', '删除渠道', [
-                'group'     => true,
+                'group' => true,
                 'type' => 'confirm',
                 'api' => 'admin/Store/del',
                 'method' => 'delete',
@@ -147,7 +149,7 @@ class StoreController extends BaseController
                 'type' => 'danger',
                 'icon' => 'RestOutlined'
             ])
-            ->addScreen('keyword','input','渠道名称')
+            ->addScreen('keyword', 'input', '渠道名称')
             ->addColumn('title', '名称')
             ->addColumn('username', '账号')
             ->addColumnEle('logo', '图标', [
@@ -179,16 +181,16 @@ class StoreController extends BaseController
                 ]
             ])
             ->addColumnEle('is_uploadify', '附件库权限', [
-                'width'             => 150,
-                'params'            => [
-                    'type'          => 'tags',
-                    'options'       => UploadifyAuthEnum::dictOptions(),
-                    'style'         => [
-                        '10'=>[
-                            'type'  => 'danger',
+                'width' => 150,
+                'params' => [
+                    'type' => 'tags',
+                    'options' => UploadifyAuthEnum::dictOptions(),
+                    'style' => [
+                        '10' => [
+                            'type' => 'danger',
                         ],
-                        '20'=>[
-                            'type'  => 'success',
+                        '20' => [
+                            'type' => 'success',
                         ],
                     ],
                 ],
@@ -207,10 +209,10 @@ class StoreController extends BaseController
      */
     public function index(Request $request)
     {
-        $keyword = $request->get('keyword','');
+        $keyword = $request->get('keyword', '');
         $where   = [];
         if ($keyword) {
-            $where[]        = ['title','like', '%' . $keyword . '%'];
+            $where[] = ['title', 'like', '%' . $keyword . '%'];
         }
         $model = $this->model;
         $data  = $model->where($where)
@@ -238,17 +240,38 @@ class StoreController extends BaseController
             $post           = $request->post();
             $post['status'] = '20';
 
-            // 数据验证
+            # 数据验证
             hpValidate($validate, $post, 'add');
 
-            $model = $this->model;
-            if (!$model->save($post)) {
-                return parent::fail('保存失败');
+            Db::startTrans();
+            try {
+                # 创建渠道
+                $model = $this->model;
+                if (!$model->save($post)) {
+                    throw new Exception('创建渠道失败');
+                }
+                # 创建附件库分类
+                $cateData        = [
+                    'store_id'      => $model->id,
+                    'title'         => '默认分类',
+                    'dir_name'      => "store_{$model->id}",
+                    'sort'          => 100,
+                    'is_system'     => '20'
+                ];
+                $uploadCateModel = new SystemUploadCate;
+                if (!$uploadCateModel->save($cateData)) {
+                    throw new Exception('创建渠道默认分类失败');
+                }
+                # 提交事务
+                Db::commit();
+            } catch (\Throwable $e) {
+                Db::rollback();
+                throw $e;
             }
-            return parent::success('保存成功');
+            return $this->success('保存成功');
         }
         $data = $this->formView()->setMethod('POST')->create();
-        return parent::successRes($data);
+        return $this->successRes($data);
     }
 
     /**
@@ -289,8 +312,8 @@ class StoreController extends BaseController
             }
             return parent::success('保存成功');
         }
-        $formData   = $model->toArray();
-        $data       = $this->formView()->setMethod('PUT')->setFormData($formData)->create();
+        $formData = $model->toArray();
+        $data     = $this->formView()->setMethod('PUT')->setFormData($formData)->create();
         return parent::successRes($data);
     }
 
@@ -305,19 +328,19 @@ class StoreController extends BaseController
     private function closeUploadifyAuth($store_id)
     {
         $where = [
-            'store_id'      => $store_id
+            'store_id' => $store_id
         ];
-        $data = StoreApp::where($where)->column('id');
+        $data  = StoreApp::where($where)->column('id');
         foreach ($data as $saas_appid) {
             $where = [
-                'saas_appid'    => $saas_appid,
-                'group'         => 'upload'
+                'saas_appid' => $saas_appid,
+                'group' => 'upload'
             ];
             $model = SystemConfig::where($where)->find();
             if ($model) {
-                $configValue = $model->value;
+                $configValue                 = $model->value;
                 $configValue['upload_drive'] = 'aliyun';
-                $model->value = $configValue;
+                $model->value                = $configValue;
                 if (!$model->save()) {
                     throw new Exception('关闭附件库权限失败');
                 }
@@ -334,7 +357,7 @@ class StoreController extends BaseController
      */
     private function formView()
     {
-        $builder                 = new FormBuilder;
+        $builder = new FormBuilder;
         $builder = $builder
             ->setMethod('PUT')
             ->addRow('username', 'input', '渠道账号', '', [
@@ -352,9 +375,9 @@ class StoreController extends BaseController
                     'suffix' => ['jpg', 'jpeg', 'png', 'gif']
                 ],
             ])
-            ->addRow('is_uploadify', 'radio', '附件库权限', '20',[
-                'col'       => 6,
-                'options'   => UploadifyAuthEnum::getOptions(),
+            ->addRow('is_uploadify', 'radio', '附件库权限', '20', [
+                'col' => 6,
+                'options' => UploadifyAuthEnum::getOptions(),
             ])
             ->addRow('wechat', 'input', '公众号数量', '', [
                 'col' => 12,
@@ -451,13 +474,18 @@ class StoreController extends BaseController
             if (!$model) {
                 throw new Exception('该数据不存在');
             }
-            # 删除平台下应用
-            $apps = StoreApp::where($where)->select();
-            foreach ($apps as $appModel) {
-                if (!$appModel->delete()) {
-                    throw new Exception('删除渠道应用失败');
-                }
-            }
+            # 通用查询条件
+            $where = [
+                'store_id'      => $id
+            ];
+            # 删除渠道旗下项目
+            StoreApp::where($where)->delete();
+            # 删除渠道默认分类
+            SystemUploadCate::where($where)->delete();
+            # 删除渠道所有附件
+            SystemUpload::where($where)->delete();
+            # 删除渠道旗下配置项
+            SystemConfig::where($where)->delete();
             # 删除渠道
             if (!$model->delete()) {
                 throw new Exception('删除渠道失败');
