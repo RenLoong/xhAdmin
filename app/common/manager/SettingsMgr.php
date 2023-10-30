@@ -30,7 +30,7 @@ class SettingsMgr
             return $default;
         }
         $configValue = [];
-        $names = explode(',', $name);
+        $names       = explode(',', $name);
         foreach ($names as $field) {
             if (isset($value[$field])) {
                 $configValue[$field] = $value[$field];
@@ -41,6 +41,45 @@ class SettingsMgr
         }
         $data = self::getConfigValue($configValue);
         return $data;
+    }
+
+    /**
+     * 获取配置项
+     * @param int|null $appid 取系统null或应用ID
+     * @param string $group 分组标识
+     * @param string $name 多个配置以逗号分割！支持取层级：name.name
+     * @param mixed $default 返回默认数据
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public static function config(int|null $appid, string $group, string $name, mixed $default = null)
+    {
+        $where = [
+            'group'         => $group,
+            'saas_appid'    => $appid,
+        ];
+        $data = self::getOriginConfig($where, $default);
+        if (empty($data)) {
+            return $default;
+        }
+        $names      = explode(',', $name);
+        if (count($names) <= 1) {
+            $data = [
+                $name       => $data[$name]
+            ];
+            $configValue = self::getConfigValue($data);
+            return $configValue[$name] ?? $default;
+        }
+        $configValue = [];
+        foreach ($names as $field) {
+            if (isset($data[$field])) {
+                $configValue[$field] = $data[$field];
+            }
+        }
+        $configValue = self::getConfigValue($configValue);
+        return $configValue;
     }
 
     /**
@@ -56,8 +95,8 @@ class SettingsMgr
     public static function group(int|null $appid, string $group, mixed $default = null)
     {
         $where = [
-            'group'         => $group,
-            'saas_appid'    => $appid
+            'group' => $group,
+            'saas_appid' => $appid
         ];
         $value = self::getOriginConfig($where, $default);
         if (empty($value)) {
@@ -141,7 +180,7 @@ class SettingsMgr
      */
     private static function createNestedArray(array $data, mixed $config)
     {
-        $data2 = [];
+        $data2   = [];
         $current = &$data2;
         foreach ($data as $field) {
             $current = &$current[$field];

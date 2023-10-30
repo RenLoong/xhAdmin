@@ -3,6 +3,8 @@
 namespace app\admin\controller;
 
 use app\common\manager\AuthMgr;
+use app\common\manager\SettingsMgr;
+use app\common\service\UploadService;
 use app\common\utils\Password;
 use Exception;
 use support\Request;
@@ -31,12 +33,13 @@ class PublicsController extends BaseController
     {
         $systemInfo = SystemInfoService::info();
         $moduleName = getModule('admin');
-        $web_logo = getHpConfig('admin_logo','');
-        $web_logo = is_array($web_logo) && !empty($web_logo) ? current($web_logo) : $web_logo;
+        $config     = SettingsMgr::config(null,'system','web_name,admin_logo',[]);
+        $web_name   = empty($config['web_name']) ? 'XHAdmin' : $config['web_name'];
+        $web_logo   = empty($config['admin_logo']) ? '' : UploadService::url($config['admin_logo']);
         $data       = [
-            'web_name'              => getHpConfig('web_name'),
+            'web_name'              => $web_name,
             'web_title'             => '总后台登录',
-            'web_logo'              => empty($web_logo) ? '' : $web_logo,
+            'web_logo'              => $web_logo,
             'version_name'          => $systemInfo['system_version_name'],
             'version'               => $systemInfo['system_version'],
             // 版权token
