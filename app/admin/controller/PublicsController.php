@@ -33,7 +33,7 @@ class PublicsController extends BaseController
     {
         $systemInfo = SystemInfoService::info();
         $moduleName = getModule('admin');
-        $config     = SettingsMgr::config(null,'system','web_name,admin_logo',[]);
+        $config     = SettingsMgr::config(null,'system','web_name,admin_logo');
         $web_name   = empty($config['web_name']) ? 'XHAdmin' : $config['web_name'];
         $web_logo   = empty($config['admin_logo']) ? '' : UploadService::url($config['admin_logo']);
         $data       = [
