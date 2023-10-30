@@ -220,8 +220,13 @@ class SystemDataController extends BaseController
         if (empty($data)) {
             return $this->fail('表结构无需修复');
         }
-        foreach ($data as $sql) {
-            Db::query($sql);
+        foreach ($data as $strSql) {
+            # 拆分SQL语句
+            $array = explode("\n", $strSql);
+            foreach ($array as $sql) {
+                # 字段操作
+                Db::query($sql);
+            }
         }
         return $this->success('表结构修复成功');
     }
@@ -359,8 +364,10 @@ class SystemDataController extends BaseController
             $sql = $sqlData[$field] ?? '';
             # 检测字段是否存在
             if (isset($fieldList[$field])) {
+                # 清空数据
+                $update = "UPDATE `{$tableName}` SET `{$field}` = 'null' WHERE `{$field}` <> 'null'";
                 # 修改字段
-                $data[$field] = "ALTER TABLE `{$tableName}` MODIFY {$sql}";
+                $data[$field] = "{$update};\nALTER TABLE `{$tableName}` MODIFY {$sql}";
             } else {
                 # 新增字段
                 $data[$field] = "ALTER TABLE `{$tableName}` ADD {$sql}";
