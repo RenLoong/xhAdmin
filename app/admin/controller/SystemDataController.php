@@ -122,7 +122,7 @@ class SystemDataController extends BaseController
             # 获取系统表结构
             $tablesFields  = $this->getTableFields();
             # 使用系统表名称作为键分组
-            $tableFields = array_column($tablesFields, null,'name');
+            $tableGroup = array_column($tablesFields, null,'name');
             foreach ($tables as $key=>$value) {
                 # 获取无表前缀的表名
                 $nonePrefixTableName    = str_replace($prefix, '', $value['TABLE_NAME']);
@@ -136,13 +136,23 @@ class SystemDataController extends BaseController
                 $tables[$key]['TABLE_ROWS'] = $rowTotal;
 
                 # 获取系统表字段
-                $systemFields = $tableFields[$nonePrefixTableName]['fields'] ?? [];
+                $systemFields = $tableGroup[$nonePrefixTableName]['fields'] ?? [];
                 # 查询表所有字段
                 $fields = Db::query("SHOW FULL COLUMNS FROM {$value['TABLE_NAME']}");
-                $fieldList = array_column($fields, 'Field');
-                foreach ($systemFields as $fieldName) {
-                    # 查询是否可修复表
-                    if (!in_array($fieldName, $fieldList) && $tables[$key]['FIELD_FIX'] === 'no') {
+                $fieldList = array_column($fields, null,'Field');
+                # 系统表对比现有表
+                foreach ($systemFields as $fieldName=>$fieldType) {
+                    $item = $fieldList[$fieldName] ?? null;
+                    # 字段不存在
+                    if (empty($item)) {
+                        $tables[$key]['FIELD_FIX'] = 'yes';
+                        continue;
+                    }
+                    # 截取字段类型长度
+                    preg_match("/(.*?)\(/", $item['Type'], $matches);
+                    $type = $matches[1] ?? $item['Type'];
+                    # 是否可修复表
+                    if ($type !== $fieldType) {
                         $tables[$key]['FIELD_FIX'] = 'yes';
                     }
                 }
@@ -187,12 +197,22 @@ class SystemDataController extends BaseController
         $tableFields = $tableGroup[$nonePrefixTableName]['fields'] ?? [];
         # 查询表所有字段
         $fields = Db::query("SHOW FULL COLUMNS FROM {$tableName}");
-        $fieldList = array_column($fields, 'Field');
+        $fieldList = array_column($fields, null,'Field');
         # 所需要修复的字段名
         $fieldData = [];
-        foreach ($tableFields as $fieldName) {
-            if (!in_array($fieldName, $fieldList)) {
-                array_push($fieldData, $fieldName);
+        foreach ($tableFields as $fieldName=>$fieldType) {
+            $item = $fieldList[$fieldName] ?? null;
+            # 字段不存在
+            if (empty($item)) {
+                $fieldData[] = $fieldName;
+                continue;
+            }
+            # 截取字段类型长度
+            preg_match("/(.*?)\(/", $item['Type'], $matches);
+            $type = $matches[1] ?? $item['Type'];
+            # 是否可修复表
+            if ($type !== $fieldType) {
+                $fieldData[] = $fieldName;
             }
         }
         # 获取所需要修复的SQL语句
@@ -223,15 +243,59 @@ class SystemDataController extends BaseController
             # 表名称
             $tableName = str_replace('yc_','',$fileName);
             # 获取字段名称
-            $fields = $this->getFields($path);
-            $fields = array_keys($fields);
-            $fields = array_filter($fields);
+            $fields = $this->getFieldsType($path);
             # 组装数据
             $data[$key] = [
                 'name'          => $tableName,
                 'fields'        => $fields
             ];
         }
+        return $data;
+    }
+
+    /**
+     * 获取字段名称+字段类型
+     * @param string $path
+     * @throws \Exception
+     * @return array
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    private function getFieldsType(string $path)
+    {
+        if (!file_exists($path)) {
+            throw new Exception('SQL文件不存在');
+        }
+        $sqlContent = file_get_contents($path);
+        $sqlContent = explode("\n", $sqlContent);
+        $data    = [];
+        foreach ($sqlContent as $value) {
+            # 判断内容是否存在,
+            if (strpos($value, ',') !== false) {
+                # 移除多余字符串
+                $newValue = trim($value," \n\r\t\v\x00,");
+                # 匹配字段名称+类型
+                preg_match("/`(.*?)`\s+(.*?) /", $newValue, $matches);
+                # 字段名称
+                $fiedName = $matches[1] ?? '';
+                # 字段类型+长度
+                $fieldType = $matches[2] ?? '';
+                # 检测是否存在表前缀
+                if (strrpos($fiedName,'__PREFIX__') !== false) {
+                    continue;            
+                }
+                # 检测是否存在类型长度
+                if (strpos($fieldType,'(') !== false) {
+                    preg_match("/(.*?)\(/", $fieldType, $matches);
+                    $fieldType = $matches[1] ?? $fieldType;
+                }
+                $data[$fiedName] = $fieldType;    
+            }
+        }
+        # 移除空数组
+        $data = array_filter($data);
+        # 返回数据
         return $data;
     }
 
@@ -287,10 +351,20 @@ class SystemDataController extends BaseController
         $sqlFile = public_path('install/http/data/sql').$fileName.'.sql';
         # 获取字段+SQL列表
         $sqlData    = $this->getFields($sqlFile);
+        # 查询表所有字段
+        $fields = Db::query("SHOW FULL COLUMNS FROM {$tableName}");
+        $fieldList = array_column($fields, null,'Field');
         $data = [];
         foreach ($fieldData as $field) {
             $sql = $sqlData[$field] ?? '';
-            $data[$field] = "ALTER TABLE `{$tableName}` ADD {$sql}";
+            # 检测字段是否存在
+            if (isset($fieldList[$field])) {
+                # 修改字段
+                $data[$field] = "ALTER TABLE `{$tableName}` MODIFY {$sql}";
+            } else {
+                # 新增字段
+                $data[$field] = "ALTER TABLE `{$tableName}` ADD {$sql}";
+            }
         }
         return $data;
     }
