@@ -267,10 +267,11 @@ export default {
         color: #70767E;
         white-space: pre-wrap;
         word-break: break-word;
-        margin: 0;
-        padding: 20px 0;
+        padding: 10px 0;
+        margin: 10px 0;
         overflow-x: hidden;
         overflow-y: auto;
+        border-bottom: 1px solid #f5f5f5;
       }
 
       .update-buttons {
