@@ -193,6 +193,12 @@ class StoreAppController extends BaseController
             }
         }
         $formData = $model->toArray();
+        # 检测是否空平台
+        $formData['platform'] = array_filter($formData['platform']);
+        if (empty($formData['platform'])) {
+            $appDetail = StoreAppMgr::getAuthAppDetail($formData['store_id'],$formData['name']);
+            $formData['platform'] = $appDetail['platform'];
+        }
         // 执行应用插件方法
         $class = "\\plugin\\{$model->name}\\api\\Created";
         if (method_exists($class, 'read')) {
@@ -203,6 +209,7 @@ class StoreAppController extends BaseController
                 isset($userData['username']) && $formData['username'] = $userData['username'];
             } catch (\Throwable $e) {
                 Log::error("获取管理员数据出错：{$e->getMessage()}");
+                throw $e;
             }
         }
         $builder = new FormBuilder;
