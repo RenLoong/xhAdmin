@@ -160,9 +160,11 @@ class UploadService
 
     /**
      * 获取外链地址
-     * @param string|array $path
-     * @return array|string
-     * @author John
+     * @param mixed $path
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
      */
     public static function url(mixed $path)
     {
@@ -176,20 +178,25 @@ class UploadService
         if (empty($path) || is_null($path)) {
             return null;
         }
-        $file = self::model($path);
-        if (!$file) {
+        $model = self::model($path);
+        if (!$model) {
             return '';
         }
         try {
-            $disk = self::getDisk($file['adapter']);
+            # 设置数据
+            self::setSaasAppid($model['saas_appid']);
+            self::setStoreId($model['store_id']);
+            self::setUid($model['uid']);
+            # 获取驱动SDK
+            $disk = self::getDisk($model['adapter']);
             # 访问链接
             $url = '';
             # 是否私有空间
-            $private_type = config('filesystem.disks.' . $file['adapter'] . '.private_type','10');
+            $private_type = config('filesystem.disks.' . $model['adapter'] . '.private_type','10');
             if ($private_type === '20') {
                 # 过期时间（单位：秒）
                 $expire_time = 600;
-                switch ($file['adapter']) {
+                switch ($model['adapter']) {
                     case 'aliyun':
                         /** @var \yzh52521\Flysystem\Oss\OssAdapter */
                         $cosDisk = $disk->getAdapter();
@@ -255,13 +262,7 @@ class UploadService
         $where = [
             'path'      => $path,
         ];
-        $field = [
-            'path',
-            'format',
-            'size',
-            'adapter',
-        ];
-        $model = SystemUpload::where($where)->field($field)->find();
+        $model = SystemUpload::where($where)->find();
         if (!$model) {
             return '';
         }
