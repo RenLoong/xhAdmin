@@ -2,6 +2,7 @@
 
 namespace app\store\middleware;
 use Closure;
+use loong\oauth\facade\Auth;
 use support\Request;
 use think\facade\Session;
 
@@ -73,7 +74,8 @@ class AuthMiddleware
             throw new \Exception('请先登录渠道账号', 12000);
         }
         // 获取用户信息
-        $user           = Session::get('XhAdminStore');
+        $token      = str_replace('Bearer ', '', $authorization);
+        $user       = Auth::decrypt($token);
         if (!$user) {
             throw new \Exception('登录已过期，请重新登录', 12000);
         }

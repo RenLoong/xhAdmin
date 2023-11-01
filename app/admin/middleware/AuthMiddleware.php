@@ -4,6 +4,7 @@ namespace app\admin\middleware;
 
 use app\common\manager\AuthMgr;
 use Closure;
+use loong\oauth\facade\Auth;
 use support\Request;
 use think\facade\Session;
 
@@ -77,7 +78,8 @@ class AuthMiddleware
             throw new \Exception('请先登录', 12000);
         }
         // 获取用户信息
-        $user           = Session::get('XhAdmin');
+        $token      = str_replace('Bearer ', '', $authorization);
+        $user       = Auth::decrypt($token);
         if (!$user) {
             throw new \Exception('登录已过期，请重新登录', 12000);
         }
@@ -95,7 +97,7 @@ class AuthMiddleware
             return true;
         }
         // 获取角色规则
-        $rule = AuthMgr::getAdminRoleColumn($user->toArray());
+        $rule = AuthMgr::getAdminRoleColumn($user);
         // 检测是否有操作权限
         $ctrlName = str_replace('Controller', '', basename(str_replace('\\', '/', $control)));
         $path = "{$ctrlName}/{$action}";

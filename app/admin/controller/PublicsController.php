@@ -7,12 +7,12 @@ use app\common\manager\SettingsMgr;
 use app\common\service\UploadService;
 use app\common\utils\Password;
 use Exception;
+use loong\oauth\facade\Auth;
 use support\Request;
 use app\admin\model\SystemAdmin;
 use app\common\service\SystemInfoService;
 use app\admin\validate\SystemAdmin as ValidateSystemAdmin;
 use app\common\BaseController;
-use think\facade\Session;
 
 class PublicsController extends BaseController
 {
@@ -132,11 +132,11 @@ class PublicsController extends BaseController
         $adminModel->save();
 
         // 构建令牌
-        $name = 'XhAdmin';
-        Session::set($name, $adminModel);
+        $data  = $adminModel->toArray();
+        $token = Auth::encrypt($data);
 
         // 返回数据
-        return $this->successToken('登录成功', $name);
+        return $this->successToken('登录成功', $token);
     }
 
 
@@ -149,8 +149,7 @@ class PublicsController extends BaseController
      */
     public function user(Request $request)
     {
-        $user = $request->user;
-        $data       = $user->toArray();
+        $data = $request->user;
         $data['menus'] = $this->getMenus();
         $data['theme'] = [
             'layoutMenu'        => 'level',
@@ -166,9 +165,8 @@ class PublicsController extends BaseController
      */
     private function getMenus()
     {
-        $adminModel = $this->request->user;
-        $admin      = $adminModel->toArray();
-        $data       = AuthMgr::run($admin);
+        $admin  = $this->request->user;
+        $data   = AuthMgr::run($admin);
         return $data;
     }
 
@@ -182,7 +180,6 @@ class PublicsController extends BaseController
      */
     public function loginout(Request $request)
     {
-        Session::delete('XhAdmin');
         return $this->success('成功退出');
     }
 }

@@ -8,6 +8,7 @@ use app\common\service\UploadService;
 use app\store\model\StoreMenus;
 use app\common\utils\Password;
 use Exception;
+use loong\oauth\facade\Auth;
 use support\Request;
 use app\admin\validate\SystemAdmin as ValidateSystemAdmin;
 use app\common\BaseController;
@@ -129,11 +130,11 @@ class PublicsController extends BaseController
         $adminModel->save();
 
         // 构建令牌
-        $tokenName = 'XhAdminStore';
-        Session::set($tokenName, $adminModel);
+        $data  = $adminModel->toArray();
+        $token = Auth::encrypt($data);
 
         // 返回数据
-        return $this->successToken('登录成功', $tokenName);
+        return $this->successToken('登录成功', $token);
     }
 
     /**
