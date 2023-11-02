@@ -148,16 +148,12 @@ class PublicsController extends BaseController
     {
         $user = $request->user;
         # 前端数据
-        $expireDate = date('Y-m-d',strtotime($user['expire_time']));
         $data = [
             'id'                => $user['id'],
             'username'          => $user['username'],
             'nickname'          => $user['title'],
             'headimg'           => $user['logo'],
             'plugins'           => $user['plugins_name'],
-            'role'              => [
-                'title'         => "到期时间：{$expireDate}"
-            ],
             'menus'             => $this->getMenus(),
             // 主题配置（待扩展）
             'theme'             => [
