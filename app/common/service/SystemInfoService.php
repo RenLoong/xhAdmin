@@ -75,10 +75,13 @@ class SystemInfoService
             $data['privatekey'] = file_get_contents($privateFilePath);
         }else if(file_exists($authFilePath)){
             # 设置渠道商版权
-            $authData = json_decode(file_get_contents($authFilePath),true);
-            $data     = array_merge($data, $authData);
-            $data['system_name'] = $data['name'];
-            $data['about_name'] = $data['copyright'];
+            $autData = json_decode(file_get_contents($authFilePath),true);
+            $data = array_merge($data,$autData);
+            $data['system_name']    = $autData['name'];
+            $data['about_name']     = $autData['copyright'];
+            $data['service_wx']     = $autData['wechat'];
+            $data['system_doc']     = $autData['public_api']['doc'];
+            $data['ecology']        = $autData['ecology'];
         }
         return $data;
     }

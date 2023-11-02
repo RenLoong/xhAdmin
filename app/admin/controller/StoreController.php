@@ -525,6 +525,7 @@ class StoreController extends BaseController
         // 构建令牌
         $data  = $adminModel->toArray();
         $token = Auth::encrypt($data);
+        $token = urlencode($token);
 
         $url = "store/#/?token={$token}";
         return $this->successRes(['url' => $url]);
