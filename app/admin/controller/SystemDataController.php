@@ -295,6 +295,10 @@ class SystemDataController extends BaseController
                     preg_match("/(.*?)\(/", $fieldType, $matches);
                     $fieldType = $matches[1] ?? $fieldType;
                 }
+                # 禁止操作主键
+                if ($fiedName === 'id') {
+                    continue;
+                }
                 $data[$fiedName] = $fieldType;    
             }
         }
@@ -330,6 +334,10 @@ class SystemDataController extends BaseController
                 preg_match_all('/`(.*)` /', $newValue, $matches);
                 $fieldName = $matches[1][0] ?? '';
                 if (strpos($fieldName,'__PREFIX__') === false) {
+                    # 禁止操作主键
+                    if ($fieldName === 'id') {
+                        continue;
+                    }
                     $data[$fieldName] = "{$newValue};";
                 }
             }
@@ -361,11 +369,19 @@ class SystemDataController extends BaseController
         $fieldList = array_column($fields, null,'Field');
         $data = [];
         foreach ($fieldData as $field) {
+            # 禁止操作主键
+            if ($field === 'id') {
+                continue;
+            }
             $sql = $sqlData[$field] ?? '';
             # 检测字段是否存在
             if (isset($fieldList[$field])) {
+                $dataValue = 'null';
+                if (in_array($field, ['create_time','update_time'])) {
+                    $dataValue = date('Y-m-d H:i:s');
+                }
                 # 清空数据
-                $update = "UPDATE `{$tableName}` SET `{$field}` = 'null' WHERE `{$field}` <> 'null'";
+                $update = "UPDATE `{$tableName}` SET `{$field}` = '{$dataValue}' WHERE `{$field}` <> 'null'";
                 # 修改字段
                 $data[$field] = "{$update};\nALTER TABLE `{$tableName}` MODIFY {$sql}";
             } else {
