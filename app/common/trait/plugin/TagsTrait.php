@@ -119,7 +119,8 @@ trait TagsTrait
      */
     public function index(Request $request)
     {
-        $data = $this->model->paginate();
+        $order = 'sort asc,id desc';
+        $data = $this->model->order($order)->paginate();
         return $this->successRes($data);
     }
 

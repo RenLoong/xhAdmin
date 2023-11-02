@@ -123,7 +123,8 @@ trait AriclesTrait
      */
     public function index(Request $request)
     {
-        $data = $this->model->with(['category'])->paginate();
+        $orderBy = 'view desc,id desc';
+        $data = $this->model->with(['category'])->order($orderBy)->paginate();
         return $this->successRes($data);
     }
 
