@@ -91,12 +91,14 @@ trait ComponentConfig
                     }
                 }
             }
+            $configValue = SettingsMgr::getChildren($this->saas_appid, $group, []);
             # 重组储存数据
+            $configData = [
+                $active     => $post
+            ];
             $data = [
                 'active'        => $active,
-                'children'      => [
-                    $active     => $post
-                ]
+                'children'      => array_merge($configValue,$configData),
             ];
             # 设置保存数据
             $model->value = $data;

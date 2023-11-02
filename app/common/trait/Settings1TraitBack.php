@@ -15,7 +15,7 @@ use support\Request;
  * @author 贵州猿创科技有限公司
  * @copyright (c) 2023
  */
-trait SettingsTrait
+trait SettingsTraitBack
 {
     # 使用JSON工具类
     use Json;
