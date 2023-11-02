@@ -4,9 +4,9 @@ namespace app\admin\middleware;
 
 use app\common\manager\AuthMgr;
 use Closure;
+use Exception;
 use loong\oauth\facade\Auth;
 use support\Request;
-use think\facade\Session;
 
 /**
  * 权限中间件
@@ -75,13 +75,17 @@ class AuthMiddleware
         // 获取登录信息
         $authorization = $request->header('Authorization', '');
         if (empty($authorization)) {
-            throw new \Exception('请先登录', 12000);
+            throw new Exception('请先登录', 12000);
         }
         // 获取用户信息
-        $token      = str_replace('Bearer ', '', $authorization);
-        $user       = Auth::decrypt($token);
+        try {
+            $token      = str_replace('Bearer ', '', $authorization);
+            $user       = Auth::decrypt($token);
+        } catch (\Throwable $e) {
+            throw new Exception('登录已过期，请重新登录', 12000);
+        }
         if (!$user) {
-            throw new \Exception('登录已过期，请重新登录', 12000);
+            throw new Exception('用户信息获取失败', 12000);
         }
         $request->token = $authorization;
         $request->user = $user;
@@ -90,7 +94,7 @@ class AuthMiddleware
             return true;
         }
         if (empty($user['role']['is_system'])) {
-            throw new \Exception('操作权限出错', 404);
+            throw new Exception('操作权限出错', 404);
         }
         // 系统级部门，不需要鉴权
         if ($user['role']['is_system'] === '20') {
@@ -102,7 +106,7 @@ class AuthMiddleware
         $ctrlName = str_replace('Controller', '', basename(str_replace('\\', '/', $control)));
         $path = "{$ctrlName}/{$action}";
         if (!in_array($path, $rule) && $path !== 'Updated/updateCheck') {
-            throw new \Exception('没有该操作权限', 404);
+            throw new Exception('没有该操作权限', 404);
         }
         return true;
     }

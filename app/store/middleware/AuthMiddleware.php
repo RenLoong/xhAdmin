@@ -1,10 +1,11 @@
 <?php
 
 namespace app\store\middleware;
+
 use Closure;
+use Exception;
 use loong\oauth\facade\Auth;
 use support\Request;
-use think\facade\Session;
 
 /**
  * 权限中间件
@@ -71,19 +72,23 @@ class AuthMiddleware
         // 获取登录信息
         $authorization = $request->header('Authorization', '');
         if (empty($authorization)) {
-            throw new \Exception('请先登录渠道账号', 12000);
+            throw new Exception('请先登录渠道账号', 12000);
         }
         // 获取用户信息
-        $token      = str_replace('Bearer ', '', $authorization);
-        $user       = Auth::decrypt($token);
+        try {
+            $token      = str_replace('Bearer ', '', $authorization);
+            $user       = Auth::decrypt($token);
+        } catch (\Throwable $e) {
+            throw new Exception('登录已过期，请重新登录', 12000);
+        }
         if (!$user) {
-            throw new \Exception('登录已过期，请重新登录', 12000);
+            throw new Exception('用户信息获取失败', 12000);
         }
         $request->token = $authorization;
         $request->user = $user;
         # 验证渠道状态
         if ($user['status'] === '10') {
-            throw new \Exception('该渠道已被禁用，请联系管理员', 12000);
+            throw new Exception('该渠道已被禁用，请联系管理员', 12000);
         }
         return true;
     }
