@@ -1,6 +1,6 @@
 [
     {
-        "path": "Settings/tabs",
+        "path": "Settings/component",
         "title": "短信设置",
         "method": [
             "GET"

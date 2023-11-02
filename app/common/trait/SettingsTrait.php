@@ -1,6 +1,7 @@
 <?php
 namespace app\common\trait;
 
+use app\common\trait\config\ComponentConfig;
 use app\common\trait\config\Config;
 use app\common\trait\config\DividerConfig;
 use app\common\trait\config\TabsConfig;
@@ -64,6 +65,8 @@ trait SettingsTrait
     use UploadConfig;
     # 使用虚线配置
     use DividerConfig;
+    # 使用组件式配置
+    use ComponentConfig;
 
     /**
      * 应用ID（null则获取系统配置）

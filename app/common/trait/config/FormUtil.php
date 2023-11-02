@@ -166,4 +166,40 @@ trait FormUtil
         # 返回构建器
         return $builder;
     }
+
+    /**
+     * 获取组件规则
+     * @param string $active
+     * @param array $component
+     * @throws \Exception
+     * @return FormBuilder
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    private function getComponentView(string $active,array $component)
+    {
+        # 设置默认选中
+        $active = empty($active) ? $component['value'] : $active;
+        # 设置组件类型
+        $componentType = $component['type'] ?? 'radio';
+        # 设置组件标题
+        $title = $component['title'] ?? '组件规则错误';
+        # 设置额外扩展
+        $extra = $component['extra'] ?? [];
+        if (empty($extra['control'])) {
+            throw new Exception('组件的【control】选项数据不能为空');
+        }
+        # 设置组件选项
+        foreach ($extra['control'] as $key => $value) {
+            $col = $value['col'] ?? 24;
+            $extra['control'][$key]['rule'] = $this->getFormView($value['rule'] ?? [],$col)->getBuilder()->formRule();
+        }
+        # 实例表单构建器
+        $builder = new FormBuilder;
+        # 设置组件
+        $builder = $builder->addRow('active', $componentType, $title, $active, $extra);
+        # 返回构建器
+        return $builder;
+    }
 }

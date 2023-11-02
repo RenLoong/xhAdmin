@@ -60,4 +60,38 @@ class PluginArticles extends AppidModel
         $link    = "{$url}/Articles/detail/?appid={$data['saas_appid']}&aid={$data['id']}";
         return $link;
     }
+
+    
+
+    /**
+     * 设置文章封面
+     * @param mixed $value
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function setThumbAttr($value)
+    {
+        if (is_array($value)) {
+            $value = UploadService::path($value);
+        }
+        return $value;
+    }
+
+    /**
+     * 获取文章封面
+     * @param mixed $value
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function getThumbAttr($value)
+    {
+        if ($value) {
+            $value = UploadService::url($value);
+        }
+        return $value;
+    }
 }

@@ -216,7 +216,6 @@ class PublicsController extends BaseController
      */
     public function loginout(Request $request)
     {
-        Session::delete('XhAdminStore');
         return $this->success('成功退出');
     }
 }

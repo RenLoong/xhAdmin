@@ -81,6 +81,12 @@ trait AriclesTrait
             ->addColumn('category.title', '文章分类',[
                 'width'         => 150
             ])
+            ->addColumnEle('thumb', '封面', [
+                'width' => 60,
+                'params' => [
+                    'type' => 'image',
+                ],
+            ])
             ->addColumn('title', '标题名称')
             ->addColumnEle('link', 'H5链接',[
                 'params'        => [
@@ -261,8 +267,13 @@ trait AriclesTrait
             ->addRow('view', 'input', '文章热度', '0', [
                 'col'       => 12,
             ])
-            ->addComponent('content', 'wangEditor', '文章内容', '', [
-            ]);
+            ->addComponent('thumb', 'uploadify', '文章封面', '', [
+                'col'       => 12,
+            ])
+            ->addRow('desc', 'textarea', '简短描述', '', [
+                'col'       => 12,
+            ])
+            ->addComponent('content', 'wangEditor', '文章内容', '');
         return $data;
     }
 }

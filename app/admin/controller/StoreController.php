@@ -14,6 +14,7 @@ use app\admin\validate\Store as ValidateStore;
 use app\common\BaseController;
 use app\common\enum\PlatformTypes;
 use Exception;
+use loong\oauth\facade\Auth;
 use support\Request;
 use think\facade\Db;
 use think\facade\Session;
@@ -520,11 +521,12 @@ class StoreController extends BaseController
         if (!$adminModel) {
             return parent::fail('登录错误');
         }
-
+        
         // 构建令牌
-        Session::set('XhAdminStore', $adminModel);
+        $data  = $adminModel->toArray();
+        $token = Auth::encrypt($data);
 
-        $url = "store/#/?token=XhAdminStore";
+        $url = "store/#/?token={$token}";
         return $this->successRes(['url' => $url]);
     }
 }
