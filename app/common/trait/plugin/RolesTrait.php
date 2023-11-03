@@ -102,7 +102,7 @@ trait RolesTrait
     public function index(Request $request)
     {
         $saas_appid = $request->saas_appid;
-        $admin_id = $request->user->id;
+        $admin_id = $request->user['id'];
         $where      = [
             'pid'           => $admin_id,
             'saas_appid'    => $saas_appid,
@@ -121,7 +121,7 @@ trait RolesTrait
      */
     public function add(Request $request)
     {
-        $admin_id = $request->user->id;
+        $admin_id = $request->user['id'];
         if ($request->method() == 'POST') {
             $post = $request->post();
             if (empty($post['title'])) {

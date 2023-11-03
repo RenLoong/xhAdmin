@@ -117,7 +117,7 @@ trait AdminTrait
      */
     public function index(Request $request)
     {
-        $admin_id = $request->user->id;
+        $admin_id = $request->user['id'];
         $where    = [
             'pid'           => $admin_id,
             'saas_appid'    => $this->saas_appid,
@@ -139,7 +139,7 @@ trait AdminTrait
      */
     public function add(Request $request)
     {
-        $admin_id = $request->user->id;
+        $admin_id = $request->user['id'];
         if ($request->method() == 'POST') {
             $post = $request->post();
             $post['pid'] = $admin_id;
@@ -216,7 +216,7 @@ trait AdminTrait
      */
     public function edit(Request $request)
     {
-        $admin_id = $request->user->id;
+        $admin_id = $request->user['id'];
         $id = $request->get('id');
         $where    = [
             'id'            => $id,
@@ -296,7 +296,7 @@ trait AdminTrait
      */
     public function editSelf(Request $request)
     {
-        $admin_id = $request->user->id;
+        $admin_id = $request->user['id'];
         $where    = [
             ['id', '=', $admin_id]
         ];
