@@ -101,7 +101,7 @@ class SystemAdminController extends BaseController
      */
     public function index(Request $request)
     {
-        $admin_id = $request->user->id;
+        $admin_id = $request->user['id'];
         $where = [
             ['pid', '=', $admin_id]
         ];
@@ -122,7 +122,7 @@ class SystemAdminController extends BaseController
      */
     public function add(Request $request)
     {
-        $admin_id = $request->user->id;
+        $admin_id = $request->user['id'];
         if ($request->method() == 'POST') {
             $post = $request->post();
             $post['pid'] = $admin_id;
@@ -192,7 +192,7 @@ class SystemAdminController extends BaseController
      */
     public function edit(Request $request)
     {
-        $admin_id = $request->user->id;
+        $admin_id = $request->user['id'];
         $id = $request->get('id');
         $where = [
             ['id', '=', $id]
@@ -270,7 +270,7 @@ class SystemAdminController extends BaseController
      */
     public function editSelf(Request $request)
     {
-        $admin_id = $request->user->id;
+        $admin_id = $request->user['id'];
         $where    = [
             ['id', '=', $admin_id]
         ];

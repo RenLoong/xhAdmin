@@ -82,7 +82,7 @@ class SystemAdminRoleController extends BaseController
      */
     public function index(Request $request)
     {
-        $admin_id = $request->user->id;
+        $admin_id = $request->user['id'];
         $where = [
             ['pid', '=', $admin_id],
         ];
@@ -100,7 +100,7 @@ class SystemAdminRoleController extends BaseController
      */
     public function add(Request $request)
     {
-        $admin_id = $request->user->id;
+        $admin_id = $request->user['id'];
         if ($request->method() == 'POST') {
             $post = $request->post();
             $post['pid'] = $admin_id;
