@@ -31,11 +31,17 @@ class PublicsController extends BaseController
      */
     public function site()
     {
+        # 获取系统信息
         $systemInfo = SystemInfoService::info();
+        # 获取模块名称
         $moduleName = getModule('admin');
+        # 获取配置信息
         $config     = SettingsMgr::config(null,'system','web_name,admin_logo');
+        # 获取网站名称
         $web_name   = empty($config['web_name']) ? 'XHAdmin' : $config['web_name'];
+        # 获取网站Logo
         $web_logo   = empty($config['admin_logo']) ? '' : UploadService::url($config['admin_logo']);
+        # 返回数据
         $data       = [
             'web_name'              => $web_name,
             'web_title'             => '总后台登录',
@@ -91,7 +97,7 @@ class PublicsController extends BaseController
                 'del'               => "{$moduleName}/SystemUploadCate/del",
             ],
         ];
-        return parent::successRes($data);
+        return $this->successRes($data);
     }
 
     /**
