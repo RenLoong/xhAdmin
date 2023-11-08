@@ -161,7 +161,9 @@ trait MenusTrait
                 $post['method'] = ['GET'];
             }
             $menuData = $post;
-            $menuData['pid'] = end($menuData['pid']);
+            if (is_array($menuData['pid'])) {
+                $menuData['pid']        = end($menuData['pid']);
+            }
             $data = PluginMgr::getMenuList($request->plugin);
             $data = list_sort_by($data,'id','asc');
             $menuEnd         = end($data);
@@ -181,6 +183,7 @@ trait MenusTrait
     {
         if ($request->isPost()) {
             $post  = $request->post();
+            print_r('开发中...');
             print_r($post);
             exit;
         }
@@ -233,7 +236,9 @@ trait MenusTrait
                 $post['method'] = ['GET'];
             }
             $menuData = $post;
-            $menuData['pid']        = end($menuData['pid']);
+            if (is_array($menuData['pid'])) {
+                $menuData['pid']        = end($menuData['pid']);
+            }
             $menuData['icon']       = isset($menuData['icon']['icon']) ? $menuData['icon']['icon'] : '';
             $menuData['id']         = $detail['id'];
             $menuData['is_default'] = $detail['is_default'];
