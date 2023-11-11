@@ -1,4 +1,5 @@
 <?php
+
 namespace YcOpen\CloudService\Request;
 
 use YcOpen\CloudService\Request;
@@ -11,23 +12,28 @@ use YcOpen\CloudService\Validator;
  */
 class MiniprojectRequest extends Request
 {
-    public $nodeBaseURL='http://miniproject-upload.kfadmin.net/';
+    public $nodeBaseURL = 'http://miniproject-upload.kfadmin.net/';
+    public function getAccessToken()
+    {
+        $this->setUrl('Miniproject/getAccessToken');
+        return $this;
+    }
     /**
      * 上传小程序或者密钥文件
      * @param mixed $params
      * @return MiniprojectRequest
      */
-    public function upload(mixed $params=null)
+    public function upload(mixed $params = null)
     {
         $this->setUrl('Miniproject/upload');
         $this->setMethod('POST');
-        $validator=new Validator;
+        $validator = new Validator;
         $validator->rules([
-            'action'=>'required',
-            'file'=>'required',
+            'action' => 'required',
+            'file' => 'required',
         ]);
-        $this->validator=$validator;
-        if($params){
+        $this->validator = $validator;
+        if ($params) {
             $this->setParams($params);
         }
         return $this;
@@ -42,20 +48,20 @@ class MiniprojectRequest extends Request
      * @param mixed $params
      * @return MiniprojectRequest
      */
-    public function createProejct(mixed $params=null)
+    public function createProejct(mixed $params = null)
     {
         $this->setUrl('Miniproject/createProejct');
         $this->setMethod('POST');
-        $validator=new Validator;
+        $validator = new Validator;
         $validator->rules([
-            'name'=>'required',
-            'path'=>'required',
-            'version'=>'required',
-            'desc'=>'required',
-            'type'=>'required',
+            'name' => 'required',
+            'path' => 'required',
+            'version' => 'required',
+            'desc' => 'required',
+            'type' => 'required',
         ]);
-        $this->validator=$validator;
-        if($params){
+        $this->validator = $validator;
+        if ($params) {
             $this->setParams($params);
         }
         return $this;
@@ -68,18 +74,18 @@ class MiniprojectRequest extends Request
      * @param mixed $params
      * @return MiniprojectRequest
      */
-    public function setConfig(mixed $params=null)
+    public function setConfig(mixed $params = null)
     {
         $this->setUrl('Miniproject/setConfig');
         $this->setMethod('POST');
-        $validator=new Validator;
+        $validator = new Validator;
         $validator->rules([
-            'appid'=>'required',
-            'privatekey'=>'required',
-            'type'=>'required'
+            'appid' => 'required',
+            'privatekey' => 'required',
+            'type' => 'required'
         ]);
-        $this->validator=$validator;
-        if($params){
+        $this->validator = $validator;
+        if ($params) {
             $this->setParams($params);
         }
         return $this;
@@ -93,18 +99,18 @@ class MiniprojectRequest extends Request
      * @param mixed $params
      * @return MiniprojectRequest
      */
-    public function getUploadToken(mixed $params=null)
+    public function getUploadToken(mixed $params = null)
     {
         $this->setUrl('Miniproject/getUploadToken');
         $this->setMethod('POST');
-        $validator=new Validator;
+        $validator = new Validator;
         $validator->rules([
-            'appid'=>'required',
-            'name'=>'required',
-            'type'=>'required'
+            'appid' => 'required',
+            'name' => 'required',
+            'type' => 'required'
         ]);
-        $this->validator=$validator;
-        if($params){
+        $this->validator = $validator;
+        if ($params) {
             $this->setParams($params);
         }
         return $this;
@@ -115,21 +121,21 @@ class MiniprojectRequest extends Request
      * @param mixed $query
      * @return MiniprojectRequest
      */
-    public function miniprojectUpload(mixed $query=null)
+    public function miniprojectUpload(mixed $query = null)
     {
-        $base_url=getenv('YC_NODE_SERVICE_BASE_URL');
-        if(!$base_url){
-            $base_url=$this->nodeBaseURL;
+        $base_url = getenv('YC_NODE_SERVICE_BASE_URL');
+        if (!$base_url) {
+            $base_url = $this->nodeBaseURL;
         }
         $this->setBaseUrl($base_url);
         $this->setTimeout(0);
         $this->setUrl('upload/index');
-        $validator=new Validator;
+        $validator = new Validator;
         $validator->rules([
-            'token'=>'required'
+            'token' => 'required'
         ]);
-        $this->validator=$validator;
-        if($query){
+        $this->validator = $validator;
+        if ($query) {
             $this->setQuery($query);
         }
         return $this;
@@ -140,21 +146,21 @@ class MiniprojectRequest extends Request
      * @param mixed $query
      * @return MiniprojectRequest
      */
-    public function miniprojectPreview(mixed $query=null)
+    public function miniprojectPreview(mixed $query = null)
     {
-        $base_url=getenv('YC_NODE_SERVICE_BASE_URL');
-        if(!$base_url){
-            $base_url=$this->nodeBaseURL;
+        $base_url = getenv('YC_NODE_SERVICE_BASE_URL');
+        if (!$base_url) {
+            $base_url = $this->nodeBaseURL;
         }
         $this->setBaseUrl($base_url);
         $this->setTimeout(0);
         $this->setUrl('upload/preview');
-        $validator=new Validator;
+        $validator = new Validator;
         $validator->rules([
-            'token'=>'required'
+            'token' => 'required'
         ]);
-        $this->validator=$validator;
-        if($query){
+        $this->validator = $validator;
+        if ($query) {
             $this->setQuery($query);
         }
         return $this;
@@ -166,24 +172,24 @@ class MiniprojectRequest extends Request
      * @param mixed $query
      * @return string
      */
-    public function miniprojectPreviewQrcode(mixed $query=null)
+    public function miniprojectPreviewQrcode(mixed $query = null)
     {
-        $base_url=getenv('YC_NODE_SERVICE_BASE_URL');
-        if(!$base_url){
-            $base_url=$this->nodeBaseURL;
+        $base_url = getenv('YC_NODE_SERVICE_BASE_URL');
+        if (!$base_url) {
+            $base_url = $this->nodeBaseURL;
         }
         $this->setBaseUrl($base_url);
         $this->setUrl('preview/index');
-        $validator=new Validator;
+        $validator = new Validator;
         $validator->rules([
-            'appid'=>'required',
-            'name'=>'required',
+            'appid' => 'required',
+            'name' => 'required',
         ]);
-        $this->validator=$validator;
-        if($query){
+        $this->validator = $validator;
+        if ($query) {
             $this->setQuery($query);
         }
-        return $base_url.'preview/index?'.http_build_query($this->query);
+        return $base_url . 'preview/index?' . http_build_query($this->query);
         // return $this;
     }
 }

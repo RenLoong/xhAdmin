@@ -19,7 +19,7 @@ class Paginator extends ThinkPaginator
     public function listRows(): int
     {
         $request = request();
-        $limit = $request->get('limit', 20);
+        $limit = (int)$request->get('limit', 20);
         if ($limit) {
             $this->listRows = $limit;
         }

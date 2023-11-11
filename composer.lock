@@ -4817,12 +4817,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/uRenlong/kfadmin-cloud.git",
-                "reference": "ee2b05ba7bd5bf9f294caadce4155563a6edd73f"
+                "reference": "3caea41944353c535657ec4f83e6f4a475405142"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/uRenlong/kfadmin-cloud/zipball/ee2b05ba7bd5bf9f294caadce4155563a6edd73f",
-                "reference": "ee2b05ba7bd5bf9f294caadce4155563a6edd73f",
+                "url": "https://api.github.com/repos/uRenlong/kfadmin-cloud/zipball/3caea41944353c535657ec4f83e6f4a475405142",
+                "reference": "3caea41944353c535657ec4f83e6f4a475405142",
                 "shasum": ""
             },
             "require": {
@@ -4854,7 +4854,7 @@
                 "issues": "https://github.com/uRenlong/kfadmin-cloud/issues",
                 "source": "https://github.com/uRenlong/kfadmin-cloud/tree/master"
             },
-            "time": "2023-10-27T07:41:55+00:00"
+            "time": "2023-11-10T07:41:29+00:00"
         },
         {
             "name": "yzh52521/flysystem-obs",
