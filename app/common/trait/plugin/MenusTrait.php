@@ -551,11 +551,12 @@ trait MenusTrait
      */
     private static function getCascaderOptions()
     {
-        $request = request();
-        $data    = PluginMgr::getMenuList($request->plugin);
-        $data    = Data::channelLevel($data, 0, '', 'id', 'pid');
-        $data    = self::getChildrenOptions($data);
-        $data    = array_merge([
+        $request    = request();
+        $data       = PluginMgr::getMenuList($request->plugin);
+        $data       = list_sort_by($data, 'sort', 'asc');
+        $data       = Data::channelLevel($data, 0, '', 'id', 'pid');
+        $data       = self::getChildrenOptions($data);
+        $data       = array_merge([
             [
                 'label' => '顶级权限菜单',
                 'value' => 0
