@@ -2,6 +2,8 @@
 
 namespace app\common\model\plugin;
 
+use app\common\service\UploadService;
+
 /**
  * 文章内容
  * @author 贵州猿创科技有限公司

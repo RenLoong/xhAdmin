@@ -20,10 +20,9 @@ class PluginAdmin extends AppidModel
 
     /**
      * 关联等级
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-02
-     * @return void
+     * @return \think\model\relation\HasOne
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
      */
     public function role()
     {
@@ -45,12 +44,10 @@ class PluginAdmin extends AppidModel
 
     /**
      * 密码加密写入
-     *
-     * @Author 贵州猿创科技有限公司
-     * @Email 416716328@qq.com
-     * @DateTime 2023-03-08
-     * @param  type $value
-     * @return void
+     * @param mixed $value
+     * @return bool|string
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
      */
     protected function setPasswordAttr($value)
     {
