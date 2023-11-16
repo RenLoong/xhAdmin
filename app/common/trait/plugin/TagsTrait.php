@@ -8,6 +8,7 @@ use app\common\utils\Json;
 use Exception;
 use support\Request;
 use think\App;
+use app\common\manager\PluginMgr;
 
 /**
  * 单页系统
@@ -17,8 +18,10 @@ use think\App;
  */
 trait TagsTrait
 {
-    // 使用JSON工具类
+    # 使用JSON工具类
     use Json;
+    # 使用菜单累
+    use MenusTrait;
 
     /**
      * 应用ID（null则获取系统配置）
@@ -34,7 +37,7 @@ trait TagsTrait
      */
     protected $model = null;
 
-    
+
     /**
      * 构造函数
      * @author 贵州猿创科技有限公司
@@ -56,50 +59,50 @@ trait TagsTrait
     public function indexGetTable(Request $request)
     {
         $builder = new ListBuilder;
-        $data = $builder
+        $data    = $builder
             ->addActionOptions('操作', [
-                'width'         => 180
+                'width' => 180
             ])
             ->pageConfig()
             ->addTopButton('add', '添加', [
-                'api'           => $this->pluginPrefix.'/admin/Tags/add',
-                'path'          => '/Tags/add',
+                'api' => $this->pluginPrefix . '/admin/Tags/add',
+                'path' => '/Tags/add',
             ], [], [
-                'type'          => 'primary'
+                'type' => 'primary'
             ])
             ->addRightButton('edit', '修改', [
-                'api'           => $this->pluginPrefix.'/admin/Tags/edit',
-                'path'          => '/Tags/edit',
+                'api' => $this->pluginPrefix . '/admin/Tags/edit',
+                'path' => '/Tags/edit',
             ], [], [
-                'type'          => 'primary',
+                'type' => 'primary',
             ])
             ->addRightButton('del', '删除', [
-                'type'          => 'confirm',
-                'api'           => $this->pluginPrefix.'/admin/Tags/del',
-                'method'        => 'delete',
+                'type' => 'confirm',
+                'api' => $this->pluginPrefix . '/admin/Tags/del',
+                'method' => 'delete',
             ], [
-                'type'          => 'error',
-                'title'         => '温馨提示',
-                'content'       => '是否确认删除该数据',
+                'type' => 'error',
+                'title' => '温馨提示',
+                'content' => '是否确认删除该数据',
             ], [
-                'type'          => 'danger',
+                'type' => 'danger',
             ])
-            ->addColumn('id', '序号',[
-                'width'         => 150
+            ->addColumn('id', '序号', [
+                'width' => 150
             ])
-            ->addColumn('create_at', '创建时间',[
-                'width'         => 150
+            ->addColumn('create_at', '创建时间', [
+                'width' => 150
             ])
             ->addColumn('title', '标题名称')
-            ->addColumn('name', '标签名称',[
-                'width'         => 280
+            ->addColumn('name', '标签名称', [
+                'width' => 280
             ])
-            ->addColumnEle('link', 'H5链接',[
-                'params'        => [
-                    'type'      => 'link',
-                    'props'     => [
-                        'copy'  => true,
-                        'text'  => '点击打开'
+            ->addColumnEle('link', 'H5链接', [
+                'params' => [
+                    'type' => 'link',
+                    'props' => [
+                        'copy' => true,
+                        'text' => '点击打开'
                     ]
                 ]
             ])
@@ -107,13 +110,28 @@ trait TagsTrait
                 'width' => 100,
                 'params' => [
                     'type' => 'switch',
-                    'api' => $this->pluginPrefix.'/admin/Tags/rowEdit',
+                    'api' => $this->pluginPrefix . '/admin/Tags/rowEdit',
                     'unchecked' => [
                         'text' => '禁用',
                         'value' => '10'
                     ],
                     'checked' => [
                         'text' => '正常',
+                        'value' => '20'
+                    ],
+                ],
+            ])
+            ->addColumnEle('is_menu', '是否加入菜单', [
+                'width' => 150,
+                'params' => [
+                    'type' => 'switch',
+                    'api' => $this->pluginPrefix . '/admin/Tags/menuEdit',
+                    'unchecked' => [
+                        'text' => '未加入菜单',
+                        'value' => '10'
+                    ],
+                    'checked' => [
+                        'text' => '已加入菜单',
                         'value' => '20'
                     ],
                 ],
@@ -133,8 +151,79 @@ trait TagsTrait
     public function index(Request $request)
     {
         $order = 'sort asc,id desc';
-        $data = $this->model->order($order)->paginate();
+        $menus = PluginMgr::getMenuList($request->plugin);
+        $data  = $this->model->order($order)->paginate()->each(function ($item) use ($menus) {
+            $auth_params = "tag_name={$item['name']}";
+            $arrayIndex = array_search($auth_params, array_column($menus, 'auth_params'));
+            $isMenu = '20';
+            if ($arrayIndex === false) {
+                $isMenu = '10';
+            }
+            $item->is_menu = $isMenu;
+            return $item;
+        });
         return $this->successRes($data);
+    }
+
+    /**
+     * 单页菜单编辑
+     * @param \support\Request $request
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public function menuEdit(Request $request)
+    {
+        $keyField = $request->post('keyField');
+        $id       = $request->post('id');
+        $value    = $request->post('value');
+        $where    = [
+            $keyField => $id
+        ];
+        $model    = $this->model;
+        $model    = $model->where($where)->find();
+        if (!$model) {
+            return $this->fail('数据不存在');
+        }
+        $menus = PluginMgr::getMenuList($request->plugin);
+        $menus = list_sort_by($menus, 'id', 'asc');
+        # 检测是否已存在菜单
+        $column      = array_column($menus, 'auth_params');
+        $column      = array_filter($column);
+        $auth_params = "tag_name={$model['name']}";
+        if ($value === '20' && !in_array($auth_params, $column)) {
+            $menuData   = end($menus);
+            $arrayIndex = array_search('Content/group', array_column($menus, 'path'));
+            $parent     = $menus[$arrayIndex];
+            # 增加菜单
+            $menuData = [
+                'id' => $menuData['id'] + 1,
+                'pid' => $parent['id'],
+                'title' => $model->menu_title,
+                'component' => "form/index",
+                'is_api' => '20',
+                'method' => ['GET', 'POST', 'PUT'],
+                'path' => "Tags/edit",
+                'show' => '20',
+                'is_default' => '10',
+                'is_system' => '20',
+                'sort' => '100',
+                'auth_params' => $auth_params,
+                'icon' => '',
+                'children' => []
+            ];
+            array_push($menus, $menuData);
+        } else {
+            # 删除菜单
+            $arrayIndex = array_search($auth_params, array_column($menus, 'auth_params'));
+            if (isset($menus[$arrayIndex])) {
+                unset($menus[$arrayIndex]);
+            }
+        }
+        # 保存菜单数据
+        $this->saveData($menus);
+        # 返回结果
+        return $this->success('操作成功');
     }
 
     /**
@@ -156,10 +245,10 @@ trait TagsTrait
             if (empty($post['name'])) {
                 return $this->fail('请输入标签名称');
             }
-            
+
             # 验证是否已存在
             $where = [
-                'name'      => $post['name']
+                'name' => $post['name']
             ];
             if ($this->model->where($where)->count()) {
                 return $this->fail('该单页已存在');
@@ -171,9 +260,18 @@ trait TagsTrait
             }
             return $this->success('保存成功');
         }
-        $data = $this->getFormView()->setMethod('POST')->create();
+        $data = $this->getFormView()
+            ->addRow('name', 'input', '标签名称(填写后不可更改)', '', [
+                'col' => 8,
+            ])
+            ->addRow('menu_title', 'input', '菜单标题', '', [
+                'col' => 8,
+            ])
+            ->addComponent('content', 'wangEditor', '文章内容')
+            ->setMethod('POST')->create();
         return $this->successRes($data);
     }
+
     /**
      * 修改
      * @return mixed
@@ -183,10 +281,16 @@ trait TagsTrait
      */
     public function edit(Request $request)
     {
-        $id    = $request->get('id','');
-        $where = [
-            'id'        => $id
+        $id       = $request->get('id', '');
+        $tag_name = $request->get('tag_name', '');
+        $where    = [
+            'id' => $id
         ];
+        if ($tag_name) {
+            $where = [
+                'name' => $tag_name
+            ];
+        }
         $model = $this->model->where($where)->find();
         if (!$model) {
             throw new Exception('数据不存在');
@@ -201,11 +305,11 @@ trait TagsTrait
             if (empty($post['name'])) {
                 return $this->fail('请输入标签名称');
             }
-            
+
             # 验证是否已存在
             $where = [
-                ['id','<>',$id],
-                ['name','=',$post['name']]
+                ['id', '<>', $id],
+                ['name', '=', $post['name']]
             ];
             if ($this->model->where($where)->count()) {
                 return $this->fail('该单页已存在');
@@ -216,7 +320,15 @@ trait TagsTrait
             }
             return $this->success('保存成功');
         }
-        $data = $this->getFormView()->setMethod('PUT')->setData($model)->create();
+        $data = $this->getFormView()
+            ->setMethod('PUT')
+            ->addRow('name', 'input', '标签名称', '', [
+                'col' => 8,
+                'disabled' => true,
+            ])
+            ->addComponent('content', 'wangEditor', '文章内容')
+            ->setData($model)
+            ->create();
         return $this->successRes($data);
     }
 
@@ -231,9 +343,9 @@ trait TagsTrait
      */
     public function del(Request $request)
     {
-        $id = $request->post('id','');
+        $id    = $request->post('id', '');
         $where = [
-            'id'        => $id
+            'id' => $id
         ];
         $model = $this->model->where($where)->find();
         if (!$model) {
@@ -257,12 +369,7 @@ trait TagsTrait
         $builder = new FormBuilder;
         $data    = $builder
             ->addRow('title', 'input', '标题名称', '', [
-                'col' => 12,
-            ])
-            ->addRow('name', 'input', '标签名称', '', [
-                'col'       => 12,
-            ])
-            ->addComponent('content', 'wangEditor', '文章内容', '', [
+                'col' => 8,
             ]);
         return $data;
     }

@@ -201,9 +201,12 @@ trait MenusTrait
                 $post['method'] = ['GET'];
             }
             $menuData = $post;
+            # 处理父级菜单
             if (is_array($menuData['pid'])) {
                 $menuData['pid'] = end($menuData['pid']);
             }
+            # 路由地址首字母转大写
+            $menuData['path']       = ucfirst($menuData['path']);
             $data                   = PluginMgr::getMenuList($request->plugin);
             $data                   = list_sort_by($data, 'id', 'asc');
             $menuEnd                = end($data);
@@ -379,9 +382,12 @@ trait MenusTrait
                 $post['method'] = ['GET'];
             }
             $menuData = $post;
+            # 处理父级菜单
             if (is_array($menuData['pid'])) {
                 $menuData['pid'] = end($menuData['pid']);
             }
+            # 路由地址首字母转大写
+            $menuData['path']       = ucfirst($menuData['path']);
             $menuData['icon']       = isset($menuData['icon']['icon']) ? $menuData['icon']['icon'] : '';
             $menuData['id']         = $detail['id'];
             $menuData['is_default'] = $detail['is_default'];
