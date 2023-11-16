@@ -42,7 +42,7 @@
     <!-- 应用列表 -->
     <div class="xh-apps-list" v-if="plugins.length">
       <el-row :gutter="20">
-        <el-col :span="4" v-for="(item, index) in plugins" :key="index" @click="hanldDetail(item)">
+        <el-col class="xh-row" :span="4" v-for="(item, index) in plugins" :key="index" @click="hanldDetail(item)">
           <el-card class="box-card">
             <div slot="header" class="clearfix">
               <el-image style="width: 100%; height: 190px;border-radius: 3px;" :src="item.logo" />
@@ -704,6 +704,9 @@ export default {
   margin-top: 10px;
   padding-bottom: 30px;
   border-radius: 3px;
+  .xh-row{
+    margin-bottom: 15px;
+  }
 
   .box-card {
     transition: all .3s ease;
