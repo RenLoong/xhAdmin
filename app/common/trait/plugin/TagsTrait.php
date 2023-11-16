@@ -264,9 +264,6 @@ trait TagsTrait
             ->addRow('name', 'input', '标签名称(填写后不可更改)', '', [
                 'col' => 8,
             ])
-            ->addRow('menu_title', 'input', '菜单标题', '', [
-                'col' => 8,
-            ])
             ->addComponent('content', 'wangEditor', '文章内容')
             ->setMethod('POST')->create();
         return $this->successRes($data);
@@ -369,6 +366,9 @@ trait TagsTrait
         $builder = new FormBuilder;
         $data    = $builder
             ->addRow('title', 'input', '标题名称', '', [
+                'col' => 8,
+            ])
+            ->addRow('menu_title', 'input', '菜单标题', '', [
                 'col' => 8,
             ]);
         return $data;
