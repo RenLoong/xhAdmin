@@ -4,7 +4,7 @@ namespace plugin\{TEAM_PLUGIN_NAME}\app\admin\controller;
 
 use plugin\{TEAM_PLUGIN_NAME}\app\BaseController;
 use app\common\trait\plugin\ArtclesCateTrait;
-use plugin\{TEAM_PLUGIN_NAME}\app\model\PluginArticlesCate;
+use app\common\model\plugin\PluginArticlesCate;
 use support\Request;
 
 /**
@@ -44,6 +44,5 @@ class ArticlesCateController extends BaseController
     {
         parent::initialize();
         $this->saas_appid = $this->request->saas_appid;
-        $this->model = new PluginArticlesCate;
     }
 }

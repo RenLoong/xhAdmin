@@ -4,10 +4,11 @@ namespace app\common\trait\plugin;
 use app\common\builder\FormBuilder;
 use app\common\builder\ListBuilder;
 use app\common\manager\PluginMgr;
+use app\common\model\plugin\PluginRoles;
 use app\common\utils\Json;
-use app\common\Model;
 use Exception;
 use support\Request;
+use think\App;
 
 /**
  * 角色权限
@@ -34,9 +35,20 @@ trait RolesTrait
 
     /**
      * 应用管理员模型
-     * @var Model
+     * @var PluginRoles
      */
     protected $model = null;
+    
+    /**
+     * 构造函数
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public function __construct(App $app)
+    {
+        parent::__construct($app);
+        $this->model = new PluginRoles;
+    }
     
     /**
      * 表格

@@ -8,6 +8,7 @@
         "component": "none/index",
         "auth_params": "",
         "show": "20",
+        "sort":100,
         "icon": "Monitor",
         "is_system": "10",
         "is_api": "10",

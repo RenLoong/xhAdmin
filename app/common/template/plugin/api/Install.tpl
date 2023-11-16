@@ -26,6 +26,15 @@ class Install
         if(empty($sql)){
             return true;
         }
+        # 检测不是标准前缀
+        if(strpos($haystack, '`php_') !== false || strpos($haystack, '`yc_') !== false){
+            # 替换前缀重新写入
+            $prefixs = ['`php_','`yc_'];
+            $sqlContent = str_replace($prefixs,'`__PREFIX__');
+            file_put_contents($sqlPath,$sqlContent);
+        }
+
+        # 开始进入数据安装
         $_config = config('database');
         if (empty($_config['default']) || empty($_config['connections'])) {
             throw new \Exception("数据库链接配置错误");

@@ -3,10 +3,11 @@ namespace app\common\trait\plugin;
 
 use app\common\builder\FormBuilder;
 use app\common\builder\ListBuilder;
+use app\common\model\plugin\PluginTags;
 use app\common\utils\Json;
-use app\common\Model;
 use Exception;
 use support\Request;
+use think\App;
 
 /**
  * 单页系统
@@ -27,11 +28,23 @@ trait TagsTrait
 
     /**
      * 模型
-     * @var Model
+     * @var PluginTags
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
     protected $model = null;
+
+    
+    /**
+     * 构造函数
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public function __construct(App $app)
+    {
+        parent::__construct($app);
+        $this->model = new PluginTags;
+    }
 
     /**
      * 模型

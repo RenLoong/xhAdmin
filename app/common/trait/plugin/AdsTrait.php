@@ -3,10 +3,11 @@ namespace app\common\trait\plugin;
 
 use app\common\builder\FormBuilder;
 use app\common\builder\ListBuilder;
+use app\common\model\plugin\PluginAds;
 use app\common\utils\Json;
-use app\common\Model;
 use Exception;
 use support\Request;
+use think\App;
 
 /**
  * 广告系统
@@ -27,11 +28,22 @@ trait AdsTrait
 
     /**
      * 模型
-     * @var Model
+     * @var PluginAds
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
     protected $model = null;
+
+    /**
+     * 构造函数
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public function __construct(App $app)
+    {
+        parent::__construct($app);
+        $this->model = new PluginAds;
+    }
 
     /**
      * 模型

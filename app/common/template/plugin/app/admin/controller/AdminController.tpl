@@ -4,12 +4,11 @@ namespace plugin\{TEAM_PLUGIN_NAME}\app\admin\controller;
 
 use plugin\{TEAM_PLUGIN_NAME}\app\BaseController;
 use app\common\trait\plugin\AdminTrait;
-use plugin\{TEAM_PLUGIN_NAME}\app\model\PluginAdmin;
+use app\common\model\plugin\PluginAdmin;
 use support\Request;
 
 /**
  * 管理员
- *
  * @author 贵州猿创科技有限公司
  * @Email 416716328@qq.com
  * @DateTime 2023-03-07
@@ -45,6 +44,5 @@ class AdminController extends BaseController
     {
         parent::initialize();
         $this->saas_appid = $this->request->saas_appid;
-        $this->model = new PluginAdmin;
     }
 }

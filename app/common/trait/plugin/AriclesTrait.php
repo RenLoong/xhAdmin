@@ -4,10 +4,11 @@ namespace app\common\trait\plugin;
 use app\common\builder\FormBuilder;
 use app\common\builder\ListBuilder;
 use app\common\enum\StatusEnum;
-use app\common\Model;
+use app\common\model\plugin\PluginArticles;
 use app\common\utils\Json;
 use Exception;
 use support\Request;
+use think\App;
 
 /**
  * 文章系统
@@ -28,11 +29,22 @@ trait AriclesTrait
 
     /**
      * 模型
-     * @var Model
+     * @var PluginArticles
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
     protected $model = null;
+    
+    /**
+     * 构造函数
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public function __construct(App $app)
+    {
+        parent::__construct($app);
+        $this->model = new PluginArticles;
+    }
 
     /**
      * 模型

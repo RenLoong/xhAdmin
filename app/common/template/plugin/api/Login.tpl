@@ -2,7 +2,7 @@
 
 namespace plugin\{TEAM_PLUGIN_NAME}\api;
 
-use plugin\{TEAM_PLUGIN_NAME}\app\model\PluginAdmin;
+use app\common\model\plugin\PluginAdmin;
 use support\Request;
 use think\facade\Session;
 use think\helper\Str;

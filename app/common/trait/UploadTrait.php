@@ -51,18 +51,30 @@ trait UploadTrait
      */
     public function index(Request $request)
     {
+        $cid     = $request->get('cid','');
         $suffix  = $request->get('suffix','*');
         $order = $request->get('order', 'desc');
-        $where[] = ['saas_appid', '=', $this->saas_appid];
-        $where[] = ['store_id', '=', $this->store_id];
-        $where[] = ['uid', '=', $this->uid];
+        # 查询条件组装
+        $where  = [];
+        if ($this->saas_appid) {
+            $where[] = ['saas_appid', '=', $this->saas_appid];
+        }
+        if ($this->store_id) {
+            $where[] = ['store_id', '=', $this->store_id];
+        }
+        if ($this->uid) {
+            $where[] = ['uid', '=', $this->uid];
+        }
         # 取出对后缀格式
         if ($suffix !== '*' && !empty($suffix)) {
             $where[] = ['format', 'in', $suffix];
         }
+        if ($cid) {
+            $where[] = ['cid', '=', $cid];
+        }
         $data  = SystemUpload::with(['category'])
             ->where($where)
-            ->order("update_at {$order},id {$order}")
+            ->order("update_at {$order},id asc")
             ->paginate()
             ->toArray();
         return parent::successRes($data);

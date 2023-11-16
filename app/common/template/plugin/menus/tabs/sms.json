@@ -8,6 +8,7 @@
         "component": "form/index",
         "auth_params": "group=sms",
         "show": "20",
+        "sort":100,
         "icon": "",
         "is_system": "10",
         "is_api": "20",

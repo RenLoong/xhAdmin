@@ -3,10 +3,11 @@ namespace app\common\trait\plugin;
 
 use app\common\builder\FormBuilder;
 use app\common\builder\ListBuilder;
-use app\common\Model;
+use app\common\model\plugin\PluginArticlesCate;
 use app\common\utils\Json;
 use Exception;
 use support\Request;
+use think\App;
 
 /**
  * 文章分类
@@ -27,11 +28,22 @@ trait ArtclesCateTrait
 
     /**
      * 模型
-     * @var Model
+     * @var PluginArticlesCate
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
     protected $model = null;
+    
+    /**
+     * 构造函数
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public function __construct(App $app)
+    {
+        parent::__construct($app);
+        $this->model = new PluginArticlesCate;
+    }
 
     /**
      * 模型

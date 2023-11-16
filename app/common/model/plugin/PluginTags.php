@@ -1,6 +1,6 @@
 <?php
 
-namespace plugin\{TEAM_PLUGIN_NAME}\app\model;
+namespace app\common\model\plugin;
 
 /**
  * 单页系统

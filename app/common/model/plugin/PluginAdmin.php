@@ -1,6 +1,6 @@
 <?php
 
-namespace plugin\{TEAM_PLUGIN_NAME}\app\model;
+namespace app\common\model\plugin;
 
 use app\common\utils\Password;
 use app\common\service\UploadService;

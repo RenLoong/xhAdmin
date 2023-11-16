@@ -4,7 +4,7 @@ namespace plugin\{TEAM_PLUGIN_NAME}\app\admin\controller;
 
 use plugin\{TEAM_PLUGIN_NAME}\app\BaseController;
 use app\common\trait\plugin\PublicsTrait;
-use plugin\{TEAM_PLUGIN_NAME}\app\model\PluginAdmin;
+use app\common\model\plugin\PluginAdmin;
 use support\Request;
 
 /**
@@ -45,6 +45,5 @@ class PublicsController extends BaseController
     {
         parent::initialize();
         $this->saas_appid = $this->request->saas_appid;
-        $this->model = new PluginAdmin;
     }
 }

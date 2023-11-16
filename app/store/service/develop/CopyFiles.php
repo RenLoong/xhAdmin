@@ -66,7 +66,6 @@ trait CopyFiles
             'api/database/install.sql',
             'api/database/update/remarks.txt',
             'app/BaseController.tpl',
-            'app/BaseModel.tpl',
             'app/common.tpl',
             'app/admin/controller/IndexController.tpl',
             'app/admin/controller/PublicsController.tpl',
@@ -76,7 +75,7 @@ trait CopyFiles
             'app/admin/middleware/AdminMiddleware.tpl',
             'app/controller/IndexController.tpl',
             'app/middleware/AuthMiddleware.tpl',
-            'app/model/AppidModel.tpl',
+            'app/model/remarks.txt',
             'config/middleware.tpl',
             'config/settings.tpl',
             'config/settings/upload.tpl',
@@ -99,18 +98,14 @@ trait CopyFiles
         if ($data['is_article'] == '20') {
             $files[] = 'app/admin/controller/ArticlesCateController.tpl';
             $files[] = 'app/admin/controller/ArticlesController.tpl';
-            $files[] = 'app/model/PluginArticlesCate.tpl';
-            $files[] = 'app/model/PluginArticles.tpl';
         }
         # 单页系统
         if ($data['is_page'] == '20') {
             $files[] = 'app/admin/controller/TagsController.tpl';
-            $files[] = 'app/model/PluginTags.tpl';
         }
         # 广告系统
         if ($data['is_image'] == '20') {
             $files[] = 'app/admin/controller/AdsController.tpl';
-            $files[] = 'app/model/PluginAds.tpl';
         }
         # 基本设置
         if ($data['is_system'] === '20') {
@@ -121,8 +116,6 @@ trait CopyFiles
             $files[] = 'app/admin/controller/MenusController.tpl';
             $files[] = 'app/admin/controller/RolesController.tpl';
             $files[] = 'app/admin/controller/AdminController.tpl';
-            $files[] = 'app/model/PluginAdmin.tpl';
-            $files[] = 'app/model/PluginRoles.tpl';
         }
         # 支付配置
         if ($data['is_pay'] == '20') {

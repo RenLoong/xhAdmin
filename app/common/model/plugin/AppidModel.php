@@ -1,8 +1,8 @@
 <?php
 
-namespace plugin\{TEAM_PLUGIN_NAME}\app\model;
+namespace app\common\model\plugin;
 
-use plugin\{TEAM_PLUGIN_NAME}\app\BaseModel;
+use app\common\Model as BaseModel;
 
 /**
  * 应用模型

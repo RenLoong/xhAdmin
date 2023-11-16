@@ -53,6 +53,7 @@ trait MenusTrait
             ->addActionOptions('操作', [
                 'width' => 180
             ])
+            ->editConfig()
             ->treeConfig([
                 'rowField' => 'id',
             ])
@@ -61,12 +62,6 @@ trait MenusTrait
                 'path' => '/Menus/add'
             ], [], [
                 'type' => 'primary'
-            ])
-            ->addTopButton('add', '添加资源菜单', [
-                'api' => $this->pluginPrefix . '/admin/Menus/addResource',
-                'path' => '/Menus/addResource'
-            ], [], [
-                'type' => 'warning'
             ])
             ->addRightButton('edit', '修改', [
                 'api' => $this->pluginPrefix . '/admin/Menus/edit',
@@ -116,6 +111,14 @@ trait MenusTrait
             ->addColumn('method', '请求类型', [
                 'width' => 180
             ])
+            ->addColumnEdit('sort', '排序', [
+                'width' => 100,
+                'params' => [
+                    'type' => 'input',
+                    'api' => $this->pluginPrefix . '/admin/Menus/rowEdit',
+                    'min' => 0,
+                ],
+            ])
             ->create();
         return $this->successRes($data);
     }
@@ -129,7 +132,40 @@ trait MenusTrait
     public function index(Request $request)
     {
         $data = PluginMgr::getMenuList($request->plugin);
+        $data = list_sort_by($data, 'sort', 'asc');
         return $this->successRes($data);
+    }
+
+    /**
+     * 编辑行数据
+     * @param \support\Request $request
+     * @return void
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public function rowEdit(Request $request)
+    {
+        # 需要修改的ID
+        $id = $request->post('id');
+        # 查询键
+        $keyField = $request->post('keyField');
+        # 修改键
+        $field = $request->post('field');
+        # 修改值
+        $value = $request->post('value');
+        # 获取列表
+        $data = PluginMgr::getMenuList($request->plugin);
+        # 查询数据
+        $arrayIndex = array_search($id, array_column($data, $keyField));
+        # 检测并判断数据
+        $item = isset($data[$arrayIndex]) ? $data[$arrayIndex] : [];
+        if (empty($item)) {
+            return $this->fail('数据不存在');
+        }
+        $data[$arrayIndex][$field] = $value;
+        # 保存菜单数据
+        $this->saveData($data);
+        return $this->success('修改成功');
     }
 
     /**
@@ -141,7 +177,7 @@ trait MenusTrait
     public function add(Request $request)
     {
         if ($request->isPost()) {
-            $post  = $request->post();
+            $post            = $request->post();
             $pluginMenusPath = root_path() . "plugin/{$request->plugin}/menus.json";
             if (!file_exists($pluginMenusPath)) {
                 return $this->fail('插件菜单文件不存在');
@@ -157,48 +193,151 @@ trait MenusTrait
                     return $this->fail('至少选择一个请求类型');
                 }
             }
+            # 检测菜单路由不存在斜杠
+            if (strpos($post['path'], '/') === false) {
+                return $this->fail('权限路由格式错误');
+            }
             if (!isset($post['method'])) {
                 $post['method'] = ['GET'];
             }
             $menuData = $post;
             if (is_array($menuData['pid'])) {
-                $menuData['pid']        = end($menuData['pid']);
+                $menuData['pid'] = end($menuData['pid']);
             }
-            $data = PluginMgr::getMenuList($request->plugin);
-            $data = list_sort_by($data,'id','asc');
-            $menuEnd         = end($data);
-            $menuId = $menuEnd['id'] + 1;
+            $data                   = PluginMgr::getMenuList($request->plugin);
+            $data                   = list_sort_by($data, 'id', 'asc');
+            $menuEnd                = end($data);
+            $menuId                 = $menuEnd['id'] + 1;
             $menuData['icon']       = isset($menuData['icon']['icon']) ? $menuData['icon']['icon'] : '';
             $menuData['id']         = $menuId;
             $menuData['is_default'] = '10';
-            array_push($data,$menuData);
+            $menuData['sort']       = '100';
+            array_push($data, $menuData);
+            # 表格组件额外新增表格规则
+            if ($post['component'] === 'table/index') {
+                $tableRule = [
+                    'id'            => $menuId + 1,
+                    'pid'           => $menuId,
+                    'title'         => "{$post['title']}-表格规则",
+                    'component'     => 'none/index',
+                    'is_api'        => '20',
+                    'path'          => "{$post['path']}GetTable",
+                    'show'          => '10',
+                    'method'        => ['GET'],
+                    'icon'          => '',
+                    'is_default'    => '10',
+                    'sort'          => '100',
+                    'auth_params'   => '',
+                    'is_system'     => '10',
+                ];
+                array_push($data, $tableRule);
+            }
+            $data = $this->getMenusChildren($request,$data,$menuData);
             $this->saveData($data);
             return $this->success('添加成功');
         }
-        $view = $this->formView()->setMethod('POST')->create();
+        $children = [
+            [
+                'label' => '添加',
+                'value' => 'add',
+            ],
+            [
+                'label' => '编辑',
+                'value' => 'edit',
+            ],
+            [
+                'label' => '删除',
+                'value' => 'del',
+            ],
+        ];
+        $builder = $this->formView();
+        $builder->addRow('children', 'checkbox', '子级权限', [], [
+            'col' => 12,
+            'options' => $children
+        ]);
+        $view = $builder->setMethod('POST')->create();
         return $this->successRes($view);
     }
-
-    public function addResource(Request $request)
+    
+    /**
+     * 获取子级权限
+     * @param \support\Request $request
+     * @param array $data
+     * @param array $parent
+     * @return array|object|null
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    private function getMenusChildren(Request $request,array $data,array $parent)
     {
-        if ($request->isPost()) {
-            $post  = $request->post();
-            print_r('开发中...');
-            print_r($post);
-            exit;
+        $children = $request->post('children',[]);
+        if (empty($children)) {
+            return $data;
         }
-        $view = $this->formView()
-        ->setMethod('POST')
-        ->addComponent('tip', 'el-alert', '温馨提示', '', [
-            'props' => [
-                'type'          => 'error',
-                'closable'      => false,
-                'title'         => '温馨提示',
-                'description'   => "资源菜单是指，【权限路由】仅需填写控制器名，则自动创建以下菜单 ---- 列表：index，表格列indexTable，添加：add，编辑：edit，删除：del",
-            ],
-        ])
-        ->create();
-        return $this->successRes($view);
+        foreach ($children as $value) {
+            $parentPath = explode('/',$parent['path']);
+            # 添加
+            if ($value === 'add') {
+                $row = end($data);
+                $item   = [
+                    'id'            => $row['id'] + 1,
+                    'pid'           => $parent['id'],
+                    'title'         => "{$parent['title']}-添加",
+                    'component'     => 'form/index',
+                    'is_api'        => '20',
+                    'path'          => "{$parentPath[0]}/add",
+                    'show'          => '10',
+                    'method'        => ['GET','POST'],
+                    'icon'          => '',
+                    'is_default'    => '10',
+                    'sort'          => '100',
+                    'auth_params'   => '',
+                    'is_system'     => '10',
+                ];
+                array_push($data, $item);
+            }
+            # 修改
+            if ($value === 'edit') {
+                $row = end($data);
+                $item   = [
+                    'id'            => $row['id'] + 1,
+                    'pid'           => $parent['id'],
+                    'title'         => "{$parent['title']}-修改",
+                    'component'     => 'form/index',
+                    'is_api'        => '20',
+                    'path'          => "{$parentPath[0]}/edit",
+                    'show'          => '10',
+                    'method'        => ['GET','PUT'],
+                    'icon'          => '',
+                    'is_default'    => '10',
+                    'sort'          => '100',
+                    'auth_params'   => '',
+                    'is_system'     => '10',
+                ];
+                array_push($data, $item);
+            }
+            # 删除
+            if ($value === 'del') {
+                $row = end($data);
+                $item   = [
+                    'id'            => $row['id'] + 1,
+                    'pid'           => $parent['id'],
+                    'title'         => "{$parent['title']}-删除",
+                    'component'     => 'form/index',
+                    'is_api'        => '20',
+                    'path'          => "{$parentPath[0]}/del",
+                    'show'          => '10',
+                    'method'        => ['GET','DELETE'],
+                    'icon'          => '',
+                    'is_default'    => '10',
+                    'sort'          => '100',
+                    'auth_params'   => '',
+                    'is_system'     => '10',
+                ];
+                array_push($data, $item);
+            }
+        }
+        return $data;
     }
 
     /**
@@ -209,18 +348,18 @@ trait MenusTrait
      */
     public function edit(Request $request)
     {
-        $id = $request->get('id','');
+        $id = $request->get('id', '');
         if (empty($id)) {
             return $this->fail('参数错误');
         }
-        $data = PluginMgr::getMenuList($request->plugin);
+        $data       = PluginMgr::getMenuList($request->plugin);
         $arrayIndex = array_search($id, array_column($data, 'id'));
-        $detail = isset($data[$arrayIndex]) ? $data[$arrayIndex] : [];
+        $detail     = isset($data[$arrayIndex]) ? $data[$arrayIndex] : [];
         if (empty($detail)) {
             return $this->fail('数据不存在');
         }
         if ($request->method() == 'PUT') {
-            $post  = $request->post();
+            $post = $request->post();
             // 数据验证
             hpValidate(SystemAuthRule::class, $post, 'edit');
             // 额外验证
@@ -232,17 +371,22 @@ trait MenusTrait
                     return $this->fail('至少选择一个请求类型');
                 }
             }
+            # 检测菜单路由不存在斜杠
+            if (strpos($post['path'], '/') === false) {
+                return $this->fail('权限路由格式错误');
+            }
             if (!isset($post['method'])) {
                 $post['method'] = ['GET'];
             }
             $menuData = $post;
             if (is_array($menuData['pid'])) {
-                $menuData['pid']        = end($menuData['pid']);
+                $menuData['pid'] = end($menuData['pid']);
             }
             $menuData['icon']       = isset($menuData['icon']['icon']) ? $menuData['icon']['icon'] : '';
             $menuData['id']         = $detail['id'];
             $menuData['is_default'] = $detail['is_default'];
-            $data[$arrayIndex] = $menuData;
+            $menuData['sort']       = $detail['sort'];
+            $data[$arrayIndex]      = $menuData;
             $this->saveData($data);
             return $this->success('修改成功');
         }
@@ -263,13 +407,13 @@ trait MenusTrait
      */
     public function del(Request $request)
     {
-        $id = $request->post('id','');
+        $id = $request->post('id', '');
         if (empty($id)) {
             return $this->fail('参数错误');
         }
-        $data = PluginMgr::getMenuList($request->plugin);
+        $data       = PluginMgr::getMenuList($request->plugin);
         $arrayIndex = array_search($id, array_column($data, 'id'));
-        $detail = isset($data[$arrayIndex]) ? $data[$arrayIndex] : [];
+        $detail     = isset($data[$arrayIndex]) ? $data[$arrayIndex] : [];
         if (empty($detail)) {
             return $this->fail('数据不存在');
         }
@@ -287,12 +431,12 @@ trait MenusTrait
      */
     private function saveData(array $data)
     {
-        $request = request();
+        $request         = request();
         $pluginMenusPath = root_path() . "plugin/{$request->plugin}/menus.json";
         if (!file_exists($pluginMenusPath)) {
             return $this->fail('插件菜单文件不存在');
         }
-        $data = Data::channelLevel($data,0,'', 'id','pid');
+        $data = Data::channelLevel($data, 0, '', 'id', 'pid');
         $data = $this->checkData($data);
         $data = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         file_put_contents($pluginMenusPath, $data);
@@ -330,86 +474,73 @@ trait MenusTrait
     {
         $builder = new FormBuilder;
         $builder->addRow('title', 'input', '菜单名称', '', [
-            'col' => [
-                'span' => 12
-            ],
+            'col' => 12,
         ])
-        ->addRow('pid', 'cascader', '父级菜单', [], [
-            'props' => [
+            ->addRow('pid', 'cascader', '父级菜单', [0], [
                 'props' => [
-                    'checkStrictly' => true,
-                ],
-            ],
-            'options' => self::getCascaderOptions(),
-            'placeholder' => '如不选择则是顶级菜单',
-            'col' => [
-                'span' => 12
-            ],
-        ])
-        ->addRow('component', 'select', '菜单类型', 'none/index', [
-            'options' => AuthRuleRuleType::getOptions(),
-            'col' => [
-                'span' => 12
-            ],
-            // 使用联动组件
-            'control' => [
-                [
-                    'value' => 'remote/index',
-                    'where' => '==',
-                    'rule' => [
-                        Elm::input('auth_params', '远程组件')
-                            ->props([
-                                'placeholder' => '示例：remote/index，则会自动加载 http://www.xxx.com/remote/index.vue 文件作为组件渲染',
-                            ])
-                            ->col([
-                                'span' => 12
-                            ]),
+                    'props' => [
+                        'checkStrictly' => true,
                     ],
                 ],
-                [
-                    'value' => ['', 'table/index', 'form/index'],
-                    'where' => 'in',
-                    'rule' => [
-                        Elm::input('auth_params', '附带参数')
-                            ->props([
-                                'placeholder' => '附带地址栏参数（选填），格式：name=楚羽幽&sex=男'
-                            ])
-                            ->col([
-                                'span' => 12
-                            ]),
+                'options' => self::getCascaderOptions(),
+                'placeholder' => '如不选择则是顶级菜单',
+                'col' => 12,
+            ])
+            ->addRow('component', 'select', '菜单类型', 'none/index', [
+                'options' => AuthRuleRuleType::getOptions(),
+                'col' => 12,
+                // 使用联动组件
+                'control' => [
+                    [
+                        'value' => 'remote/index',
+                        'where' => '==',
+                        'rule' => [
+                            Elm::input('auth_params', '远程组件')
+                                ->props([
+                                    'placeholder' => '示例：remote/index，则会自动加载 http://www.xxx.com/remote/index.vue 文件作为组件渲染',
+                                ])
+                                ->col([
+                                    'span' => 12
+                                ]),
+                        ],
+                    ],
+                    [
+                        'value' => ['', 'table/index', 'form/index'],
+                        'where' => 'in',
+                        'rule' => [
+                            Elm::input('auth_params', '附带参数')
+                                ->props([
+                                    'placeholder' => '附带地址栏参数（选填），格式：name=楚羽幽&sex=男'
+                                ])
+                                ->col([
+                                    'span' => 12
+                                ]),
+                        ],
                     ],
                 ],
-            ],
-        ])
-        ->addRow('is_api', 'radio', '是否接口', '10', [
-            'options' => YesNoEum::getOptions(),
-            'col' => [
-                'span' => 12
-            ],
-        ])
-        ->addRow('path', 'input', '权限路由', '', [
-            'placeholder' => '示例：控制器/方法',
-            'col' => [
-                'span' => 12
-            ],
-        ])
-        ->addRow('show', 'radio', '显示隐藏', '10', [
-            'options' => ShowStatus::getOptions(),
-            'col' => [
-                'span' => 12
-            ],
-        ])
-        ->addRow('method', 'checkbox', '请求类型', ['GET'], [
-            'options' => AuthRuleMethods::getOptions(),
-            'col' => [
-                'span' => 12
-            ],
-        ])
-        ->addComponent('icon', 'icons', '菜单图标', '', [
-            'col' => [
-                'span' => 12
-            ],
-        ]);
+            ])
+            ->addRow('is_api', 'radio', '是否接口', '10', [
+                'options' => YesNoEum::getOptions(),
+                'col' => 12,
+            ])
+            ->addRow('path', 'input', '权限路由', '', [
+                'placeholder' => '示例：控制器/方法',
+                'col' => 12,
+            ])
+            ->addRow('show', 'radio', '显示隐藏', '10', [
+                'options' => ShowStatus::getOptions(),
+                'col' => 12,
+            ])
+            ->addRow('method', 'checkbox', '请求类型', ['GET'], [
+                'options' => AuthRuleMethods::getOptions(),
+                'col' => 12,
+            ])
+            ->addComponent('icon', 'icons', '菜单图标', '', [
+                'col' => 12,
+            ])
+            ->addRow('sort', 'input', '菜单排序', '100', [
+                'col' => 12,
+            ]);
         return $builder;
     }
 
@@ -421,10 +552,10 @@ trait MenusTrait
     private static function getCascaderOptions()
     {
         $request = request();
-        $data   = PluginMgr::getMenuList($request->plugin);
-        $data   = Data::channelLevel($data, 0, '', 'id', 'pid');
-        $data   = self::getChildrenOptions($data);
-        $data   = array_merge([
+        $data    = PluginMgr::getMenuList($request->plugin);
+        $data    = Data::channelLevel($data, 0, '', 'id', 'pid');
+        $data    = self::getChildrenOptions($data);
+        $data    = array_merge([
             [
                 'label' => '顶级权限菜单',
                 'value' => 0
@@ -445,18 +576,18 @@ trait MenusTrait
     public static function getChildrenOptions(array $data): array
     {
         $list = [];
-        $i = 0;
+        $i    = 0;
         foreach ($data as $value) {
-            $componentText                  = AuthRuleRuleType::getText($value['component']);
-            $title                          = "{$value['title']}-{$componentText}";
-            $list[$i]['label']              = $title;
-            $list[$i]['value']              = $value['id'];
-            $list[$i]['disabled']           = false;
+            $componentText        = AuthRuleRuleType::getText($value['component']);
+            $title                = "{$value['title']}-{$componentText}";
+            $list[$i]['label']    = $title;
+            $list[$i]['value']    = $value['id'];
+            $list[$i]['disabled'] = false;
             if (!empty($value['disabled'])) {
-                $list[$i]['disabled']       = true;
+                $list[$i]['disabled'] = true;
             }
             if ($value['children']) {
-                $list[$i]['children']       = self::getChildrenOptions($value['children']);
+                $list[$i]['children'] = self::getChildrenOptions($value['children']);
             }
             $i++;
         }

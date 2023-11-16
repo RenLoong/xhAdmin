@@ -3,12 +3,13 @@ namespace app\common\trait\plugin;
 
 use app\common\manager\PluginMgr;
 use app\common\manager\StoreAppMgr;
+use app\common\model\plugin\PluginAdmin;
 use app\common\service\SystemInfoService;
 use app\common\utils\Json;
-use app\common\Model;
 use app\common\utils\Password;
 use Exception;
 use support\Request;
+use think\App;
 use think\facade\Session;
 use think\helper\Str;
 use app\admin\validate\SystemAdmin as SystemAdminValidate;
@@ -38,7 +39,7 @@ trait PublicsTrait
 
     /**
      * 模型
-     * @var Model
+     * @var PluginAdmin
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
@@ -51,6 +52,17 @@ trait PublicsTrait
      * @email 416716328@qq.com
      */
     protected $appendData = [];
+
+    /**
+     * 构造函数
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public function __construct(App $app)
+    {
+        parent::__construct($app);
+        $this->model = new PluginAdmin;
+    }
 
     /**
      * 应用入口
@@ -168,7 +180,13 @@ trait PublicsTrait
             throw new Exception('管理员不存在');
         }
         Session::set($request->plugin, $adminModel);
-        $adminModel->menus = PluginMgr::getMenus($request->plugin);
+        # 获取菜单数据
+        $menus = PluginMgr::getMenus($request->plugin);
+        # 对菜单进行排序
+        $menus = list_sort_by($menus, 'sort', 'asc');
+        # 分配菜单数据
+        $adminModel->menus = $menus;
+        # 返回用户数据
         return $this->successRes($adminModel);
     }
 

@@ -2,8 +2,8 @@
 
 namespace plugin\{TEAM_PLUGIN_NAME}\api;
 
-use plugin\{TEAM_PLUGIN_NAME}\app\model\PluginAdmin;
-use plugin\{TEAM_PLUGIN_NAME}\app\model\PluginRoles;
+use app\common\model\plugin\PluginAdmin;
+use app\common\model\plugin\PluginRoles;
 use think\facade\Db;
 
 class Created
