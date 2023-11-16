@@ -308,7 +308,7 @@ trait TagsTrait
 
             # 验证是否已存在
             $where = [
-                ['id', '<>', $id],
+                ['id', '<>', $model['id']],
                 ['name', '=', $post['name']]
             ];
             if ($this->model->where($where)->count()) {
