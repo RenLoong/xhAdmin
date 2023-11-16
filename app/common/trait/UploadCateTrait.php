@@ -50,11 +50,18 @@ trait UploadCateTrait
     public function index(Request $request)
     {
         $order = $request->get('order', 'asc');
-        $where[] = ['saas_appid', '=', $this->saas_appid];
-        $where[] = ['store_id', '=', $this->store_id];
-        $where[] = ['uid', '=', $this->uid];
+        $where   = [];
+        if ($this->saas_appid) {
+            $where[] = ['saas_appid', '=', $this->saas_appid];
+        }
+        if ($this->store_id) {
+            $where[] = ['store_id', '=', $this->store_id];
+        }
+        if ($this->uid) {
+            $where[] = ['uid', '=', $this->uid];
+        }
         $data = SystemUploadCate::where($where)
-        ->order("sort {$order},id {$order}")
+        ->order("sort {$order},id asc")
         ->select()
         ->toArray();
         return $this->successRes($data);
@@ -70,9 +77,10 @@ trait UploadCateTrait
     {
         if ($request->method() === 'POST') {
             $post = $request->post();
-            $post['store'] = $this->store_id;
-            $post['saas_appid'] = $this->saas_appid;
-            $post['uid'] = $this->uid;
+            $post['store_id']       = $this->store_id;
+            $post['saas_appid']     = $this->saas_appid;
+            $post['uid']            = $this->uid;
+            $post['is_system']      = '10';
             // 数据验证
             hpValidate(\app\admin\validate\SystemUploadCate::class, $post, 'add');
 
@@ -136,8 +144,23 @@ trait UploadCateTrait
     public function del(Request $request)
     {
         $id    = $request->post('id', '');
-        $model = $this->model;
-        $model = $model->where(['id' => $id])->find();
+        if (!$id) {
+            return $this->fail('缺少参数');
+        }
+        $model = new SystemUploadCate;
+        $where = [
+            ['id', '=', $id],
+        ];
+        if ($this->saas_appid) {
+            $where[] = ['saas_appid', '=', $this->saas_appid];
+        }
+        if ($this->store_id) {
+            $where[] = ['store_id', '=', $this->store_id];
+        }
+        if ($this->uid) {
+            $where[] = ['uid', '=', $this->uid];
+        }
+        $model = $model->where($where)->find();
         if (!$model) {
             return $this->fail('该附件分类不存在');
         }

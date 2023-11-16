@@ -31,6 +31,7 @@ class SystemUploadCateController extends BaseController
      */
     public function initialize()
     {
+        parent::initialize();
         $this->store_id = $this->request->user['id'];
     }
 }
