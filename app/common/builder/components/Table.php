@@ -102,6 +102,25 @@ trait Table
     }
 
     /**
+     * 设置选项卡表格
+     * @param array $data
+     * @param string $field
+     * @param string $active
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public function setTableTabs(array $data,string $field,string $active)
+    {
+        $this->tabsConfig = array_merge($this->tabsConfig,[
+            'active' => $active,
+            'field'  => $field,
+            'list'   => $data,
+        ]);
+        return $this;
+    }
+
+    /**
      * 表格的表单配置
      *
      * @Author 贵州猿创科技有限公司

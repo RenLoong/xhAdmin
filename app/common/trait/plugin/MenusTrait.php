@@ -326,7 +326,7 @@ trait MenusTrait
                     'id'            => $row['id'] + 1,
                     'pid'           => $parent['id'],
                     'title'         => "{$parent['title']}-删除",
-                    'component'     => 'form/index',
+                    'component'     => 'none/index',
                     'is_api'        => '20',
                     'path'          => "{$parentPath[0]}/del",
                     'show'          => '10',

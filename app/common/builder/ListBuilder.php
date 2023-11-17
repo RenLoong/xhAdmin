@@ -86,8 +86,8 @@ class ListBuilder
                 $resutl['formConfig']['items'],
                 [
                     'itemRender' => [
-                        'name' => '$button',
-                        'props' => $resutl['screenConfig'],
+                        'name' => '$buttons',
+                        'children'  => $resutl['screenConfig']
                     ],
                 ]
             );

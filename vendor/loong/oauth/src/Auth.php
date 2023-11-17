@@ -131,9 +131,9 @@ class Auth
                 throw new SingleException('已在其他地方登录');
             }
         }
-        if ($this->expire > 0) {
+        if (isset($decryptData['expire']) && $decryptData['expire'] > 0) {
             # 刷新过期时间
-            Redis::expire($decryptData['key'], $this->expire);
+            Redis::expire($decryptData['key'], $decryptData['expire']);
         }
         return $decryptData['data'];
     }
@@ -149,12 +149,17 @@ class Auth
         $encryptData = [
             'key' => 'OAUTH::' . md5($this->prefix . Str::random(32)) . '::' . sha1($time),
             'data' => $data,
+            'expire' => $this->expire,
         ];
-        Redis::setex($encryptData['key'], $this->expire, $time);
+        $expire = $this->expire;
+        if ($this->expire <= 0) {
+            $expire = 60;
+        }
+        Redis::setex($encryptData['key'], $expire, $time);
         if ($this->single) {
             Redis::set('OAUTH::' . $this->prefix . '::' . $data[$this->singleKey], $encryptData['key']);
         }
-        if ($this->expire == 0) {
+        if ($this->expire === 0) {
             Redis::persist($encryptData['key']);
         }
         return Rsa::encrypt($encryptData, $this->rsa_publickey);

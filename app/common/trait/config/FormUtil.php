@@ -51,7 +51,7 @@ trait FormUtil
                 }
             }
             #设置默认值
-            $configValue = empty($value['value']) ? '' : $value['value'];
+            $configValue = !isset($value['value']) ? '' : $value['value'];
             # 设置扩展数据
             $configExtra = empty($value['extra']) ? [] : $value['extra'];
             # 设置布局模式

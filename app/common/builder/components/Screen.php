@@ -17,25 +17,38 @@ trait Screen
     protected $formConfig = [];
     # 筛选表单配置
     protected $screenConfig = [
-        'api'           => '',
-        'method'        => 'GET',
-        'type'          => 'submit',
-        'status'        => 'primary',
-        'content'       => '查询',
+        [
+            'props' => [
+                'api' => '',
+                'method' => 'GET',
+                'type' => 'submit',
+                'status' => 'primary',
+                'content' => '查询',
+            ],
+        ],
+        [
+            'props' => [
+                'api' => '',
+                'method' => 'GET',
+                'type' => 'reset',
+                'status' => 'default',
+                'content' => '重置',
+            ],
+        ]
     ];
 
-     /**
-      * 设置启用远程组件表单
-      * @param string $remote
-      * @param array $params
-      * @return \app\common\builder\ListBuilder
-      * @copyright 贵州猿创科技有限公司
-      * @email 416716328@qq.com
-      */
-    public function screenRemote(string $remote,array $params = []):ListBuilder
+    /**
+     * 设置启用远程组件表单
+     * @param string $remote
+     * @param array $params
+     * @return \app\common\builder\ListBuilder
+     * @copyright 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    public function screenRemote(string $remote, array $params = []): ListBuilder
     {
-        $this->screenRemote['file']     = $remote;
-        $this->screenRemote['ajaxParams']  = $params;
+        $this->screenRemote['file']       = $remote;
+        $this->screenRemote['ajaxParams'] = $params;
         return $this;
     }
 
@@ -74,15 +87,41 @@ trait Screen
     }
 
     /**
+     * 设置提交按钮
+     * @param array $config
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public function submitConfig(array $config)
+    {
+        $this->screenConfig = array_merge($this->screenConfig[0]['props'], $config);
+        return $this;
+    }
+
+    /**
+     * 设置重置按钮
+     * @param array $config
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public function restConfig(array $config)
+    {
+        $this->screenConfig = array_merge($this->screenConfig[1]['props'], $config);
+        return $this;
+    }
+
+    /**
      * 筛选表单配置
      * @param array $config
      * @return \app\common\builder\ListBuilder
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      */
-    public function screenConfig(array $config):ListBuilder
+    public function screenConfig(array $config): ListBuilder
     {
-        $this->screenConfig = array_merge($this->screenConfig,$config);
+        $this->screenConfig = array_merge($this->screenConfig, $config);
         return $this;
     }
 }

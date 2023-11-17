@@ -1767,16 +1767,16 @@
         },
         {
             "name": "loong/oauth",
-            "version": "1.0.4",
+            "version": "1.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/uRenlong/oauth.git",
-                "reference": "4a4bed9ededbd907d7ccbe1f9d1358bc9702395b"
+                "reference": "e34e274531e7ecdd0dc38266c3ea51e18101720f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/uRenlong/oauth/zipball/4a4bed9ededbd907d7ccbe1f9d1358bc9702395b",
-                "reference": "4a4bed9ededbd907d7ccbe1f9d1358bc9702395b",
+                "url": "https://api.github.com/repos/uRenlong/oauth/zipball/e34e274531e7ecdd0dc38266c3ea51e18101720f",
+                "reference": "e34e274531e7ecdd0dc38266c3ea51e18101720f",
                 "shasum": ""
             },
             "type": "library",
@@ -1798,9 +1798,9 @@
             "description": "基于TP8, 不同系统之间安全传递信息, 用于用户登录验证, 信息传递等",
             "support": {
                 "issues": "https://github.com/uRenlong/oauth/issues",
-                "source": "https://github.com/uRenlong/oauth/tree/1.0.4"
+                "source": "https://github.com/uRenlong/oauth/tree/1.0.6"
             },
-            "time": "2023-10-09T07:47:16+00:00"
+            "time": "2023-11-17T10:11:44+00:00"
         },
         {
             "name": "monolog/monolog",
