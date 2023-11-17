@@ -55,16 +55,9 @@ trait UploadTrait
         $suffix  = $request->get('suffix','*');
         $order = $request->get('order', 'desc');
         # 查询条件组装
-        $where  = [];
-        if ($this->saas_appid) {
-            $where[] = ['saas_appid', '=', $this->saas_appid];
-        }
-        if ($this->store_id) {
-            $where[] = ['store_id', '=', $this->store_id];
-        }
-        if ($this->uid) {
-            $where[] = ['uid', '=', $this->uid];
-        }
+        $where[] = ['saas_appid', '=', $this->saas_appid];
+        $where[] = ['store_id', '=', $this->store_id];
+        $where[] = ['uid', '=', $this->uid];
         # 取出对后缀格式
         if ($suffix !== '*' && !empty($suffix)) {
             $where[] = ['format', 'in', $suffix];
