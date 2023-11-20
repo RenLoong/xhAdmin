@@ -44,7 +44,7 @@ class StoreController extends BaseController
      */
     public function edit(Request $request)
     {
-        $store_id = hp_admin_id('XhAdminStore');
+        $store_id = $request->user['id'];
         $model = $this->model;
         $where = [
             ['id','=',$store_id],
@@ -71,25 +71,11 @@ class StoreController extends BaseController
         $builder = new FormBuilder;
         $builder->setMethod('POST')
         ->addRow('title', 'input', '用户名称', '', [
-            'col' => [
-                'span' => 12
-            ],
+            'col' => 12,
         ])
         ->addRow('password', 'input', '登录密码', '', [
-            'col' => [
-                'span' => 12
-            ],
+            'col' => 12,
             'placeholder'=> '不填写则不修改',
-        ])
-        ->addRow('contact', 'input', '联系人姓名', '', [
-            'col' => [
-                'span' => 12
-            ],
-        ])
-        ->addRow('mobile', 'input', '联系电话', '', [
-            'col' => [
-                'span' => 12
-            ],
         ])
         ->addComponent('logo', 'uploadify', '用户头像', '', [
             'props' => [
