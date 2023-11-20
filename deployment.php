@@ -3,8 +3,7 @@ namespace think;
 use YcOpen\CloudService\Cloud;
 use YcOpen\CloudService\Request\SystemUpdateRequest;
 
-define('ROOT_PATH', dirname(dirname(dirname(__DIR__))));
-define('XH_PUBLIC_PATH', ROOT_PATH.'/public');
+define('ROOT_PATH', __DIR__);
 require ROOT_PATH . '/vendor/autoload.php';
 
 // 执行HTTP应用并响应
@@ -26,8 +25,9 @@ try {
         'version_name'  => $data->version_name
     ];
     $versionJson       = json_encode($versionData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-    print_r($versionJson);
-    // file_put_contents(ROOT_PATH . '/config/version.json', $versionJson);
+    file_put_contents(ROOT_PATH . '/config/version.json', $versionJson);
+    echo '最新版本自动部署成功';
+    echo PHP_EOL;
 } catch (\Throwable $e) {
     exit($e->getMessage());
 }
