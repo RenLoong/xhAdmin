@@ -159,19 +159,6 @@ class InstallUtil
     {
         # 安装Env配置文件
         self::installEnv($data);
-
-        # 安装完成,写入版本信息
-        $req = new SystemUpdateRequest;
-        $req->newVersion();
-        $cloud             = new Cloud($req);
-        $data              = $cloud->send();
-        $versionData       = [
-            'version'       => $data->version,
-            'version_name'  => $data->version_name
-        ];
-        $versionJson       = json_encode($versionData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-        file_put_contents(ROOT_PATH . '/config/version.json', $versionJson);
-
         # 安装完成
         return Json::success('安装完成，即将跳转...');
     }
