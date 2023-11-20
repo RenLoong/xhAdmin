@@ -1,5 +1,6 @@
 <?php
 namespace think;
+use Exception;
 use YcOpen\CloudService\Cloud;
 use YcOpen\CloudService\Request\SystemUpdateRequest;
 
@@ -20,8 +21,12 @@ try {
     $req->newVersion();
     $cloud             = new Cloud($req);
     $data              = $cloud->send();
+    if (!isset($data->version)) {
+        throw new Exception('获取最新版本失败');
+    }
+    $version = (int)$data->version;
     $versionData       = [
-        'version'       => $data->version,
+        'version'       => $version+1,
         'version_name'  => $data->version_name
     ];
     $versionJson       = json_encode($versionData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
