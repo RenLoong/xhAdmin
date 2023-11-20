@@ -1,1 +1,0 @@
-ALTER TABLE `yc_plugin_tags` ADD COLUMN `menu_title` varchar(30) NULL COMMENT '菜单标题';

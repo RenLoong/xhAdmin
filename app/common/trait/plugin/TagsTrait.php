@@ -261,11 +261,8 @@ trait TagsTrait
             return $this->success('保存成功');
         }
         $data = $this->getFormView()
-            ->addRow('name', 'input', '标签名称(填写后不可更改)', '', [
-                'col' => 8,
-            ])
-            ->addComponent('content', 'wangEditor', '文章内容')
-            ->setMethod('POST')->create();
+            ->setMethod('POST')
+            ->create();
         return $this->successRes($data);
     }
 
@@ -319,11 +316,6 @@ trait TagsTrait
         }
         $data = $this->getFormView()
             ->setMethod('PUT')
-            ->addRow('name', 'input', '标签名称', '', [
-                'col' => 8,
-                'disabled' => true,
-            ])
-            ->addComponent('content', 'wangEditor', '文章内容')
             ->setData($model)
             ->create();
         return $this->successRes($data);
@@ -370,7 +362,12 @@ trait TagsTrait
             ])
             ->addRow('menu_title', 'input', '菜单标题', '', [
                 'col' => 8,
-            ]);
+            ])
+            ->addRow('name', 'input', '标签名称（创建后不可修改）', '', [
+                'col' => 8,
+                'disabled' => true,
+            ])
+            ->addComponent('content', 'wangEditor', '文章内容');
         return $data;
     }
 }

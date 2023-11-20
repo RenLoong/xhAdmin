@@ -2,10 +2,10 @@
 
 namespace app\admin\controller;
 
+use app\admin\utils\SystemFixUtil;
 use app\common\builder\ListBuilder;
 use app\common\BaseController;
 use app\common\manager\DbMgr;
-use Exception;
 use support\Request;
 use think\facade\Db;
 
@@ -35,11 +35,27 @@ class SystemDataController extends BaseController
             ->rowConfig([
                 'keyField'      => 'TABLE_NAME'
             ])
-            ->addTopButton('add', '备份数据库', [
-                'api' => 'admin/SystemData/add',
-                'path' => '/SystemData/add',
-            ], [], [
-                'type' => 'primary',
+            ->addTopButton('backup', '备份数据库', [
+                'api'       => 'admin/SystemData/backup',
+                'path'      => '/SystemData/backup',
+                'type'      => 'confirm',
+            ], [
+                'type'      => 'success',
+                'title'     => '温馨提示',
+                'content'   => '是否确认备份数据库？',
+            ], [
+                'type'      => 'primary',
+            ])
+            ->addTopButton('fixMenus', '修复菜单数据', [
+                'api'       => 'admin/SystemData/fixMenus',
+                'path'      => '/SystemData/fixMenus',
+                'type'      => 'confirm',
+            ], [
+                'type'      => 'success',
+                'title'     => '温馨提示',
+                'content'   => '是否确认修复菜单数据？',
+            ], [
+                'type' => 'success',
             ])
             ->addRightButton('optimize', '优化', [
                 'type'      => 'confirm',
@@ -85,6 +101,7 @@ class SystemDataController extends BaseController
                 'width' => 180
             ])
             ->addColumn('TABLE_COMMENT', '备注')
+            ->addColumn('FIX_REMARKS', '修复理由')
             ->create();
         return $this->successRes($data);
     }
@@ -112,7 +129,7 @@ class SystemDataController extends BaseController
         # 表前缀
         $prefix = config('database.connections.mysql.prefix', '');
         # 获取总数
-        $sql   = "SELECT count(*)total FROM  information_schema.`TABLES` WHERE TABLE_SCHEMA='$database' and TABLE_NAME LIKE '%{$prefix}system_%' or TABLE_NAME LIKE '%{$prefix}plugin_%'";
+        $sql   = "SELECT count(*)total FROM  information_schema.`TABLES` WHERE TABLE_SCHEMA='{$database}' and TABLE_NAME LIKE '%{$prefix}system_%' or TABLE_NAME LIKE '%{$prefix}plugin_%'";
         $total = Db::query($sql)[0]['total'] ?? 0;
         # 获取表信息列表
         $sql    = "SELECT TABLE_NAME,TABLE_COMMENT,ENGINE,TABLE_ROWS,CREATE_TIME,UPDATE_TIME,TABLE_COLLATION FROM  information_schema.`TABLES` WHERE TABLE_SCHEMA='{$database}' and TABLE_NAME LIKE '{$prefix}system_%' or TABLE_NAME LIKE '{$prefix}plugin_%' or TABLE_NAME LIKE '{$prefix}store%' order by {$field} {$order} limit {$offset},{$limit}";
@@ -120,7 +137,7 @@ class SystemDataController extends BaseController
         # 重构表部分数据
         if ($tables) {
             # 获取系统表结构
-            $tablesFields  = $this->getTableFields();
+            $tablesFields  = SystemFixUtil::getTableFields();
             # 使用系统表名称作为键分组
             $tableGroup = array_column($tablesFields, null,'name');
             foreach ($tables as $key=>$value) {
@@ -146,6 +163,7 @@ class SystemDataController extends BaseController
                     # 字段不存在
                     if (empty($item)) {
                         $tables[$key]['FIELD_FIX'] = 'yes';
+                        $tables[$key]['FIX_REMARKS'] = "字段【{$fieldName}】不存在";
                         continue;
                     }
                     # 截取字段类型长度
@@ -153,6 +171,7 @@ class SystemDataController extends BaseController
                     $type = $matches[1] ?? $item['Type'];
                     # 是否可修复表
                     if ($type !== $fieldType) {
+                        $tables[$key]['FIX_REMARKS'] = "字段【{$fieldName}】类型匹配失败";
                         $tables[$key]['FIELD_FIX'] = 'yes';
                     }
                 }
@@ -168,6 +187,32 @@ class SystemDataController extends BaseController
             'data'          => $tables
         ];
         return $this->successRes($data);
+    }
+
+    /**
+     * 备份数据库
+     * @param \support\Request $request
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public function backup(Request $request)
+    {
+        SystemFixUtil::backup();
+        return $this->success('数据库备份成功');
+    }
+
+    /**
+     * 修复菜单
+     * @param \support\Request $request
+     * @return mixed
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public function fixMenus(Request $request)
+    {
+        SystemFixUtil::fixMenus();
+        return $this->success('菜单修复成功');
     }
 
     /**
@@ -190,7 +235,7 @@ class SystemDataController extends BaseController
         # 获取无表前缀的表名
         $nonePrefixTableName    = str_replace($prefix, '', $tableName);
         # 获取系统表结构
-        $allTable = $this->getTableFields();
+        $allTable = SystemFixUtil::getTableFields();
         # 使用系统表名称作为键分组
         $tableGroup = array_column($allTable, null,'name');
         # 当前表字段
@@ -216,7 +261,7 @@ class SystemDataController extends BaseController
             }
         }
         # 获取所需要修复的SQL语句
-        $data = $this->getSql($tableName, $fieldData);
+        $data = SystemFixUtil::getSql($tableName, $fieldData);
         if (empty($data)) {
             return $this->fail('表结构无需修复');
         }
@@ -229,166 +274,5 @@ class SystemDataController extends BaseController
             }
         }
         return $this->success('表结构修复成功');
-    }
-
-    /**
-     * 获取表名称与字段
-     * @return array
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
-     */
-    private function getTableFields()
-    {
-        $files = glob(public_path().'install/http/data/sql/*.sql');
-        $data  = [];
-        foreach ($files as $key => $path) {
-            # 文件名称
-            $fileName = basename($path,'.sql');
-            # 表名称
-            $tableName = str_replace('yc_','',$fileName);
-            # 获取字段名称
-            $fields = $this->getFieldsType($path);
-            # 组装数据
-            $data[$key] = [
-                'name'          => $tableName,
-                'fields'        => $fields
-            ];
-        }
-        return $data;
-    }
-
-    /**
-     * 获取字段名称+字段类型
-     * @param string $path
-     * @throws \Exception
-     * @return array
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
-     */
-    private function getFieldsType(string $path)
-    {
-        if (!file_exists($path)) {
-            throw new Exception('SQL文件不存在');
-        }
-        $sqlContent = file_get_contents($path);
-        $sqlContent = explode("\n", $sqlContent);
-        $data    = [];
-        foreach ($sqlContent as $value) {
-            # 判断内容是否存在,
-            if (strpos($value, ',') !== false) {
-                # 移除多余字符串
-                $newValue = trim($value," \n\r\t\v\x00,");
-                # 匹配字段名称+类型
-                preg_match("/`(.*?)`\s+(.*?) /", $newValue, $matches);
-                # 字段名称
-                $fiedName = $matches[1] ?? '';
-                # 字段类型+长度
-                $fieldType = $matches[2] ?? '';
-                # 检测是否存在表前缀
-                if (strrpos($fiedName,'__PREFIX__') !== false) {
-                    continue;            
-                }
-                # 检测是否存在类型长度
-                if (strpos($fieldType,'(') !== false) {
-                    preg_match("/(.*?)\(/", $fieldType, $matches);
-                    $fieldType = $matches[1] ?? $fieldType;
-                }
-                # 禁止操作主键
-                if ($fiedName === 'id') {
-                    continue;
-                }
-                $data[$fiedName] = $fieldType;    
-            }
-        }
-        # 移除空数组
-        $data = array_filter($data);
-        # 返回数据
-        return $data;
-    }
-
-    /**
-     * 获取文件字段名称
-     * @param string $path
-     * @throws \Exception
-     * @return array
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
-     */
-    private function getFields(string $path)
-    {
-        if (!file_exists($path)) {
-            throw new Exception('SQL文件不存在');
-        }
-        $sqlContent = file_get_contents($path);
-        $sqlContent = explode("\n", $sqlContent);
-        $data    = [];
-        foreach ($sqlContent as $value) {
-            # 判断内容是否存在,
-            if (strpos($value, ',') !== false) {
-                # 移除多余字符串
-                $newValue = trim($value," \n\r\t\v\x00,");
-                # 匹配字符串中``之间内容
-                preg_match_all('/`(.*)` /', $newValue, $matches);
-                $fieldName = $matches[1][0] ?? '';
-                if (strpos($fieldName,'__PREFIX__') === false) {
-                    # 禁止操作主键
-                    if ($fieldName === 'id') {
-                        continue;
-                    }
-                    $data[$fieldName] = "{$newValue};";
-                }
-            }
-        }
-        return $data;
-    }
-
-    /**
-     * 查找所需更新的SQL语句
-     * @param string $tableName
-     * @param array $fieldData
-     * @throws \Exception
-     * @return array
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     * @email 416716328@qq.com
-     */
-    private function getSql(string $tableName, array $fieldData)
-    {
-        # 表前缀
-        $prefix = config('database.connections.mysql.prefix', '');
-        $fileName = str_replace($prefix, 'yc_', $tableName);
-        # SQL文件路径
-        $sqlFile = public_path('install/http/data/sql').$fileName.'.sql';
-        # 获取字段+SQL列表
-        $sqlData    = $this->getFields($sqlFile);
-        # 查询表所有字段
-        $fields = Db::query("SHOW FULL COLUMNS FROM {$tableName}");
-        $fieldList = array_column($fields, null,'Field');
-        $data = [];
-        foreach ($fieldData as $field) {
-            # 禁止操作主键
-            if ($field === 'id') {
-                continue;
-            }
-            $sql = $sqlData[$field] ?? '';
-            # 检测字段是否存在
-            if (isset($fieldList[$field])) {
-                $dataValue = 'null';
-                if (in_array($field, ['create_time','update_time'])) {
-                    $dataValue = date('Y-m-d H:i:s');
-                }
-                # 清空数据
-                $update = "UPDATE `{$tableName}` SET `{$field}` = '{$dataValue}' WHERE `{$field}` <> 'null'";
-                # 修改字段
-                $data[$field] = "{$update};\nALTER TABLE `{$tableName}` MODIFY {$sql}";
-            } else {
-                # 新增字段
-                $data[$field] = "ALTER TABLE `{$tableName}` ADD {$sql}";
-            }
-        }
-        return $data;
     }
 }
