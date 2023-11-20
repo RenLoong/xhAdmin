@@ -31,6 +31,7 @@ try {
     ];
     $versionJson       = json_encode($versionData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     file_put_contents(ROOT_PATH . '/config/version.json', $versionJson);
+    exec("git add config/version.json");
     echo '最新版本自动部署成功';
     echo PHP_EOL;
 } catch (\Throwable $e) {
