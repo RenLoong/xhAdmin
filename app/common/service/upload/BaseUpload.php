@@ -92,7 +92,7 @@ trait BaseUpload
             $where[] = ['is_system', '=', '20'];
         }
         if (self::$saas_appid) {
-            $where[] = ['saas_appid', '=', self::$saas_appid];            
+            $where[] = ['saas_appid', '=', self::$saas_appid];
         }
         if (self::$store_id) {
             $where[] = ['store_id', '=', self::$store_id];
@@ -121,16 +121,16 @@ trait BaseUpload
     {
         if (self::$saas_appid) {
             # 应用级附件库
-            $config = SettingsMgr::group(self::$saas_appid, 'upload',[]);
+            $config = SettingsMgr::group(self::$saas_appid, 'upload', []);
         } else {
             # 系统级附件库
-            $config = SettingsMgr::group(null, 'upload',[]);
+            $config = SettingsMgr::group(null, 'upload', []);
         }
         if (empty($config['upload_drive'])) {
-            throw new Exception('附件库驱动未设置',13000);
+            throw new Exception('附件库驱动未设置', 13000);
         }
         if (empty($config['children'])) {
-            throw new Exception('请先设置附件库',13000);
+            throw new Exception('请先设置附件库', 13000);
         }
         return $config;
     }
@@ -154,7 +154,7 @@ trait BaseUpload
         # 附件库配置
         $settings = isset($config['children'][$drive]) ? $config['children'][$drive] : [];
         if (empty($config['children'])) {
-            throw new Exception('请先设置附件库上传设置',13000);
+            throw new Exception('请先设置附件库上传设置', 13000);
         }
         return $settings;
     }
@@ -195,7 +195,7 @@ trait BaseUpload
         # 合并配置
         $templateConfig = config("filesystem.disks", []);
         foreach ($configOptions as $key => $value) {
-            $configSave = array_merge($templateConfig[$key] ?? [], $value);
+            $configSave     = array_merge($templateConfig[$key] ?? [], $value);
             $settings[$key] = $configSave;
         }
         # 取验证数据
@@ -214,11 +214,53 @@ trait BaseUpload
         }
         # 动态设置配置
         Config::set([
-            'default'       => $drive,
-            'disks'         => $settings
+            'default' => $drive,
+            'disks' => $settings
         ], 'filesystem');
         # 获取驱动SDK
         return Filesystem::disk($drive);
+    }
+
+
+    /**
+     * 保存文件信息
+     * @param string $path
+     * @param string $dir_name
+     * @param int $store_id
+     * @param int $appid
+     * @param int $uid
+     * @param string $drive
+     * @return SystemUpload
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
+     */
+    public static function addUpload(string $path, string $dir_name, int $store_id = null, int $appid = null, int $uid = null, string $drive = 'local')
+    {
+        # 完整地址
+        $fullPath = public_path() . $path;
+        # 获取文件信息
+        $info = pathinfo($fullPath);
+        $size = filesize($fullPath);
+        # 获取分类
+        $category = self::getCategory($dir_name);
+        # 组装数据
+        $data = [
+            'cid'           => $category['id'],
+            'store_id'      => $store_id,
+            'saas_appid'    => $appid,
+            'uid'           => $uid,
+            'title'         => $info['basename'],
+            'filename'      => $info['filename'],
+            'format'        => $info['extension'],
+            'adapter'       => $drive,
+            'size'          => get_size($size),
+            'path'          => $path,
+        ];
+        $model = new SystemUpload;
+        if (!$model->save($data)) {
+            throw new Exception('保存文件信息失败');
+        }
+        return $model;
     }
 
     /**

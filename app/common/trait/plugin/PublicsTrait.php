@@ -2,9 +2,11 @@
 namespace app\common\trait\plugin;
 
 use app\common\manager\PluginMgr;
+use app\common\manager\SettingsMgr;
 use app\common\manager\StoreAppMgr;
 use app\common\model\plugin\PluginAdmin;
 use app\common\service\SystemInfoService;
+use app\common\service\UploadService;
 use app\common\utils\Json;
 use app\common\utils\Password;
 use Exception;
@@ -76,12 +78,23 @@ trait PublicsTrait
     {
         $pluginVersion      = PluginMgr::getPluginVersionData($request->plugin);
         $systemInfo         = SystemInfoService::info();
-        $project            = StoreAppMgr::detail(['id'=> $request->appid]);
+        $project            = SettingsMgr::group($request->appid,'system');
+        if (!empty($project['web_logo'])) {
+            $project['web_logo'] = UploadService::url($project['web_logo']);
+        }
+        if (empty($project)) {
+            $storeApp = StoreAppMgr::detail(['id'=> $request->appid]);
+            $project  = [
+                'web_name'      => $storeApp['title'],
+                'web_title'     => '管理员登录',
+                'web_logo'      => $storeApp['logo']
+            ];
+        }
         $pluginPrefix       = "app/{$request->plugin}";
         $data = [
-            "web_name"                  => $project['title'],
-            "web_title"                 => "管理员登录",
-            "web_logo"                  => $project['logo'],
+            "web_name"                  => $project['web_name'],
+            "web_title"                 => $project['web_title'] ?? "管理员登录",
+            "web_logo"                  => $project['web_logo'],
             "appid"                     => $request->appid,
             'version_name'              => $pluginVersion['version_name'],
             'version'                   => $pluginVersion['version'],

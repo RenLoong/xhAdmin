@@ -93,9 +93,6 @@ trait AdsTrait
             ], [
                 'type'          => 'danger',
             ])
-            ->addColumn('id', '序号',[
-                'width'         => 150
-            ])
             ->addColumn('create_at', '创建时间',[
                 'width'         => 150
             ])

@@ -55,6 +55,10 @@ class CustomComponent extends Enum
         'text'      => '自定义输入框',
         'value'     => 'XInput'
     ];
+    const NDivider = [
+        'text'      => '虚线框',
+        'value'     => 'NDivider'
+    ];
     const XTABLE = [
         'text'      => '自定义表格',
         'value'     => 'XTable'

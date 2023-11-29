@@ -18,6 +18,20 @@ class MiniprojectRequest extends Request
         $this->setUrl('Miniproject/getAccessToken');
         return $this;
     }
+    public function pushComponentAccessToken(mixed $params = null)
+    {
+        $this->setUrl('Miniproject/pushComponentAccessToken');
+        $this->setMethod('POST');
+        $validator = new Validator;
+        $validator->rules([
+            'component_access_token' => 'required',
+        ]);
+        $this->validator = $validator;
+        if ($params) {
+            $this->setParams($params);
+        }
+        return $this;
+    }
     /**
      * 上传小程序或者密钥文件
      * @param mixed $params
@@ -81,7 +95,6 @@ class MiniprojectRequest extends Request
         $validator = new Validator;
         $validator->rules([
             'appid' => 'required',
-            'privatekey' => 'required',
             'type' => 'required'
         ]);
         $this->validator = $validator;

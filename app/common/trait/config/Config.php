@@ -91,6 +91,10 @@ trait Config
             ];
             $formData = SettingsMgr::getOriginConfig($where, []);
             foreach ($settings as $value) {
+                # 虚线框不验证
+                if ($value['component'] === 'NDivider') {
+                    continue;
+                }
                 # 处理附件库数据
                 if (isset($formData[$value['name']]) && $value['component'] === 'uploadify') {
                     $formData[$value['name']] = UploadService::url($formData[$value['name']]);

@@ -83,13 +83,19 @@ trait ArtclesCateTrait
             ], [
                 'type'          => 'danger',
             ])
-            ->addColumn('id', '序号',[
-                'width'         => 150
-            ])
             ->addColumn('create_at', '创建时间',[
                 'width'         => 150
             ])
             ->addColumn('title', '分类名称')
+            ->addColumnEle('link', 'H5链接', [
+                'params' => [
+                    'type' => 'link',
+                    'props' => [
+                        'copy' => true,
+                        'text' => '点击打开'
+                    ]
+                ]
+            ])
             ->addColumn('sort', '分配排序',[
                 'width'         => 120
             ])

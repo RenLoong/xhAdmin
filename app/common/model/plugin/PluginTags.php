@@ -25,9 +25,12 @@ class PluginTags extends AppidModel
      */
     public function getLinkAttr($value,$data)
     {
-        $request = request();
-        $url     = $request->domain();
-        $link    = "{$url}/tags/?appid={$data['saas_appid']}&name={$data['name']}";
+        $link = '';
+        if (!empty($data['saas_appid']) && !empty($data['name'])) {
+            $request = request();
+            $url     = $request->domain();
+            $link    = "{$url}/tags/?appid={$data['saas_appid']}&name={$data['name']}";
+        }
         return $link;
     }
 }

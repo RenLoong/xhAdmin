@@ -4,6 +4,7 @@ namespace app\common\trait\plugin;
 use app\common\builder\FormBuilder;
 use app\common\builder\ListBuilder;
 use app\common\model\plugin\PluginTags;
+use app\common\utils\Data;
 use app\common\utils\Json;
 use Exception;
 use support\Request;
@@ -20,8 +21,6 @@ trait TagsTrait
 {
     # 使用JSON工具类
     use Json;
-    # 使用菜单累
-    use MenusTrait;
 
     /**
      * 应用ID（null则获取系统配置）
@@ -86,9 +85,6 @@ trait TagsTrait
                 'content' => '是否确认删除该数据',
             ], [
                 'type' => 'danger',
-            ])
-            ->addColumn('id', '序号', [
-                'width' => 150
             ])
             ->addColumn('create_at', '创建时间', [
                 'width' => 150
@@ -345,6 +341,48 @@ trait TagsTrait
         }
         return $this->success('删除成功');
     }
+    
+    /**
+     * 保存菜单数据
+     * @param array $data
+     * @return mixed
+     * @author John
+     */
+    private function saveData(array $data)
+    {
+        $request         = request();
+        $pluginMenusPath = root_path() . "plugin/{$request->plugin}/menus.json";
+        if (!file_exists($pluginMenusPath)) {
+            return $this->fail('插件菜单文件不存在');
+        }
+        $data = Data::channelLevel($data, 0, '', 'id', 'pid');
+        $data = $this->checkData($data);
+        $data = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        file_put_contents($pluginMenusPath, $data);
+    }
+    
+    /**
+     * 递归处理数据
+     * @param array $data
+     * @return array
+     * @author John
+     */
+    private function checkData(array $data)
+    {
+        $data = array_values($data);
+        foreach ($data as $key => $value) {
+            if (isset($value['_level'])) {
+                unset($data[$key]['_level']);
+            }
+            if (isset($value['_html'])) {
+                unset($data[$key]['_html']);
+            }
+            if (!empty($value['children'])) {
+                $data[$key]['children'] = $this->checkData($value['children']);
+            }
+        }
+        return $data;
+    }
 
     /**
      * 获取表单视图
@@ -355,19 +393,27 @@ trait TagsTrait
      */
     private function getFormView()
     {
+        $id = request()->get('id', '');
+        $tag_name = request()->get('tag_name', '');
+        $disabled = false;
+        if ($id) {
+            $disabled = true;
+        }
+        if ($tag_name && !$disabled) {
+            $disabled = true;
+        }
         $builder = new FormBuilder;
-        $data    = $builder
-            ->addRow('title', 'input', '标题名称', '', [
-                'col' => 8,
-            ])
-            ->addRow('menu_title', 'input', '菜单标题', '', [
-                'col' => 8,
-            ])
-            ->addRow('name', 'input', '标签名称（创建后不可修改）', '', [
-                'col' => 8,
-                'disabled' => true,
-            ])
-            ->addComponent('content', 'wangEditor', '文章内容');
-        return $data;
+        $builder->addRow('title', 'input', '标题名称', '', [
+            'col'           => 8,
+        ]);
+        $builder->addRow('menu_title', 'input', '菜单标题', '', [
+            'col'           => 8,
+        ]);
+        $builder->addRow('name', 'input', '标签名称（创建后不可修改）', '', [
+            'col'           => 8,
+            'disabled'      => $disabled,
+        ]);
+        $builder->addComponent('content', 'wangEditor', '文章内容');
+        return $builder;
     }
 }

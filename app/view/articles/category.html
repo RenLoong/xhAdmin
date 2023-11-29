@@ -9,7 +9,6 @@
         .category-container{
             display: flex;
             flex-direction: column;
-            margin-bottom: 30px;
         }
         .category-container .category-title{
             padding: 15px;
@@ -36,18 +35,16 @@
     </style>
 </head>
 <body>
-    {foreach $data as $key=>$item } 
     <div class="category-container">
-        <div class="category-title">{$item.title}</div>
+        <div class="category-title">{$data['title']}</div>
         <div class="article-container">
-            {foreach $item['articles'] as $key=>$val } 
-            <a href="{:url('articles/detail', ['appid'=> $val.saas_appid,'aid' => $val.id])}" class="item">
-                <div class="article-title">{$val.title}</div>
-                <div class="create-time">{$val.create_at}</div>
+            {foreach $data['articles'] as $key=>$item } 
+            <a href="{:url('articles/detail', ['appid'=> $item.saas_appid,'aid' => $item.id])}" class="item">
+                <div class="article-title">{$item.title}</div>
+                <div class="create-time">{$item.create_at}</div>
             </a>
             {/foreach}
         </div>
     </div>
-    {/foreach}
 </body>
 </html>

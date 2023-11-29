@@ -57,9 +57,12 @@ class PluginArticles extends AppidModel
      */
     public function getLinkAttr($value,$data)
     {
-        $request = request();
-        $url     = $request->domain();
-        $link    = "{$url}/Articles/detail/?appid={$data['saas_appid']}&aid={$data['id']}";
+        $link = '';
+        if (!empty($data['saas_appid'])) {
+            $request = request();
+            $url     = $request->domain();
+            $link    = "{$url}/Articles/detail/?appid={$data['saas_appid']}&aid={$data['id']}";
+        }
         return $link;
     }
 

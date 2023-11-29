@@ -66,6 +66,9 @@ class SettingsMgr
         }
         $names      = explode(',', $name);
         if (count($names) <= 1) {
+            if (!isset($data[$name])) {
+                return $default;
+            }
             $data = [
                 $name       => $data[$name]
             ];

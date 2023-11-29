@@ -3,7 +3,7 @@
         'name' => 'topthink/think',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '20cea5736a83b135748b6e28c7c2b581f648c053',
+        'reference' => 'c248ee9de5744128c70f0528291b6b1ef8be52b3',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -610,7 +610,7 @@
         'topthink/think' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '20cea5736a83b135748b6e28c7c2b581f648c053',
+            'reference' => 'c248ee9de5744128c70f0528291b6b1ef8be52b3',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -754,7 +754,7 @@
         'yc-open/cloud-service' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '3caea41944353c535657ec4f83e6f4a475405142',
+            'reference' => 'f5e7eaf04467936344ab25ddbd2a381fcb472573',
             'type' => 'library',
             'install_path' => __DIR__ . '/../yc-open/cloud-service',
             'aliases' => array(

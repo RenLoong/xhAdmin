@@ -29,38 +29,44 @@ trait FormUtil
     /**
      * 获取表单规则
      * @param array $data
-     * @param int $col
      * @return \app\common\builder\FormBuilder
-     * @author John
+     * @author 贵州猿创科技有限公司
+     * @copyright 贵州猿创科技有限公司
      */
-    private function getFormView(array $data,int $col = 24): FormBuilder
+    private function getFormView(array $data): FormBuilder
     {
         $builder   = new FormBuilder;
         # 获取自定义组件枚举列
         $custComponent = CustomComponent::getColumn('value');
         foreach ($data as $value) {
-            # 数据验证
-            hpValidate(\app\admin\validate\SystemConfig::class, $value);
-            # 验证扩展组件
-            if (in_array($value['component'], $this->extraOptions)) {
-                if (empty($value['extra'])) {
-                    throw new Exception("[{$value['title']}] - 扩展【extra】数据不能为空");
-                }
-                if (empty($value['extra']['options'])) {
-                    throw new Exception("[{$value['title']}] - 扩展的【options】选项数据不能为空");
+            # 虚线框不验证
+            if ($value['component'] !== 'NDivider') {
+                # 数据验证
+                hpValidate(\app\admin\validate\SystemConfig::class, $value);
+                # 验证扩展组件
+                if (in_array($value['component'], $this->extraOptions)) {
+                    if (empty($value['extra'])) {
+                        throw new Exception("[{$value['title']}] - 扩展【extra】数据不能为空");
+                    }
+                    if (empty($value['extra']['options'])) {
+                        throw new Exception("[{$value['title']}] - 扩展的【options】选项数据不能为空");
+                    }
                 }
             }
             #设置默认值
             $configValue = !isset($value['value']) ? '' : $value['value'];
             # 设置扩展数据
             $configExtra = empty($value['extra']) ? [] : $value['extra'];
-            # 设置布局模式
-            $configExtra['col'] = $col;
+            # 虚线框
+            if ($value['component'] === 'NDivider') {
+                $builder->addDivider($value['title'], $configExtra);
+                continue;
+            }
             # 设置组件参数
             if (in_array($value['component'], $custComponent)) {
                 # 自定义组件
                 $builder->addComponent(
-                    $value['name'],
+                    $value['name'] ?? '',
                     $value['component'],
                     $value['title'],
                     $configValue,
@@ -69,7 +75,7 @@ trait FormUtil
             } else {
                 # 普通组件
                 $builder->addRow(
-                    $value['name'],
+                    $value['name'] ?? '',
                     $value['component'],
                     $value['title'],
                     $configValue,

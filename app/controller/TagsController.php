@@ -30,8 +30,7 @@ class TagsController extends BaseController
         if (empty($storeApp)) {
             throw new Exception('应用不存在');
         }
-        $class = "plugin\\{$storeApp['name']}\\app\\model\\PluginTags";
-        $model = new $class;
+        $model = new \app\common\model\plugin\PluginTags;
         $where = [
             'name' => $name,
         ];
