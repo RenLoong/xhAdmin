@@ -82,7 +82,7 @@ trait PublicsTrait
         if (!empty($project['web_logo'])) {
             $project['web_logo'] = UploadService::url($project['web_logo']);
         }
-        if (empty($project)) {
+        if (empty($project['web_name'])) {
             $storeApp = StoreAppMgr::detail(['id'=> $request->appid]);
             $project  = [
                 'web_name'      => $storeApp['title'],
