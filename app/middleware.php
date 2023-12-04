@@ -9,4 +9,6 @@ return [
     \think\middleware\SessionInit::class,
     // 全局视图中间件
     \app\common\middleware\XhMiddleware::class,
+    // 控制台中间件
+    \think\swoole\middleware\InteractsWithVarDumper::class,
 ];
