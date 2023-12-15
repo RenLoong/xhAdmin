@@ -58,7 +58,7 @@ function hpValidate($validate, array $data, string $scene = ''): bool
  */
 function getAdminView($plugin = '')
 {
-    $viewPath = app()->getRootPath() . 'view/index.html';
+    $viewPath = public_path() . 'xhadmin/index.html';
     if (!file_exists($viewPath)) {
         throw new Exception('官方后台视图模板文件不存在');
     }

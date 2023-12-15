@@ -1,6 +1,5 @@
 <?php
 use app\common\utils\SwooleUtil;
-
 return [
     'http' => [
         'enable' => true,
@@ -29,8 +28,13 @@ return [
                 'max_wait_time' => 5,
             ],
         ],
-        'listen' => [],
-        'subscribe' => SwooleUtil::getWebSocket(),
+        'listen'        => [
+            'open'      => \app\common\event\WebSocketOpen::class,
+            'message'   => \app\common\event\WebSocketMessage::class,
+            'event'     => \app\common\event\WebSocketEvent::class,
+            'close'     => \app\common\event\WebSocketClose::class,
+        ],
+        'subscribe'     => [],
     ],
     'rpc' => [
         'server' => [

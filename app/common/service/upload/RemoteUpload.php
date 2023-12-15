@@ -34,14 +34,14 @@ trait RemoteUpload
     {
         $fileInfo = pathinfo($url);
         if (!isset($fileInfo['extension'])) {
-            throw new Exception('获取远程文件扩展失败');
+            $extension = 'png';
         }
         if (!isset($fileInfo['filename'])) {
             throw new Exception('获取远程文件名称失败');
         }
         $fileMd5  = md5($fileInfo['filename']);
         # 储存临时缓存文件目录
-        $tempFile = runtime_path() . "tempDown/{$fileMd5}.{$fileInfo['extension']}";
+        $tempFile = runtime_path() . "tempDown/{$fileMd5}.{$extension}";
         if (!is_dir(dirname($tempFile))) {
             mkdir(dirname($tempFile), 0775, true);
         }
@@ -51,7 +51,8 @@ trait RemoteUpload
             throw new Exception('远程资源文件下载失败');
         }
         $fileMimeType = self::getFileMimeType($tempFile);
-        $uploadFile   = new UploadedFile($tempFile, $fileInfo['basename'], $fileMimeType, 0);
+        $fileName = "{$fileInfo['basename']}.{$extension}";
+        $uploadFile   = new UploadedFile($tempFile, $fileName, $fileMimeType);
         if (!$data = self::upload($uploadFile, $dir_name, $appid, $uid,$store_id)) {
             throw new Exception('上传文件失败');
         }

@@ -2,6 +2,9 @@
 
 namespace app\common\utils;
 
+use think\Container;
+use think\swoole\Websocket;
+
 /**
  * swoole配置工具类
  * @author 贵州猿创科技有限公司
@@ -9,19 +12,11 @@ namespace app\common\utils;
  */
 class SwooleUtil
 {
-    /**
-     * 获取应用的websocket
-     * @return array
-     * @author 贵州猿创科技有限公司
-     * @copyright 贵州猿创科技有限公司
-     */
-    public static function getWebSocket()
+    private function getConfig()
     {
-        $data = [
-            \app\common\service\WebSocketService::class
-        ];
+        $data = [];
         # 扫描配置文件
-        $websocket = glob(root_path().'plugin/*/config/websocket.php');
+        $websocket = glob(root_path().'plugin/*/config/socketEvent.php');
         if (empty($websocket)) {
             return $data;
         }
