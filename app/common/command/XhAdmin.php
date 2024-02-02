@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace app\common\command;
 
 use EasyTask\Task;
-use think\cache\driver\Redis;
 use think\console\Command;
 use think\console\Input;
 use think\console\input\Argument;
 use think\console\input\Option;
 use think\console\Output;
-use think\facade\Cache;
-
+use queue\Redis;
 class XhAdmin extends Command
 {
     protected function configure()
@@ -61,9 +59,6 @@ class XhAdmin extends Command
                         }
                     }
                 }
-                $EasyTask->addFunc(function () {
-                    Cache::set('xhadmin_task', time(), 60);
-                }, 'TaskRunState', 1, 1);
                 $EasyTask->start();
                 break;
             case 'stop':
@@ -78,11 +73,7 @@ class XhAdmin extends Command
     {
         return function () use ($plugin, $key, $value) {
             try {
-                // echo "监听队列：" . strtoupper($plugin . $key) . PHP_EOL;
-                $options = config('cache.stores.redis');
-                $redis = (new Redis($options))->handler();
-                $data = $redis->lpop(strtoupper($plugin . $key));
-                $redis->close();
+                $data=Redis::lpop(strtoupper($plugin . $key));
                 if (empty($data)) {
                     return;
                 }

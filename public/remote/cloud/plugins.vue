@@ -89,12 +89,12 @@
         </el-col>
       </el-row>
     </div>
-    <!-- 分页 -->
-    <div class="pagination" v-if="plugins.length">
-      <el-pagination background layout="prev, pager, next" :total="pagination.total" />
-    </div>
     <div class="project-empty" v-else>
       <el-empty description="没有更多的应用" />
+    </div>
+    <!-- 分页 -->
+    <div class="pagination" v-if="plugins.length">
+      <el-pagination background layout="prev, pager, next" :total="pagination.total" :page-size="pagination.limit" :current-page="pagination.page" @current-change="setPage"/>
     </div>
     <!-- 应用详情弹窗 -->
     <div class="xh-apps-dialog" v-if="dialogData.show">
@@ -265,7 +265,7 @@ export default {
       // 分页数据
       pagination: {
         page: 1,
-        limit: 10,
+        limit: 20,
         total: 0,
       },
       // 应用列表
@@ -456,6 +456,10 @@ export default {
         _this.installed.list = res?.data?.installed ?? [];
       })
     },
+    setPage(page){
+      this.pagination.page = page;
+      this.getList();
+    },
     // 获取列表
     getList() {
       const _this = this;
@@ -489,6 +493,8 @@ export default {
 <style lang="scss" scoped>
 .app-container {
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .xh-apps-dialog {
@@ -704,6 +710,8 @@ export default {
   margin-top: 10px;
   padding-bottom: 30px;
   border-radius: 3px;
+  flex:1;
+  overflow: hidden;
   .xh-row{
     margin-bottom: 15px;
   }
