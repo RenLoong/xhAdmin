@@ -711,7 +711,7 @@ export default {
   padding-bottom: 30px;
   border-radius: 3px;
   flex:1;
-  overflow: hidden;
+  overflow: auto;
   .xh-row{
     margin-bottom: 15px;
   }
