@@ -1,18 +1,6 @@
 location ~* (runtime|application)/{
 	return 403;
 }
-location / {
-	if (!-e $request_filename){
-		rewrite  ^(.*)$  /index.php?s=$1  last;   break;
-	}
-}
-location /websocket {
-      add_header Access-Control-Allow-Origin *;
-      add_header Access-Control-Allow-Headers X-Requested-With;
-      add_header Access-Control-Allow-Methods GET,POST,OPTIONS;
-      proxy_pass http://0.0.0.0:39600;
-      proxy_http_version 1.1;
-      proxy_set_header Upgrade $http_upgrade;
-      proxy_set_header Connection "Upgrade";
-      break;
+if (!-e $request_filename){
+      rewrite  ^(.*)$  /index.php?s=$1  last;   break;
 }
