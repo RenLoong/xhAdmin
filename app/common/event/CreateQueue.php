@@ -1,0 +1,49 @@
+<?php
+declare (strict_types = 1);
+namespace app\common\event;
+use think\facade\Log;
+use Swoole\Timer;
+use app\common\utils\SwooleUtil;
+use queue\Redis;
+class CreateQueue
+{
+    public function handle($event)
+    {
+        try {
+            $queue=SwooleUtil::getQueue();
+            if (empty($queue)) {
+                return;
+            }
+            foreach ($queue as $key => $value) {
+                $used = 1;
+                if (!empty($value['used'])) {
+                    $used = abs((int)$value['used']);
+                }
+                for ($i=0; $i < $used; $i++) { 
+                    Timer::tick(1000, function ()use($value) {
+                        try {
+                            if (!empty($value['package'])) {
+                                require_once $value['package'];
+                            }
+                            $data=Redis::lpop(strtoupper($value['queue_name']));
+                            if (empty($data)) {
+                                return;
+                            }
+                            $data = json_decode($data, true);
+                            if (empty($data)) {
+                                return;
+                            }
+                            $class = new $value['class'];
+                            $class->{$value['handler']}($data);
+                        } catch (\Throwable $th) {
+                            Log::error("{$value['queue_name']} queue error：{$th->getMessage()}，file：{$th->getFile()}:{$th->getLine()}");
+                        }
+                    });
+                }
+            }
+            Log::info('create queue start：'. date('Y-m-d H:i:s'));
+        } catch (\Throwable $th) {
+            Log::error("create queue error：{$th->getMessage()}，file：{$th->getFile()}:{$th->getLine()}");
+        }
+    }
+}

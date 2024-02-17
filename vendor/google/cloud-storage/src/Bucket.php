@@ -267,6 +267,13 @@ class Bucket
      *           Acceptable values include, `"authenticatedRead"`,
      *           `"bucketOwnerFullControl"`, `"bucketOwnerRead"`, `"private"`,
      *           `"projectPrivate"`, and `"publicRead"`.
+     *     @type array $retention The full list of available options are outlined
+     *           at the [JSON API docs](https://cloud.google.com/storage/docs/json_api/v1/objects/insert#request-body).
+     *     @type string $retention.retainUntilTime The earliest time in RFC 3339
+     *           UTC "Zulu" format that the object can be deleted or replaced.
+     *           This is the retention configuration set for this object.
+     *     @type string $retention.mode The mode of the retention configuration,
+     *           which can be either `"Unlocked"` or `"Locked"`.
      *     @type array $metadata The full list of available options are outlined
      *           at the [JSON API docs](https://cloud.google.com/storage/docs/json_api/v1/objects/insert#request-body).
      *     @type array $metadata.metadata User-provided metadata, in key/value pairs.
@@ -566,7 +573,9 @@ class Bucket
 
     /**
      * Lazily instantiates an object. There are no network requests made at this
-     * point. To see the operations that can be performed on an object please
+     * point.
+     *
+     * To see the operations that can be performed on an object please
      * see {@see StorageObject}.
      *
      * Example:
@@ -636,6 +645,9 @@ class Bucket
      *           from the prefix, contain delimiter will have their name,
      *           truncated after the delimiter, returned in prefixes. Duplicate
      *           prefixes are omitted.
+     *     @type bool $includeFoldersAsPrefixes If true, will also include folders
+     *           and managed folders (besides objects) in the returned prefixes.
+     *           Only applicable if delimiter is set to '/'.
      *     @type int $maxResults Maximum number of results to return per
      *           request. **Defaults to** `1000`.
      *     @type int $resultLimit Limit the number of results returned in total.
@@ -761,7 +773,7 @@ class Bucket
      * }
      * @return Notification
      * @throws \InvalidArgumentException When providing a type other than string
-     *         or {@see Google\Cloud\PubSub\Topic} as $topic.
+     *         or {@see \Google\Cloud\PubSub\Topic} as $topic.
      * @throws GoogleException When a project ID has not been detected.
      * @experimental The experimental flag means that while we believe this
      *      method or class is ready for use, it may change before release in
@@ -787,7 +799,9 @@ class Bucket
 
     /**
      * Lazily instantiates a notification. There are no network requests made at
-     * this point. To see the operations that can be performed on a notification
+     * this point.
+     *
+     * To see the operations that can be performed on a notification
      * please see {@see Notification}.
      *
      * Example:
@@ -953,6 +967,8 @@ class Bucket
      *           Buckets can have either StorageClass OLM rules or Autoclass,
      *           but not both. When Autoclass is enabled on a bucket, adding
      *           StorageClass OLM rules will result in failure.
+     *           For more information, refer to
+     *           [Storage Autoclass](https://cloud.google.com/storage/docs/autoclass)
      *     @type array $versioning The bucket's versioning configuration.
      *     @type array $website The bucket's website configuration.
      *     @type array $billing The bucket's billing configuration.
@@ -1218,7 +1234,9 @@ class Bucket
 
     /**
      * Retrieves a lifecycle builder preconfigured with the lifecycle rules that
-     * already exists on the bucket. Use this if you want to make updates to an
+     * already exists on the bucket.
+     *
+     * Use this if you want to make updates to an
      * existing configuration without removing existing rules, as would be the
      * case when using {@see Bucket::lifecycle()}.
      *
@@ -1419,7 +1437,7 @@ class Bucket
      * @see https://cloud.google.com/storage/docs/access-control/signed-urls Signed URLs
      *
      * @param Timestamp|\DateTimeInterface|int $expires Specifies when the URL
-     *        will expire. May provide an instance of {@see Google\Cloud\Core\Timestamp},
+     *        will expire. May provide an instance of {@see \Google\Cloud\Core\Timestamp},
      *        [http://php.net/datetimeimmutable](`\DateTimeImmutable`), or a
      *        UNIX timestamp as an integer.
      * @param array $options {
@@ -1525,7 +1543,7 @@ class Bucket
      * @param string $objectName The path to the file in Google Cloud Storage,
      *        relative to the bucket.
      * @param Timestamp|\DateTimeInterface|int $expires Specifies when the URL
-     *        will expire. May provide an instance of {@see Google\Cloud\Core\Timestamp},
+     *        will expire. May provide an instance of {@see \Google\Cloud\Core\Timestamp},
      *        [http://php.net/datetimeimmutable](`\DateTimeImmutable`), or a
      *        UNIX timestamp as an integer.
      * @param array $options [optional] {

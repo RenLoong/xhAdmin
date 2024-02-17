@@ -18,6 +18,7 @@ use loong\oauth\utils\Str;
  * @method setSingleKey(string $singleKey)
  * @method decrypt(string $token)
  * @method encrypt(mixed $data)
+ * @method delete(string $token)
  * 
  * 静态调用需使用门面类
  * @method static void refreshRsa()
@@ -27,6 +28,7 @@ use loong\oauth\utils\Str;
  * @method static Auth setSingleKey(string $singleKey)
  * @method static string encrypt(mixed $data)
  * @method static mixed decrypt(string $token)
+ * @method static bool delete(string $token)
  */
 class Auth
 {
@@ -163,5 +165,19 @@ class Auth
             Redis::persist($encryptData['key']);
         }
         return Rsa::encrypt($encryptData, $this->rsa_publickey);
+    }
+    /**
+     * 删除指定token
+     *
+     * @param string $token
+     * @return bool
+     */
+    public function delete(string $token)
+    {
+        $decryptData = Rsa::decrypt($token, $this->rsa_privatekey);
+        if (!Redis::get($decryptData['key'])) {
+            return true;
+        }
+        return Redis::del($decryptData['key']);
     }
 }

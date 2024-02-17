@@ -1,11 +1,15 @@
 <?php
-use app\common\utils\SwooleUtil;
 return [
+    'coroutine' => [
+        'enable' => true,
+        'flags' => SWOOLE_HOOK_ALL|SWOOLE_HOOK_CURL,
+    ],
     'http' => [
         'enable' => true,
         'host' => '0.0.0.0',
         'port' => env('SWOOLE_HTTP_SERVER_PORT', 39600),
-        'worker_num' => swoole_cpu_num(),
+        // 'worker_num' => swoole_cpu_num(),
+        'worker_num' => 1,
         'options' => [],
     ],
     'websocket' => [
@@ -41,14 +45,15 @@ return [
             'enable' => false,
             'host' => '0.0.0.0',
             'port' => 9000,
-            'worker_num' => swoole_cpu_num(),
+            // 'worker_num' => swoole_cpu_num(),
+            'worker_num' => 1,
             'services' => [],
         ],
         'client' => [],
     ],
     //队列
     'queue' => [
-        'enable' => true,
+        'enable' => false,
         'workers' => [
             //下面参数是不设置时的默认配置
             'default' => [
@@ -66,12 +71,11 @@ return [
                 'tries' => 0,
                 'timeout' => 60,
                 'worker_num' => 1,
-            ],
-            SwooleUtil::getQueue()
-        ],
+            ]
+        ]
     ],
     'hot_update' => [
-        'enable' => env('APP_DEBUG', false),
+        'enable' => env('APP_DEBUG', true),
         'name' => ['*.php'],
         'include' => [
             app_path(),
@@ -87,7 +91,7 @@ return [
             'max_wait_time' => 5,
         ],
         'cache' => [
-            'enable' => false,
+            'enable' => true,
             'max_active' => 3,
             'max_wait_time' => 5,
         ],

@@ -62,10 +62,10 @@ class FtpAdapter implements FilesystemAdapter
         private bool $detectMimeTypeUsingPath = false,
     ) {
         $this->systemType = $this->connectionOptions->systemType();
-        $this->connectionProvider = $connectionProvider ?: new FtpConnectionProvider();
-        $this->connectivityChecker = $connectivityChecker ?: new NoopCommandConnectivityChecker();
-        $this->visibilityConverter = $visibilityConverter ?: new PortableVisibilityConverter();
-        $this->mimeTypeDetector = $mimeTypeDetector ?: new FinfoMimeTypeDetector();
+        $this->connectionProvider = $connectionProvider ?? new FtpConnectionProvider();
+        $this->connectivityChecker = $connectivityChecker ?? new NoopCommandConnectivityChecker();
+        $this->visibilityConverter = $visibilityConverter ?? new PortableVisibilityConverter();
+        $this->mimeTypeDetector = $mimeTypeDetector ?? new FinfoMimeTypeDetector();
         $this->useRawListOptions = $connectionOptions->useRawListOptions();
     }
 
@@ -251,7 +251,7 @@ class FtpAdapter implements FilesystemAdapter
 
     public function createDirectory(string $path, Config $config): void
     {
-        $this->ensureDirectoryExists($path, $config->get('directory_visibility', $config->get('visibility')));
+        $this->ensureDirectoryExists($path, $config->get(Config::OPTION_DIRECTORY_VISIBILITY, $config->get(Config::OPTION_VISIBILITY)));
     }
 
     public function setVisibility(string $path, string $visibility): void
@@ -275,7 +275,7 @@ class FtpAdapter implements FilesystemAdapter
 
         $object = @ftp_raw($this->connection(), 'STAT ' . $location);
 
-        if (empty($object) || count($object) < 3 || substr($object[1], 0, 5) === "ftpd:") {
+        if (empty($object) || count($object) < 3 || str_starts_with($object[1], "ftpd:")) {
             throw UnableToRetrieveMetadata::create($path, $type, error_get_last()['message'] ?? '');
         }
 
@@ -437,7 +437,9 @@ class FtpAdapter implements FilesystemAdapter
 
         if ($isDirectory) {
             return new DirectoryAttributes(
-                $path, $this->visibilityConverter->inverseForDirectory($permissions), $lastModified
+                $path,
+                $this->visibilityConverter->inverseForDirectory($permissions),
+                $lastModified
             );
         }
 
@@ -448,7 +450,7 @@ class FtpAdapter implements FilesystemAdapter
 
     private function listingItemIsDirectory(string $permissions): bool
     {
-        return substr($permissions, 0, 1) === 'd';
+        return str_starts_with($permissions, 'd');
     }
 
     private function normalizeUnixTimestamp(string $month, string $day, string $timeOrYear): int
@@ -457,14 +459,12 @@ class FtpAdapter implements FilesystemAdapter
             $year = $timeOrYear;
             $hour = '00';
             $minute = '00';
-            $seconds = '00';
         } else {
             $year = date('Y');
             [$hour, $minute] = explode(':', $timeOrYear);
-            $seconds = '00';
         }
 
-        $dateTime = DateTime::createFromFormat('Y-M-j-G:i:s', "{$year}-{$month}-{$day}-{$hour}:{$minute}:{$seconds}");
+        $dateTime = DateTime::createFromFormat('Y-M-j-G:i:s', "$year-$month-$day-$hour:$minute:00");
 
         return $dateTime->getTimestamp();
     }
@@ -482,7 +482,7 @@ class FtpAdapter implements FilesystemAdapter
         $parts = str_split($permissions, 3);
 
         // convert the groups
-        $mapper = function ($part) {
+        $mapper = static function ($part) {
             return array_sum(str_split($part));
         };
 
@@ -490,11 +490,6 @@ class FtpAdapter implements FilesystemAdapter
         return octdec(implode('', array_map($mapper, $parts)));
     }
 
-    /**
-     * @inheritdoc
-     *
-     * @param string $directory
-     */
     private function listDirectoryContentsRecursive(string $directory): Generator
     {
         $location = $this->prefixer()->prefixPath($directory);
@@ -527,7 +522,7 @@ class FtpAdapter implements FilesystemAdapter
             $path = $this->escapePath($path);
         }
 
-        if (! $this->isServerSupportingListOptions()) {
+        if ( ! $this->isServerSupportingListOptions()) {
             $options = '';
         }
 
@@ -547,7 +542,7 @@ class FtpAdapter implements FilesystemAdapter
         $connection = $this->connection();
 
         if ( ! @ftp_rename($connection, $sourceLocation, $destinationLocation)) {
-            throw UnableToMoveFile::fromLocationTo($source, $destination);
+            throw UnableToMoveFile::because(error_get_last()['message'] ?? 'reason unknown', $source, $destination);
         }
     }
 
@@ -555,8 +550,13 @@ class FtpAdapter implements FilesystemAdapter
     {
         try {
             $readStream = $this->readStream($source);
-            $visibility = $this->visibility($source)->visibility();
-            $this->writeStream($destination, $readStream, new Config(compact('visibility')));
+            $visibility = $config->get(Config::OPTION_VISIBILITY);
+
+            if ($visibility === null && $config->get(Config::OPTION_RETAIN_VISIBILITY, true)) {
+                $config = $config->withSetting(Config::OPTION_VISIBILITY, $this->visibility($source)->visibility());
+            }
+
+            $this->writeStream($destination, $readStream, $config);
         } catch (Throwable $exception) {
             if (isset($readStream) && is_resource($readStream)) {
                 @fclose($readStream);
@@ -576,9 +576,6 @@ class FtpAdapter implements FilesystemAdapter
         $this->ensureDirectoryExists($dirname, $visibility);
     }
 
-    /**
-     * @param string $dirname
-     */
     private function ensureDirectoryExists(string $dirname, ?string $visibility): void
     {
         $connection = $this->connection();
@@ -604,7 +601,10 @@ class FtpAdapter implements FilesystemAdapter
             }
 
             if ($mode !== false && @ftp_chmod($connection, $mode, $location) === false) {
-                throw UnableToCreateDirectory::atLocation($dirPath, 'unable to chmod the directory');
+                throw UnableToCreateDirectory::atLocation(
+                    $dirPath,
+                    'unable to chmod the directory: ' . (error_get_last()['message'] ?? 'reason unknown'),
+                );
             }
         }
     }
@@ -624,9 +624,10 @@ class FtpAdapter implements FilesystemAdapter
 
     public function directoryExists(string $path): bool
     {
+        $location = $this->prefixer()->prefixPath($path);
         $connection = $this->connection();
 
-        return @ftp_chdir($connection, $path) === true;
+        return @ftp_chdir($connection, $location) === true;
     }
 
     /**

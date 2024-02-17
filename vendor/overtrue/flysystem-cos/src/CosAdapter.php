@@ -19,6 +19,7 @@ use League\Flysystem\Visibility;
 use Overtrue\CosClient\BucketClient;
 use Overtrue\CosClient\Exceptions\ClientException;
 use Overtrue\CosClient\ObjectClient;
+use TheNorthMemory\Xml\Transformer;
 
 class CosAdapter implements FilesystemAdapter
 {
@@ -155,10 +156,8 @@ class CosAdapter implements FilesystemAdapter
 
         $response = $this->getObjectClient()->deleteObjects(
             [
-                'Delete' => [
-                    'Quiet' => 'false',
-                    'Object' => $keys,
-                ],
+                'Quiet' => 'false',
+                'Object' => Transformer::wrap($keys, true, 'Object'),
             ]
         );
 
@@ -201,7 +200,7 @@ class CosAdapter implements FilesystemAdapter
         $meta = $this->getObjectClient()->getObjectACL($prefixedPath);
 
         foreach ($meta['AccessControlPolicy']['AccessControlList']['Grant'] ?? [] as $grant) {
-            if ('READ' === $grant['Permission'] && str_contains($grant['Grantee']['URI'] ?? '', 'global/AllUsers')) {
+            if ($grant['Permission'] === 'READ' && str_contains($grant['Grantee']['URI'] ?? '', 'global/AllUsers')) {
                 return new FileAttributes($path, null, Visibility::PUBLIC);
             }
         }
@@ -324,6 +323,8 @@ class CosAdapter implements FilesystemAdapter
 
     /**
      * For laravel FilesystemAdapter.
+     *
+     * @throws \Overtrue\CosClient\Exceptions\InvalidConfigException
      */
     public function getTemporaryUrl($path, int|string|\DateTimeInterface $expiration): string
     {
@@ -340,10 +341,6 @@ class CosAdapter implements FilesystemAdapter
     public function getSignedUrl(string $path, int|string $expires = '+60 minutes'): string
     {
         $prefixedPath = $this->prefixer->prefixPath($path);
-
-        if (is_int($expires)) {
-            $expires = \date('Y-m-d H:i:s', $expires);
-        }
 
         return $this->getObjectClient()->getObjectSignedUrl($prefixedPath, $expires);
     }
@@ -423,10 +420,10 @@ class CosAdapter implements FilesystemAdapter
     {
         $result = $this->getBucketClient()->getObjects(
             [
-                'prefix' => ('' === (string) $directory) ? '' : ($directory.'/'),
+                'prefix' => empty($directory) ? '' : ($directory.'/'),
                 'delimiter' => $recursive ? '' : '/',
             ]
-        )['ListBucketResult'];
+        )->toArray();
 
         foreach (['CommonPrefixes', 'Contents'] as $key) {
             $result[$key] = $result[$key] ?? [];

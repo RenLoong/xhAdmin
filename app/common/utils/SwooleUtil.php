@@ -39,6 +39,36 @@ class SwooleUtil
         # 返回数据
         return $data;
     }
+    public static function getData()
+    {
+        $data=[];
+        # 扫描配置文件
+        $task = glob(root_path().'plugin/*/config/task.php');
+        if (empty($task)) {
+            return $data;
+        }
+        foreach ($task as $path) {
+            $config = require $path;
+            if (empty($config) || !is_array($config)) {
+                continue;
+            }
+            # 插件名称
+            $plugin = basename(dirname(dirname($path)));
+            $packagePath = root_path("plugin/{$plugin}/package");
+            $package='';
+            if (is_dir($packagePath) && file_exists($packagePath . "/vendor/autoload.php")) {
+                $package=$packagePath . "/vendor/autoload.php";
+            }
+            foreach ($config as $key => $value) {
+                $value['plugin']=$plugin;
+                $value['package']=$package;
+                $value['queue_name'] = $plugin.$key;
+                $data[] = $value;
+            }
+        }
+        # 返回数据
+        return $data;
+    }
 
     /**
      * 获取应用的队列
@@ -48,20 +78,26 @@ class SwooleUtil
      */
     public static function getQueue()
     {
-        $data = [];
-        # 扫描配置文件
-        $queue = glob(root_path().'plugin/*/config/queue.php');
-        if (empty($queue)) {
-            return $data;
-        }
-        foreach ($queue as $path) {
-            $config = require $path;
-            if (empty($config) || !is_array($config)) {
-                continue;
+        $queue = [];
+        $list=self::getData();
+        foreach ($list as $key => $value) {
+            if (isset($value['type']) && $value['type'] == 'queue') {
+                $queue[] = $value;
             }
-            $data = array_merge($data, $config);
         }
         # 返回数据
-        return $data;
+        return $queue;
+    }
+    public static function getTask()
+    {
+        $task = [];
+        $list=self::getData();
+        foreach ($list as $key => $value) {
+            if (!(isset($value['type']) && $value['type'] == 'queue')) {
+                $task[] = $value;
+            }
+        }
+        # 返回数据
+        return $task;
     }
 }
