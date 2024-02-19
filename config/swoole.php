@@ -1,4 +1,5 @@
 <?php
+$cpunum=swoole_cpu_num();
 return [
     'coroutine' => [
         'enable' => true,
@@ -87,12 +88,12 @@ return [
     'pool' => [
         'db' => [
             'enable' => true,
-            'max_active' => 3,
+            'max_active' => $cpunum*8,
             'max_wait_time' => 5,
         ],
         'cache' => [
             'enable' => true,
-            'max_active' => 3,
+            'max_active' => $cpunum*8,
             'max_wait_time' => 5,
         ],
         //自定义连接池
