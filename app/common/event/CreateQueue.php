@@ -36,14 +36,14 @@ class CreateQueue
                             $class = new $value['class'];
                             $class->{$value['handler']}($data);
                         } catch (\Throwable $th) {
-                            Log::error("{$value['queue_name']} queue error：{$th->getMessage()}，file：{$th->getFile()}:{$th->getLine()}");
+                            Log::channel('swoole')->error("{$value['queue_name']} queue error：{$th->getMessage()}，file：{$th->getFile()}:{$th->getLine()}");
                         }
                     });
                 }
             }
-            Log::info('create queue start：'. date('Y-m-d H:i:s'));
+            Log::channel('swoole')->info('create queue start：'. date('Y-m-d H:i:s'));
         } catch (\Throwable $th) {
-            Log::error("create queue error：{$th->getMessage()}，file：{$th->getFile()}:{$th->getLine()}");
+            Log::channel('swoole')->error("create queue error：{$th->getMessage()}，file：{$th->getFile()}:{$th->getLine()}");
         }
     }
 }

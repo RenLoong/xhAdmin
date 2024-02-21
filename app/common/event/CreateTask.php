@@ -26,13 +26,13 @@ class CreateTask
                         $class = new $value['class'];
                         $class->{$value['handler']}();
                     } catch (\Throwable $th) {
-                        Log::error("{$value['plugin']} task error：{$th->getMessage()}，file：{$th->getFile()}:{$th->getLine()}");
+                        Log::channel('swoole')->error("{$value['plugin']} task error：{$th->getMessage()}，file：{$th->getFile()}:{$th->getLine()}");
                     }
                 });
             }
-            Log::info('create task start：'. date('Y-m-d H:i:s'));
+            Log::channel('swoole')->info('create task start：'. date('Y-m-d H:i:s'));
         } catch (\Throwable $th) {
-            Log::error("create task error：{$th->getMessage()}，file：{$th->getFile()}:{$th->getLine()}");
+            Log::channel('swoole')->error("create task error：{$th->getMessage()}，file：{$th->getFile()}:{$th->getLine()}");
         }
     }
 }
