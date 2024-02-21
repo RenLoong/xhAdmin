@@ -11,3 +11,4 @@ Thumbs.db
 /.buildpath
 /.project
 auto_install.json
+/config/yc_plugins_domains.php

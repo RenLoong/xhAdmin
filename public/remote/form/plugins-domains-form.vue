@@ -4,6 +4,8 @@
             <div class="py-10">
                 <h4>应用主域名</h4>
                 <p class="tips">应用主域名（落地域名）设置以后访问域名就能直接访问到您的应用，对外分享链接使用</p>
+                <p class="tips">如没有域名可填写主站域名：<span class="web_url" @click="form.domain = web_url">{{ web_url
+                }}</span>，主站域名不参与落地域名功能</p>
                 <p class="tips">在代码中使用：getHpConfig('domain', (int)$saas_appid, 'plugins_domains');</p>
                 <el-input v-model="form.domain" size="large" placeholder="应用主域名，如：https://www.baidu.com，不以/结尾" />
             </div>
@@ -33,6 +35,7 @@
 export default {
     data() {
         return {
+            web_url: '',
             baseUrl: '',
             sub_domain: '',
             form: {
@@ -42,6 +45,7 @@ export default {
         }
     },
     mounted() {
+        this.web_url = this.$siteApp.siteInfo.web_url;
         this.baseUrl = `app/${this.$siteApp.siteInfo.plugin}/`;
         this.initify()
     },
@@ -106,5 +110,11 @@ export default {
     font-size: 12px;
     margin-top: 10px;
     margin-bottom: 20px;
+}
+
+.web_url {
+    color: var(--el-text-color-primary);
+    font-size: 12px;
+    cursor: pointer;
 }
 </style>

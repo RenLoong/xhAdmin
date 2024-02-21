@@ -58,22 +58,26 @@ trait PluginsDomainsTrait
                 $model->value = $post;
                 $model->save();
                 SystemPluginsDomains::where('saas_appid', $this->saas_appid)->delete();
+                $web_url=getHpConfig('web_url');
+                $web_url_host=parse_url($web_url,PHP_URL_HOST);
                 if(!empty($post['domain'])){
                     # 获取$post['domain']中的domain
                     $host=parse_url($post['domain'],PHP_URL_HOST);
                     if(!$host){
                         throw new Exception("{$post['domain']}域名解析失败");
                     }
-                    if(SystemPluginsDomains::where('host',$host)->find()){
-                        throw new Exception("{$host}域名已存在");
+                    if($web_url_host!=$host){
+                        if(SystemPluginsDomains::where('host',$host)->find()){
+                            throw new Exception("{$host}域名已存在");
+                        }
+                        $SystemPluginsDomains=new SystemPluginsDomains;
+                        $SystemPluginsDomains->save([
+                            'saas_appid'=>$this->saas_appid,
+                            'domain'=>$post['domain'],
+                            'host'=>$host,
+                            'plugin'=>$plugin,
+                        ]);
                     }
-                    $SystemPluginsDomains=new SystemPluginsDomains;
-                    $SystemPluginsDomains->save([
-                        'saas_appid'=>$this->saas_appid,
-                        'domain'=>$post['domain'],
-                        'host'=>$host,
-                        'plugin'=>$plugin,
-                    ]);
                     if (!empty($post['sub_domain'])) {
                         $data=[];
                         foreach ($post['sub_domain'] as $key => $value) {
@@ -81,18 +85,22 @@ trait PluginsDomainsTrait
                             if(!$host){
                                 throw new Exception("{$value}域名解析失败");
                             }
-                            if(SystemPluginsDomains::where('host',$host)->find()){
-                                throw new Exception("{$host}域名已存在");
+                            if($web_url_host!=$host){
+                                if(SystemPluginsDomains::where('host',$host)->find()){
+                                    throw new Exception("{$host}域名已存在");
+                                }
+                                $data[]=[
+                                    'saas_appid'=>$this->saas_appid,
+                                    'domain'=>$value,
+                                    'plugin'=>$plugin,
+                                    'host'=>$host,
+                                ];
                             }
-                            $data[]=[
-                                'saas_appid'=>$this->saas_appid,
-                                'domain'=>$value,
-                                'plugin'=>$plugin,
-                                'host'=>$host,
-                            ];
                         }
-                        $SystemPluginsDomains=new SystemPluginsDomains;
-                        $SystemPluginsDomains->saveAll($data);
+                        if(!empty($data)){
+                            $SystemPluginsDomains=new SystemPluginsDomains;
+                            $SystemPluginsDomains->saveAll($data);
+                        }
                     }
                 }
                 Db::commit();
