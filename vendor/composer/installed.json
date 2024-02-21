@@ -7794,17 +7794,17 @@
         },
         {
             "name": "xbai/plugins",
-            "version": "1.0.4",
-            "version_normalized": "1.0.4.0",
+            "version": "1.0.5",
+            "version_normalized": "1.0.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/xbai8/plugins.git",
-                "reference": "af3a6601ba0f4955f002946ccd3e87fcf036b22f"
+                "reference": "7a8cc572f8664a781189beccd02afb63aabee747"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/xbai8/plugins/zipball/af3a6601ba0f4955f002946ccd3e87fcf036b22f",
-                "reference": "af3a6601ba0f4955f002946ccd3e87fcf036b22f",
+                "url": "https://api.github.com/repos/xbai8/plugins/zipball/7a8cc572f8664a781189beccd02afb63aabee747",
+                "reference": "7a8cc572f8664a781189beccd02afb63aabee747",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -7813,7 +7813,7 @@
                     }
                 ]
             },
-            "time": "2023-10-09T10:11:22+00:00",
+            "time": "2024-02-21T03:13:30+00:00",
             "type": "library",
             "extra": {
                 "think": {
@@ -7840,11 +7840,15 @@
                 {
                     "name": "楚羽幽",
                     "email": "cy958416459@qq.com"
+                },
+                {
+                    "name": "RenLoong",
+                    "email": "unknown.renlong@gmail.com"
                 }
             ],
             "support": {
                 "issues": "https://github.com/xbai8/plugins/issues",
-                "source": "https://github.com/xbai8/plugins/tree/1.0.4"
+                "source": "https://github.com/xbai8/plugins/tree/1.0.5"
             },
             "install-path": "../xbai/plugins"
         },

@@ -89,6 +89,7 @@ class PluginMiddleware
     private function parseRoute()
     {
         $plugin   = $this->app->request->route('plugin', '');
+        $appid   = $this->app->request->route('appid', '');
         $pathinfo = $this->app->request->pathinfo();
         // 静态资源则拦截
         if ($response = getAssetsCheck($this->app->request)) {
@@ -101,6 +102,12 @@ class PluginMiddleware
         }
         // 设置插件名称
         $this->app->request->plugin = $plugin;
+        if($appid){
+            # 设置Appid
+            $this->app->request->withHeader([
+                'Appid'=>(string)$appid
+            ]);
+        }
         // 解析路由
         $pathinfo  = str_replace("app/{$plugin}", '', $pathinfo);
         $routeinfo = trim($pathinfo, '/');

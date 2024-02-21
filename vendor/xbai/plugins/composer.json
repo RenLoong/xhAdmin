@@ -13,6 +13,10 @@
         {
             "name": "楚羽幽",
             "email": "cy958416459@qq.com"
+        },
+        {
+            "name": "RenLoong",
+            "email": "unknown.renlong@gmail.com"
         }
     ],
     "require": {},
@@ -22,7 +26,7 @@
                 "Xbai\\Plugins\\Service"
             ]
         },
-        "config":{
+        "config": {
             "plugins": "src/config/plugins.php"
         }
     }

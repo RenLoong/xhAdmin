@@ -28,17 +28,29 @@ class Service extends BaseService
         if (!is_dir($this->app->getRootPath() . 'plugin')) {
             mkdir($this->app->getRootPath() . 'plugin', 0755, true);
         }
-        
+        $execute = '\\Xbai\\Plugins\\service\\RouteService@execute';
         // 使用composer注册插件命名空间
         $this->registerNamespace();
-
-        // 监听服务
-        $this->app->event->listen('HttpRun', function () use ($route) {
-            // 注册插件路由
-            $execute = '\\Xbai\\Plugins\\service\\RouteService@execute';
-            $route->rule("app/:plugin", $execute)
-            ->middleware(PluginMiddleware::class);
-        });
+        # 域名映射插件
+        $baseUrl=$this->app->request->baseUrl();
+        if($baseUrl=='/'){
+            $pluginsDomains=config('yc_plugins_domains');
+            $host=$this->app->request->host();
+            if(!empty($pluginsDomains)&&isset($pluginsDomains[$host])){
+                $plugin=$pluginsDomains[$host];
+                $route->rule("/", $execute)
+                ->append(['plugin'=>$plugin['plugin'],'appid'=>$plugin['appid']])
+                ->middleware(PluginMiddleware::class);
+            }
+        # baseUrl是以/app/开头的
+        }elseif(strpos($baseUrl,'/app/')===0){
+            // 监听服务
+            $this->app->event->listen('HttpRun', function () use ($route,$execute) {
+                // 注册插件路由
+                $route->rule("app/:plugin", $execute)
+                ->middleware(PluginMiddleware::class);
+            });
+        }
     }
     /**
      * 使用composer注册插件命名空间
