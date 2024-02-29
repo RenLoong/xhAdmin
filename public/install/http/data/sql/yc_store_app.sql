@@ -10,5 +10,6 @@ CREATE TABLE `__PREFIX__store_app`  (
   `logo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '项目LOGO',
   `status` enum('10','20') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '10' COMMENT '项目状态',
   `platform` text COMMENT '应用平台类型（JSON格式）',
+  `auth_id` int NULL DEFAULT NULL COMMENT '授权ID',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '渠道-项目' ROW_FORMAT = DYNAMIC;

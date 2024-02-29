@@ -1,0 +1,1 @@
+ALTER TABLE `php_store_app` ADD COLUMN `auth_id` int NULL AFTER `platform`;
