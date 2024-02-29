@@ -39,7 +39,7 @@ class PluginAuthMiddleware
     public function handle($request, Closure $next)
     {
         $appid=$request->appid;
-        $auth_store_state=Session::get('auth_store_state');
+        $auth_store_state=Session::get('auth_store_state.'.$appid);
         if($appid&&!$auth_store_state){
             $StoreApp=StoreApp::where(['id'=>$appid])->find();
             if(!$StoreApp){
@@ -58,7 +58,7 @@ class PluginAuthMiddleware
                     return $this->fail($request, '插件已过期，请联系管理员');
                 }
             }
-            Session::set('auth_store_state',1);
+            Session::set('auth_store_state.'.$appid,1);
         }
         // 调度转发
         return $next($request);
