@@ -3,7 +3,7 @@
         'name' => 'topthink/think',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'f61d8bc5c6c7b406fc3bcf39c7ff967944b4fc78',
+        'reference' => '9c90980c09529ebbdd394489d6ae435fbd55b40e',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -874,7 +874,7 @@
         'topthink/think' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'f61d8bc5c6c7b406fc3bcf39c7ff967944b4fc78',
+            'reference' => '9c90980c09529ebbdd394489d6ae435fbd55b40e',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -1052,9 +1052,9 @@
             'dev_requirement' => false,
         ),
         'xbai/plugins' => array(
-            'pretty_version' => '1.0.5',
-            'version' => '1.0.5.0',
-            'reference' => '7a8cc572f8664a781189beccd02afb63aabee747',
+            'pretty_version' => '1.0.6',
+            'version' => '1.0.6.0',
+            'reference' => '52f3612e68a139ca04be96a3cc26b94ceab4f717',
             'type' => 'library',
             'install_path' => __DIR__ . '/../xbai/plugins',
             'aliases' => array(),
@@ -1063,7 +1063,7 @@
         'yc-open/cloud-service' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'f5e7eaf04467936344ab25ddbd2a381fcb472573',
+            'reference' => '7bfa8f42ee39e72189304f1b876ef34933d515df',
             'type' => 'library',
             'install_path' => __DIR__ . '/../yc-open/cloud-service',
             'aliases' => array(

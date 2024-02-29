@@ -94,7 +94,8 @@
     </div>
     <!-- 分页 -->
     <div class="pagination" v-if="plugins.length">
-      <el-pagination background layout="prev, pager, next" :total="pagination.total" :page-size="pagination.limit" :current-page="pagination.page" @current-change="setPage"/>
+      <el-pagination background layout="prev, pager, next" :total="pagination.total" :page-size="pagination.limit"
+        :current-page="pagination.page" @current-change="setPage" />
     </div>
     <!-- 应用详情弹窗 -->
     <div class="xh-apps-dialog" v-if="dialogData.show">
@@ -140,6 +141,12 @@
                   </div>
                 </div>
                 <div class="items">
+                  <div class="label">授权数量：</div>
+                  <div class="value">
+                    <el-tag type="success">{{ detail?.auth_num }}个授权</el-tag>
+                  </div>
+                </div>
+                <div class="items">
                   <div class="label">下载次数：</div>
                   <div class="value">{{ detail?.down }}次</div>
                 </div>
@@ -172,6 +179,12 @@
                       </template>
                       卸载
                     </el-button>
+                    <el-button type="success" @click="hanldBindSite">
+                      <template #icon>
+                        <AppIcons icon="Promotion" />
+                      </template>
+                      获取更多授权
+                    </el-button>
                   </el-row>
                 </div>
               </div>
@@ -196,7 +209,7 @@
                 <el-timeline v-if="detail?.version_log?.length">
                   <el-timeline-item icon="MoreFilled" type="primary" color="#0bbd87" size="large"
                     :timestamp="item.create_at" v-for="(item, index) in detail?.version_log" :key="index">
-                    <div class="version-info">{{ item?.version_name }}（{{item?.version}}）</div>
+                    <div class="version-info">{{ item?.version_name }}（{{ item?.version }}）</div>
                     <pre class="pre-line">{{ item?.remarks }}</pre>
                   </el-timeline-item>
                 </el-timeline>
@@ -456,7 +469,7 @@ export default {
         _this.installed.list = res?.data?.installed ?? [];
       })
     },
-    setPage(page){
+    setPage(page) {
       this.pagination.page = page;
       this.getList();
     },
@@ -631,8 +644,9 @@ export default {
 
         .content {
           padding: 15px;
-          .version-info{
-            font-size:14px;
+
+          .version-info {
+            font-size: 14px;
           }
         }
       }
@@ -710,9 +724,10 @@ export default {
   margin-top: 10px;
   padding-bottom: 30px;
   border-radius: 3px;
-  flex:1;
+  flex: 1;
   overflow: auto;
-  .xh-row{
+
+  .xh-row {
     margin-bottom: 15px;
   }
 
@@ -826,7 +841,9 @@ export default {
   }
 
   .search {
+
     .el-form-item {
+      min-width: 100px;
       margin-bottom: 0px !important;
     }
   }

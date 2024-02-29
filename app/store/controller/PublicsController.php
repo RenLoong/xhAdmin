@@ -35,8 +35,16 @@ class PublicsController extends BaseController
         $admin_logo = is_array($admin_logo) ? current($admin_logo) : $admin_logo;
         $web_logo = UploadService::url($admin_logo);
         $systemInfo = SystemInfoService::info();
+        $config=getHpConfig('',null,'system');
+        $web_name=empty($config['web_name']) ? 'XHAdmin' : $config['web_name'];
+        $web_icp   = empty($config['web_icp']) ? '' : $config['web_icp'];
+        $web_mps   = empty($config['web_mps']) ? '' : $config['web_mps'];
+        $web_mps_text   = empty($config['web_mps_text']) ? '' : $config['web_mps_text'];
         $data = [
-            'web_name' => getHpConfig('web_name'),
+            'web_name' => $web_name,
+            'web_icp' => $web_icp,
+            'web_mps' => $web_mps,
+            'web_mps_text' => $web_mps_text,
             'web_title' => '后台登录',
             'web_logo' => empty($web_logo) ? '' : $web_logo,
             'version_name' => $systemInfo['system_version_name'],

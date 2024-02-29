@@ -291,6 +291,7 @@ class PluginController extends BaseController
             'platform'      => $platform,
             'page'          => $page,
             'plugins'       => $installData,
+            'limit'         =>  12,
             'saas_version'  => $systemInfo['system_version']
         ];
         $res        = CloudServiceRequest::Plugin()

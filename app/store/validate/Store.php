@@ -21,6 +21,9 @@ class Store extends Validate
         'mobile.mobile'     => '请输入正确的联系手机',
         'logo.require'      => '请上传租户图标',
     ];
+    protected $scene = [
+        'edit'  =>  ['title','logo'],
+    ];
 
     /**
      * 验证租户名称

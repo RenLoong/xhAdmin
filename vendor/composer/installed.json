@@ -7794,17 +7794,17 @@
         },
         {
             "name": "xbai/plugins",
-            "version": "1.0.5",
-            "version_normalized": "1.0.5.0",
+            "version": "1.0.6",
+            "version_normalized": "1.0.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/xbai8/plugins.git",
-                "reference": "7a8cc572f8664a781189beccd02afb63aabee747"
+                "reference": "52f3612e68a139ca04be96a3cc26b94ceab4f717"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/xbai8/plugins/zipball/7a8cc572f8664a781189beccd02afb63aabee747",
-                "reference": "7a8cc572f8664a781189beccd02afb63aabee747",
+                "url": "https://api.github.com/repos/xbai8/plugins/zipball/52f3612e68a139ca04be96a3cc26b94ceab4f717",
+                "reference": "52f3612e68a139ca04be96a3cc26b94ceab4f717",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -7813,7 +7813,7 @@
                     }
                 ]
             },
-            "time": "2024-02-21T03:13:30+00:00",
+            "time": "2024-02-27T03:32:06+00:00",
             "type": "library",
             "extra": {
                 "think": {
@@ -7848,7 +7848,7 @@
             ],
             "support": {
                 "issues": "https://github.com/xbai8/plugins/issues",
-                "source": "https://github.com/xbai8/plugins/tree/1.0.5"
+                "source": "https://github.com/xbai8/plugins/tree/1.0.6"
             },
             "install-path": "../xbai/plugins"
         },
@@ -7858,21 +7858,27 @@
             "version_normalized": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/uRenlong/kfadmin-cloud.git",
-                "reference": "f5e7eaf04467936344ab25ddbd2a381fcb472573"
+                "url": "https://github.com/RenLoong/kfadmin-cloud.git",
+                "reference": "7bfa8f42ee39e72189304f1b876ef34933d515df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/uRenlong/kfadmin-cloud/zipball/f5e7eaf04467936344ab25ddbd2a381fcb472573",
-                "reference": "f5e7eaf04467936344ab25ddbd2a381fcb472573",
-                "shasum": ""
+                "url": "https://api.github.com/repos/RenLoong/kfadmin-cloud/zipball/7bfa8f42ee39e72189304f1b876ef34933d515df",
+                "reference": "7bfa8f42ee39e72189304f1b876ef34933d515df",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
             },
             "require": {
                 "guzzlehttp/guzzle": "^7.7",
                 "php": "^8.0",
                 "vlucas/phpdotenv": "^5.4"
             },
-            "time": "2023-11-29T09:26:38+00:00",
+            "time": "2024-02-28T09:00:43+00:00",
             "default-branch": true,
             "type": "library",
             "installation-source": "dist",
@@ -7895,8 +7901,8 @@
                 }
             ],
             "support": {
-                "issues": "https://github.com/uRenlong/kfadmin-cloud/issues",
-                "source": "https://github.com/uRenlong/kfadmin-cloud/tree/master"
+                "issues": "https://github.com/RenLoong/kfadmin-cloud/issues",
+                "source": "https://github.com/RenLoong/kfadmin-cloud/tree/1.2.3"
             },
             "install-path": "../yc-open/cloud-service"
         },

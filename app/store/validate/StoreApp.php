@@ -10,7 +10,7 @@ class StoreApp extends Validate
     protected $rule =   [
         'store_id'          => 'require',
         'title'             => 'require|verifyTitle',
-        'name'              => 'require',
+        'auth_id'              => 'require',
         'username'          => 'require',
         'password'          => 'require',
         'logo'              => 'require',
@@ -19,7 +19,7 @@ class StoreApp extends Validate
     protected $message  =   [
         'store_id.require'          => '缺少租户参数',
         'title.require'             => '请输入项目名称',
-        'name.require'              => '请选择应用插件',
+        'auth_id.require'              => '请选择应用插件',
         'username.require'          => '请输入管理员账号',
         'password.require'          => '请输入管理员密码',
         'logo.require'              => '请上传应用图标',
@@ -35,7 +35,7 @@ class StoreApp extends Validate
                 'url',
                 'username',
                 'password',
-                'name',
+                'auth_id',
                 'logo',
             ]);
     }
@@ -47,7 +47,7 @@ class StoreApp extends Validate
                 'platform',
                 'title',
                 'url',
-                'name',
+                'auth_id',
                 'username',
                 'logo',
             ])

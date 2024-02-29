@@ -45,6 +45,9 @@
                 <div class="project-list">
                     <div class="item" v-for="(item, index) in projects.list" :key="index">
                         <div @click="hanldAdmin(item)">
+                            <div class="auth" :class="[item.auth_class ? item.auth_class : '']">
+                                {{ item.auth_text }}
+                            </div>
                             <div class="tags">
                                 {{ item.platform_text }}
                             </div>
@@ -70,7 +73,9 @@
                     </div>
                 </div>
                 <div class="xh-paginate">
-                    <el-pagination background layout="prev, pager, next" v-model:current-page="projects.paginate.page"  :total="projects.paginate.total" :page-size="projects.paginate.limit" @current-change="hanldChangePage" />
+                    <el-pagination background layout="prev, pager, next" v-model:current-page="projects.paginate.page"
+                        :total="projects.paginate.total" :page-size="projects.paginate.limit"
+                        @current-change="hanldChangePage" />
                 </div>
             </div>
             <div class="project-empty" v-else>
@@ -105,7 +110,7 @@ export default {
                 },
                 paginate: {
                     page: 1,
-                    limit: 10,
+                    limit: 8,
                     total: 0,
                 },
                 list: [],
@@ -216,6 +221,7 @@ export default {
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
+
     .user-container {
         background-color: #fff;
         border-radius: 5px;
@@ -304,9 +310,9 @@ export default {
                 display: flex;
                 flex-direction: row;
                 flex-wrap: wrap;
-                margin: 0px -10px;
                 overflow-y: auto;
                 overflow-x: hidden;
+                gap: 20px;
 
                 .item {
                     position: relative;
@@ -321,7 +327,6 @@ export default {
                     overflow: hidden;
                     cursor: pointer;
                     transition: all .3s ease;
-                    margin: 0 10px 20px 10px;
 
                     .icon {
                         width: 100%;
@@ -363,6 +368,27 @@ export default {
                         padding: 5px;
                         border-radius: 0px 5px 0px 10px;
                         z-index: 999;
+                    }
+
+                    .auth {
+                        position: absolute;
+                        top: 0px;
+                        left: 0px;
+                        background-color: #67C23A;
+                        font-size: 12px;
+                        color: #fff;
+                        padding: 5px;
+                        border-radius: 5px 0px 10px 0px;
+                        z-index: 999;
+                    }
+
+                    .auth.auth-not {
+                        background-color: var(--el-text-color-disabled);
+                        color: var(--el-text-color-regular);
+                    }
+
+                    .auth.auth-expire {
+                        background-color: var(--el-color-error);
                     }
                 }
 

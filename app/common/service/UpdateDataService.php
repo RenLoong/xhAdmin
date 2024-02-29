@@ -5,6 +5,8 @@ use app\common\manager\DbMgr;
 use app\common\utils\DirUtil;
 use support\Request;
 use think\facade\Log;
+use app\common\model\StorePlugins;
+use app\common\model\StoreApp;
 
 /**
  * 执行数据同步更新
@@ -18,6 +20,13 @@ class UpdateDataService extends SystemUpdateService
      * @var int
      */
     protected $clientVersion = null;
+    /**
+     * 本地版本名称
+     * @var string
+     * @author 贵州猿创科技有限公司
+     * @email 416716328@qq.com
+     */
+    protected $clientVersionName = '';
 
     /**
      * 构造函数
@@ -26,9 +35,10 @@ class UpdateDataService extends SystemUpdateService
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public function __construct(Request $request,$clientVersion)
+    public function __construct(Request $request,$clientVersion,$clientVersionName='')
     {
         $this->clientVersion = $clientVersion;
+        $this->clientVersionName = $clientVersionName;
         parent::__construct($request);
     }
 
@@ -102,6 +112,29 @@ class UpdateDataService extends SystemUpdateService
             }
         } catch (\Throwable $e) {
             Log::error("更新SQL错误，终止：{$e->getMessage()}，Line：{$e->getLine()}，File：{$e->getFile()}");
+        }
+        try {
+            $use_auth_num=[];
+            $use_plugin_num=[];
+            $useAuthNum=StorePlugins::select();
+            foreach ($useAuthNum as $key => $value) {
+                if(!isset($use_auth_num[$value['plugin_name']]))$use_auth_num[$value['plugin_name']]=0;
+                $use_auth_num[$value['plugin_name']]+=$value['auth_num'];
+            }
+            $usePluginNum=StoreApp::select();
+            foreach ($usePluginNum as $key => $value) {
+                if(!isset($use_plugin_num[$value['name']]))$use_plugin_num[$value['name']]=0;
+                $use_plugin_num[$value['name']]++;
+            }
+            $data=[
+                'name'=>'plugins',
+                'version'=>$this->clientVersion,
+                'version_name'=>$this->clientVersionName,
+                'use_auth_num'=>$use_auth_num,
+                'use_plugin_num'=>$use_plugin_num,
+            ];
+            \YcOpen\CloudService\Request::Plugin()->authNum($data)->response();
+        } catch (\Throwable $th) {
         }
     }
 }

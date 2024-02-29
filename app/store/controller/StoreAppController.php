@@ -7,6 +7,8 @@ use app\common\enum\StatusEnum;
 use app\common\exception\RedirectException;
 use app\common\manager\StoreAppMgr;
 use app\common\model\Store;
+use app\common\model\StorePlugins;
+use app\common\model\StorePluginsExpire;
 use app\common\BaseController;
 use app\common\manager\PluginMgr;
 use app\store\validate\StoreApp;
@@ -60,7 +62,20 @@ class StoreAppController extends BaseController
             ->withSearch(['platform'], ['platform' => $platformType])
             ->where($where)
             ->order(['id' => 'desc'])
-            ->paginate($limit);
+            ->paginate($limit)->each(function ($item){
+                $item->auth_text='未授权';
+                $item->auth_class='auth-not';
+                $StorePluginsExpire=StorePluginsExpire::where(['id'=>$item->auth_id])->find();
+                if($StorePluginsExpire){
+                    if($StorePluginsExpire->expire_time>date('Y-m-d')){
+                        $item->auth_text=$StorePluginsExpire->expire_time.'到期';
+                        $item->auth_class='';
+                    }else{
+                        $item->auth_text='已过期';
+                        $item->auth_class='auth-expire';
+                    }
+                }
+            });
         return parent::successRes($data);
     }
 
@@ -86,8 +101,16 @@ class StoreAppController extends BaseController
 
             # 数据验证
             hpValidate(StoreApp::class, $post, 'add');
-
-            $storeApp = StoreAppMgr::getAuthAppDetail($store['id'], $post['name']);
+            $StorePluginsExpire=StorePluginsExpire::where(['id'=>$post['auth_id']])->whereTime('expire_time','>',time())->find();
+            if(!$StorePluginsExpire){
+                return $this->fail('授权不存在或已过期');
+            }
+            $use_auth_num=$this->model->where(['store_id'=>$store['id'],'auth_id'=>$StorePluginsExpire->id])->count();
+            if($use_auth_num>=$StorePluginsExpire->auth_num){
+                return $this->fail('授权数量已用完');
+            }
+            $StorePlugins=StorePlugins::where(['id'=>$StorePluginsExpire->store_plugins_id])->find();
+            $storeApp = StoreAppMgr::getAuthAppDetail($store['id'], $StorePlugins->plugin_name);
             # 取平台类型
             $platforms = $storeApp['platform'] ?? [];
 
@@ -101,7 +124,8 @@ class StoreAppController extends BaseController
                 }
             }
             $post['platform'] = $platforms;
-
+            $post['name']     = $StorePlugins->plugin_name;
+            $post['auth_id']  = $StorePluginsExpire->id;
             # 创建项目
             StoreAppMgr::created($post);
 
@@ -109,7 +133,24 @@ class StoreAppController extends BaseController
             return $this->success('项目创建成功');
         }
         try {
-            $platformList = StoreAppMgr::getAuthAppOptions($store['id']);
+            // $platformList = StoreAppMgr::getAuthAppOptions($store['id']);
+            $platformList =[];
+            $StorePluginsExpire=StorePluginsExpire::alias('sub')->where(['sub.store_id'=>$store['id']])
+            ->whereTime('sub.expire_time','>',time())
+            ->join('StorePlugins p','p.id=sub.store_plugins_id')
+            ->field('sub.id,p.plugin_name,p.plugin_title,sub.expire_time,sub.auth_num')
+            ->order('sub.expire_time asc,sub.id desc')
+            ->select();
+            foreach ($StorePluginsExpire as $key => $value) {
+                $auth_num=$value['auth_num'];
+                $use_auth_num=$this->model->where(['store_id'=>$store['id'],'auth_id'=>$value['id']])->count();
+                $stock_auth_num=$auth_num-$use_auth_num;
+                $platformList[] = [
+                    'value' => $value['id'],
+                    'label' => "{$value['plugin_title']},有效期至:{$value['expire_time']},可用授权数量:{$stock_auth_num}",
+                    'disabled' => $use_auth_num>=$auth_num?true:false
+                ];
+            }
         } catch (\Throwable $e) {
             throw new RedirectException($e->getMessage(), "/#/Index/index");
         }
@@ -118,7 +159,7 @@ class StoreAppController extends BaseController
         $builder->addRow('title', 'input', '项目名称', '', [
             'col' => 12,
         ]);
-        $builder->addRow('name', 'select', '所属应用', '', [
+        $builder->addRow('auth_id', 'select', '授权应用', '', [
             'col' => 12,
             'noDataText' => '您还没有更多的已授权应用',
             'options' => $platformList
@@ -176,6 +217,14 @@ class StoreAppController extends BaseController
 
             Db::startTrans();
             try {
+                $StorePluginsExpire=StorePluginsExpire::where(['id'=>$post['auth_id']])->whereTime('expire_time','>',time())->find();
+                if(!$StorePluginsExpire){
+                    return $this->fail('授权不存在或已过期');
+                }
+                $use_auth_num=$this->model->where(['store_id'=>$store_id,'auth_id'=>$StorePluginsExpire->id])->count();
+                if($use_auth_num>=$StorePluginsExpire->auth_num){
+                    return $this->fail('授权数量已用完');
+                }
                 # 修改项目
                 $model->save($post);
                 // 执行应用插件方法
@@ -212,6 +261,28 @@ class StoreAppController extends BaseController
                 throw $e;
             }
         }
+        try {
+            // $platformList = StoreAppMgr::getAuthAppOptions($store['id']);
+            $platformList =[];
+            $StorePluginsExpire=StorePluginsExpire::alias('sub')->where(['sub.store_id'=>$formData['store_id'],'p.plugin_name'=>$formData['name']])
+            ->whereTime('sub.expire_time','>',time())
+            ->join('StorePlugins p','p.id=sub.store_plugins_id')
+            ->field('sub.id,p.plugin_name,p.plugin_title,sub.expire_time,sub.auth_num')
+            ->order('sub.expire_time asc,sub.id desc')
+            ->select();
+            foreach ($StorePluginsExpire as $key => $value) {
+                $auth_num=$value['auth_num'];
+                $use_auth_num=$this->model->where(['store_id'=>$formData['store_id'],'auth_id'=>$value['id']])->count();
+                $stock_auth_num=$auth_num-$use_auth_num;
+                $platformList[] = [
+                    'value' => $value['id'],
+                    'label' => "{$value['plugin_title']},有效期至:{$value['expire_time']},可用授权数量:{$stock_auth_num}",
+                    'disabled' => $use_auth_num>=$auth_num?true:false
+                ];
+            }
+        } catch (\Throwable $e) {
+            throw new RedirectException($e->getMessage(), "/#/Index/index");
+        }
         $builder = new FormBuilder;
         $builder->setMethod('PUT')
             ->addRow('title', 'input', '项目名称', '', [
@@ -223,11 +294,14 @@ class StoreAppController extends BaseController
             ])
             ->addComponent('platform', 'info', '项目类型', '', [
                 'col' => 12,
-            ])
-            ->addComponent('name', 'info', '绑定应用', '', [
+            ]);
+
+            $builder->addRow('auth_id', 'select', '授权应用', '', [
                 'col' => 12,
-            ])
-            ->addRow('username', 'input', '超管账号', '', [
+                'noDataText' => '您还没有更多的已授权应用',
+                'options' => $platformList
+            ]);
+            $builder->addRow('username', 'input', '超管账号', '', [
                 'col' => 12,
             ])
             ->addRow('password', 'input', '登录密码', '', [

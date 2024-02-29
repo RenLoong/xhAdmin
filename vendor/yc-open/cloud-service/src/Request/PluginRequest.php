@@ -82,4 +82,18 @@ class PluginRequest extends Request
         }
         return $this;
     }
+    public function authNum(mixed $params=null)
+    {
+        $this->setMethod('POST');
+        $this->setUrl('Plugin/authNum');
+        $validator = new Validator;
+        $validator->rules([
+            'name' => 'required'
+        ]);
+        $this->validator = $validator;
+        if ($params) {
+            $this->setParams($params);
+        }
+        return $this;
+    }
 }

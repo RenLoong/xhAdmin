@@ -5,6 +5,7 @@ use support\Request;
 use think\Route;
 use think\Service as BaseService;
 use Xbai\Plugins\middleware\PluginMiddleware;
+use Xbai\Plugins\middleware\PluginAuthMiddleware;
 
 /**
  * 插件服务
@@ -40,7 +41,7 @@ class Service extends BaseService
                 $plugin=$pluginsDomains[$host];
                 $route->rule("/", $execute)
                 ->append(['plugin'=>$plugin['plugin'],'appid'=>$plugin['appid']])
-                ->middleware(PluginMiddleware::class);
+                ->middleware([PluginMiddleware::class,PluginAuthMiddleware::class]);
             }
         # baseUrl是以/app/开头的
         }elseif(strpos($baseUrl,'/app/')===0){
@@ -48,7 +49,7 @@ class Service extends BaseService
             $this->app->event->listen('HttpRun', function () use ($route,$execute) {
                 // 注册插件路由
                 $route->rule("app/:plugin", $execute)
-                ->middleware(PluginMiddleware::class);
+                ->middleware([PluginMiddleware::class,PluginAuthMiddleware::class]);
             });
         }
     }

@@ -21,7 +21,7 @@ return [
         // 'swoole.websocket.Close'    => [
         //     \app\common\event\WebSocketClose::class
         // ],
-        'swoole.workerStart'        => [
+        'swoole.init'        => [
             \app\common\event\CreateTask::class,
             \app\common\event\CreateQueue::class
         ],

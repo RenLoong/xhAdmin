@@ -53,11 +53,16 @@ trait UploadTrait
     {
         $cid     = $request->get('cid','');
         $suffix  = $request->get('suffix','*');
+        $limit= $request->get('limit', 10);
         $order = $request->get('order', 'desc');
         # 查询条件组装
         $where[] = ['saas_appid', '=', $this->saas_appid];
         $where[] = ['store_id', '=', $this->store_id];
-        $where[] = ['uid', '=', $this->uid];
+        if($this->uid){
+            $where[] = ['uid', '=', $this->uid];
+        }else{
+            $where[] = ['uid', 'NULL',''];
+        }
         # 取出对后缀格式
         if ($suffix !== '*' && !empty($suffix)) {
             $where[] = ['format', 'in', $suffix];
@@ -68,7 +73,7 @@ trait UploadTrait
         $data  = SystemUpload::with(['category'])
             ->where($where)
             ->order("update_at {$order},id asc")
-            ->paginate()
+            ->paginate($limit)
             ->toArray();
         return parent::successRes($data);
     }
@@ -177,6 +182,9 @@ trait UploadTrait
         $file = $request->file('file');
         # 获取上传目录
         $dirName  = $request->post('dir_name','');
+        if (isset($this->request->uid)) {
+            $this->uid = $this->request->uid;
+        }
         # 上传附件
         $data    = UploadService::upload($file, $dirName, $this->saas_appid, $this->uid, $this->store_id);
         if (!$data) {

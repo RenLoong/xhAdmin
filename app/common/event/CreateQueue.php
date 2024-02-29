@@ -3,11 +3,25 @@ declare (strict_types = 1);
 namespace app\common\event;
 use think\facade\Log;
 use Swoole\Timer;
+use think\App;
+use think\swoole\Manager;
 use app\common\utils\SwooleUtil;
 use queue\Redis;
 class CreateQueue
 {
-    public function handle($event)
+    public function __construct(App $app)
+    {
+        $this->manager         = $app->make(Manager::class);
+    }
+    public function handle()
+    {
+        $this->manager->addWorker(function () {
+            $this->manager->runWithBarrier(function () {
+                $this->process();
+            });
+        }, 'xhadmin-queue');
+    }
+    public function process()
     {
         try {
             $queue=SwooleUtil::getQueue();

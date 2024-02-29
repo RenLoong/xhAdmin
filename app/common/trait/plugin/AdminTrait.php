@@ -320,7 +320,7 @@ trait AdminTrait
             $post = $request->post();
 
             // 数据验证
-            hpValidate(ValidateSystemAdmin::class, $post, 'editSelf');
+            hpValidate(SystemAdmin::class, $post, 'editSelf');
 
             // 空密码，不修改
             if (empty($post['password'])) {
@@ -354,14 +354,14 @@ trait AdminTrait
                     'span' => 12
                 ],
             ])
-            ->addComponent('headimg', 'uploadify', '用户头像', '', [
+            /* ->addComponent('headimg', 'uploadify', '用户头像', '', [
                 'col'   => [
                     'span' => 12
                 ],
                 'props' => [
                     'ext'  => ['jpg', 'png', 'gif']
                 ],
-            ])
+            ]) */
             ->setData($model)
             ->create();
         return $this->successRes($data);

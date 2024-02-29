@@ -317,7 +317,7 @@ class SystemUpdateService
             # 更新服务类
             $class = "app\\common\\service\\UpdateDataService";
             if (class_exists($class)) {
-                $updateServiceCls = new $class($this->request, $this->clientVersion);
+                $updateServiceCls = new $class($this->request, $this->clientVersion, $this->clientVersionName);
                 # 执行更新前置
                 $context = [];
                 if (method_exists($class, 'beforeUpdate')) {

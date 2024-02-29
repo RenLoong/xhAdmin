@@ -90,10 +90,10 @@ class SystemAdmin extends Validate
     {
         return $this->only([
             'username',
-            'nickname',
-            'headimg'
+            'nickname'
         ])
             ->remove('role_id')
+            ->remove('headimg')
             ->remove('username', ['verifyAdd']);
     }
 

@@ -36,14 +36,20 @@ class PublicsController extends BaseController
         # 获取模块名称
         $moduleName = getModule('admin');
         # 获取配置信息
-        $config     = SettingsMgr::config(null,'system','web_name,admin_logo');
+        $config     = SettingsMgr::group(null,'system');
         # 获取网站名称
         $web_name   = empty($config['web_name']) ? 'XHAdmin' : $config['web_name'];
+        $web_icp   = empty($config['web_icp']) ? '' : $config['web_icp'];
+        $web_mps   = empty($config['web_mps']) ? '' : $config['web_mps'];
+        $web_mps_text   = empty($config['web_mps_text']) ? '' : $config['web_mps_text'];
         # 获取网站Logo
         $web_logo   = empty($config['admin_logo']) ? '' : UploadService::url($config['admin_logo']);
         # 返回数据
         $data       = [
             'web_name'              => $web_name,
+            'web_icp'               => $web_icp,
+            'web_mps'               => $web_mps,
+            'web_mps_text'          => $web_mps_text,
             'web_title'             => '总后台登录',
             'web_logo'              => $web_logo,
             'version_name'          => $systemInfo['system_version_name'],
