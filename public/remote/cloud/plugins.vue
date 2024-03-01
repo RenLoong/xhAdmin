@@ -140,11 +140,17 @@
                     <el-tag>{{ detail?.cate_title }}</el-tag>
                   </div>
                 </div>
-                <div class="items">
+                <div class="items" v-if="!detail?.installed">
                   <div class="label">授权数量：</div>
                   <div class="value">
+                    <el-tag type="danger">{{ detail?.auth_num }}个授权</el-tag>
+                  </div>
+                </div>
+                <div class="items" v-else>
+                  <div class="label">拥有授权：</div>
+                  <div class="value">
                     <el-tag type="success">{{ detail?.auth_num }}个授权</el-tag>
-                    <el-button type="success" link @click="hanldBindSite" v-if="detail?.installed">
+                    <el-button type="success" link @click="hanldBindSite">
                       <template #icon>
                         <AppIcons icon="Promotion" />
                       </template>
