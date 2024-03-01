@@ -149,7 +149,7 @@
                 <div class="items" v-else>
                   <div class="label">拥有授权：</div>
                   <div class="value">
-                    <el-tag type="success">{{ detail?.auth_num }}个授权</el-tag>
+                    <el-tag type="success">{{ detail?.have_auth_num }}个授权</el-tag>
                     <el-button type="success" link @click="hanldBindSite">
                       <template #icon>
                         <AppIcons icon="Promotion" />
