@@ -60,8 +60,6 @@ trait UploadTrait
         $where[] = ['store_id', '=', $this->store_id];
         if($this->uid){
             $where[] = ['uid', '=', $this->uid];
-        }else{
-            $where[] = ['uid', 'NULL',''];
         }
         # 取出对后缀格式
         if ($suffix !== '*' && !empty($suffix)) {

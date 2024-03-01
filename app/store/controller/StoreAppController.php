@@ -58,13 +58,19 @@ class StoreAppController extends BaseController
         $platformType = $request->get('platform', '');
         $model        = $this->model;
         $where        = [];
+        $Store=Store::where(['id'=>$request->user['id']])->find();
         $data         = $model
+            ->with('store')
             ->withSearch(['platform'], ['platform' => $platformType])
             ->where($where)
             ->order(['id' => 'desc'])
-            ->paginate($limit)->each(function ($item){
+            ->paginate($limit)->each(function ($item)use($Store){
                 $item->auth_text='未授权';
                 $item->auth_class='auth-not';
+                if($Store->plugins_name){
+                    $item->auth_text='正常';
+                    $item->auth_class='';
+                }
                 $StorePluginsExpire=StorePluginsExpire::where(['id'=>$item->auth_id])->find();
                 if($StorePluginsExpire){
                     if($StorePluginsExpire->expire_time>date('Y-m-d')){

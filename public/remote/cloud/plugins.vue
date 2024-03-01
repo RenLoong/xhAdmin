@@ -144,6 +144,12 @@
                   <div class="label">授权数量：</div>
                   <div class="value">
                     <el-tag type="success">{{ detail?.auth_num }}个授权</el-tag>
+                    <el-button type="success" link @click="hanldBindSite" v-if="detail?.installed">
+                      <template #icon>
+                        <AppIcons icon="Promotion" />
+                      </template>
+                      获取更多授权
+                    </el-button>
                   </div>
                 </div>
                 <div class="items">
@@ -178,12 +184,6 @@
                         <AppIcons icon="Delete" />
                       </template>
                       卸载
-                    </el-button>
-                    <el-button type="success" @click="hanldBindSite">
-                      <template #icon>
-                        <AppIcons icon="Promotion" />
-                      </template>
-                      获取更多授权
                     </el-button>
                   </el-row>
                 </div>
