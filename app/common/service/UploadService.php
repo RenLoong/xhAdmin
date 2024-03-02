@@ -99,13 +99,13 @@ class UploadService
         ];
 
         # 检测文件是否存在
-        if ($info = self::getFileInfo($data['filename'], $data['adapter'])) {
+        /* if ($info = self::getFileInfo($data['filename'], $data['adapter'])) {
             $data['size'] = $info['size'];
             $data['path'] = $info['path'];
             $data['url']  = $filesystem->url($info['path']);
             # 返回数据
             return $data;
-        }
+        } */
         # 上传子目录
         $dirName = $category['dir_name'] ?? 'default';
         # 上传文件
