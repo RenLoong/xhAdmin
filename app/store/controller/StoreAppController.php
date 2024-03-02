@@ -116,7 +116,7 @@ class StoreAppController extends BaseController
                 return $this->fail('授权数量已用完');
             }
             $StorePlugins=StorePlugins::where(['id'=>$StorePluginsExpire->store_plugins_id])->find();
-            $storeApp = StoreAppMgr::getAuthAppDetail($store['id'], $StorePlugins->plugin_name);
+            $storeApp = StoreAppMgr::getAppDetail($StorePlugins->plugin_name);
             # 取平台类型
             $platforms = $storeApp['platform'] ?? [];
 

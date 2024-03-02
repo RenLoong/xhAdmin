@@ -52,6 +52,20 @@ class StoreAppMgr
         $data       = $res->data;
         return $data;
     }
+    public static function getAppDetail($name)
+    {
+        $installed  = PluginMgr::getPluginVersionData($name);
+        $systemInfo = SystemInfoService::info();
+        $res                  = \YcOpen\CloudService\Request::Plugin()
+            ->detail([
+                'name'          => $name,
+                'version'       => $installed['version'],
+                'saas_version'  => $systemInfo['system_version'],
+                'local_version' => $installed['version'],
+            ])
+            ->response();
+        return $res->toArray();
+    }
 
     /**
      * 获取已购买并已安装的应用选项列表
