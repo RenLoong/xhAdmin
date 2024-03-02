@@ -251,7 +251,7 @@ class StoreAppController extends BaseController
         # 检测是否空平台
         $formData['platform'] = array_filter($formData['platform']);
         if (empty($formData['platform'])) {
-            $appDetail = StoreAppMgr::getAuthAppDetail($formData['store_id'],$formData['name']);
+            $appDetail = StoreAppMgr::getAppDetail($formData['name']);
             $formData['platform'] = $appDetail['platform'];
         }
         // 执行应用插件方法
