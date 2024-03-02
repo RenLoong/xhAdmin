@@ -21,8 +21,7 @@
 				</div>
 				<div class="flex-1 auth-list">
 					<div class="app-item" v-for="(formItem, i) in item.form">
-						<el-input-number v-model="formItem.auth_num" :min="0" :max="item.stock_auth_num"
-							class="auth-number" />
+						<el-input-number v-model="formItem.auth_num" :min="0" class="auth-number" />
 						<el-date-picker v-model="formItem.expire_time" type="date" placeholder="有效期" format="YYYY-MM-DD"
 							value-format="YYYY-MM-DD" :shortcuts="expireTimeShortcuts" />
 						<el-button type="danger" size="small" @click="cannelSubAuth(index, i)">取消授权</el-button>
