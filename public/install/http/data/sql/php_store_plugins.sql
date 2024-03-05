@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS `php_store_plugins`;
-CREATE TABLE `php_store_plugins`  (
+DROP TABLE IF EXISTS `__PREFIX__store_plugins`;
+CREATE TABLE `__PREFIX__store_plugins`  (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `store_id` int NULL DEFAULT NULL,
   `plugin_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,

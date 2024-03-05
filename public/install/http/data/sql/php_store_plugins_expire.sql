@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS `php_store_plugins_expire`;
-CREATE TABLE `php_store_plugins_expire`  (
+DROP TABLE IF EXISTS `__PREFIX__store_plugins_expire`;
+CREATE TABLE `__PREFIX__store_plugins_expire`  (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `store_id` int NULL DEFAULT NULL,
   `store_plugins_id` int NULL DEFAULT NULL,
