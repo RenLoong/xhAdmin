@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS `__PREFIX__store_plugins`;
+
 CREATE TABLE `__PREFIX__store_plugins`  (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `store_id` int NULL DEFAULT NULL,

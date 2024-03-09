@@ -12,6 +12,10 @@
 // [ 应用入口文件 ]
 namespace think;
 
+if(!extension_loaded('swoole')){
+    die('请先安装Swoole扩展');
+}
+
 require __DIR__ . '/../vendor/autoload.php';
 
 // 执行HTTP应用并响应
