@@ -283,26 +283,7 @@ trait AriclesTrait
             ->addRow('desc', 'textarea', '简短描述', '', [
                 'col'       => 12,
             ])
-            ->addComponent('content', 'wangEditor', '文章内容', '', [
-                'props' => [
-                    'editorConfig' => [
-                        'MENU_CONF' => [
-                            'uploadImage' => [
-                                'server' => '/' . $this->pluginPrefix . '/admin/Upload/wangeditor',
-                                'headers' => [
-                                    'Appid' => $this->saas_appid
-                                ]
-                            ],
-                            'uploadVideo' => [
-                                'server' => '/' . $this->pluginPrefix . '/admin/Upload/wangeditor',
-                                'headers' => [
-                                    'Appid' => $this->saas_appid
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]);
+            ->addComponent('content', 'wangEditor', '文章内容', '', []);
         return $data;
     }
 }

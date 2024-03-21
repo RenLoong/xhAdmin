@@ -1,6 +1,7 @@
 <?php
 
 namespace app\common\manager;
+
 use Exception;
 use think\facade\Db;
 
@@ -21,7 +22,7 @@ class DbMgr
      */
     public static function querySQL(string $sql)
     {
-        $sql = self::splitSqlFile($sql,';');
+        $sql = self::splitSqlFile($sql, ';');
         foreach ($sql as $item) {
             Db::statement($item);
         }
@@ -39,7 +40,7 @@ class DbMgr
     {
         return Db::statement($sql);
     }
-    
+
     /**
      * 检查表名是否合法
      * @param string $table
@@ -84,9 +85,9 @@ class DbMgr
      */
     public static function removeComments($sql): string
     {
-        return preg_replace("/(\n--[^\n]*)/","", $sql);
+        return preg_replace("/(\n--[^\n]*)/", "", $sql);
     }
-    
+
     /**
      * 分割SQL文件
      * @param mixed $sql
@@ -129,24 +130,21 @@ class DbMgr
                             $temp .= $tokens[$j] . $delimiter;
                             $tokens[$j] = "";
                         }
-
                     }
                 }
             }
         }
         return $output;
     }
-    
+
     /**
      * 获取连接实例
-     * @return Db
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
     public static function instance()
     {
-        /** @var \think\facade\Db */
         $connect = Db::connect();
         $connect->execute('show tables');
         return $connect;
