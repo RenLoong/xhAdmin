@@ -1,4 +1,5 @@
 <?php
+
 use app\common\utils\Password;
 use think\facade\Config;
 use think\facade\Db;
@@ -51,7 +52,7 @@ class InstallUtil
             $database['charset']
         );
         # 导入SQL文件
-        @$mysql->importSqlFile($sqlFile, $database['prefix']);
+        $mysql->importSqlFile($sqlFile, $database['prefix']);
         # 获取数据表名称
         $installName = str_replace(['php_', 'yc_',], '', basename($sqlFile, '.sql'));
         # 返回成功

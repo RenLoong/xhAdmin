@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\trait;
 
 use app\common\builder\FormBuilder;
@@ -51,14 +52,14 @@ trait UploadTrait
      */
     public function index(Request $request)
     {
-        $cid     = $request->get('cid','');
-        $suffix  = $request->get('suffix','*');
-        $limit= $request->get('limit', 10);
+        $cid     = $request->get('cid', '');
+        $suffix  = $request->get('suffix', '*');
+        $limit = $request->get('limit', 10);
         $order = $request->get('order', 'desc');
         # 查询条件组装
         $where[] = ['saas_appid', '=', $this->saas_appid];
         $where[] = ['store_id', '=', $this->store_id];
-        if($this->uid){
+        if ($this->uid) {
             $where[] = ['uid', '=', $this->uid];
         }
         # 取出对后缀格式
@@ -179,7 +180,7 @@ trait UploadTrait
         # 获取上传文件
         $file = $request->file('file');
         # 获取上传目录
-        $dirName  = $request->post('dir_name','');
+        $dirName  = $request->post('dir_name', '');
         if (isset($this->request->uid)) {
             $this->uid = $this->request->uid;
         }

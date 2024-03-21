@@ -210,6 +210,7 @@ class StoreController extends BaseController
      */
     public function index(Request $request)
     {
+        $limit = $request->get('limit', 10);
         $keyword = $request->get('keyword', '');
         $where   = [];
         if ($keyword) {
@@ -218,7 +219,7 @@ class StoreController extends BaseController
         $model = $this->model;
         $data  = $model->where($where)
             ->order(['id' => 'desc'])
-            ->paginate()
+            ->paginate($limit)
             ->each(function ($e) {
                 return $e;
             })
@@ -521,7 +522,7 @@ class StoreController extends BaseController
         if (!$adminModel) {
             return parent::fail('登录错误');
         }
-        
+
         // 构建令牌
         $data  = $adminModel->toArray();
         $token = Auth::encrypt($data);

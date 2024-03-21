@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\trait\plugin;
 
 use app\common\builder\FormBuilder;
@@ -34,7 +35,7 @@ trait AriclesTrait
      * @email 416716328@qq.com
      */
     protected $model = null;
-    
+
     /**
      * 构造函数
      * @author 贵州猿创科技有限公司
@@ -62,20 +63,20 @@ trait AriclesTrait
             ])
             ->pageConfig()
             ->addTopButton('add', '添加', [
-                'api'           => $this->pluginPrefix.'/admin/Articles/add',
+                'api'           => $this->pluginPrefix . '/admin/Articles/add',
                 'path'          => '/Articles/add',
             ], [], [
                 'type'          => 'primary'
             ])
             ->addRightButton('edit', '修改', [
-                'api'           => $this->pluginPrefix.'/admin/Articles/edit',
+                'api'           => $this->pluginPrefix . '/admin/Articles/edit',
                 'path'          => '/Articles/edit',
             ], [], [
                 'type'          => 'primary',
             ])
             ->addRightButton('del', '删除', [
                 'type'          => 'confirm',
-                'api'           => $this->pluginPrefix.'/admin/Articles/del',
+                'api'           => $this->pluginPrefix . '/admin/Articles/del',
                 'method'        => 'delete',
             ], [
                 'type'          => 'error',
@@ -84,10 +85,10 @@ trait AriclesTrait
             ], [
                 'type'          => 'danger',
             ])
-            ->addColumn('create_at', '创建时间',[
+            ->addColumn('create_at', '创建时间', [
                 'width'         => 150
             ])
-            ->addColumn('category.title', '文章分类',[
+            ->addColumn('category.title', '文章分类', [
                 'width'         => 150
             ])
             ->addColumnEle('thumb', '封面', [
@@ -97,7 +98,7 @@ trait AriclesTrait
                 ],
             ])
             ->addColumn('title', '标题名称')
-            ->addColumnEle('link', 'H5链接',[
+            ->addColumnEle('link', 'H5链接', [
                 'params'        => [
                     'type'      => 'link',
                     'props'     => [
@@ -106,14 +107,14 @@ trait AriclesTrait
                     ]
                 ]
             ])
-            ->addColumn('view', '文章热度',[
+            ->addColumn('view', '文章热度', [
                 'width'         => 100
             ])
             ->addColumnEle('status', '状态', [
                 'width' => 150,
                 'params' => [
                     'type' => 'switch',
-                    'api' => $this->pluginPrefix.'/admin/Articles/rowEdit',
+                    'api' => $this->pluginPrefix . '/admin/Articles/rowEdit',
                     'unchecked' => [
                         'text' => '未发布',
                         'value' => '10'
@@ -162,7 +163,7 @@ trait AriclesTrait
             if (empty($post['cid'])) {
                 return $this->fail('请选择文章分类');
             }
-            
+
             # 验证是否已存在
             $where = [
                 'title'      => $post['title']
@@ -189,7 +190,7 @@ trait AriclesTrait
      */
     public function edit(Request $request)
     {
-        $id    = $request->get('id','');
+        $id    = $request->get('id', '');
         $where = [
             'id'        => $id
         ];
@@ -207,11 +208,11 @@ trait AriclesTrait
             if (empty($post['cid'])) {
                 return $this->fail('请选择文章分类');
             }
-                        
+
             # 验证是否已存在
             $where = [
-                ['id','<>',$id],
-                ['title','=',$post['title']]
+                ['id', '<>', $id],
+                ['title', '=', $post['title']]
             ];
             if ($this->model->where($where)->count()) {
                 return $this->fail('该文章已发布');
@@ -237,7 +238,7 @@ trait AriclesTrait
      */
     public function del(Request $request)
     {
-        $id = $request->post('id','');
+        $id = $request->post('id', '');
         $where = [
             'id'        => $id
         ];
@@ -282,7 +283,26 @@ trait AriclesTrait
             ->addRow('desc', 'textarea', '简短描述', '', [
                 'col'       => 12,
             ])
-            ->addComponent('content', 'wangEditor', '文章内容', '');
+            ->addComponent('content', 'wangEditor', '文章内容', '', [
+                'props' => [
+                    'editorConfig' => [
+                        'MENU_CONF' => [
+                            'uploadImage' => [
+                                'server' => '/' . $this->pluginPrefix . '/admin/Upload/wangeditor',
+                                'headers' => [
+                                    'Appid' => $this->saas_appid
+                                ]
+                            ],
+                            'uploadVideo' => [
+                                'server' => '/' . $this->pluginPrefix . '/admin/Upload/wangeditor',
+                                'headers' => [
+                                    'Appid' => $this->saas_appid
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]);
         return $data;
     }
 }
