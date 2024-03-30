@@ -10,7 +10,7 @@ use YcOpen\CloudService\Request\UserRequest;
 
 class PluginMgr
 {
-    
+
     /**
      * 检测是否开发者
      * @return bool
@@ -135,9 +135,9 @@ class PluginMgr
      * @return mixed
      * @author John
      */
-    public static function getOriginMenus(string $name)
+    public static function getOriginMenus(string $name, string $file = 'menus.json')
     {
-        $menuJsonPath = root_path() . "/plugin/{$name}/menus.json";
+        $menuJsonPath = root_path() . "/plugin/{$name}/{$file}";
         if (!file_exists($menuJsonPath)) {
             throw new Exception('插件菜单文件不存在');
         }
