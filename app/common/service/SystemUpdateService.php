@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\service;
 
 use app\common\exception\RollBackException;
@@ -146,7 +147,7 @@ class SystemUpdateService
         # 解压至目标地址(根据环境变量设置)
         if (!env('APP_DEBUG', true)) {
             # 生产环境
-            $rootPath = substr(root_path(),0,-1);
+            $rootPath = substr(root_path(), 0, -1);
             $this->targetPath = $rootPath;
         } else {
             # 开发环境
@@ -262,7 +263,10 @@ class SystemUpdateService
             # 执行导出数据
             $mysql->exportSqlFile($this->backupSqlPath);
         } catch (\Throwable $e) {
-            return JsonMgr::fail("数据库备份失败：{$e->getMessage()}，Line：{$e->getFile()}，File：{$e->getFile()}");
+            if (file_exists($this->backupSqlPath)) {
+                unlink($this->backupSqlPath);
+            }
+            // return JsonMgr::fail("数据库备份失败：{$e->getMessage()}，Line：{$e->getFile()}，File：{$e->getFile()}");
         }
         return JsonMgr::successRes([
             'next' => 'unzip'
