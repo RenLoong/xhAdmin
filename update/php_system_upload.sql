@@ -1,0 +1,1 @@
+ALTER TABLE `php_system_upload` ADD COLUMN `hide` tinyint NULL DEFAULT 0 AFTER `adapter`;

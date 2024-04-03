@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\trait\plugin;
 
 use app\common\manager\PluginMgr;
@@ -78,12 +79,12 @@ trait PublicsTrait
     {
         $pluginVersion      = PluginMgr::getPluginVersionData($request->plugin);
         $systemInfo         = SystemInfoService::info();
-        $project            = SettingsMgr::group($request->appid,'system');
+        $project            = SettingsMgr::group($request->appid, 'system');
         if (!empty($project['web_logo'])) {
             $project['web_logo'] = UploadService::url($project['web_logo']);
         }
         if (empty($project['web_name'])) {
-            $storeApp = StoreAppMgr::detail(['id'=> $request->appid]);
+            $storeApp = StoreAppMgr::detail(['id' => $request->appid]);
             $project  = [
                 'web_name'      => $storeApp['title'],
                 'web_title'     => '管理员登录',
@@ -163,7 +164,7 @@ trait PublicsTrait
             return $this->fail('该用户已被冻结');
         }
         Session::set($request->plugin, $adminModel);
-        
+
         // 更新登录信息
         $ip = $request->ip();
         $adminModel->last_login_ip = $ip;

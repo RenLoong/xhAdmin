@@ -59,6 +59,7 @@ trait UploadTrait
         # 查询条件组装
         $where[] = ['saas_appid', '=', $this->saas_appid];
         $where[] = ['store_id', '=', $this->store_id];
+        $where[] = ['hide', '=', 0];
         if ($this->uid) {
             $where[] = ['uid', '=', $this->uid];
         }
@@ -184,8 +185,9 @@ trait UploadTrait
         if (isset($this->request->uid)) {
             $this->uid = $this->request->uid;
         }
+        $is_hide = $request->post('is_hide', 0);
         # 上传附件
-        $data    = UploadService::upload($file, $dirName, $this->saas_appid, $this->uid, $this->store_id);
+        $data    = UploadService::upload($file, $dirName, $this->saas_appid, $this->uid, $this->store_id, $is_hide);
         if (!$data) {
             return $this->fail('上传失败');
         }
