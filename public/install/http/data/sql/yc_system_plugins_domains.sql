@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS `__PREFIX___system_plugins_domains`;
+DROP TABLE IF EXISTS `__PREFIX__system_plugins_domains`;
 
-CREATE TABLE `__PREFIX___system_plugins_domains`  (
+CREATE TABLE `__PREFIX__system_plugins_domains`  (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `domain` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `host` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
