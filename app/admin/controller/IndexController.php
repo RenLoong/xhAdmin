@@ -65,12 +65,22 @@ class IndexController extends BaseController
         $platformTypes = PlatformTypes::toArray();
         $platformApp = [];
         $platform_echarts = [];
+        $StoreApp = StoreApp::select();
+        $count = [];
+        foreach ($StoreApp as $item) {
+            foreach ($item->platform as $platform) {
+                if (isset($count[$platform])) {
+                    $count[$platform]++;
+                } else {
+                    $count[$platform] = 1;
+                }
+            }
+        }
         foreach ($platformTypes as $value) {
             $where = [
-                ['platform', '=', $value['value']],
+                ['platform', 'like', "%{$value['value']}%"],
             ];
-            $count = StoreApp::where($where)->count();
-            $platformApp[$value['value']] = $count;
+            $platformApp[$value['value']] = $count[$value['value']] ?? 0;
 
             // 查询图表数据
             $today = StoreApp::where($where)->whereDay('create_at')->count();
