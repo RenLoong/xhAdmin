@@ -74,14 +74,14 @@ class SystemAdminController extends BaseController
                 'params'            => [
                     'type'          => 'tags',
                     'options'       => [
-                        '10'=>'禁用',
-                        '20'=>'正常'
+                        '10' => '禁用',
+                        '20' => '正常'
                     ],
                     'style'         => [
-                        '10'=>[
+                        '10' => [
                             'type'  => 'danger',
                         ],
-                        '20'=>[
+                        '20' => [
                             'type'  => 'success',
                         ],
                     ],
@@ -146,7 +146,7 @@ class SystemAdminController extends BaseController
                 'col'       => [
                     'span'  => 12
                 ],
-                'options'   => SystemAdminRole::selectOptions($admin_id)
+                'options'   => SystemAdminRole::selectOptions()
             ])
             ->addRow('status', 'radio', '用户状态', '10', [
                 'col'       => [
@@ -192,7 +192,6 @@ class SystemAdminController extends BaseController
      */
     public function edit(Request $request)
     {
-        $admin_id = $request->user['id'];
         $id = $request->get('id');
         $where = [
             ['id', '=', $id]
@@ -223,7 +222,7 @@ class SystemAdminController extends BaseController
                 'col'       => [
                     'span'  => 12
                 ],
-                'options'   => SystemAdmin::selectOptions($admin_id)
+                'options'   => SystemAdminRole::selectOptions()
             ])
             ->addRow('status', 'radio', '用户状态', '1', [
                 'col'       => [

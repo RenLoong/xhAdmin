@@ -21,10 +21,10 @@ class SystemAdminRole extends ModelSystemAdminRole
      * @param  integer $admin_id
      * @return array
      */
-    public static function selectOptions(int $admin_id): array
+    public static function selectOptions(): array
     {
         $where = [
-            'pid'       => $admin_id
+            'is_system'       => '10'
         ];
         $field = [
             'id as value',

@@ -82,9 +82,8 @@ class SystemAdminRoleController extends BaseController
      */
     public function index(Request $request)
     {
-        $admin_id = $request->user['id'];
         $where = [
-            ['pid', '=', $admin_id],
+            ['is_system', '=', '10'],
         ];
         $data = SystemAdminRole::where($where)->paginate()->toArray();
         return parent::successRes($data);
@@ -100,10 +99,8 @@ class SystemAdminRoleController extends BaseController
      */
     public function add(Request $request)
     {
-        $admin_id = $request->user['id'];
         if ($request->method() == 'POST') {
             $post = $request->post();
-            $post['pid'] = $admin_id;
             // 默认权限
             $post['rule'] = self::getDefaultRule();
             $model = new SystemAdminRole;
@@ -209,7 +206,7 @@ class SystemAdminRoleController extends BaseController
             }
             $rule = $post['rule'];
             $where   = [
-                ['id','in',$rule]
+                ['id', 'in', $rule]
             ];
             $paths = SystemAuthRule::where($where)->column('path');
             $model->rule = array_values(array_filter($paths));
@@ -220,13 +217,13 @@ class SystemAdminRoleController extends BaseController
         }
         // 查询已授权关联规则ID
         $where         = [
-            ['path','in',$model['rule']]
+            ['path', 'in', $model['rule']]
         ];
         $model['rule'] = SystemAuthRule::where($where)->column('id');
         // 获取全部权限规则
-        $rule = SystemAuthRule::order(['sort'=>'asc','id'=>'asc'])
-        ->select()
-        ->toArray();
+        $rule = SystemAuthRule::order(['sort' => 'asc', 'id' => 'asc'])
+            ->select()
+            ->toArray();
         $rule = Data::channelLevel($rule, 0, '', 'id', 'pid');
         // 拼接规则权限为视图所需要的数组
         $authRule = $this->getAuthRule($rule);
