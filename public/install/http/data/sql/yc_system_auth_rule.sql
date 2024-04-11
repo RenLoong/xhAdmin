@@ -90,7 +90,7 @@ INSERT INTO `__PREFIX__system_auth_rule` VALUES (143, '2023-04-30 19:32:44', '20
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (144, '2023-04-30 19:34:48', '2023-04-30 19:52:20', 'storeGroup/group', 0, '站点', 0, '[\"GET\"]', '10', 'none/index', '', 'InboxOutlined', '20', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (145, '2023-04-30 21:11:43', '2023-04-30 21:13:12', 'Plugin/indexGetTable', 139, '表格列表', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (147, '2023-04-30 21:53:43', '2024-04-08 16:47:08', 'Store/index', 144, '站点管理', 0, '[\"GET\"]', '20', 'table/index', '', '', '20', '10', '10');
-INSERT INTO `__PREFIX__system_auth_rule` VALUES (148, '2023-04-30 21:54:09', '2023-04-30 22:18:26', 'Store/add', 147, '开通站点', 0, '[\"GET\",\"POST\"]', '20', 'form/index', '', '', '10', '10', '10');
+INSERT INTO `__PREFIX__system_auth_rule` VALUES (148, '2023-04-30 21:54:09', '2023-04-30 22:18:26', 'Store/add', 147, '创建站点', 0, '[\"GET\",\"POST\"]', '20', 'form/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (149, '2023-04-30 21:54:40', '2023-04-30 21:55:55', 'Store/edit', 147, '修改站点', 0, '[\"GET\",\"PUT\"]', '20', 'form/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (150, '2023-04-30 21:55:22', '2023-04-30 21:55:22', 'Store/del', 147, '删除站点', 0, '[\"GET\",\"DELETE\"]', '20', 'none/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (151, '2023-04-30 21:57:39', '2023-04-30 21:57:39', 'Store/indexGetTable', 147, '站点表格', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');

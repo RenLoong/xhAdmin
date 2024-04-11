@@ -71,12 +71,12 @@ class StoreController extends BaseController
             ->rowConfig([
                 'height' => 70
             ])
-            ->addTopButton('add', '开通站点', [
+            ->addTopButton('add', '创建站点', [
                 'type' => 'page',
                 'api' => 'admin/Store/add',
                 'path' => '/Store/add',
             ], [
-                'title' => '开通站点',
+                'title' => '创建站点',
             ], [
                 'type' => 'primary'
             ])
@@ -151,7 +151,8 @@ class StoreController extends BaseController
                 'icon' => 'RestOutlined'
             ])
             ->addScreen('keyword', 'input', '站点名称')
-            ->addColumn('title', '名称')
+            ->addScreen('username', 'input', '账号')
+            ->addColumn('title', '站点名称')
             ->addColumn('username', '账号')
             ->addColumnEle('logo', '图标', [
                 'width' => 60,
@@ -215,6 +216,10 @@ class StoreController extends BaseController
         $where   = [];
         if ($keyword) {
             $where[] = ['title', 'like', '%' . $keyword . '%'];
+        }
+        $username = $request->get('username', '');
+        if ($username) {
+            $where[] = ['username', 'like', '%' . $username . '%'];
         }
         $model = $this->model;
         $data  = $model->where($where)

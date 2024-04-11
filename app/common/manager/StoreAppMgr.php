@@ -24,7 +24,7 @@ class StoreAppMgr
      */
     public static function model(array $where): modelStoreApp
     {
-        $model = modelStoreApp::where($where)->find();
+        $model = modelStoreApp::where($where)->withTrashed()->find();
         if (!$model) {
             throw new Exception('找不到该项目数据');
         }
