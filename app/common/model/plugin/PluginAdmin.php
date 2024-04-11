@@ -28,7 +28,7 @@ class PluginAdmin extends AppidModel
     {
         return $this->hasOne(PluginRoles::class, 'id', 'role_id');
     }
-    
+
     /**
      * 获取头像URL
      * @param mixed $value
@@ -58,16 +58,16 @@ class PluginAdmin extends AppidModel
     }
 
     /**
-    * 获取管理员角色规则
-    * @author 贵州猿创科技有限公司
-    * @Email 416716328@qq.com
-    * @DateTime 2023-03-11
-    */
+     * 获取管理员角色规则
+     * @author 贵州猿创科技有限公司
+     * @Email 416716328@qq.com
+     * @DateTime 2023-03-11
+     */
     public static function getAdminRule(int $adminId)
     {
         return [];
     }
-    
+
     /**
      * 获取管理员组件选项
      * @Author 贵州猿创科技有限公司
@@ -76,10 +76,10 @@ class PluginAdmin extends AppidModel
      * @param  integer $admin_id
      * @return array
      */
-    public function selectOptions(int $admin_id): array
+    public function selectOptions(int $saas_appid): array
     {
         $where = [
-            ['pid', '=', $admin_id],
+            ['saas_appid', '=', $saas_appid],
         ];
         $field = [
             'id as value',
@@ -100,8 +100,8 @@ class PluginAdmin extends AppidModel
      * @param  integer $admin_id
      * @return array
      */
-    public function selectRolesOptions(int $admin_id): array
+    public function selectRolesOptions(int $saas_appid): array
     {
-        return (new PluginRoles)->selectOptions($admin_id);
+        return (new PluginRoles)->selectOptions($saas_appid);
     }
 }

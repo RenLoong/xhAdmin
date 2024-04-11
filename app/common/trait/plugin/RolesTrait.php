@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\trait\plugin;
 
 use app\common\builder\FormBuilder;
@@ -38,7 +39,7 @@ trait RolesTrait
      * @var PluginRoles
      */
     protected $model = null;
-    
+
     /**
      * 构造函数
      * @author 贵州猿创科技有限公司
@@ -49,7 +50,7 @@ trait RolesTrait
         parent::__construct($app);
         $this->model = new PluginRoles;
     }
-    
+
     /**
      * 表格
      * @param Request $request
@@ -65,26 +66,26 @@ trait RolesTrait
             ->addActionOptions('操作')
             ->pageConfig()
             ->addTopButton('add', '添加', [
-                'api'           => $this->pluginPrefix.'/admin/Roles/add',
+                'api'           => $this->pluginPrefix . '/admin/Roles/add',
                 'path'          => '/Roles/add',
             ], [], [
                 'type'          => 'primary'
             ])
             ->addRightButton('auth', '授权', [
-                'api'           => $this->pluginPrefix.'/admin/Roles/auth',
+                'api'           => $this->pluginPrefix . '/admin/Roles/auth',
                 'path'          => '/Roles/auth',
             ], [], [
                 'type'          => 'warning',
             ])
             ->addRightButton('edit', '修改', [
-                'api'           => $this->pluginPrefix.'/admin/Roles/edit',
+                'api'           => $this->pluginPrefix . '/admin/Roles/edit',
                 'path'          => '/Roles/edit',
             ], [], [
                 'type'          => 'primary',
             ])
             ->addRightButton('del', '删除', [
                 'type'          => 'confirm',
-                'api'           => $this->pluginPrefix.'/admin/Roles/del',
+                'api'           => $this->pluginPrefix . '/admin/Roles/del',
                 'method'        => 'delete',
             ], [
                 'type'          => 'error',
@@ -114,10 +115,9 @@ trait RolesTrait
     public function index(Request $request)
     {
         $saas_appid = $request->saas_appid;
-        $admin_id = $request->user['id'];
         $where      = [
-            'pid'           => $admin_id,
             'saas_appid'    => $saas_appid,
+            'is_system'     => '10'
         ];
         $data = $this->model->where($where)->paginate()->toArray();
         return $this->successRes($data);
@@ -133,14 +133,12 @@ trait RolesTrait
      */
     public function add(Request $request)
     {
-        $admin_id = $request->user['id'];
         if ($request->method() == 'POST') {
             $post = $request->post();
             if (empty($post['title'])) {
                 return $this->fail('角色名称不能为空');
             }
             $post['saas_appid'] = $this->saas_appid;
-            $post['pid'] = $admin_id;
             // 默认权限
             $post['rule'] = self::getDefaultRule();
             if (!$this->model->save($post)) {
@@ -324,7 +322,7 @@ trait RolesTrait
             $data[$i]['title']          = $label;
             $data[$i]['value']          = $value['path'];
             $data[$i]['disabled']       = $disabled;
-            if ($value['children']) {
+            if (isset($value['children']) && !empty($value['children'])) {
                 $data[$i]['children']   = $this->getAuthRule($value['children']);
             }
             $i++;

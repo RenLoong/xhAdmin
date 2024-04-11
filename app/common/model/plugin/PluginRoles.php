@@ -14,7 +14,7 @@ class PluginRoles extends AppidModel
     protected $json = ['rule'];
     # 设置JSON数据返回数组
     protected $jsonAssoc = true;
-    
+
     /**
      * 获取角色组件选项
      * @Author 贵州猿创科技有限公司
@@ -23,10 +23,10 @@ class PluginRoles extends AppidModel
      * @param  integer $admin_id
      * @return array
      */
-    public function selectOptions(int $admin_id): array
+    public function selectOptions(int $saas_appid): array
     {
         $where = [
-            'pid'       => $admin_id
+            'saas_appid'       => $saas_appid
         ];
         $field = [
             'id as value',
@@ -39,7 +39,7 @@ class PluginRoles extends AppidModel
         return $list;
     }
 
-    
+
     /**
      * 验证是否可删除
      * @param int $role_id

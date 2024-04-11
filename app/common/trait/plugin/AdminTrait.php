@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\trait\plugin;
 
 use app\admin\validate\SystemAdmin;
@@ -50,7 +51,7 @@ trait AdminTrait
         parent::__construct($app);
         $this->model = new PluginAdmin;
     }
-    
+
     /**
      * 获取表格
      * @param Request $request
@@ -68,20 +69,20 @@ trait AdminTrait
             ])
             ->pageConfig()
             ->addTopButton('add', '添加', [
-                'api'           => $this->pluginPrefix.'/admin/Admin/add',
+                'api'           => $this->pluginPrefix . '/admin/Admin/add',
                 'path'          => '/Admin/add',
             ], [], [
                 'type'          => 'primary'
             ])
             ->addRightButton('edit', '修改', [
-                'api'           => $this->pluginPrefix.'/admin/Admin/edit',
+                'api'           => $this->pluginPrefix . '/admin/Admin/edit',
                 'path'          => '/Admin/edit',
             ], [], [
                 'type'          => 'primary',
             ])
             ->addRightButton('del', '删除', [
                 'type'          => 'confirm',
-                'api'           => $this->pluginPrefix.'/admin/Admin/del',
+                'api'           => $this->pluginPrefix . '/admin/Admin/del',
                 'method'        => 'delete',
             ], [
                 'type'          => 'error',
@@ -106,10 +107,10 @@ trait AdminTrait
                     'type'          => 'tags',
                     'options'       => StatusEnum::dictOptions(),
                     'style'         => [
-                        '10'=>[
+                        '10' => [
                             'type'  => 'danger',
                         ],
-                        '20'=>[
+                        '20' => [
                             'type'  => 'success',
                         ],
                     ],
@@ -129,10 +130,9 @@ trait AdminTrait
      */
     public function index(Request $request)
     {
-        $admin_id = $request->user['id'];
         $where    = [
-            'pid'           => $admin_id,
             'saas_appid'    => $this->saas_appid,
+            'is_system'     => '10'
         ];
         $data = $this->model->with(['role'])
             ->where($where)
@@ -140,7 +140,7 @@ trait AdminTrait
             ->toArray();
         return $this->successRes($data);
     }
-    
+
     /**
      * 添加
      * @param Request $request
@@ -160,7 +160,7 @@ trait AdminTrait
 
             # 数据验证
             hpValidate(SystemAdmin::class, $post, 'add');
-            
+
             # 验证是否已存在
             $where = [
                 'username'      => $post['username']
@@ -182,7 +182,7 @@ trait AdminTrait
                 'col'       => [
                     'span'  => 12
                 ],
-                'options'   => $this->model->selectRolesOptions($admin_id)
+                'options'   => $this->model->selectRolesOptions($this->saas_appid)
             ])
             ->addRow('status', 'radio', '用户状态', '10', [
                 'col'       => [
@@ -261,7 +261,7 @@ trait AdminTrait
                 'col'       => [
                     'span'  => 12
                 ],
-                'options'   => $this->model->selectRolesOptions($admin_id)
+                'options'   => $this->model->selectRolesOptions($this->saas_appid)
             ])
             ->addRow('status', 'radio', '用户状态', '10', [
                 'col'       => [
