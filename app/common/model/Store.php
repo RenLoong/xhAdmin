@@ -5,6 +5,7 @@ namespace app\common\model;
 use app\common\Model;
 use app\common\service\UploadService;
 use app\common\utils\Password;
+use think\model\concern\SoftDelete;
 
 /**
  * 租户
@@ -15,6 +16,8 @@ use app\common\utils\Password;
  */
 class Store extends Model
 {
+    use SoftDelete;
+    protected $deleteTime = 'delete_time';
     // 设置JSON字段转换
     protected $json = [
         'plugins_name'

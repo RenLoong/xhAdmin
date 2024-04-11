@@ -41,7 +41,8 @@
         "easy-task/easy-task": "^2.4",
         "topthink/think-captcha": "^3.0",
         "phpoffice/phpspreadsheet": "^2.0",
-        "phpoffice/phpword": "^1.2"
+        "phpoffice/phpword": "^1.2",
+        "loong/apistore-cloud": "^1.0"
     },
     "require-dev": {
         "topthink/think-trace": "^1.0"

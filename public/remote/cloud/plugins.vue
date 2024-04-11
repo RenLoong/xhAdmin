@@ -42,7 +42,7 @@
     <!-- 应用列表 -->
     <div class="xh-apps-list" v-if="plugins.length">
       <el-row :gutter="20">
-        <el-col class="xh-row" :span="4" v-for="(item, index) in plugins" :key="index" @click="hanldDetail(item)">
+        <el-col class="xh-row" :xs="24" :sm="12" :md="8" :lg="6" :xl="4" v-for="(item, index) in plugins" :key="index" @click="hanldDetail(item)">
           <el-card class="box-card">
             <div slot="header" class="clearfix">
               <el-image style="width: 100%; height: 190px;border-radius: 3px;" :src="item.logo" />
@@ -829,12 +829,12 @@ export default {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
   font-size: 14px;
 
   .tabs {
     display: flex;
     flex-direction: row;
+	flex:1;
 
     .item {
       padding: 10px;
@@ -849,7 +849,9 @@ export default {
   .search {
 
     .el-form-item {
-      min-width: 100px;
+      .el-select{
+        --el-select-width: 100px;
+      }
       margin-bottom: 0px !important;
     }
   }
@@ -866,5 +868,15 @@ export default {
   -webkit-line-clamp: 10;
   font-size: 14px;
   color: #606266;
+}
+@media only screen and (max-width: 1500px){
+	.xh-search-card {
+		flex-direction:column-reverse;
+		flex-wrap: wrap;
+    align-items: flex-start;
+		.tabs {
+			width:100%;
+		}
+	}
 }
 </style>

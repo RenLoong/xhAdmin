@@ -81,6 +81,17 @@ class StoreAppController extends BaseController
                         $item->auth_class = 'auth-expire';
                     }
                 }
+                // 执行应用插件方法
+                $class = "\\plugin\\{$item['name']}\\api\\Created";
+                if (method_exists($class, 'read')) {
+                    $post['id'] = $item->id;
+                    $logicCls   = new $class;
+                    try {
+                        $userData = $logicCls->read($item->id);
+                        isset($userData['username']) && $item->username = $userData['username'];
+                    } catch (\Throwable $e) {
+                    }
+                }
             });
         return parent::successRes($data);
     }
@@ -120,7 +131,7 @@ class StoreAppController extends BaseController
             # 取平台类型
             $platforms = $storeApp['platform'] ?? [];
 
-            # 验证平台数量是否充足
+            /* # 验证平台数量是否充足
             foreach ($platforms as $value) {
                 # 验证平台数量是否充足
                 $storePlatformNum     = Store::where('id', $store['id'])->value($value);
@@ -128,7 +139,7 @@ class StoreAppController extends BaseController
                 if ($storeCreatedPlatform >= $storePlatformNum) {
                     throw new Exception("平台【{$value}】可用数量不足");
                 }
-            }
+            } */
             $post['platform'] = $platforms;
             $post['name']     = $StorePlugins->plugin_name;
             $post['auth_id']  = $StorePluginsExpire->id;
@@ -257,7 +268,7 @@ class StoreAppController extends BaseController
             $formData['platform'] = $appDetail['platform'];
         }
         // 执行应用插件方法
-        $class = "\\plugin\\{$model->name}\\api\\Created";
+        $class = "\\plugin\\{$model['name']}\\api\\Created";
         if (method_exists($class, 'read')) {
             $post['id'] = $model->id;
             $logicCls   = new $class;
@@ -338,8 +349,15 @@ class StoreAppController extends BaseController
     {
         # 获取数据
         $saas_appid = (int) $request->post('id', 0);
+        $store_id   = $request->user['id'];
+        $storeApp   = $this->model->where(['id' => $saas_appid, 'store_id' => $store_id])->find();
+        if (!$storeApp) {
+            return $this->fail('找不到该应用');
+        }
         # 删除项目
-        StoreAppMgr::del($saas_appid);
+        if (!$storeApp->delete()) {
+            return $this->fail('操作失败');
+        }
         return $this->success('操作成功');
     }
 

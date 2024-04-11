@@ -12,12 +12,12 @@ class Store extends Validate
         'password'          => 'require',
         'title'             => 'require',
         'logo'              => 'require',
-        'wechat'            => 'require|number',
+        /* 'wechat'            => 'require|number',
         'mini_wechat'       => 'require|number',
         'douyin'            => 'require|number',
         'h5'                => 'require|number',
         'app'               => 'require|number',
-        'other'             => 'require|number',
+        'other'             => 'require|number', */
     ];
 
     protected $message  =   [

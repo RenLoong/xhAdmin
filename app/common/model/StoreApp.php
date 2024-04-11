@@ -6,6 +6,7 @@ use app\common\enum\PlatformTypes;
 use app\common\Model;
 use app\common\service\UploadService;
 use think\facade\Db;
+use think\model\concern\SoftDelete;
 
 /**
  * 应用模型
@@ -15,8 +16,10 @@ use think\facade\Db;
  */
 class StoreApp extends Model
 {
-	# 设置json类型字段
-	protected $json = ['platform'];
+    use SoftDelete;
+    protected $deleteTime = 'delete_time';
+    # 设置json类型字段
+    protected $json = ['platform'];
     # 设置JSON字段的类型
     protected $jsonAssoc = true;
 
@@ -88,12 +91,12 @@ class StoreApp extends Model
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    protected function getPlatformAttr($value,$data)
+    protected function getPlatformAttr($value, $data)
     {
         if (empty($value)) {
             $platform = Db::name('store_app')
-            ->where(['id'=> $data['id']])
-            ->value('platform');
+                ->where(['id' => $data['id']])
+                ->value('platform');
             return [$platform];
         }
         return $value;
@@ -130,7 +133,7 @@ class StoreApp extends Model
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    protected function getPlatformTextAttr($value,$data)
+    protected function getPlatformTextAttr($value, $data)
     {
         $platform  = '';
         if (isset($data['platform'])) {

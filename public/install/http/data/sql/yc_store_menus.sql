@@ -17,8 +17,8 @@ CREATE TABLE `__PREFIX__store_menus`  (
   `is_system` enum('10','20') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '10' COMMENT '是否系统：10否，20是',
   `is_default` enum('10','20') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '10' COMMENT '默认权限：10否，20是',
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `path`(`path`) USING BTREE COMMENT '唯一索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '渠道-菜单' ROW_FORMAT = DYNAMIC;
+  INDEX `path`(`path` ASC) USING BTREE COMMENT '唯一索引'
+) ENGINE = InnoDB AUTO_INCREMENT = 40 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '渠道-菜单' ROW_FORMAT = DYNAMIC;
 
 INSERT INTO `__PREFIX__store_menus` VALUES (1, '2022-10-27 17:22:51', '2023-10-10 16:53:15', 'Index/index', 0, '控制台', 0, '[\"GET\"]', '10', 'remote/index', '/remote/store/index', 'HomeOutlined', '20', '20', '20');
 INSERT INTO `__PREFIX__store_menus` VALUES (2, '2022-10-27 17:22:51', '2023-07-24 14:14:16', 'Index/welcome', 1, '控制台', 0, '[\"GET\"]', '10', 'remote/index', '/remote/store/index', '', '10', '20', '20');
@@ -52,3 +52,10 @@ INSERT INTO `__PREFIX__store_menus` VALUES (29, '2023-05-03 17:42:57', '2023-05-
 INSERT INTO `__PREFIX__store_menus` VALUES (30, '2023-05-03 17:44:02', '2023-05-03 17:44:36', 'UserFinance/actionFinance', 29, '操作财务', 0, '[\"GET\",\"PUT\"]', '20', 'form/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__store_menus` VALUES (31, '2023-05-03 19:53:40', '2023-07-23 16:11:28', 'StoreApp/edit', 21, '修改项目', 0, '[\"GET\",\"PUT\"]', '20', 'form/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__store_menus` VALUES (32, '2023-06-16 11:44:08', '2023-07-23 15:27:31', 'StoreApp/del', 21, '删除项目', 0, '[\"GET\",\"DELETE\"]', '20', 'none/index', '', '', '10', '10', '10');
+INSERT INTO `__PREFIX__store_menus` VALUES (33, '2024-04-09 15:32:48', '2024-04-09 15:32:48', 'StoreAppRecycleBin/index', 0, '回收站', 0, '[\"GET\"]', '20', 'table/index', '', '', '20', '10', '10');
+INSERT INTO `__PREFIX__store_menus` VALUES (34, '2024-04-09 15:33:08', '2024-04-09 15:33:08', 'StoreAppRecycleBin/indexGetTable', 33, '表格', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');
+INSERT INTO `__PREFIX__store_menus` VALUES (35, '2024-04-09 15:33:38', '2024-04-09 15:33:38', 'StoreAppRecycleBin/restore', 33, '恢复', 0, '[\"GET\",\"POST\"]', '20', 'none/index', '', '', '10', '10', '10');
+INSERT INTO `__PREFIX__store_menus` VALUES (36, '2024-04-09 15:33:56', '2024-04-09 15:33:56', 'StoreAppRecycleBin/delete', 33, '删除', 0, '[\"GET\",\"POST\"]', '10', 'none/index', '', '', '10', '10', '10');
+INSERT INTO `__PREFIX__store_menus` VALUES (37, '2024-04-09 17:45:04', '2024-04-09 17:45:04', 'StoreLog/index', 0, '操作日志', 0, '[\"GET\"]', '20', 'table/index', '', '', '20', '10', '10');
+INSERT INTO `__PREFIX__store_menus` VALUES (38, '2024-04-09 17:45:25', '2024-04-09 17:45:25', 'StoreLog/indexGetTable', 37, '表格', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');
+INSERT INTO `__PREFIX__store_menus` VALUES (39, '2024-04-09 17:45:25', '2024-04-09 17:45:25', 'StoreLog/clear', 37, '清除', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');

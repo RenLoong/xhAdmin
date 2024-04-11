@@ -266,6 +266,10 @@ class SystemUpdateService
             if (file_exists($this->backupSqlPath)) {
                 unlink($this->backupSqlPath);
             }
+            Log::write(
+                "数据库备份失败：{$e->getMessage()}，Line：{$e->getFile()}，File：{$e->getFile()}",
+                'xhadmin_update_error'
+            );
             // return JsonMgr::fail("数据库备份失败：{$e->getMessage()}，Line：{$e->getFile()}，File：{$e->getFile()}");
         }
         return JsonMgr::successRes([

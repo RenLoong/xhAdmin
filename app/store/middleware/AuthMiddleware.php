@@ -2,6 +2,8 @@
 
 namespace app\store\middleware;
 
+use app\common\model\Store;
+use app\common\model\StoreLog;
 use Closure;
 use Exception;
 use loong\oauth\facade\Auth;
@@ -26,9 +28,21 @@ class AuthMiddleware
     {
         $request->token = null;
         $request->user = null;
+        $StoreLog = new StoreLog();
+        $StoreLog->action_ip = $request->ip();
+        $StoreLog->path = $request->baseUrl();
+        $StoreLog->params = $request->param();
         try {
             self::canAccess($request);
+            if ($request->user) {
+                $StoreLog->store_id = $request->user['id'];
+            }
+            $StoreLog->save();
         } catch (\Throwable $e) {
+            if ($request->user) {
+                $StoreLog->store_id = $request->user['id'];
+            }
+            $StoreLog->save();
             return json(['code' => $e->getCode(), 'msg' => $e->getMessage()]);
         }
         $response = $next($request);
@@ -48,7 +62,7 @@ class AuthMiddleware
     {
         $control  = '';
         $action  = '';
-        $pathinfo = explode('/',$request->pathinfo());
+        $pathinfo = explode('/', $request->pathinfo());
         if (isset($pathinfo[0])) {
             $control = $pathinfo[0];
         }
@@ -85,11 +99,15 @@ class AuthMiddleware
             throw new Exception('用户信息获取失败', 12000);
         }
         $request->token = $authorization;
-        $request->user = $user;
+        $Store = Store::where(['id' => $user['id']])->find();
+        if (!$Store) {
+            throw new Exception('用户信息获取失败', 12000);
+        }
         # 验证渠道状态
-        if ($user['status'] === '10') {
+        if ($Store->status != '20') {
             throw new Exception('该渠道已被禁用，请联系管理员', 12000);
         }
+        $request->user = $user;
         return true;
     }
 }

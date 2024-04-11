@@ -2381,6 +2381,53 @@
             "install-path": "../league/mime-type-detection"
         },
         {
+            "name": "loong/apistore-cloud",
+            "version": "1.0.1",
+            "version_normalized": "1.0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/RenLoong/apistore-cloud.git",
+                "reference": "2abb415e5ff522f720c1836b34b6a1eda0ccd385"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/RenLoong/apistore-cloud/zipball/2abb415e5ff522f720c1836b34b6a1eda0ccd385",
+                "reference": "2abb415e5ff522f720c1836b34b6a1eda0ccd385",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.7",
+                "php": "^8.0",
+                "vlucas/phpdotenv": "^5.4"
+            },
+            "time": "2024-04-11T03:37:34+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "files": [
+                    "./src/helpers.php"
+                ],
+                "psr-4": {
+                    "loong\\ApiStore\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "余心",
+                    "email": "unknown.renlong@gmail.com"
+                }
+            ],
+            "support": {
+                "issues": "https://github.com/RenLoong/apistore-cloud/issues",
+                "source": "https://github.com/RenLoong/apistore-cloud/tree/1.0.1"
+            },
+            "install-path": "../loong/apistore-cloud"
+        },
+        {
             "name": "loong/oauth",
             "version": "1.0.7",
             "version_normalized": "1.0.7.0",

@@ -1,12 +1,13 @@
 DROP TABLE IF EXISTS `__PREFIX__system_auth_rule`;
+
 CREATE TABLE `__PREFIX__system_auth_rule`  (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `create_at` datetime NULL DEFAULT NULL,
   `update_at` datetime NULL DEFAULT NULL,
   `path` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '请求地址：控制器/操作方法',
-  `pid` int(11) NULL DEFAULT 0 COMMENT '父级菜单地址',
+  `pid` int NULL DEFAULT 0 COMMENT '父级菜单地址',
   `title` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '菜单名称',
-  `sort` int(11) NULL DEFAULT 0 COMMENT '菜单排序，值越大越靠后',
+  `sort` int NULL DEFAULT 0 COMMENT '菜单排序，值越大越靠后',
   `method` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '请求类型：GET,POST,PUT,DELETE',
   `is_api` enum('10','20') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '10' COMMENT '是否接口：10否 20是',
   `component` enum('none/index','form/index','table/index','remote/index','vue/index','html/index') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'none/index' COMMENT '组件类型',
@@ -16,8 +17,8 @@ CREATE TABLE `__PREFIX__system_auth_rule`  (
   `is_system` enum('10','20') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '10' COMMENT '是否系统：10否 20是',
   `is_default` enum('10','20') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '10' COMMENT '默认权限：10否 20是',
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `path`(`path`) USING BTREE COMMENT '唯一索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 194 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-权限规则' ROW_FORMAT = DYNAMIC;
+  INDEX `path`(`path` ASC) USING BTREE COMMENT '唯一索引'
+) ENGINE = InnoDB AUTO_INCREMENT = 201 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统-权限规则' ROW_FORMAT = DYNAMIC;
 
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (1, '2022-10-27 17:22:51', '2023-03-07 21:36:28', 'SystemIndex/group', 0, '首页', 0, '[\"GET\"]', '10', 'none/index', '', 'HomeOutlined', '20', '20', '20');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (2, '2022-10-27 17:22:51', '2023-05-10 14:47:24', 'Index/index', 1, '控制台', 0, '[\"GET\"]', '10', 'remote/index', '/remote/welcome', 'FolderOpenOutlined', '20', '20', '20');
@@ -30,7 +31,7 @@ INSERT INTO `__PREFIX__system_auth_rule` VALUES (8, '2022-10-27 17:22:51', '2023
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (9, '2022-10-27 17:22:51', '2023-04-16 17:16:04', 'Auth/tabs', 7, '权限管理', 0, '[\"GET\"]', '10', 'none/index', '', '', '20', '20', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (10, '2022-10-27 17:22:51', '2023-10-17 17:19:15', 'SystemConfig/settings', 8, '系统设置', 0, '[\"GET\",\"PUT\"]', '20', 'form/index', 'group=system&type=1', '', '20', '20', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (11, '2022-10-27 17:22:51', '2023-08-03 23:18:44', 'SystemConfigGroup/index', 8, '配置分组', 0, '[\"GET\"]', '20', 'table/index', '', '', '10', '20', '10');
-INSERT INTO `__PREFIX__system_auth_rule` VALUES (12, '2022-10-27 17:22:51', '2023-04-16 17:16:04', 'SystemAuthRule/index', 9, '菜单管理', 0, '[\"GET\"]', '20', 'table/index', '', '', '20', '20', '10');
+INSERT INTO `__PREFIX__system_auth_rule` VALUES (12, '2022-10-27 17:22:51', '2024-04-09 17:41:43', 'SystemAuthRule/index', 9, '菜单管理', 0, '[\"GET\"]', '20', 'table/index', '', '', '10', '20', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (13, '2022-10-27 17:22:51', '2023-04-16 17:16:04', 'SystemAdminRole/index', 9, '部门管理', 0, '[\"GET\"]', '20', 'table/index', '', '', '20', '20', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (14, '2022-10-27 17:22:51', '2023-04-16 17:16:04', 'SystemAdmin/index', 9, '账户管理', 0, '[\"GET\"]', '20', 'table/index', '', '', '20', '20', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (17, '2022-10-27 17:22:51', '2023-10-27 14:03:06', 'Modules/tabs', 7, '功能模块', 0, '[\"GET\"]', '10', 'none/index', '', '', '20', '20', '10');
@@ -88,19 +89,18 @@ INSERT INTO `__PREFIX__system_auth_rule` VALUES (142, '2023-04-30 19:32:16', '20
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (143, '2023-04-30 19:32:44', '2023-04-30 19:32:44', 'Plugin/uninstall', 139, '卸载应用', 0, '[\"GET\",\"DELETE\"]', '20', 'none/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (144, '2023-04-30 19:34:48', '2023-04-30 19:52:20', 'storeGroup/group', 0, '渠道', 0, '[\"GET\"]', '10', 'none/index', '', 'InboxOutlined', '20', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (145, '2023-04-30 21:11:43', '2023-04-30 21:13:12', 'Plugin/indexGetTable', 139, '表格列表', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');
-INSERT INTO `__PREFIX__system_auth_rule` VALUES (146, '2023-04-30 21:52:41', '2023-04-30 21:52:41', 'storeGroup/tabs', 144, '渠道模块', 0, '[\"GET\"]', '10', 'none/index', '', '', '20', '10', '10');
-INSERT INTO `__PREFIX__system_auth_rule` VALUES (147, '2023-04-30 21:53:43', '2023-04-30 21:53:43', 'Store/index', 146, '渠道管理', 0, '[\"GET\"]', '20', 'table/index', '', '', '20', '10', '10');
+INSERT INTO `__PREFIX__system_auth_rule` VALUES (147, '2023-04-30 21:53:43', '2024-04-08 16:47:08', 'Store/index', 144, '渠道管理', 0, '[\"GET\"]', '20', 'table/index', '', '', '20', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (148, '2023-04-30 21:54:09', '2023-04-30 22:18:26', 'Store/add', 147, '开通渠道', 0, '[\"GET\",\"POST\"]', '20', 'form/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (149, '2023-04-30 21:54:40', '2023-04-30 21:55:55', 'Store/edit', 147, '修改渠道', 0, '[\"GET\",\"PUT\"]', '20', 'form/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (150, '2023-04-30 21:55:22', '2023-04-30 21:55:22', 'Store/del', 147, '删除渠道', 0, '[\"GET\",\"DELETE\"]', '20', 'none/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (151, '2023-04-30 21:57:39', '2023-04-30 21:57:39', 'Store/indexGetTable', 147, '渠道表格', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');
-INSERT INTO `__PREFIX__system_auth_rule` VALUES (157, '2023-05-01 02:23:35', '2023-05-01 02:23:35', 'StoreProject/index', 146, '项目管理', 0, '[\"GET\"]', '20', 'table/index', '', '', '10', '10', '10');
+INSERT INTO `__PREFIX__system_auth_rule` VALUES (157, '2023-05-01 02:23:35', '2024-04-08 16:47:28', 'StoreProject/index', 144, '项目管理', 0, '[\"GET\"]', '20', 'table/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (158, '2023-05-01 02:39:51', '2023-05-01 02:39:51', 'StoreProject/add', 157, '创建平台', 0, '[\"GET\",\"POST\"]', '20', 'form/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (159, '2023-05-01 02:56:21', '2023-05-01 02:56:21', 'StoreProject/edit', 157, '修改平台', 0, '[\"GET\",\"PUT\"]', '20', 'form/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (160, '2023-05-01 03:03:01', '2023-05-01 03:03:01', 'StoreProject/del', 157, '删除平台', 0, '[\"GET\",\"DELETE\"]', '20', 'none/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (161, '2023-05-01 03:04:09', '2023-05-01 03:04:09', 'StoreProject/indexGetTable', 157, '平台列表', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (162, '2023-05-03 12:18:46', '2023-05-03 12:18:46', 'Store/login', 147, '管理渠道表格', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');
-INSERT INTO `__PREFIX__system_auth_rule` VALUES (163, '2023-05-03 14:45:48', '2023-05-03 14:45:48', 'StoreMenus/index', 146, '渠道菜单', 0, '[\"GET\"]', '20', 'table/index', '', '', '20', '10', '10');
+INSERT INTO `__PREFIX__system_auth_rule` VALUES (163, '2023-05-03 14:45:48', '2024-04-09 15:28:53', 'StoreMenus/index', 144, '渠道菜单', 0, '[\"GET\"]', '20', 'table/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (164, '2023-05-03 14:46:25', '2023-05-03 14:48:02', 'StoreMenus/add', 163, '添加渠道菜单', 0, '[\"GET\",\"POST\"]', '20', 'form/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (165, '2023-05-03 14:46:53', '2023-05-03 16:11:18', 'StoreMenus/edit', 163, '修改渠道菜单', 0, '[\"GET\",\"PUT\"]', '20', 'form/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (166, '2023-05-03 14:47:20', '2023-05-03 14:47:20', 'StoreMenus/del', 163, '删除渠道菜单', 0, '[\"GET\",\"DELETE\"]', '20', 'none/index', '', '', '10', '10', '10');
@@ -125,3 +125,10 @@ INSERT INTO `__PREFIX__system_auth_rule` VALUES (190, '2023-09-28 14:26:34', '20
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (191, '2023-09-28 14:28:15', '2023-09-28 14:28:15', 'Updated/index', 41, '更新日志', 0, '[\"GET\"]', '20', 'remote/index', 'remote/update/log', '', '20', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (192, '2023-10-02 16:43:43', '2023-10-02 16:43:43', 'SystemAuthRule/addResource', 12, '添加资源菜单', 0, '[\"GET\",\"POST\"]', '20', 'form/index', '', '', '10', '10', '10');
 INSERT INTO `__PREFIX__system_auth_rule` VALUES (193, '2023-10-25 12:37:41', '2023-10-25 12:37:41', 'PluginCloud/bill', 174, '云服务账单', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');
+INSERT INTO `__PREFIX__system_auth_rule` VALUES (194, '2024-04-08 17:18:03', '2024-04-08 17:18:03', 'StoreRecycleBin/index', 144, '回收站', 0, '[\"GET\"]', '10', 'table/index', '', '', '20', '10', '10');
+INSERT INTO `__PREFIX__system_auth_rule` VALUES (195, '2024-04-08 17:18:25', '2024-04-08 17:18:25', 'StoreRecycleBin/indexGetTable', 194, '表格', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');
+INSERT INTO `__PREFIX__system_auth_rule` VALUES (196, '2024-04-08 17:18:49', '2024-04-08 17:18:49', 'StoreRecycleBin/delete', 194, '删除', 0, '[\"GET\",\"DELETE\",\"POST\"]', '20', 'none/index', '', '', '10', '10', '10');
+INSERT INTO `__PREFIX__system_auth_rule` VALUES (197, '2024-04-08 17:19:25', '2024-04-08 17:19:25', 'StoreRecycleBin/restore', 194, '恢复', 0, '[\"GET\",\"POST\"]', '20', 'none/index', '', '', '10', '10', '10');
+INSERT INTO `__PREFIX__system_auth_rule` VALUES (198, '2024-04-09 16:36:29', '2024-04-09 16:41:03', 'SystemAdminLog/index', 9, '操作日志', 0, '[\"GET\"]', '10', 'table/index', '', '', '20', '10', '10');
+INSERT INTO `__PREFIX__system_auth_rule` VALUES (199, '2024-04-09 16:36:55', '2024-04-09 16:36:55', 'SystemAdminLog/indexGetTable', 198, '表格', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');
+INSERT INTO `__PREFIX__system_auth_rule` VALUES (200, '2024-04-09 16:36:55', '2024-04-09 16:36:55', 'SystemAdminLog/clear', 198, '清除', 0, '[\"GET\"]', '20', 'none/index', '', '', '10', '10', '10');

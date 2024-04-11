@@ -3,6 +3,7 @@
 namespace app\admin\middleware;
 
 use app\common\manager\AuthMgr;
+use app\common\model\SystemAdminLog;
 use Closure;
 use Exception;
 use loong\oauth\facade\Auth;
@@ -29,14 +30,32 @@ class AuthMiddleware
     {
         $request->token = null;
         $request->user = null;
+        $AdminLog = new SystemAdminLog;
+        $AdminLog->action_ip = $request->ip();
+        $AdminLog->path = $request->baseUrl();
+        $AdminLog->params = $request->param();
         # 检测是否具有权限
-        self::canAccess($request);
+        try {
+            self::canAccess($request);
+            if ($request->user) {
+                $AdminLog->admin_id = $request->user['id'];
+                $AdminLog->role_id = $request->user['role_id'];
+            }
+            $AdminLog->save();
+        } catch (\Throwable $th) {
+            if ($request->user) {
+                $AdminLog->admin_id = $request->user['id'];
+                $AdminLog->role_id = $request->user['role_id'];
+            }
+            $AdminLog->save();
+            throw $th;
+        }
         # 检测通过
         $response = $next($request);
         return $response;
     }
 
-    
+
     /**
      * 检测是否有权限
      * @param \support\Request $request
@@ -50,7 +69,7 @@ class AuthMiddleware
     {
         $control  = '';
         $action  = '';
-        $pathinfo = explode('/',$request->pathinfo());
+        $pathinfo = explode('/', $request->pathinfo());
         if (isset($pathinfo[0])) {
             $control = $pathinfo[0];
         }

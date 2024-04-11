@@ -56,11 +56,11 @@ class StoreController extends BaseController
      */
     public function indexGetTable(Request $request)
     {
-        $platformAssets = PlatformTypes::toArray();
+        /* $platformAssets = PlatformTypes::toArray();
         foreach ($platformAssets as $key => $value) {
             $platformAssets[$key]['title'] = $value['text'];
             $platformAssets[$key]['field'] = $value['value'];
-        }
+        } */
         $builder = new ListBuilder;
         $data    = $builder
             ->addActionOptions('操作', [
@@ -145,7 +145,7 @@ class StoreController extends BaseController
             ], [
                 'type' => 'error',
                 'title' => '温馨提示',
-                'content' => '该数据删除将不可恢复，请谨慎操作',
+                'content' => '是否将该渠道放入回收站？',
             ], [
                 'type' => 'danger',
                 'icon' => 'RestOutlined'
@@ -174,13 +174,13 @@ class StoreController extends BaseController
                     ]
                 ],
             ])
-            ->addColumnEle('surplusNum', '渠道资产：已创建/总数量', [
+            /* ->addColumnEle('surplusNum', '渠道资产：已创建/总数量', [
                 'width' => 330,
                 'params' => [
                     'type' => 'assets',
                     'resource' => $platformAssets,
                 ]
-            ])
+            ]) */
             ->addColumnEle('is_uploadify', '附件库权限', [
                 'width' => 150,
                 'params' => [
@@ -381,7 +381,7 @@ class StoreController extends BaseController
                 'col' => 6,
                 'options' => UploadifyAuthEnum::getOptions(),
             ])
-            ->addRow('wechat', 'input', '公众号数量', '', [
+            /* ->addRow('wechat', 'input', '公众号数量', '', [
                 'col' => 12,
             ])
             ->addRow('mini_wechat', 'input', '微信小程序', '', [
@@ -398,7 +398,7 @@ class StoreController extends BaseController
             ])
             ->addRow('other', 'input', '其他应用', '', [
                 'col' => 12,
-            ])
+            ]) */
             ->addRow('remarks', 'textarea', '渠道备注（可选）', '');
         return $builder;
     }
@@ -476,7 +476,7 @@ class StoreController extends BaseController
             if (!$model) {
                 throw new Exception('该数据不存在');
             }
-            # 通用查询条件
+            /* # 通用查询条件
             $where = [
                 'store_id'      => $id
             ];
@@ -487,7 +487,7 @@ class StoreController extends BaseController
             # 删除渠道所有附件
             SystemUpload::where($where)->delete();
             # 删除渠道旗下配置项
-            SystemConfig::where($where)->delete();
+            SystemConfig::where($where)->delete(); */
             # 删除渠道
             if (!$model->delete()) {
                 throw new Exception('删除渠道失败');
