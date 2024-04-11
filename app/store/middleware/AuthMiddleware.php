@@ -86,7 +86,7 @@ class AuthMiddleware
         // 获取登录信息
         $authorization = $request->header('Authorization', '');
         if (empty($authorization)) {
-            throw new Exception('请先登录渠道账号', 12000);
+            throw new Exception('请先登录站点账号', 12000);
         }
         // 获取用户信息
         try {
@@ -103,9 +103,9 @@ class AuthMiddleware
         if (!$Store) {
             throw new Exception('用户信息获取失败', 12000);
         }
-        # 验证渠道状态
+        # 验证站点状态
         if ($Store->status != '20') {
-            throw new Exception('该渠道已被禁用，请联系管理员', 12000);
+            throw new Exception('该站点已被禁用，请联系管理员', 12000);
         }
         $request->user = $user;
         return true;

@@ -17,7 +17,7 @@ class SystemUploadController extends BaseController
     use UploadTrait;
 
     /**
-     * 渠道ID
+     * 站点ID
      * @var int|null
      */
     protected $store_id = null;

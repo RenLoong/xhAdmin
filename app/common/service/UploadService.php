@@ -24,7 +24,7 @@ class UploadService
     use RemoteUpload;
 
     /**
-     * 渠道ID
+     * 站点ID
      * @var null|int
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
@@ -53,7 +53,7 @@ class UploadService
      * @param string $dir_name 上传目录(分类dir_name)
      * @param mixed $appid 上传应用ID
      * @param mixed $uid 上传用户ID
-     * @param mixed $store_id 上传渠道ID
+     * @param mixed $store_id 上传站点ID
      * @throws \Exception
      * @return array
      * @author 贵州猿创科技有限公司
@@ -62,7 +62,7 @@ class UploadService
      */
     public static function upload(UploadedFile $file, string $dir_name = '', $appid = null, $uid = null, $store_id = null, $is_hide = 0)
     {
-        # 设置渠道ID
+        # 设置站点ID
         self::setStoreId($store_id);
         # 设置应用ID
         self::setSaasAppid($appid);

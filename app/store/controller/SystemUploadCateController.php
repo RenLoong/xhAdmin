@@ -18,7 +18,7 @@ class SystemUploadCateController extends BaseController
     use UploadCateTrait;
 
     /**
-     * 渠道ID
+     * 站点ID
      * @var int|null
      */
     protected $store_id = null;

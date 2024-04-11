@@ -63,17 +63,17 @@ trait Table
 
     // 列字段名（注：属性层级越深，渲染性能就越差，例如：aa.bb.cc.dd.ee）
     private $columns = [];
-    // 数据渠道配置项（基于 Promise API）
+    // 数据站点配置项（基于 Promise API）
     private $proxyConfig = [
-        // 启用动态序号渠道，每一页的序号会根据当前页数变化
+        // 启用动态序号站点，每一页的序号会根据当前页数变化
         'seq'    => true,
-        // 启用排序渠道，当点击排序时会自动触发 query 行为
+        // 启用排序站点，当点击排序时会自动触发 query 行为
         'sort'   => true,
-        // 启用筛选渠道，当点击筛选时会自动触发 query 行为 
+        // 启用筛选站点，当点击筛选时会自动触发 query 行为 
         'filter' => true,
-        // 启用表单渠道，当点击表单提交按钮时会自动触发 reload 行为
+        // 启用表单站点，当点击表单提交按钮时会自动触发 reload 行为
         'form'   => true,
-        // 数据渠道字段
+        // 数据站点字段
         'props'  => [
             // 默认无分页
             'list' => 'data',
@@ -110,9 +110,9 @@ trait Table
      * @author 贵州猿创科技有限公司
      * @copyright 贵州猿创科技有限公司
      */
-    public function setTableTabs(array $data,string $field,string $active)
+    public function setTableTabs(array $data, string $field, string $active)
     {
-        $this->tabsConfig = array_merge($this->tabsConfig,[
+        $this->tabsConfig = array_merge($this->tabsConfig, [
             'active' => $active,
             'field'  => $field,
             'list'   => $data,
@@ -612,7 +612,7 @@ trait Table
         // 当前页码
         $currentPage = (int) request()->get('page', 1);
         // 分页配置
-        $config = config('paginator',[]);
+        $config = config('paginator', []);
         // 每页数量
         $listRows                   = isset($config['listRows']) ? $config['listRows'] : 20;
         $this->pagerConfig          = array_merge([

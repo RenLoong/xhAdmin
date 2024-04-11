@@ -66,17 +66,17 @@ class SystemInfoService
         $data['system_version_name']    = $versionData['version_name'];
         $data['system_version']         = $versionData['version'];
         # 优先读取旧版授权文件
-        $tokenFilePath = root_path().'token.pem';
-        $privateFilePath = root_path().'private_key.pem';
+        $tokenFilePath = root_path() . 'token.pem';
+        $privateFilePath = root_path() . 'private_key.pem';
         # 新版授权文件
         $authFilePath = config_path() . 'authorization.json';
         if (file_exists($tokenFilePath) && file_exists($privateFilePath)) {
             $data['site_encrypt'] = file_get_contents($tokenFilePath);
             $data['privatekey'] = file_get_contents($privateFilePath);
-        }else if(file_exists($authFilePath)){
-            # 设置渠道商版权
-            $autData = json_decode(file_get_contents($authFilePath),true);
-            $data = array_merge($data,$autData);
+        } else if (file_exists($authFilePath)) {
+            # 设置站点商版权
+            $autData = json_decode(file_get_contents($authFilePath), true);
+            $data = array_merge($data, $autData);
             $data['system_name']    = $autData['name'];
             $data['about_name']     = $autData['copyright'];
             $data['service_wx']     = $autData['wechat'];
@@ -85,7 +85,7 @@ class SystemInfoService
         }
         return $data;
     }
-    
+
     /**
      * 获取版本信息
      * @param string $name
@@ -97,9 +97,9 @@ class SystemInfoService
      */
     public static function version(string $name = '')
     {
-        $packPath            = root_path().'config/version.json';
+        $packPath            = root_path() . 'config/version.json';
         if (!file_exists($packPath)) {
-            $packPath       = root_path().'version.json';
+            $packPath       = root_path() . 'version.json';
         }
         if (!file_exists($packPath)) {
             throw new Exception('框架版本出错');

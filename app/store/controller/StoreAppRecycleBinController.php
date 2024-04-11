@@ -16,7 +16,7 @@ use support\Request;
 use think\facade\Db;
 
 /**
- * 渠道管理
+ * 站点管理
  *
  * @author 贵州猿创科技有限公司
  * @Email 416716328@qq.com
@@ -157,7 +157,7 @@ class StoreAppRecycleBinController extends BaseController
         # 开启事务
         Db::startTrans();
         try {
-            # 查询渠道信息
+            # 查询站点信息
             $where = [
                 'id' => $id
             ];
@@ -165,9 +165,9 @@ class StoreAppRecycleBinController extends BaseController
             if (!$model) {
                 throw new Exception('该数据不存在');
             }
-            # 恢复渠道
+            # 恢复站点
             if (!$model->restore()) {
-                throw new Exception('恢复渠道失败');
+                throw new Exception('恢复站点失败');
             }
             Db::commit();
             return $this->success('恢复成功');
@@ -192,7 +192,7 @@ class StoreAppRecycleBinController extends BaseController
 
         # 开启事务
         try {
-            # 查询渠道信息
+            # 查询站点信息
             $where = [
                 'id' => $id
             ];

@@ -15,7 +15,7 @@ use think\helper\Str;
 class Login
 {
     /**
-     * 渠道商登录
+     * 站点商登录
      * @param \support\Request $request
      * @param int $appid
      * @return array

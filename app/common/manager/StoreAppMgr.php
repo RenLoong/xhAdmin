@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\manager;
 
 use app\admin\utils\UploadUtil;
@@ -123,7 +124,7 @@ class StoreAppMgr
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public static function getAuthAppDetail(int $store_id,string $name)
+    public static function getAuthAppDetail(int $store_id, string $name)
     {
         $list = self::getAuthApp($store_id);
         foreach ($list as $value) {
@@ -144,7 +145,7 @@ class StoreAppMgr
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public static function getAuthAppOptions(int $store_id,bool $isLabel = true,bool $isPlatform = true)
+    public static function getAuthAppOptions(int $store_id, bool $isLabel = true, bool $isPlatform = true)
     {
         # 获取已授权的租户应用
         $list = self::getAuthApp($store_id);
@@ -177,7 +178,7 @@ class StoreAppMgr
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public static function getAuthAppPlatformOptions(int $store_id,string $platform,bool $isLabel = true)
+    public static function getAuthAppPlatformOptions(int $store_id, string $platform, bool $isLabel = true)
     {
         # 获取已授权的租户应用
         $list = self::getAuthApp($store_id);
@@ -208,12 +209,12 @@ class StoreAppMgr
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public static function getStoreCreatedPlatform(int $store_id,string $platform)
+    public static function getStoreCreatedPlatform(int $store_id, string $platform)
     {
         # 获取已创建应用的数量
         $where = [
-            ['store_id','=',$store_id],
-            ['platform','like','%"'.$platform.'"%']
+            ['store_id', '=', $store_id],
+            ['platform', 'like', '%"' . $platform . '"%']
         ];
         $storeAppNum = modelStoreApp::where($where)->count();
         return $storeAppNum;
@@ -241,7 +242,7 @@ class StoreAppMgr
     public static function created(array $data)
     {
         if (empty($data['store_id'])) {
-            throw new Exception('缺少参数 -- [渠道ID]');
+            throw new Exception('缺少参数 -- [站点ID]');
         }
         if (empty($data['platform'])) {
             throw new Exception('缺少参数 -- [项目类型]');
@@ -280,7 +281,7 @@ class StoreAppMgr
                 throw new Exception('创建项目默认分类失败');
             }
             # 创建默认附件库配置
-            $store        = StoreMgr::detail(['id'=> $data['store_id']]);
+            $store        = StoreMgr::detail(['id' => $data['store_id']]);
             $request = request();
             $upload_drive = $store['is_uploadify'] === '20' ? 'local' : 'aliyun';
             $data = [

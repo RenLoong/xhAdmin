@@ -21,7 +21,7 @@ use yzh52521\filesystem\facade\Filesystem;
 trait BaseUpload
 {
     /**
-     * 渠道ID
+     * 站点ID
      * @var null|int
      * @author 贵州猿创科技有限公司
      * @email 416716328@qq.com
@@ -264,7 +264,7 @@ trait BaseUpload
     }
 
     /**
-     * 设置渠道ID
+     * 设置站点ID
      * @param null|int $id
      * @return void
      * @author 贵州猿创科技有限公司

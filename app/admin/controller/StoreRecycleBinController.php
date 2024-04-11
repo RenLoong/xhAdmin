@@ -20,7 +20,7 @@ use think\facade\Db;
 use think\facade\Session;
 
 /**
- * 渠道管理
+ * 站点管理
  *
  * @author 贵州猿创科技有限公司
  * @Email 416716328@qq.com
@@ -73,7 +73,7 @@ class StoreRecycleBinController extends BaseController
             ], [
                 'type' => 'success',
                 'title' => '温馨提示',
-                'content' => '是否确认恢复该渠道？',
+                'content' => '是否确认恢复该站点？',
             ], [
                 'type' => 'success',
                 'icon' => 'RefreshRight'
@@ -85,12 +85,12 @@ class StoreRecycleBinController extends BaseController
             ], [
                 'type' => 'error',
                 'title' => '温馨提示',
-                'content' => '是否确认删除该渠道所有数据？请谨慎操作，该操作不可逆！',
+                'content' => '是否确认删除该站点所有数据？请谨慎操作，该操作不可逆！',
             ], [
                 'type' => 'danger',
                 'icon' => 'RestOutlined'
             ])
-            ->addScreen('keyword', 'input', '渠道名称')
+            ->addScreen('keyword', 'input', '站点名称')
             ->addColumn('title', '名称')
             ->addColumn('username', '账号')
             ->addColumnEle('logo', '图标', [
@@ -165,7 +165,7 @@ class StoreRecycleBinController extends BaseController
         # 开启事务
         Db::startTrans();
         try {
-            # 查询渠道信息
+            # 查询站点信息
             $where = [
                 'id' => $id
             ];
@@ -173,9 +173,9 @@ class StoreRecycleBinController extends BaseController
             if (!$model) {
                 throw new Exception('该数据不存在');
             }
-            # 恢复渠道
+            # 恢复站点
             if (!$model->restore()) {
-                throw new Exception('恢复渠道失败');
+                throw new Exception('恢复站点失败');
             }
             Db::commit();
             return $this->success('恢复成功');
@@ -201,7 +201,7 @@ class StoreRecycleBinController extends BaseController
         # 开启事务
         Db::startTrans();
         try {
-            # 查询渠道信息
+            # 查询站点信息
             $where = [
                 'id' => $id
             ];
@@ -213,17 +213,17 @@ class StoreRecycleBinController extends BaseController
             $where = [
                 'store_id'      => $id
             ];
-            # 删除渠道旗下项目
+            # 删除站点旗下项目
             StoreApp::where($where)->delete();
-            # 删除渠道默认分类
+            # 删除站点默认分类
             SystemUploadCate::where($where)->delete();
-            # 删除渠道所有附件
+            # 删除站点所有附件
             SystemUpload::where($where)->delete();
-            # 删除渠道旗下配置项
+            # 删除站点旗下配置项
             SystemConfig::where($where)->delete();
-            # 删除渠道
+            # 删除站点
             if (!$model->force()->delete()) {
-                throw new Exception('删除渠道失败');
+                throw new Exception('删除站点失败');
             }
             Db::commit();
             return $this->success('删除成功');

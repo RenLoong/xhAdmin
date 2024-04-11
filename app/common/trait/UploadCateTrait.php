@@ -1,4 +1,5 @@
 <?php
+
 namespace app\common\trait;
 
 use app\common\builder\FormBuilder;
@@ -24,7 +25,7 @@ trait UploadCateTrait
     protected $request = null;
 
     /**
-     * 渠道ID（null则获取系统配置）
+     * 站点ID（null则获取系统配置）
      * @var int|null
      */
     protected $store_id = null;
@@ -54,9 +55,9 @@ trait UploadCateTrait
         $where[] = ['store_id', '=', $this->store_id];
         $where[] = ['uid', '=', $this->uid];
         $data = SystemUploadCate::where($where)
-        ->order("sort {$order},id asc")
-        ->select()
-        ->toArray();
+            ->order("sort {$order},id asc")
+            ->select()
+            ->toArray();
         return $this->successRes($data);
     }
 
@@ -160,7 +161,7 @@ trait UploadCateTrait
         if ($model->is_system === '20') {
             return $this->fail('系统分类，禁止删除');
         }
-        if (SystemUpload::where('cid',$id)->count()) {
+        if (SystemUpload::where('cid', $id)->count()) {
             return $this->fail('该分类下已有附件，禁止删除');
         }
         if (!$model->delete()) {

@@ -31,7 +31,7 @@ trait UploadTrait
     protected $saas_appid = null;
 
     /**
-     * 渠道ID（null则获取系统配置）
+     * 站点ID（null则获取系统配置）
      * @var int|null
      */
     protected $store_id = null;

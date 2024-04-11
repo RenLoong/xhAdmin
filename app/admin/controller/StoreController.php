@@ -20,7 +20,7 @@ use think\facade\Db;
 use think\facade\Session;
 
 /**
- * 渠道管理
+ * 站点管理
  *
  * @author 贵州猿创科技有限公司
  * @Email 416716328@qq.com
@@ -71,12 +71,12 @@ class StoreController extends BaseController
             ->rowConfig([
                 'height' => 70
             ])
-            ->addTopButton('add', '开通', [
+            ->addTopButton('add', '开通站点', [
                 'type' => 'page',
                 'api' => 'admin/Store/add',
                 'path' => '/Store/add',
             ], [
-                'title' => '开通渠道',
+                'title' => '开通站点',
             ], [
                 'type' => 'primary'
             ])
@@ -113,7 +113,7 @@ class StoreController extends BaseController
                 'api' => 'admin/Store/copyrightSet',
                 'path' => '/Store/copyrightSet',
             ], [
-                'title' => '渠道版权设置',
+                'title' => '站点版权设置',
             ], [
                 'type' => 'primary',
                 'icon' => 'EditOutlined'
@@ -126,18 +126,18 @@ class StoreController extends BaseController
                 'type' => 'info',
                 'icon' => 'DesktopOutlined'
             ])
-            ->addRightButton('edit', '修改渠道', [
+            ->addRightButton('edit', '修改站点', [
                 'group' => true,
                 'type' => 'page',
                 'api' => 'admin/Store/edit',
                 'path' => '/Store/edit',
             ], [
-                'title' => '修改渠道',
+                'title' => '修改站点',
             ], [
                 'type' => 'primary',
                 'icon' => 'EditOutlined'
             ])
-            ->addRightButton('del', '删除渠道', [
+            ->addRightButton('del', '删除站点', [
                 'group' => true,
                 'type' => 'confirm',
                 'api' => 'admin/Store/del',
@@ -145,12 +145,12 @@ class StoreController extends BaseController
             ], [
                 'type' => 'error',
                 'title' => '温馨提示',
-                'content' => '是否将该渠道放入回收站？',
+                'content' => '是否将该站点放入回收站？',
             ], [
                 'type' => 'danger',
                 'icon' => 'RestOutlined'
             ])
-            ->addScreen('keyword', 'input', '渠道名称')
+            ->addScreen('keyword', 'input', '站点名称')
             ->addColumn('title', '名称')
             ->addColumn('username', '账号')
             ->addColumnEle('logo', '图标', [
@@ -174,7 +174,7 @@ class StoreController extends BaseController
                     ]
                 ],
             ])
-            /* ->addColumnEle('surplusNum', '渠道资产：已创建/总数量', [
+            /* ->addColumnEle('surplusNum', '站点资产：已创建/总数量', [
                 'width' => 330,
                 'params' => [
                     'type' => 'assets',
@@ -247,10 +247,10 @@ class StoreController extends BaseController
 
             Db::startTrans();
             try {
-                # 创建渠道
+                # 创建站点
                 $model = $this->model;
                 if (!$model->save($post)) {
-                    throw new Exception('创建渠道失败');
+                    throw new Exception('创建站点失败');
                 }
                 # 创建附件库分类
                 $cateData        = [
@@ -262,7 +262,7 @@ class StoreController extends BaseController
                 ];
                 $uploadCateModel = new SystemUploadCate;
                 if (!$uploadCateModel->save($cateData)) {
-                    throw new Exception('创建渠道默认分类失败');
+                    throw new Exception('创建站点默认分类失败');
                 }
                 # 提交事务
                 Db::commit();
@@ -362,16 +362,16 @@ class StoreController extends BaseController
         $builder = new FormBuilder;
         $builder = $builder
             ->setMethod('PUT')
-            ->addRow('username', 'input', '渠道账号', '', [
+            ->addRow('username', 'input', '站点账号', '', [
                 'col' => 12,
             ])
             ->addRow('password', 'input', '登录密码', '', [
                 'col' => 12,
             ])
-            ->addRow('title', 'input', '渠道名称', '', [
+            ->addRow('title', 'input', '站点名称', '', [
                 'col' => 12,
             ])
-            ->addComponent('logo', 'uploadify', '渠道图标', '', [
+            ->addComponent('logo', 'uploadify', '站点图标', '', [
                 'col' => 6,
                 'props' => [
                     'suffix' => ['jpg', 'jpeg', 'png', 'gif']
@@ -399,7 +399,7 @@ class StoreController extends BaseController
             ->addRow('other', 'input', '其他应用', '', [
                 'col' => 12,
             ]) */
-            ->addRow('remarks', 'textarea', '渠道备注（可选）', '');
+            ->addRow('remarks', 'textarea', '站点备注（可选）', '');
         return $builder;
     }
 
@@ -433,19 +433,19 @@ class StoreController extends BaseController
         $builder  = new FormBuilder;
         $data     = $builder
             ->setMethod('PUT')
-            ->addRow('title', 'input', '渠道名称', '', [
+            ->addRow('title', 'input', '站点名称', '', [
                 'col' => [
                     'span' => 12
                 ],
             ])
             ->addRow('copyright_service', 'input', '专属客服', '', [
-                'placeholder' => '渠道首页展示的专属客服，如不填写，则按照系统配置中的显示',
+                'placeholder' => '站点首页展示的专属客服，如不填写，则按照系统配置中的显示',
                 'col' => [
                     'span' => 12
                 ],
             ])
             ->addRow('copyright_tutorial', 'textarea', '系统教程', '', [
-                'placeholder' => '渠道首页展示的系统教程，如不填写，则按照系统配置中的显示',
+                'placeholder' => '站点首页展示的系统教程，如不填写，则按照系统配置中的显示',
             ])
             ->setFormData($formData)
             ->create();
@@ -468,7 +468,7 @@ class StoreController extends BaseController
         # 开启事务
         Db::startTrans();
         try {
-            # 查询渠道信息
+            # 查询站点信息
             $where = [
                 'id' => $id
             ];
@@ -480,17 +480,17 @@ class StoreController extends BaseController
             $where = [
                 'store_id'      => $id
             ];
-            # 删除渠道旗下项目
+            # 删除站点旗下项目
             StoreApp::where($where)->delete();
-            # 删除渠道默认分类
+            # 删除站点默认分类
             SystemUploadCate::where($where)->delete();
-            # 删除渠道所有附件
+            # 删除站点所有附件
             SystemUpload::where($where)->delete();
-            # 删除渠道旗下配置项
+            # 删除站点旗下配置项
             SystemConfig::where($where)->delete(); */
-            # 删除渠道
+            # 删除站点
             if (!$model->delete()) {
-                throw new Exception('删除渠道失败');
+                throw new Exception('删除站点失败');
             }
             Db::commit();
             return $this->success('删除成功');
@@ -501,7 +501,7 @@ class StoreController extends BaseController
     }
 
     /**
-     * 登录渠道平台
+     * 登录站点平台
      * @param Request $request
      * @return \support\Response
      * @copyright 贵州猿创科技有限公司
