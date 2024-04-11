@@ -359,7 +359,7 @@ class StoreAppMgr
             # 删除单页内容
             Db::name('plugin_tags')->where($where)->delete();
             # 删除项目
-            if (!$model->delete()) {
+            if (!$model->force()->delete()) {
                 throw new Exception('删除项目失败');
             }
             Db::commit();
