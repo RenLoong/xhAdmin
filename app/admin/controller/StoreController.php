@@ -221,6 +221,9 @@ class StoreController extends BaseController
         if ($username) {
             $where[] = ['username', 'like', '%' . $username . '%'];
         }
+        if ($request->user['role']['is_system'] !== '20') {
+            $where[] = ['admin_id', '=', $request->user['id']];
+        }
         $model = $this->model;
         $data  = $model->where($where)
             ->order(['id' => 'desc'])
@@ -254,6 +257,7 @@ class StoreController extends BaseController
             try {
                 # 创建站点
                 $model = $this->model;
+                $post['admin_id'] = $request->user['id'];
                 if (!$model->save($post)) {
                     throw new Exception('创建站点失败');
                 }

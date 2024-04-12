@@ -1,0 +1,1 @@
+ALTER TABLE `php_store` ADD COLUMN `admin_id` int NULL AFTER `delete_time`;
