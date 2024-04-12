@@ -23,7 +23,7 @@
 <div align="center">
 
 [官网](https://xhadmin.cn/) |
-[在线体验](https://demo.kfadmin.net/admin/) |
+[在线体验](https://demo.xhadmin.cn/admin/) |
 [帮助文档](https://www.kancloud.cn/me_coder/xhadmin/3203726) |
 [安装教程](https://www.kancloud.cn/me_coder/xhadmin/3203728) |
 [应用市场](https://xhadmin.cn/)
@@ -36,6 +36,15 @@
 ### 🌈框架介绍
 
 xhadmin 是一套基于最新技术的研发的多应用 Saas 框架，支持在线升级和安装模块及模板，拥有良好的开发框架、成熟稳定的技术解决方案、提供丰富的扩展功能。为开发者赋能，助力企业发展、国家富强，致力于打造最受欢迎的多应用 Saas 系统。
+
+### ☘ 交流群
+
+为了让xhadmin多应用SaaS框架能快速成长，欢迎加入微信交流群群，群内除xhadmin相关话题以外禁止任何广告行为，在你扫码加入群聊之前请先考虑清楚：
+
+- 由于群二维码有失效时间，加我个人微信后备注：``进群``，我拉你！
+
+
+- <img src="https://pxphp-edu.oss-cn-beijing.aliyuncs.com/ycFlyingChess/20240412/76eccdb6c4dfe71ec31c372858f93ba7.jpg"  width="600" />
 
 ### ☘ 功能特性
 
@@ -76,19 +85,19 @@ Swoole
 
 ### 🔨官方导航
 
-[官网](https://kfadmin.net/) |
-[在线体验](https://demo.kfadmin.net/admin/) |
+[官网](https://xhadmin.cn/) |
+[在线体验](https://demo.xhadmin.cn/admin/) |
 [帮助文档](https://www.kancloud.cn/me_coder/kfadmin/3169580) |
 [安装教程](https://www.kancloud.cn/me_coder/kfadmin/3169582) |
-[应用市场](https://kfadmin.net/)
+[应用市场](https://xhadmin.cn/)
 
 ### ⚡ 系统演示
 
 ![xhadmin租户后台](https://img.alicdn.com/imgextra/i4/2064565174/O1CN017FqDVa1o5k8DHfOBx_!!2064565174.jpg)
 
-管理后台： http://demo.kfadmin.net/admin 账号：yanshi 密码：123456
+管理后台： http://demo.xhadmin.cn/admin 账号：yanshi 密码：123456
 
-租户后台： http://demo.kfadmin.net/store 账号：15185081324 密码：123456
+租户后台： http://demo.xhadmin.cn/store 账号：15185081324 密码：123456
 
 ### 📖 部分页面展示
 
