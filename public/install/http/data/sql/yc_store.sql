@@ -23,7 +23,7 @@ CREATE TABLE `__PREFIX__store`  (
   `douyin` int NOT NULL DEFAULT 0 COMMENT '抖音小程序数量',
   `h5` int NOT NULL DEFAULT 0 COMMENT '网页应用数量',
   `app` int NOT NULL DEFAULT 0 COMMENT 'APP应用数量',
-  `other` int NOT NULL COMMENT '其他应用',
+  `other` int NOT NULL DEFAULT 0 COMMENT '其他应用',
   `is_uploadify` enum('10','20') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '10' COMMENT '附件库权限：10 无本地权限，20有本地权限',
   `delete_time` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE

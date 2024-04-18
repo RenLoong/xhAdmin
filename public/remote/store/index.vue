@@ -66,7 +66,7 @@
             <div class="xh-project" v-if="projects.list.length">
                 <div class="project-list" :class="['project-list-'+listMode]">
                     <div class="item" v-for="(item, index) in projects.list" :key="index">
-                        <div class="project-info">
+                        <div class="project-info pointer" @click="hanldAdmin(item)" title="进入应用后台">
                             <el-avatar class="logo" :src="item.logo" shape="square">
                                 {{ item.title }}
                             </el-avatar>
@@ -566,5 +566,8 @@
                 border-radius: 8px;
             }
         }
+    }
+    .pointer{
+        cursor: pointer;
     }
 </style>
