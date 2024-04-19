@@ -7,6 +7,7 @@ use app\common\builder\FormBuilder;
 use app\common\builder\ListBuilder;
 use app\common\enum\StatusEnum;
 use app\common\model\plugin\PluginAdmin;
+use app\common\service\UploadService;
 use app\common\utils\Json;
 use support\Request;
 use think\App;
@@ -155,7 +156,6 @@ trait AdminTrait
         if ($request->method() == 'POST') {
             $post = $request->post();
             $post['pid'] = $admin_id;
-            $post['headimg'] = current($post['headimg']);
             $post['saas_appid'] = $this->saas_appid;
 
             # 数据验证
@@ -168,7 +168,9 @@ trait AdminTrait
             if ($this->model->where($where)->count()) {
                 return $this->fail('该登录账号已存在');
             }
-
+            if (!empty($post['headimg'])) {
+                $post['headimg'] = current($post['headimg']);
+            }
             $model = $this->model;
             if (!$model->save($post)) {
                 return $this->fail('保存失败');
@@ -248,6 +250,9 @@ trait AdminTrait
             // 空密码，不修改
             if (empty($post['password'])) {
                 unset($post['password']);
+            }
+            if (!empty($post['headimg'])) {
+                $post['headimg'] = current($post['headimg']);
             }
             if (!$model->save($post)) {
                 return $this->fail('保存失败');

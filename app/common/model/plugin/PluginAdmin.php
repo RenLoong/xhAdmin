@@ -41,6 +41,10 @@ class PluginAdmin extends AppidModel
     {
         return $value ? UploadService::url((string)$value) : '';
     }
+    public function setHeadimgAttr($value)
+    {
+        return $value ? UploadService::path($value) : $value;
+    }
 
     /**
      * 密码加密写入

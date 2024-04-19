@@ -12,7 +12,6 @@ class SystemAdmin extends Validate
         'username'          => 'require|verifyAdd',
         'password'          => 'require',
         'nickname'          => 'require',
-        'headimg'           => 'require',
     ];
 
     protected $message  =   [
@@ -20,7 +19,6 @@ class SystemAdmin extends Validate
         'username.require'  => '请输入登录账号',
         'password.require'  => '请输入登录密码',
         'nickname.require'  => '请输入用户昵称',
-        'headimg.require'   => '请上传头像',
     ];
 
     /**
