@@ -1,1 +1,0 @@
-ALTER TABLE `php_store` ADD COLUMN `delete_time` datetime NULL AFTER `is_uploadify`;

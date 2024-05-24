@@ -1,1 +1,0 @@
-ALTER TABLE `php_store` MODIFY COLUMN `other` int NOT NULL DEFAULT 0 COMMENT '其他应用' AFTER `app`;

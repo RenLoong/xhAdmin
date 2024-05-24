@@ -13,5 +13,6 @@ CREATE TABLE `__PREFIX__plugin_articles` (
   `content` text COMMENT '内容',
   `view` int(11) DEFAULT '0' COMMENT '热度',
   `virtually_view` int(11) DEFAULT '0' COMMENT '虚拟热度',
+  `is_alert` tinyint NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='应用插件-文章内容';

@@ -1,0 +1,1 @@
+ALTER TABLE `php_plugin_articles` ADD COLUMN `is_alert` tinyint NULL DEFAULT 0 AFTER `virtually_view`;

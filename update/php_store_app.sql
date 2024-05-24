@@ -1,1 +1,0 @@
-ALTER TABLE `php_store_app` ADD COLUMN `delete_time` datetime NULL AFTER `auth_id`;

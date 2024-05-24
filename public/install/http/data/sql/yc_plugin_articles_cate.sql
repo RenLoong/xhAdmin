@@ -8,5 +8,6 @@ CREATE TABLE `__PREFIX__plugin_articles_cate` (
   `title` varchar(255) NOT NULL DEFAULT '' COMMENT '分类标题',
   `status` enum('10','20') DEFAULT '10' COMMENT '状态：10禁用，20启用',
   `sort` int(11) DEFAULT NULL COMMENT '分类排序',
+  `alias` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='应用插件-文章分类';
