@@ -273,16 +273,17 @@ class UploadService
     /**
      * URL转PATH
      * @param string|array $url
+     * @param bool $array 是否返回数组
      * @return array|string
      * @copyright 贵州猿创科技有限公司
      * @Email 416716328@qq.com
      * @DateTime 2023-05-03
      */
-    public static function path(string|array $url)
+    public static function path(string|array $url,bool $array = false)
     {
         if (is_array($url)) {
             $data = [];
-            if (count($url) === 1) {
+            if (count($url) === 1&&!$array) {
                 return self::path(current($url));
             }
             foreach ($url as $value) {
