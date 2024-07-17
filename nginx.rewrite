@@ -7,23 +7,6 @@ location ~* (runtime|application)/{
   # proxy_pass https://restapi.amap.com/;
 # }
 location ~ ^/(?!_AMapService).*$ {
-  # 允许所有来源的跨域请求
-  # add_header 'Access-Control-Allow-Origin' '*';
-  # add_header 'Access-Control-Allow-Credentials' 'true';
-  # add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, PUT, DELETE';
-  # add_header 'Access-Control-Allow-Headers' 'Origin, Content-Type, Cookie, X-CSRF-TOKEN, Accept, X-XSRF-TOKEN,Authorization, Appid, Area, City, Province, Longitude, Latitude';
-  # add_header 'Access-Control-Expose-Headers' 'Authorization, Appid, Area, City, Province, Longitude, Latitude';
-
-  # 额外的CORS配置，具体根据需要进行调整
-  # if ($request_method = 'OPTIONS') {
-      # add_header 'Access-Control-Allow-Origin' '*';
-      # add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, PUT, DELETE';
-      # add_header 'Access-Control-Allow-Headers' 'Origin, Content-Type, Cookie, X-CSRF-TOKEN, Accept, X-XSRF-TOKEN,Authorization, Appid, Area, City, Province, Longitude, Latitude';
-      # add_header 'Access-Control-Max-Age' 1728000;
-      # add_header 'Content-Type' 'text/plain; charset=utf-8';
-      # add_header 'Content-Length' 0;
-      # return 204;
-  # }
   if (!-e $request_filename){
         rewrite  ^(.*)$  /index.php?s=$1  last;   break;
   }
