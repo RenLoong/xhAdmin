@@ -2,6 +2,7 @@
 
 use app\common\manager\StoreAppMgr;
 use app\common\service\UploadService;
+use phpseclib3\Math\BigInteger\Engines\PHP;
 use support\Response;
 
 /**
@@ -350,6 +351,7 @@ function list_sort_by(array $list, string $field, $sortby = 'asc')
 function p($str, string $remarks = '日志：', bool $type = false)
 {
     echo "<pre>";
+    echo $remarks.PHP_EOL;
     print_r($str);
     echo "</pre>";
 }
