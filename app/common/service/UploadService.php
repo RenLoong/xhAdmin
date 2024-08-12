@@ -46,6 +46,7 @@ class UploadService
      * @email 416716328@qq.com
      */
     protected static $uid = null;
+    protected static $acceptExt = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg', 'mp3', 'mp4', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'pdf', 'pem', 'crt', 'key', 'zip', 'rar', '7z', 'ttf', 'otf', 'woff', 'woff2', 'eot'];
 
     /**
      * 上传文件
@@ -62,6 +63,9 @@ class UploadService
      */
     public static function upload(UploadedFile $file, string $dir_name = '', $appid = null, $uid = null, $store_id = null, $is_hide = 0,$acceptExt=[])
     {
+        if(empty($acceptExt)){
+            $acceptExt = self::$acceptExt;
+        }
         validate(['image'=>'fileExt:'.implode(',',$acceptExt)])
             ->check([
                 'image' => $file
