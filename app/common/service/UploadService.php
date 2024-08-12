@@ -60,8 +60,12 @@ class UploadService
      * @copyright 贵州猿创科技有限公司
      * @email 416716328@qq.com
      */
-    public static function upload(UploadedFile $file, string $dir_name = '', $appid = null, $uid = null, $store_id = null, $is_hide = 0)
+    public static function upload(UploadedFile $file, string $dir_name = '', $appid = null, $uid = null, $store_id = null, $is_hide = 0,$acceptExt=[])
     {
+        validate(['image'=>'fileExt:'.implode(',',$acceptExt)])
+            ->check([
+                'image' => $file
+            ]);
         # 设置站点ID
         self::setStoreId($store_id);
         # 设置应用ID

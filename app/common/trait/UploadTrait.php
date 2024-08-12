@@ -41,6 +41,19 @@ trait UploadTrait
      * @var int|null
      */
     protected $uid = null;
+    /**
+     * 允许上传的文件格式
+     * 图片：jpg,jpeg,png,gif,bmp,webp,svg
+     * 音频：mp3
+     * 视频：mp4
+     * 文档：doc,docx,xls,xlsx,ppt,pptx,pdf
+     * 证书：pem,crt,key
+     * 压缩：zip,rar,7z
+     * 字体：ttf,otf,woff,woff2,eot
+     * 
+     * @var array
+     */
+    protected $acceptExt = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg', 'mp3', 'mp4', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'pdf', 'pem', 'crt', 'key', 'zip', 'rar', '7z', 'ttf', 'otf', 'woff', 'woff2', 'eot'];
 
     /**
      * 获取附件列表
@@ -187,7 +200,7 @@ trait UploadTrait
         }
         $is_hide = $request->post('is_hide', 0);
         # 上传附件
-        $data    = UploadService::upload($file, $dirName, $this->saas_appid, $this->uid, $this->store_id, $is_hide);
+        $data    = UploadService::upload($file, $dirName, $this->saas_appid, $this->uid, $this->store_id, $is_hide,$this->acceptExt);
         if (!$data) {
             return $this->fail('上传失败');
         }
