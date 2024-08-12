@@ -200,9 +200,13 @@ trait UploadTrait
         }
         $is_hide = $request->post('is_hide', 0);
         # 上传附件
-        $data    = UploadService::upload($file, $dirName, $this->saas_appid, $this->uid, $this->store_id, $is_hide,$this->acceptExt);
-        if (!$data) {
-            return $this->fail('上传失败');
+        try {
+            $data    = UploadService::upload($file, $dirName, $this->saas_appid, $this->uid, $this->store_id, $is_hide,$this->acceptExt);
+            if (!$data) {
+                return $this->fail('上传失败');
+            }
+        } catch (\Throwable $th) {
+            return $this->fail($th->getMessage());
         }
         return $this->successFul('上传成功', $data);
     }
