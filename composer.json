@@ -17,6 +17,10 @@
         {
             "name": "yunwuxin",
             "email": "448901948@qq.com"
+        },
+        {
+            "name": "renloong",
+            "email": "1016683587@qq.com"
         }
     ],
     "require": {
@@ -34,7 +38,7 @@
         "yc-open/cloud-service": "dev-master",
         "topthink/think-ide-helper": "^1.0",
         "pclzip/pclzip": "^2.8",
-        "loong/oauth": "^1.0",
+        "loong/oauth": "^1.1",
         "topthink/think-swoole": "^4.0",
         "symfony/var-dumper": "^6.0",
         "topthink/think-queue": "^3.0",

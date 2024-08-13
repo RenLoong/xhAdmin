@@ -8,17 +8,23 @@ class Redis
     public function __construct()
     {
         if (class_exists('\Redis')) {
-            $config = include config_path() . 'cache.php';
-            if (!isset($config['stores']['redis'])) {
-                throw new \Exception('请配置config/cache.php redis');
+            $oauthFile = config_path() . '/oauth.php';
+            if (file_exists($oauthFile)) {
+                $config = include $oauthFile;
+            } else {
+                $config = include config_path() . '/cache.php';
+                if (!isset($config['stores']['redis'])) {
+                    throw new \Exception('请配置config/cache.php redis');
+                }
+                $config = $config['stores'];
             }
             $redis = new \Redis;
-            $redis->connect($config['stores']['redis']['host'], $config['stores']['redis']['port']);
-            if ($config['stores']['redis']['password']) {
-                $redis->auth($config['stores']['redis']['password']);
+            $redis->connect($config['redis']['host'], $config['redis']['port']);
+            if ($config['redis']['password']) {
+                $redis->auth($config['redis']['password']);
             }
-            if ($config['stores']['redis']['select']) {
-                $redis->select($config['stores']['redis']['select']);
+            if ($config['redis']['select']) {
+                $redis->select($config['redis']['select']);
             }
             $this->redis = $redis;
             return;

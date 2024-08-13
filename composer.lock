@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a7396c2be8195620a4448ba1a2a3e98c",
+    "content-hash": "dbe00f6330961df532c7676c8992c6a8",
     "packages": [
         {
             "name": "aliyuncs/oss-sdk-php",
@@ -2363,23 +2363,17 @@
         },
         {
             "name": "loong/oauth",
-            "version": "1.0.7",
+            "version": "1.1.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/uRenlong/oauth.git",
-                "reference": "6d734a75882349ce5134c81fc5c91d4d6c62ca53"
+                "url": "https://github.com/RenLoong/oauth.git",
+                "reference": "36f6c10385e8283544f09b5cbed731b60bda10a0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/uRenlong/oauth/zipball/6d734a75882349ce5134c81fc5c91d4d6c62ca53",
-                "reference": "6d734a75882349ce5134c81fc5c91d4d6c62ca53",
-                "shasum": "",
-                "mirrors": [
-                    {
-                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
-                        "preferred": true
-                    }
-                ]
+                "url": "https://api.github.com/repos/RenLoong/oauth/zipball/36f6c10385e8283544f09b5cbed731b60bda10a0",
+                "reference": "36f6c10385e8283544f09b5cbed731b60bda10a0",
+                "shasum": ""
             },
             "type": "library",
             "autoload": {
@@ -2399,10 +2393,10 @@
             ],
             "description": "基于TP8, 不同系统之间安全传递信息, 用于用户登录验证, 信息传递等",
             "support": {
-                "issues": "https://github.com/uRenlong/oauth/issues",
-                "source": "https://github.com/uRenlong/oauth/tree/1.0.7"
+                "issues": "https://github.com/RenLoong/oauth/issues",
+                "source": "https://github.com/RenLoong/oauth/tree/1.1.2"
             },
-            "time": "2023-12-01T06:51:11+00:00"
+            "time": "2024-08-12T09:54:52+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
