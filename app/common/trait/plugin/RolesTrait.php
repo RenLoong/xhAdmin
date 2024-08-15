@@ -182,6 +182,9 @@ trait RolesTrait
             }
             return $this->success('保存成功');
         }
+        if(!is_array($model->role)){
+            $model->role = [];
+        }
         $builder = new FormBuilder;
         $view = $builder
             ->setMethod('PUT')
