@@ -70,10 +70,7 @@ class SystemInfoService
         $privateFilePath = root_path() . 'private_key.pem';
         # 新版授权文件
         $authFilePath = config_path() . 'authorization.json';
-        if (file_exists($tokenFilePath) && file_exists($privateFilePath)) {
-            $data['site_encrypt'] = file_get_contents($tokenFilePath);
-            $data['privatekey'] = file_get_contents($privateFilePath);
-        } else if (file_exists($authFilePath)) {
+        if (file_exists($authFilePath)) {
             # 设置站点商版权
             $autData = json_decode(file_get_contents($authFilePath), true);
             $data = array_merge($data, $autData);
@@ -82,6 +79,10 @@ class SystemInfoService
             $data['service_wx']     = $autData['wechat'];
             $data['system_doc']     = $autData['public_api']['doc'];
             $data['ecology']        = $autData['ecology'];
+        }
+        if (file_exists($tokenFilePath) && file_exists($privateFilePath)) {
+            $data['site_encrypt'] = file_get_contents($tokenFilePath);
+            $data['privatekey'] = file_get_contents($privateFilePath);
         }
         return $data;
     }
