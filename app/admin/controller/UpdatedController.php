@@ -7,6 +7,7 @@ use app\common\service\SystemRollbackService;
 use app\common\service\SystemUpdateService;
 use app\common\service\SystemInfoService;
 use app\common\BaseController;
+use app\common\manager\PluginMgr;
 use Exception;
 use support\Request;
 use think\App;
@@ -179,6 +180,8 @@ class UpdatedController extends BaseController
             $req->verify();
             $req->version_name = $this->version_name;
             $req->version      = $this->system_version;
+            $installData  = PluginMgr::getLocalPlugins();
+            $req->plugins=implode(',',$installData);
             $cloud             = new Cloud($req);
             $data              = $cloud->send();
             return $this->successRes($data->toArray());
@@ -203,6 +206,8 @@ class UpdatedController extends BaseController
             $req->detail();
             $req->version_name = $this->version_name;
             $req->version      = $this->system_version;
+            $installData  = PluginMgr::getLocalPlugins();
+            $req->plugins=implode(',',$installData);
             $cloud             = new Cloud($req);
             $data              = $cloud->send();
             return $this->successRes($data->toArray());
