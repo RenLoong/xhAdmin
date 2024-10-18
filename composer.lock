@@ -7763,23 +7763,17 @@
         },
         {
             "name": "xbai/plugins",
-            "version": "1.0.6",
+            "version": "1.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/xbai8/plugins.git",
-                "reference": "52f3612e68a139ca04be96a3cc26b94ceab4f717"
+                "reference": "489d1fc930ff7ee1f808d1f479be6b6cb18baa53"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/xbai8/plugins/zipball/52f3612e68a139ca04be96a3cc26b94ceab4f717",
-                "reference": "52f3612e68a139ca04be96a3cc26b94ceab4f717",
-                "shasum": "",
-                "mirrors": [
-                    {
-                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
-                        "preferred": true
-                    }
-                ]
+                "url": "https://api.github.com/repos/xbai8/plugins/zipball/489d1fc930ff7ee1f808d1f479be6b6cb18baa53",
+                "reference": "489d1fc930ff7ee1f808d1f479be6b6cb18baa53",
+                "shasum": ""
             },
             "type": "library",
             "extra": {
@@ -7814,9 +7808,9 @@
             ],
             "support": {
                 "issues": "https://github.com/xbai8/plugins/issues",
-                "source": "https://github.com/xbai8/plugins/tree/1.0.6"
+                "source": "https://github.com/xbai8/plugins/tree/1.0.7"
             },
-            "time": "2024-02-27T03:32:06+00:00"
+            "time": "2024-10-18T03:33:14+00:00"
         },
         {
             "name": "yc-open/cloud-service",
@@ -8233,5 +8227,5 @@
         "php": ">=8.0.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.0.0"
 }

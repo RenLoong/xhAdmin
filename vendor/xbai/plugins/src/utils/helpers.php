@@ -193,9 +193,25 @@ if (!function_exists('getAssetsCheck')) {
                 unset($pluginRoute[1]);
                 $pluginRoute = implode('/', $pluginRoute);
                 $file = root_path()."plugin/{$plugin}/public/{$pluginRoute}";
-                if (file_exists($file)) {
+                $fileGz=$file.'.gz';
+                if(file_exists($fileGz)){
+                    $content  = file_get_contents($fileGz);
+                    $header=[
+                        'Content-Type'      => $mimeContentType,
+                        'Content-Encoding'  => 'gzip'
+                    ];
+                    return response()->code(200)->header($header)->content($content);
+                }else if (file_exists($file)) {
+                    $size= filesize($file);
+                    $header=[
+                        'Content-Type'      => $mimeContentType,
+                    ];
                     $content  = file_get_contents($file);
-                    return response()->code(200)->contentType($mimeContentType)->content($content);
+                    if($size>1024*1024){
+                        $header['Content-Encoding'] = 'gzip';
+                        $content  = gzencode($content,9);
+                    }
+                    return response()->code(200)->header($header)->content($content);
                 }
             }
             # 文件资源不存在则找官方库

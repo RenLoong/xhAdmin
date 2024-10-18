@@ -40,9 +40,6 @@ class XhMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if ($response = getAssetsCheck($request)) {
-            return $response;
-        }
         $response = $next($request);
         return $response;
     }

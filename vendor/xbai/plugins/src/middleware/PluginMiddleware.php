@@ -93,6 +93,7 @@ class PluginMiddleware
         $pathinfo = $this->app->request->pathinfo();
         // 静态资源则拦截
         if ($response = getAssetsCheck($this->app->request)) {
+            echo '2';die;
             print_r($response);
             exit;
             return $response;

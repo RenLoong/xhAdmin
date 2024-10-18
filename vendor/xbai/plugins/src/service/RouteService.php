@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Xbai\Plugins\service;
@@ -48,16 +49,6 @@ class RouteService
      */
     public function execute($plugin)
     {
-        // 静态资源则拦截
-        $static_suffix = config('plugins.static_suffix');
-        if (!is_array($static_suffix)) {
-            throw new \Exception("配置项plugins.static_suffix必须为数组");
-        }
-        $extendsion = pathinfo($this->request->pathinfo(), PATHINFO_EXTENSION);
-        if (in_array($extendsion, $static_suffix)) {
-            // 执行调度转发
-            return app($class)->$action($this->request);
-        }
         // 获取三层数据
         $control = $this->request->control;
         $action  = $this->request->action;
